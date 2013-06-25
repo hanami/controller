@@ -1,0 +1,6 @@
+require 'rubygems'
+require 'bundler/setup'
+require 'minitest/autorun'
+$:.unshift 'lib'
+require 'lotus/action'
+require 'fixtures'
