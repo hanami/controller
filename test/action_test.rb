@@ -17,11 +17,24 @@ describe Lotus::Action do
       response[2].must_equal( ['Internal Server Error'] )
     end
 
-    it 'passes the params' do
-      action = ParamsCallAction.new
-      action.call({'router.params' => {number: number = Random.new.rand}})
+    describe 'params' do
+      before do
+        @params = {number: @number = Random.new.rand}
+      end
 
-      action.number.must_equal(number)
+      it 'extracts router params' do
+        action = ParamsCallAction.new
+        action.call({'router.params' => @params})
+
+        action.number.must_equal(@number)
+      end
+
+      it 'passes as they are, if router params are missing' do
+        action = ParamsCallAction.new
+        action.call(@params)
+
+        action.number.must_equal(@number)
+      end
     end
   end
 

@@ -1,3 +1,15 @@
+class TestController
+  include Lotus::Controller
+
+  action 'Index' do
+    expose :xyz
+
+    def call(params)
+      @xyz = params[:name]
+    end
+  end
+end
+
 class CallAction
   include Lotus::Action
 

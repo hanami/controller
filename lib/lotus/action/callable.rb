@@ -25,7 +25,7 @@ module Lotus
 
       private
       def _params(params)
-        params['router.params']
+        params.fetch('router.params', params)
       end
 
       def _rescue
