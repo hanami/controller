@@ -18,11 +18,17 @@ module Lotus
       end
 
       def headers
-        @headers || {}
+        @headers ||= {}
       end
 
       def body
         [@body.to_s]
+      end
+
+      protected
+      def redirect_to(url, status: 302)
+        headers.merge!('Location' => url)
+        @status = status
       end
 
       private

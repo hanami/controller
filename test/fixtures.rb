@@ -171,6 +171,22 @@ class SessionAction
   end
 end
 
+class RedirectAction
+  include Lotus::Action
+
+  def call(params)
+    redirect_to '/destination'
+  end
+end
+
+class StatusRedirectAction
+  include Lotus::Action
+
+  def call(params)
+    redirect_to '/destination', status: 301
+  end
+end
+
 class ClassAttributeTest
   include Lotus::Utils::ClassAttribute
 
