@@ -3,12 +3,14 @@ module Lotus
     module Callable
       def call(params)
         _rescue do
-          super _params(params)
+          @session = _session(params)
+          super      _params(params)
         end
 
         [status, headers, body]
       end
 
+      attr_reader :session
       attr_writer :status, :headers, :body
 
       def status
@@ -24,6 +26,10 @@ module Lotus
       end
 
       private
+      def _session(params)
+        params['rack.session'] ||= {}
+      end
+
       def _params(params)
         params.fetch('router.params', params)
       end

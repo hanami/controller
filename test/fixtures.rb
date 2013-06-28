@@ -164,6 +164,13 @@ class YieldAfterBlockAction < AfterBlockAction
   before {|params| @meaning_of_life_params = params }
 end
 
+class SessionAction
+  include Lotus::Action
+
+  def call(params)
+  end
+end
+
 class ClassAttributeTest
   include Lotus::Utils::ClassAttribute
 

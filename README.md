@@ -161,6 +161,19 @@ The output of `#call` is a serialized Rack response:
     action = Show.new
     action.call({}) # => [500, {}, [""]]
 
+It has builtin support for Rack sessions
+
+    class Show
+      include Lotus::Action
+
+      def call(params)
+      end
+    end
+
+    action = Show.new
+    action.call({ 'rack.session' => { 'age' => '31' }})
+
+    puts action.session # => { 'age' => '31' }
 
 ### Controllers
 
