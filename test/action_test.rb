@@ -5,36 +5,16 @@ describe Lotus::Action do
     it 'calls an action' do
       response = CallAction.new.call({})
 
-      response[0].must_equal( 201                     )
-      response[1].must_equal( {'X-Custom' => 'OK'}    )
-      response[2].must_equal( ['Hi from TestAction!'] )
+      response.status.must_equal 201
+      response.headers.must_equal({'X-Custom' => 'OK'})
+      response.body.must_equal ['Hi from TestAction!']
     end
 
     it 'returns an HTTP 500 status code when an exception is raised' do
       response = ErrorCallAction.new.call({})
 
-      response[0].must_equal( 500                       )
-      response[2].must_equal( ['Internal Server Error'] )
-    end
-
-    describe 'params' do
-      before do
-        @params = {number: @number = Random.new.rand}
-      end
-
-      it 'extracts router params' do
-        action = ParamsCallAction.new
-        action.call({'router.params' => @params})
-
-        action.number.must_equal(@number)
-      end
-
-      it 'passes as they are, if router params are missing' do
-        action = ParamsCallAction.new
-        action.call(@params)
-
-        action.number.must_equal(@number)
-      end
+      response.status.must_equal 500
+      response.body.must_equal ['Internal Server Error']
     end
   end
 
@@ -43,7 +23,7 @@ describe Lotus::Action do
       action = ExposeAction.new
 
       response = action.call({})
-      response[0].must_equal 200
+      response.status.must_equal 200
 
       action.exposures.must_equal({ film: '400 ASA', time: nil })
     end

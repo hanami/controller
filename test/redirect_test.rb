@@ -3,18 +3,18 @@ require 'test_helper'
 describe Lotus::Action do
   describe 'redirect' do
     it 'redirects to the given path' do
-      action = RedirectAction.new
-      status, headers, _ = *action.call({})
+      action   = RedirectAction.new
+      response = action.call({})
 
-      status.must_equal(302)
-      headers.must_equal({ 'Location' => '/destination' })
+      response.status.must_equal(302)
+      response.headers.must_equal({ 'Location' => '/destination' })
     end
 
     it 'redirects with custom status code' do
-      action    = StatusRedirectAction.new
-      status, _ = *action.call({})
+      action   = StatusRedirectAction.new
+      response = action.call({})
 
-      status.must_equal(301)
+      response.status.must_equal(301)
     end
   end
 end

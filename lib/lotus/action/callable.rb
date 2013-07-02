@@ -1,51 +1,48 @@
+require 'rack/request'
+require 'rack/response'
+require 'lotus/action/params'
+
 module Lotus
   module Action
     module Callable
-      def call(params)
+      def call(env)
         _rescue do
-          @session = _session(params)
-          super      _params(params)
+          @_request  = Rack::Request.new(env)
+          @_response = Rack::Response.new
+          super        Params.new(env, @_request)
         end
 
-        [status, headers, body]
-      end
-
-      attr_reader :session
-      attr_writer :status, :headers, :body
-
-      def status
-        @status || 200
-      end
-
-      def headers
-        @headers ||= {}
-      end
-
-      def body
-        [@body.to_s]
+        @_response
       end
 
       protected
+      def status=(status)
+        @_response.status = status
+      end
+
+      def body=(body)
+        @_response.body = [ body ]
+      end
+
+      def headers
+        @_response.headers
+      end
+
+      def session
+        @_request.session
+      end
+
       def redirect_to(url, status: 302)
-        headers.merge!('Location' => url)
-        @status = status
+        @_response.redirect(url, status)
       end
 
       private
-      def _session(params)
-        params['rack.session'] ||= {}
-      end
-
-      def _params(params)
-        params.fetch('router.params', params)
-      end
-
       def _rescue
         begin
           yield
         rescue
-          @status = 500
-          @body   = 'Internal Server Error'
+          self.status = 500
+          self.body   = 'Internal Server Error'
         end
       end
     end

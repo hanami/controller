@@ -15,8 +15,8 @@ class CallAction
 
   def call(params)
     self.status  = 201
-    self.headers = { 'X-Custom' => 'OK' }
     self.body    = 'Hi from TestAction!'
+    self.headers.merge!({ 'X-Custom' => 'OK' })
   end
 end
 
@@ -25,16 +25,6 @@ class ErrorCallAction
 
   def call(params)
     raise
-  end
-end
-
-class ParamsCallAction
-  include Lotus::Action
-
-  expose :number
-
-  def call(params)
-    @number = params[:number]
   end
 end
 

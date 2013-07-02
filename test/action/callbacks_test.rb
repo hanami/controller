@@ -42,7 +42,7 @@ describe Lotus::Action do
         action   = ErrorBeforeMethodAction.new
         response = action.call({})
 
-        response[0].must_equal 500
+        response.status.must_equal 500
         action.article.must_be_nil
       end
     end
@@ -89,7 +89,7 @@ describe Lotus::Action do
         action   = ErrorAfterMethodAction.new
         response = action.call({})
 
-        response[0].must_equal 500
+        response.status.must_equal 500
         action.egg.must_be_nil
       end
     end
