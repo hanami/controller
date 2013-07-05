@@ -25,15 +25,17 @@ describe Lotus::Action do
 
     it 'can optionally have params in method signature' do
       action = ParamsBeforeMethodAction.new
-      action.call(bang: '!')
+      action.call(params = {bang: '!'})
 
       action.article.must_equal 'Bonjour!!'.reverse
+      action.exposed_params.must_equal(params)
     end
 
     it 'yields params when the callback is a block' do
-      action = YieldBeforeBlockAction.new
-      action.call(params = { twentythree: '23' })
+      action   = YieldBeforeBlockAction.new
+      response = action.call(params = { twentythree: '23' })
 
+      response.status.must_equal 200
       action.yielded_params.must_equal params
     end
 

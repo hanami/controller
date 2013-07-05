@@ -1,17 +1,19 @@
 require 'rack/request'
 require 'rack/response'
 require 'lotus/action/params'
+require 'lotus/action/cookie_jar'
 
 module Lotus
   module Action
     module Callable
       def call(env)
         _rescue do
-          @_request  = Rack::Request.new(env)
+          @_request  = Rack::Request.new(env.dup)
           @_response = Rack::Response.new
-          super        Params.new(env, @_request)
+          super        Params.new(env)
         end
 
+        cookies.finish
         @_response
       end
 
@@ -30,6 +32,10 @@ module Lotus
 
       def session
         @_request.session
+      end
+
+      def cookies
+        @cookies ||= CookieJar.new(@_request, @_response)
       end
 
       def redirect_to(url, status: 302)

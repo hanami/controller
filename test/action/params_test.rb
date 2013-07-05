@@ -60,8 +60,7 @@ describe Lotus::Action::Params do
   end
 
   it 'is frozen' do
-    request = Minitest::Mock.new
-    params  = Lotus::Action::Params.new({id: '23'}, request)
+    params  = Lotus::Action::Params.new({id: '23'})
 
     -> { params.delete(:id) }.must_raise(RuntimeError)
   end

@@ -67,8 +67,11 @@ class SubclassBeforeMethodAction < BeforeMethodAction
 end
 
 class ParamsBeforeMethodAction < BeforeMethodAction
+  expose :exposed_params
+
   private
   def set_article(params)
+    @exposed_params = params
     @article = super() + params[:bang]
   end
 end
@@ -187,4 +190,36 @@ end
 
 class SubclassAttributeTest < ClassAttributeTest
   self.functions = [:x, :y]
+end
+
+class GetCookiesAction
+  include Lotus::Action
+
+  def call(params)
+  end
+end
+
+class SetCookiesAction
+  include Lotus::Action
+
+  def call(params)
+    self.body = 'yo'
+    cookies[:foo] = 'yum!'
+  end
+end
+
+class SetCookiesWithOptionsAction
+  include Lotus::Action
+
+  def call(params)
+    cookies[:kukki] = { value: 'yum!', domain: 'lotusrb.org', path: '/controller', expires: params[:expires], secure: true, httponly: true }
+  end
+end
+
+class RemoveCookiesAction
+  include Lotus::Action
+
+  def call(params)
+    cookies[:rm] = nil
+  end
 end

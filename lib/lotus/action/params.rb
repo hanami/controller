@@ -1,8 +1,8 @@
 module Lotus
   module Action
     class Params < ::Hash
-      def initialize(env, request)
-        merge! _extract(env, request)
+      def initialize(env)
+        merge! _extract(env)
         _symbolize!
         freeze
       end
@@ -14,17 +14,17 @@ module Lotus
         end
       end
 
-      if defined?(Lotus::Router)
+      if defined?(::Lotus::Router)
 
-        def _extract(env, request)
+        def _extract(env)
           env.fetch('router.params', env)
         end
 
       else
 
-        def _extract(env, request)
+        def _extract(env)
           if env.has_key?('rack.input')
-            request.params
+            ::Rack::Request.new(env).params
           else
             env
           end
