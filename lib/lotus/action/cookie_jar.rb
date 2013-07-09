@@ -1,10 +1,13 @@
+require 'lotus/utils/hash'
+
 module Lotus
   module Action
-    class CookieJar < ::Hash
+    class CookieJar < Utils::Hash
       def initialize(request, response)
-        merge! request.cookies
-        _symbolize!
         @_response = response
+
+        super(request.cookies)
+        symbolize!
       end
 
       def finish
@@ -14,13 +17,6 @@ module Lotus
           else
             @_response.set_cookie(k, v)
           end
-        end
-      end
-
-      private
-      def _symbolize!
-        keys.each do |k|
-          self[k.to_sym] = delete(k)
         end
       end
     end

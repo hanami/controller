@@ -223,3 +223,72 @@ class RemoveCookiesAction
     cookies[:rm] = nil
   end
 end
+
+class ParamsAction
+  include Lotus::Action
+
+  def call(params)
+    self.body = params.inspect
+  end
+end
+
+class Root
+  include Lotus::Action
+
+  def call(params)
+    self.body = params
+    headers.merge!({'X-Test' => 'test'})
+  end
+end
+
+class AboutController
+  include Lotus::Controller
+
+  class Team < Root
+  end
+
+  action 'Contacts' do
+    def call(params)
+      self.body = params
+    end
+  end
+end
+
+class IdentityController
+  include Lotus::Controller
+
+  class Action
+    include Lotus::Action
+
+    def call(params)
+      self.body = params
+    end
+  end
+
+  Show    = Class.new(Action)
+  New     = Class.new(Action)
+  Create  = Class.new(Action)
+  Edit    = Class.new(Action)
+  Update  = Class.new(Action)
+  Destroy = Class.new(Action)
+end
+
+class FlowersController
+  include Lotus::Controller
+
+  class Action
+    include Lotus::Action
+
+    def call(params)
+      self.body = params
+    end
+  end
+
+  Index   = Class.new(Action)
+  Show    = Class.new(Action)
+  New     = Class.new(Action)
+  Create  = Class.new(Action)
+  Edit    = Class.new(Action)
+  Update  = Class.new(Action)
+  Destroy = Class.new(Action)
+end
