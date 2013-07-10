@@ -1,5 +1,6 @@
 require 'rack/request'
 require 'rack/response'
+require 'lotus/http/status'
 require 'lotus/action/params'
 require 'lotus/action/cookie_jar'
 
@@ -42,13 +43,24 @@ module Lotus
         @_response.redirect(url, status)
       end
 
+      def throw(code)
+        status(*Http::Status.for_code(code))
+        super :halt
+      end
+
+      def status(code, message)
+        self.status = code
+        self.body   = message
+      end
+
       private
       def _rescue
-        begin
-          yield
-        rescue
-          self.status = 500
-          self.body   = 'Internal Server Error'
+        catch :halt do
+          begin
+            yield
+          rescue
+            throw 500
+          end
         end
       end
     end
