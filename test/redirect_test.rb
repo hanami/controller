@@ -7,7 +7,7 @@ describe Lotus::Action do
       response = action.call({})
 
       response.status.must_equal(302)
-      response.headers.must_equal({ 'Location' => '/destination' })
+      response.headers.must_equal({ 'Content-Type' => 'application/octet-stream', 'Location' => '/destination' })
     end
 
     it 'redirects with custom status code' do

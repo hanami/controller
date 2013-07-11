@@ -6,7 +6,7 @@ describe Lotus::Action do
       response = CallAction.new.call({})
 
       response.status.must_equal 201
-      response.headers.must_equal({'X-Custom' => 'OK'})
+      response.headers.must_equal({'Content-Type' => 'application/octet-stream', 'X-Custom' => 'OK'})
       response.body.must_equal ['Hi from TestAction!']
     end
 
