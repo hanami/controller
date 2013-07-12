@@ -435,3 +435,41 @@ class FlowersController
   Update  = Class.new(Action)
   Destroy = Class.new(Action)
 end
+
+class DashboardController
+  include Lotus::Controller
+
+  action 'Index' do
+    before :authenticate!
+
+    def call(params)
+    end
+
+    private
+    def authenticate!
+      throw 401 unless loggedin?
+    end
+
+    def loggedin?
+      session.has_key?(:user_id)
+    end
+  end
+end
+
+class SessionsController
+  include Lotus::Controller
+
+  action 'Create' do
+    def call(params)
+      session[:user_id] = 23
+      redirect_to '/'
+    end
+  end
+
+  action 'Destroy' do
+    def call(params)
+      session.delete(:user_id)
+    end
+  end
+end
+
