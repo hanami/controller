@@ -13,4 +13,12 @@ describe Lotus::HTTP::Response do
   it 'exposes action' do
     @response.action.must_equal(@action)
   end
+
+  it 'wraps body when it is set' do
+    @response.body = 'hi'
+    @response.body.must_equal ['hi']
+
+    @response.body = ['hello']
+    @response.body.must_equal ['hello']
+  end
 end

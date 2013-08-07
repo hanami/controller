@@ -9,6 +9,10 @@ module Lotus
         super()
         @action = action
       end
+
+      def body=(body)
+        super Array(body)
+      end
     end
   end
 end
