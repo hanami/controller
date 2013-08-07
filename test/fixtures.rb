@@ -253,18 +253,6 @@ class StatusRedirectAction
   end
 end
 
-class ClassAttributeTest
-  include Lotus::Utils::ClassAttribute
-
-  class_attribute :callbacks, :functions, :values
-  self.callbacks = [:a]
-  self.values    = [1]
-end
-
-class SubclassAttributeTest < ClassAttributeTest
-  self.functions = [:x, :y]
-end
-
 class GetCookiesAction
   include Lotus::Action
 

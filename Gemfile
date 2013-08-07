@@ -2,4 +2,5 @@ source 'http://rubygems.org'
 
 gemspec
 gem 'debugger',     require: false
-gem 'lotus-router', require: false, git: 'git@github.com:lotus/router.git'
+gem 'lotus-utils',  require: false, path: '../lotus-utils'
+gem 'lotus-router', require: false, path: '../lotus-router'
