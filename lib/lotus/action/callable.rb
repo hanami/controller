@@ -1,5 +1,5 @@
-require 'rack/request'
-require 'rack/response'
+require 'lotus/http/request'
+require 'lotus/http/response'
 require 'lotus/action/params'
 
 module Lotus
@@ -7,8 +7,8 @@ module Lotus
     module Callable
       def call(env)
         _rescue do
-          @_request  = ::Rack::Request.new(env.dup)
-          @_response = ::Rack::Response.new
+          @_request  = HTTP::Request.new(env.dup)
+          @_response = HTTP::Response.new(self)
           super        Params.new(env)
         end
 
