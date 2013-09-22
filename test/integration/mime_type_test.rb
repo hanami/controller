@@ -36,8 +36,22 @@ describe 'Mime type' do
     response.headers['Content-Type'].must_equal 'application/xml'
   end
 
-  it 'sets "Content-Type" header according to "Accept"' do
-    response = @app.get('/', 'CONTENT_TYPE' => 'application/png')
-    response.headers['Content-Type'].must_equal 'application/png'
+  describe 'when HTTP_ACCEPT is set' do
+    it 'sets "Content-Type" header according to "Accept"' do
+      response = @app.get('/', 'HTTP_ACCEPT' => '*/*')
+      response.headers['Content-Type'].must_equal 'application/octet-stream'
+    end
+
+    it 'sets "Content-Type" header according to "Accept"' do
+      response = @app.get('/', 'HTTP_ACCEPT' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8')
+      response.headers['Content-Type'].must_equal 'text/html'
+    end
+  end
+
+  describe 'when both CONTENT_TYPE and HTTP_ACCEPT are set' do
+    it 'prefers the first' do
+      response = @app.get('/', 'CONTENT_TYPE' => 'application/png', 'HTTP_ACCEPT' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8')
+      response.headers['Content-Type'].must_equal 'application/png'
+    end
   end
 end

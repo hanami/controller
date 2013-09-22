@@ -15,7 +15,7 @@ module Lotus
       end
 
       def content_type
-        @content_type || @_request.media_type || DEFAULT_CONTENT_TYPE
+        @content_type || @_request.media_type || @_request.accepts || DEFAULT_CONTENT_TYPE
       end
     end
   end
