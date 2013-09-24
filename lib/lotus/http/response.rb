@@ -20,7 +20,11 @@ module Lotus
       end
 
       def body=(body)
-        super Array(body)
+        if body.respond_to?(:each)
+          super body
+        else
+          super Array(body)
+        end
       end
 
       private
