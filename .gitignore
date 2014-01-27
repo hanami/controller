@@ -2,3 +2,4 @@
 .greenbar
 Gemfile.lock
 tags
+.bundle
