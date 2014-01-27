@@ -1,7 +1,7 @@
 require 'test_helper'
 require 'lotus/router'
 
-Routes = Lotus::Router.draw do
+Routes = Lotus::Router.new do
   get '/',         to: 'root'
   get '/team',     to: 'about#team'
   get '/contacts', to: 'about#contacts'

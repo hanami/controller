@@ -2,7 +2,7 @@ require 'test_helper'
 require 'rack/test'
 require 'lotus/router'
 
-SessionRoutes = Lotus::Router.draw do
+SessionRoutes = Lotus::Router.new do
   get    '/',       to: 'dashboard#index'
   post   '/login',  to: 'sessions#create'
   delete '/logout', to: 'sessions#destroy'

@@ -1,7 +1,7 @@
 require 'test_helper'
 require 'lotus/router'
 
-MimeRoutes = Lotus::Router.draw do
+MimeRoutes = Lotus::Router.new do
   get '/',       to: 'mimes#default'
   get '/custom', to: 'mimes#custom'
 end
