@@ -1,6 +1,26 @@
 # Lotus::Controller
 
-A Rack compatible Controller layer for Lotus
+A Rack compatible Controller layer for [Lotus](http://lotusrb.org).
+
+## Status
+
+[![Gem Version](https://badge.fury.io/rb/lotus-controller.png)](http://badge.fury.io/rb/lotus-controller)
+[![Build Status](https://secure.travis-ci.org/lotus/controller.png?branch=master)](http://travis-ci.org/lotus/controller?branch=master)
+[![Coverage](https://coveralls.io/repos/lotus/controller/badge.png?branch=master)](https://coveralls.io/r/lotus/controller)
+[![Code Climate](https://codeclimate.com/github/lotus/controller.png)](https://codeclimate.com/github/lotus/controller)
+[![Dependencies](https://gemnasium.com/lotus/controller.png)](https://gemnasium.com/lotus/controller)
+
+## Contact
+
+* Home page: http://lotusrb.org
+* Mailing List: http://lotusrb.org/mailing-list
+* API Doc: http://rdoc.info/gems/lotus-controller
+* Bugs/Issues: https://github.com/lotus/controller/issues
+* Support: http://stackoverflow.com/questions/tagged/lotusrb
+
+## Rubies
+
+__Lotus::Controller__ supports Ruby (MRI) 2+
 
 ## Installation
 
@@ -24,10 +44,14 @@ $ gem install lotus-controller
 
 ## Usage
 
-Lotus::Controller is a thin layer for MVC web frameworks and works beautifully with [Lotus::Router](https://lotusrb.org/router).
+Lotus::Controller is a thin layer (**230 LOCs**) for MVC web frameworks.
+It works beautifully with [Lotus::Router](https://github.com/lotus/router), but it can be employed everywhere.
 It's designed with performances and testability in mind.
 
 ### Actions
+
+The core of this frameworks are the actions.
+They are the endpoint that responds to incoming HTTP requests.
 
 ```ruby
 class Show
@@ -41,8 +65,18 @@ class Show
 end
 ```
 
-Just include `Lotus::Action`, implement `#call(params)` and you're done: it doesn't interfer with classes inheritance, and leaves all the freedom to **you**, the developer, to control it.
-For instance, you can implement your own initialization strategy and eventually inject dependencies while testing:
+The usage of `Lotus::Action` follows the Lotus philosophy: include a module and implement a minimal interface.
+In this case, it's only one method: `#call(params)`.
+
+Lotus is designed to not interfere with inheritance.
+This is important, because you can implement your own initialization strategy.
+
+An action is an object after all, it's important that you have the full control on it.
+In other words, you have the freedom of instantiate, inject dependencies and test it, both with unit and integration.
+
+In the example below, we're stating that the default repository is `Article`, but during an unit test we can inject a stubbed version, and invoke `#call` with the params that we want to simulate.
+We're avoiding HTTP calls, we're eventually avoiding to hit the database (it depends on the stubbed repository), we're just dealing with message passing.
+Imagine how **fast** can be a unit test like this.
 
 ```ruby
 class Show
@@ -61,32 +95,13 @@ end
 
 action = Show.new(StubArticleRepository)
 action.call({ id: 23 })
-
-# or
-
-class Resource
-  include Lotus::Action
-
-  expose :article
-
-  def initialize(repository = Article)
-    @repository = repository
-  end
-
-  def call(params)
-    @article = @repository.find params[:id]
-  end
-end
-
-class Show < Resource
-end
-
-class Edit < Resource
-end
 ```
 
-The request params are passed as an argument to the `#call` method: if routed with *Lotus::Router*, it extract the relevant bits from the Rack env, otherwise everything it's passed as it is.
-This avoids complex testing scenarios, where real HTTP calls are involved. Imagine a simple test like this:
+### Params
+
+The request params are passed as an argument to the `#call` method.
+If routed with *Lotus::Router*, it extracts the relevant bits from the Rack `env`.
+Otherwise everything it's passed as it is: the full Rack `env` in production, and the given `Hash` for unit tests.
 
 ```ruby
 action   = Show.new
@@ -95,7 +110,13 @@ response = action.call({ id: 23 })
 assert_equal 200, response[0]
 ```
 
-It has a simple and powerful DSL for attributes: when use the `expose` macro, all the exposed objects are available from the outside:
+### Exposures
+
+We know that actions are objects and Lotus::Action respects one of the pillars of OOP: __encapsulation__.
+Other frameworks extract instance variables (`@ivar`) and make them available to the view context.
+The solution of Lotus::Action is a simple and powerful DSL: `expose`.
+It's a thin layer on top of `attr_reader`. When used, it creates a getter for the given attribute, and adds it to the _exposures_.
+Exposures (`#exposures`) is set of exposed attributes, so that the view context can have the information needed to render a page.
 
 ```ruby
 action = Show.new
@@ -106,7 +127,9 @@ assert_equal 23, action.article.id
 puts action.exposures # => { article: <Article:0x007f965c1d0318 @id=23> }
 ```
 
-It offers powerful, inheritable callbacks which are executed before and after your `#call` method invocation:
+### Callbacks
+
+It offers powerful, inheritable callbacks chain which is executed before and/or after your `#call` method invocation:
 
 ```ruby
 class Show
@@ -143,19 +166,26 @@ class Show
 end
 ```
 
-The output of `#call` is a serialized Rack response:
+### Response
+
+The output of `#call` is a serialized Rack::Response (see [#finish](http://rack.rubyforge.org/doc/classes/Rack/Response.html#M000182)):
 
 ```ruby
 class Show
   include Lotus::Action
 
   def call(params)
+    # ...
   end
 end
 
 action = Show.new
 action.call({}) # => [200, {}, [""]]
+```
 
+It has private accessors to explicitly set status, headers and body:
+
+```ruby
 class Show
   include Lotus::Action
 
@@ -168,7 +198,13 @@ end
 
 action = Show.new
 action.call({}) # => [201, { "X-Custom" => "OK" }, ["Hi!"]]
+```
 
+### Exceptions management
+
+When an exception is raised, it automatically sets the HTTP status to [500](http://httpstatus.es/500):
+
+```ruby
 class Show
   include Lotus::Action
 
@@ -181,21 +217,181 @@ action = Show.new
 action.call({}) # => [500, {}, [""]]
 ```
 
-It has builtin support for Rack sessions
+### Throwable HTTP statuses
+
+When [#throw](http://ruby-doc.org/core-2.1.0/Kernel.html#method-i-throw) is used with a valid HTTP code, it stops the execution and sets the proper status and body for the response:
+
+```ruby
+class Show
+  include Lotus::Action
+
+  before :authenticate!
+
+  def call(params)
+    # ...
+  end
+
+  private
+  def authenticate!
+    throw 401 unless authenticated?
+  end
+end
+
+action = Show.new
+action.call({}) # => [401, {}, ["Unauthorized"]]
+```
+
+### Cookies
+
+It offers convenient access to cookies.
+
+They are read as an Hash from Rack env:
+
+```ruby
+class ReadCookiesFromRackEnv
+  include Lotus::Action
+
+  def call(params)
+    # ...
+    cookies[:foo] # => 'bar'
+  end
+end
+
+action = ReadCookiesFromRackEnv.new
+action.call({'HTTP_COOKIE' => 'foo=bar'})
+```
+
+They are set like an Hash:
+
+```ruby
+class SetCookies
+  include Lotus::Action
+
+  def call(params)
+    # ...
+    cookies[:foo] = 'bar'
+  end
+end
+
+action = SetCookies.new
+action.call({}) # => [200, {'Set-Cookie' => 'foo=bar'}, '...']
+```
+
+They are removed by setting their value to `nil`:
+
+```ruby
+class RemoveCookies
+  include Lotus::Action
+
+  def call(params)
+    # ...
+    cookies[:foo] = nil
+  end
+end
+
+action = SetCookies.new
+action.call({}) # => [200, {'Set-Cookie' => "foo=; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 -0000"}, '...']
+```
+
+### Sessions
+
+It has builtin support for Rack sessions:
+
+```ruby
+class ReadSessionFromRackEnv
+  include Lotus::Action
+
+  def call(params)
+    # ...
+    session[:age] # => '31'
+  end
+end
+
+action = ReadSessionFromRackEnv.new
+action.call({ 'rack.session' => { 'age' => '31' }})
+```
+
+Values can be set like an Hash:
+
+```ruby
+class SetSession
+  include Lotus::Action
+
+  def call(params)
+    # ...
+    session[:age] = 31
+  end
+end
+
+action = SetSession.new
+action.call({}) # => [200, {"Set-Cookie"=>"rack.session=..."}, "..."]
+```
+
+Values can be removed like an Hash:
+
+```ruby
+class RemoveSession
+  include Lotus::Action
+
+  def call(params)
+    # ...
+    session[:age] = nil
+  end
+end
+
+action = RemoveSession.new
+action.call({}) # => [200, {"Set-Cookie"=>"rack.session=..."}, "..."] it removes that value from the session
+```
+
+While Lotus::Controller supports sessions natively, it is __session store agnostic__.
+You have to specify the session store in your Rack middleware configuration (eg `config.ru`).
+
+```ruby
+use Rack::Session::Cookie, secret: SecureRandom.hex(16)
+run Show.new
+```
+
+### Redirect
+
+If you need to redirect the client to another resource, use `#redirect_to`:
+
+```ruby
+class Create
+  include Lotus::Action
+
+  def call(params)
+    # ...
+    redirect_to 'http://example.com/articles/23'
+  end
+end
+
+action = Create.new
+action.call({ article: { title: 'Hello' }}) # => [302, {'Location' => '/articles/23'}, '']
+```
+
+### Mime types
+
+Lotus::Action automatically sets the mime type, according to the request headers.
+However, you can override this value:
 
 ```ruby
 class Show
   include Lotus::Action
 
   def call(params)
+    # ...
+    self.content_type = 'application/json'
   end
 end
 
 action = Show.new
-action.call({ 'rack.session' => { 'age' => '31' }})
-
-puts action.session # => { 'age' => '31' }
+action.call({ id: 23 }) # => [200, {'Content-Type' => 'application/json'}, '...']
 ```
+
+### No rendering, please
+
+Lotus::Controller is designed to be a pure HTTP endpoint, rendering belongs to other layers of MVC.
+You can set the body directly (see [response](#response)), or use [Lotus::View](https://github.com/lotus/view).
 
 ### Controllers
 
@@ -234,6 +430,9 @@ end
 
 ArticlesController::Index.new.call({})
 ```
+## Versioning
+
+__Lotus::Controller__ uses [Semantic Versioning 2.0.0](http://semver.org)
 
 ## Contributing
 
@@ -242,3 +441,7 @@ ArticlesController::Index.new.call({})
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
+
+## Copyright
+
+Copyright 2014 Luca Guidi – Released under MIT License
