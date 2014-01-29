@@ -456,8 +456,15 @@ class SessionsController
 
   action 'Destroy' do
     def call(params)
-      session.delete(:user_id)
+      session[:user_id] = nil
     end
   end
 end
 
+class StandaloneSession
+  include Lotus::Action
+
+  def call(params)
+    session[:age] = Time.now.year - 1982
+  end
+end
