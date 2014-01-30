@@ -191,8 +191,8 @@ class Show
 
   def call(params)
     self.status  = 201
-    self.headers = { 'X-Custom' => 'OK' }
     self.body    = 'Hi!'
+    self.headers.merge!({ 'X-Custom' => 'OK' })
   end
 end
 
