@@ -430,6 +430,39 @@ end
 
 ArticlesController::Index.new.call({})
 ```
+
+## Lotus::Router integration
+
+While Lotus::Router works great with this framework, Lotus::Controller doesn't depend from it.
+You, as developer, are free to choose your own routing system.
+
+But, if you use them together, the **only constraint is that an action must support _arity 0_ in its constructor**.
+The following examples are valid constructors:
+
+```ruby
+def initialize
+end
+
+def initialize(repository = Article)
+end
+
+def initialize(repository: Article)
+end
+
+def initialize(options = {})
+end
+
+def initialize(*args)
+end
+```
+
+__Please note that this is subject to change: we're working to remove this constraint.__
+
+## Rack integration
+
+Lotus::Controller is compatible with Rack. However, it doesn't mount any middleware.
+While a Lotus application's architecture is more web oriented, this framework is designed to be a pure HTTP entpoint.
+
 ## Versioning
 
 __Lotus::Controller__ uses [Semantic Versioning 2.0.0](http://semver.org)
