@@ -1,5 +1,3 @@
-require 'lotus/http/request'
-require 'lotus/http/response'
 require 'lotus/action/params'
 
 module Lotus
@@ -9,8 +7,6 @@ module Lotus
         _rescue do
           @_env    = env
           @headers = ::Rack::Utils::HeaderHash.new
-          @_request  = HTTP::Request.new(env.dup)
-          @_response = HTTP::Response.new(self)
           super        Params.new(env)
         end
 
