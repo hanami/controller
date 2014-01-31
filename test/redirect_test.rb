@@ -6,15 +6,15 @@ describe Lotus::Action do
       action   = RedirectAction.new
       response = action.call({})
 
-      response.status.must_equal(302)
-      response.headers.must_equal({ 'Content-Type' => 'application/octet-stream', 'Location' => '/destination' })
+      response[0].must_equal(302)
+      response[1].must_equal({ 'Content-Type' => 'application/octet-stream', 'Location' => '/destination' })
     end
 
     it 'redirects with custom status code' do
       action   = StatusRedirectAction.new
       response = action.call({})
 
-      response.status.must_equal(301)
+      response[0].must_equal(301)
     end
   end
 end

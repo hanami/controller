@@ -248,8 +248,11 @@ It offers convenient access to cookies.
 They are read as an Hash from Rack env:
 
 ```ruby
+require 'lotus/action/cookies'
+
 class ReadCookiesFromRackEnv
   include Lotus::Action
+  include Lotus::Action::Cookies
 
   def call(params)
     # ...
@@ -264,8 +267,11 @@ action.call({'HTTP_COOKIE' => 'foo=bar'})
 They are set like an Hash:
 
 ```ruby
+require 'lotus/action/cookies'
+
 class SetCookies
   include Lotus::Action
+  include Lotus::Action::Cookies
 
   def call(params)
     # ...
@@ -280,8 +286,11 @@ action.call({}) # => [200, {'Set-Cookie' => 'foo=bar'}, '...']
 They are removed by setting their value to `nil`:
 
 ```ruby
+require 'lotus/action/cookies'
+
 class RemoveCookies
   include Lotus::Action
+  include Lotus::Action::Cookies
 
   def call(params)
     # ...
@@ -298,8 +307,11 @@ action.call({}) # => [200, {'Set-Cookie' => "foo=; max-age=0; expires=Thu, 01 Ja
 It has builtin support for Rack sessions:
 
 ```ruby
+require 'lotus/action/session'
+
 class ReadSessionFromRackEnv
   include Lotus::Action
+  include Lotus::Action::Session
 
   def call(params)
     # ...
@@ -314,8 +326,11 @@ action.call({ 'rack.session' => { 'age' => '31' }})
 Values can be set like an Hash:
 
 ```ruby
+require 'lotus/action/session'
+
 class SetSession
   include Lotus::Action
+  include Lotus::Action::Session
 
   def call(params)
     # ...
@@ -330,8 +345,11 @@ action.call({}) # => [200, {"Set-Cookie"=>"rack.session=..."}, "..."]
 Values can be removed like an Hash:
 
 ```ruby
+require 'lotus/action/session'
+
 class RemoveSession
   include Lotus::Action
+  include Lotus::Action::Session
 
   def call(params)
     # ...
@@ -343,7 +361,7 @@ action = RemoveSession.new
 action.call({}) # => [200, {"Set-Cookie"=>"rack.session=..."}, "..."] it removes that value from the session
 ```
 
-While Lotus::Controller supports sessions natively, it is __session store agnostic__.
+While Lotus::Controller supports sessions natively, it's __session store agnostic__.
 You have to specify the session store in your Rack middleware configuration (eg `config.ru`).
 
 ```ruby

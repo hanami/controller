@@ -5,7 +5,10 @@ module Lotus
     # @since 0.1.0
     module Mime
       CONTENT_TYPE         = 'Content-Type'.freeze
+      ENV_CONTENT_TYPE     = 'CONTENT_TYPE'.freeze
+      ENV_HTTP_ACCEPT      = 'HTTP_ACCEPT'.freeze
       DEFAULT_CONTENT_TYPE = 'application/octet-stream'.freeze
+      CONTENT_TYPE_REGEX   = /\s*[;,]\s*/.freeze
 
       protected
       # Finalize the response by setting the current content type
@@ -54,8 +57,6 @@ module Lotus
       #
       # @since 0.1.0
       #
-      # @see Rack::Request#media_type
-      # @see Lotus::HTTP::Request#accepts
       # @see Lotus::Action::Mime#content_type=
       #
       # @example
@@ -70,7 +71,32 @@ module Lotus
       #     end
       #   end
       def content_type
-        @content_type || @_request.media_type || @_request.accepts || DEFAULT_CONTENT_TYPE
+        @content_type || media_type || accepts || DEFAULT_CONTENT_TYPE
+      end
+
+      private
+      def _raw_content_type
+        content_type = @_env[ENV_CONTENT_TYPE]
+        content_type.nil? || content_type.empty? ? nil : content_type
+      end
+
+      def media_type
+        _raw_content_type && _raw_content_type.split(CONTENT_TYPE_REGEX, 2).first.downcase
+      end
+
+      # FIXME I don't have the time to fix this hack now.
+      # FIXME I'm not sure I want to use this API at all.
+      def accepts
+        accept == '*/*' ? nil : accept
+      end
+
+      # TODO order according mime type weight (eg. q=0.8)
+      def accept
+        if _accept = @_env[ENV_HTTP_ACCEPT]
+          _accept.split(',').first
+        else
+          '*/*'
+        end
       end
     end
   end

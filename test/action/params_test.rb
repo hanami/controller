@@ -6,14 +6,14 @@ describe Lotus::Action::Params do
     action   = ParamsAction.new
     response = action.call({ 'router.params' => {id: '23'} })
 
-    response.body.must_equal ["{:id=>\"23\"}"]
+    response[2].must_equal ["{:id=>\"23\"}"]
   end
 
   it 'accepts params as they are, for testing purposes' do
     action   = ParamsAction.new
     response = action.call({id: '23'})
 
-    response.body.must_equal ["{:id=>\"23\"}"]
+    response[2].must_equal ["{:id=>\"23\"}"]
   end
 
   it 'accepts params from "rack.input" as request body' do

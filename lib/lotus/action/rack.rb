@@ -4,6 +4,10 @@ module Lotus
     #
     # @since 0.1.0
     module Rack
+      SESSION_KEY           = 'rack.session'.freeze
+      DEFAULT_RESPONSE_CODE = 200
+      DEFAULT_RESPONSE_BODY = []
+
       protected
 
       # Sets the HTTP status code for the response
@@ -25,7 +29,7 @@ module Lotus
       #     end
       #   end
       def status=(status)
-        @_response.status = status
+        @_status = status
       end
 
       # Sets the body of the response
@@ -47,7 +51,8 @@ module Lotus
       #     end
       #   end
       def body=(body)
-        @_response.body = [ body ]
+        body   = Array(body) unless body.respond_to?(:each)
+        @_body = body
       end
 
       # Gets the headers from the response
@@ -69,36 +74,24 @@ module Lotus
       #     end
       #   end
       def headers
-        @_response.headers
+        @headers
       end
 
-      # Gets the session from the request
+      # Returns a serialized Rack response (Array), according to the current
+      #   status code, headers, and body.
       #
-      # @return [Hash] the HTTP session from the request
+      # @return [Array] the serialized response
       #
       # @since 0.1.0
+      # @api private
       #
-      # @example
-      #   require 'lotus/controller'
-      #
-      #   class Show
-      #     include Lotus::Action
-      #
-      #     def call(params)
-      #       # ...
-      #
-      #       # get a value
-      #       session[:user_id] # => '23'
-      #
-      #       # set a value
-      #       session[:foo] = 'bar'
-      #
-      #       # remove a value
-      #       session[:bax] = nil
-      #     end
-      #   end
-      def session
-        @_request.session
+      # @see Lotus::Action::Rack::DEFAULT_RESPONSE_CODE
+      # @see Lotus::Action::Rack::DEFAULT_RESPONSE_BODY
+      # @see Lotus::Action::Rack#status=
+      # @see Lotus::Action::Rack#headers
+      # @see Lotus::Action::Rack#body=
+      def response
+        [ @_status || DEFAULT_RESPONSE_CODE, headers, @_body || DEFAULT_RESPONSE_BODY.dup ]
       end
     end
   end

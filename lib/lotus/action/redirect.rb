@@ -26,7 +26,8 @@ module Lotus
       #     end
       #   end
       def redirect_to(url, status: 302)
-        @_response.redirect(url, status)
+        headers.merge!('Location' => url)
+        self.status = status
       end
     end
   end

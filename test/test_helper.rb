@@ -19,4 +19,6 @@ end
 require 'minitest/autorun'
 $:.unshift 'lib'
 require 'lotus/controller'
+require 'lotus/action/cookies'
+require 'lotus/action/session'
 require 'fixtures'

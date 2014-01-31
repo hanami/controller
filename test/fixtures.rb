@@ -232,6 +232,7 @@ end
 
 class SessionAction
   include Lotus::Action
+  include Lotus::Action::Session
 
   def call(params)
   end
@@ -255,6 +256,7 @@ end
 
 class GetCookiesAction
   include Lotus::Action
+  include Lotus::Action::Cookies
 
   def call(params)
   end
@@ -262,6 +264,7 @@ end
 
 class SetCookiesAction
   include Lotus::Action
+  include Lotus::Action::Cookies
 
   def call(params)
     self.body = 'yo'
@@ -271,6 +274,7 @@ end
 
 class SetCookiesWithOptionsAction
   include Lotus::Action
+  include Lotus::Action::Cookies
 
   def call(params)
     cookies[:kukki] = { value: 'yum!', domain: 'lotusrb.org', path: '/controller', expires: params[:expires], secure: true, httponly: true }
@@ -279,6 +283,7 @@ end
 
 class RemoveCookiesAction
   include Lotus::Action
+  include Lotus::Action::Cookies
 
   def call(params)
     cookies[:rm] = nil
@@ -367,7 +372,7 @@ class Root
   include Lotus::Action
 
   def call(params)
-    self.body = params
+    self.body = params.inspect
     headers.merge!({'X-Test' => 'test'})
   end
 end
@@ -380,7 +385,7 @@ class AboutController
 
   action 'Contacts' do
     def call(params)
-      self.body = params
+      self.body = params.inspect
     end
   end
 end
@@ -392,7 +397,7 @@ class IdentityController
     include Lotus::Action
 
     def call(params)
-      self.body = params
+      self.body = params.inspect
     end
   end
 
@@ -411,7 +416,7 @@ class FlowersController
     include Lotus::Action
 
     def call(params)
-      self.body = params
+      self.body = params.inspect
     end
   end
 
@@ -428,6 +433,7 @@ class DashboardController
   include Lotus::Controller
 
   action 'Index' do
+    include Lotus::Action::Session
     before :authenticate!
 
     def call(params)
@@ -448,6 +454,8 @@ class SessionsController
   include Lotus::Controller
 
   action 'Create' do
+    include Lotus::Action::Session
+
     def call(params)
       session[:user_id] = 23
       redirect_to '/'
@@ -455,6 +463,8 @@ class SessionsController
   end
 
   action 'Destroy' do
+    include Lotus::Action::Session
+
     def call(params)
       session[:user_id] = nil
     end
@@ -463,6 +473,7 @@ end
 
 class StandaloneSession
   include Lotus::Action
+  include Lotus::Action::Session
 
   def call(params)
     session[:age] = Time.now.year - 1982
