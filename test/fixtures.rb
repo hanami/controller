@@ -255,6 +255,7 @@ end
 
 class GetCookiesAction
   include Lotus::Action
+  include Lotus::Action::Cookies
 
   def call(params)
   end
@@ -262,6 +263,7 @@ end
 
 class SetCookiesAction
   include Lotus::Action
+  include Lotus::Action::Cookies
 
   def call(params)
     self.body = 'yo'
@@ -271,6 +273,7 @@ end
 
 class SetCookiesWithOptionsAction
   include Lotus::Action
+  include Lotus::Action::Cookies
 
   def call(params)
     cookies[:kukki] = { value: 'yum!', domain: 'lotusrb.org', path: '/controller', expires: params[:expires], secure: true, httponly: true }
@@ -279,6 +282,7 @@ end
 
 class RemoveCookiesAction
   include Lotus::Action
+  include Lotus::Action::Cookies
 
   def call(params)
     cookies[:rm] = nil

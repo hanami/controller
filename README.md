@@ -248,8 +248,11 @@ It offers convenient access to cookies.
 They are read as an Hash from Rack env:
 
 ```ruby
+require 'lotus/action/cookies'
+
 class ReadCookiesFromRackEnv
   include Lotus::Action
+  include Lotus::Action::Cookies
 
   def call(params)
     # ...
@@ -264,8 +267,11 @@ action.call({'HTTP_COOKIE' => 'foo=bar'})
 They are set like an Hash:
 
 ```ruby
+require 'lotus/action/cookies'
+
 class SetCookies
   include Lotus::Action
+  include Lotus::Action::Cookies
 
   def call(params)
     # ...
@@ -280,8 +286,11 @@ action.call({}) # => [200, {'Set-Cookie' => 'foo=bar'}, '...']
 They are removed by setting their value to `nil`:
 
 ```ruby
+require 'lotus/action/cookies'
+
 class RemoveCookies
   include Lotus::Action
+  include Lotus::Action::Cookies
 
   def call(params)
     # ...

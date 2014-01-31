@@ -1,7 +1,6 @@
 require 'lotus/action/rack'
 require 'lotus/action/mime'
 require 'lotus/action/redirect'
-require 'lotus/action/cookies'
 require 'lotus/action/exposable'
 require 'lotus/action/throwable'
 require 'lotus/action/callbacks'
@@ -28,7 +27,6 @@ module Lotus
         include Rack
         include Mime
         include Redirect
-        include Cookies
         include Exposable
         include Throwable
         include Callbacks
