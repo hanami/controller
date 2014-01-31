@@ -4,7 +4,9 @@ module Lotus
     #
     # @since 0.1.0
     module Rack
-      SESSION_KEY = 'rack.session'.freeze
+      SESSION_KEY           = 'rack.session'.freeze
+      DEFAULT_RESPONSE_CODE = 200
+      DEFAULT_RESPONSE_BODY = []
 
       protected
 
@@ -27,7 +29,7 @@ module Lotus
       #     end
       #   end
       def status=(status)
-        @_response.status = status
+        @_status = status
       end
 
       # Sets the body of the response
@@ -49,7 +51,8 @@ module Lotus
       #     end
       #   end
       def body=(body)
-        @_response.body = [ body ]
+        body   = Array(body) unless body.respond_to?(:each)
+        @_body = body
       end
 
       # Gets the headers from the response
@@ -71,7 +74,7 @@ module Lotus
       #     end
       #   end
       def headers
-        @_response.headers
+        @headers
       end
 
       # Gets the session from the request
@@ -101,6 +104,23 @@ module Lotus
       #   end
       def session
         @_env[SESSION_KEY] ||= {}
+      end
+
+      # Returns a serialized Rack response (Array), according to the current
+      #   status code, headers, and body.
+      #
+      # @return [Array] the serialized response
+      #
+      # @since 0.1.0
+      # @api private
+      #
+      # @see Lotus::Action::Rack::DEFAULT_RESPONSE_CODE
+      # @see Lotus::Action::Rack::DEFAULT_RESPONSE_BODY
+      # @see Lotus::Action::Rack#status=
+      # @see Lotus::Action::Rack#headers
+      # @see Lotus::Action::Rack#body=
+      def response
+        [ @_status || DEFAULT_RESPONSE_CODE, headers, @_body || DEFAULT_RESPONSE_BODY.dup ]
       end
     end
   end

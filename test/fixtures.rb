@@ -367,7 +367,7 @@ class Root
   include Lotus::Action
 
   def call(params)
-    self.body = params
+    self.body = params.inspect
     headers.merge!({'X-Test' => 'test'})
   end
 end
@@ -380,7 +380,7 @@ class AboutController
 
   action 'Contacts' do
     def call(params)
-      self.body = params
+      self.body = params.inspect
     end
   end
 end
@@ -392,7 +392,7 @@ class IdentityController
     include Lotus::Action
 
     def call(params)
-      self.body = params
+      self.body = params.inspect
     end
   end
 
@@ -411,7 +411,7 @@ class FlowersController
     include Lotus::Action
 
     def call(params)
-      self.body = params
+      self.body = params.inspect
     end
   end
 

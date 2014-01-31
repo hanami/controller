@@ -7,7 +7,8 @@ module Lotus
     module Callable
       def call(env)
         _rescue do
-          @_env = env
+          @_env    = env
+          @headers = ::Rack::Utils::HeaderHash.new
           @_request  = HTTP::Request.new(env.dup)
           @_response = HTTP::Response.new(self)
           super        Params.new(env)
@@ -20,7 +21,7 @@ module Lotus
 
       def finish
         super
-        @_response
+        response
       end
     end
   end

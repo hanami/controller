@@ -7,8 +7,8 @@ module Lotus
       COOKIE_HASH_KEY   = 'rack.request.cookie_hash'.freeze
       COOKIE_STRING_KEY = 'rack.request.cookie_string'.freeze
 
-      def initialize(env, response)
-        @_response = response
+      def initialize(env, headers)
+        @_headers = headers
 
         super(extract(env))
         symbolize!
@@ -38,11 +38,11 @@ module Lotus
       end
 
       def set_cookie(key, value)
-        ::Rack::Utils.set_cookie_header!(@_response.headers, key, value)
+        ::Rack::Utils.set_cookie_header!(@_headers, key, value)
       end
 
       def delete_cookie(key)
-        ::Rack::Utils.delete_cookie_header!(@_response.headers, key, {})
+        ::Rack::Utils.delete_cookie_header!(@_headers, key, {})
       end
     end
   end
