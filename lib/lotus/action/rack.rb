@@ -4,6 +4,8 @@ module Lotus
     #
     # @since 0.1.0
     module Rack
+      SESSION_KEY = 'rack.session'.freeze
+
       protected
 
       # Sets the HTTP status code for the response
@@ -98,7 +100,7 @@ module Lotus
       #     end
       #   end
       def session
-        @_request.session
+        @_env[SESSION_KEY] ||= {}
       end
     end
   end
