@@ -46,7 +46,7 @@ module Lotus
       #     end
       #   end
       def cookies
-        @cookies ||= CookieJar.new(@_request, @_response)
+        @cookies ||= CookieJar.new(@_env.dup, @_response)
       end
     end
   end

@@ -7,6 +7,7 @@ module Lotus
     module Callable
       def call(env)
         _rescue do
+          @_env = env
           @_request  = HTTP::Request.new(env.dup)
           @_response = HTTP::Response.new(self)
           super        Params.new(env)
