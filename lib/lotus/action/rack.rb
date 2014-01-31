@@ -77,35 +77,6 @@ module Lotus
         @headers
       end
 
-      # Gets the session from the request
-      #
-      # @return [Hash] the HTTP session from the request
-      #
-      # @since 0.1.0
-      #
-      # @example
-      #   require 'lotus/controller'
-      #
-      #   class Show
-      #     include Lotus::Action
-      #
-      #     def call(params)
-      #       # ...
-      #
-      #       # get a value
-      #       session[:user_id] # => '23'
-      #
-      #       # set a value
-      #       session[:foo] = 'bar'
-      #
-      #       # remove a value
-      #       session[:bax] = nil
-      #     end
-      #   end
-      def session
-        @_env[SESSION_KEY] ||= {}
-      end
-
       # Returns a serialized Rack response (Array), according to the current
       #   status code, headers, and body.
       #

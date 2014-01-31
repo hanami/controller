@@ -232,6 +232,7 @@ end
 
 class SessionAction
   include Lotus::Action
+  include Lotus::Action::Session
 
   def call(params)
   end
@@ -432,6 +433,7 @@ class DashboardController
   include Lotus::Controller
 
   action 'Index' do
+    include Lotus::Action::Session
     before :authenticate!
 
     def call(params)
@@ -452,6 +454,8 @@ class SessionsController
   include Lotus::Controller
 
   action 'Create' do
+    include Lotus::Action::Session
+
     def call(params)
       session[:user_id] = 23
       redirect_to '/'
@@ -459,6 +463,8 @@ class SessionsController
   end
 
   action 'Destroy' do
+    include Lotus::Action::Session
+
     def call(params)
       session[:user_id] = nil
     end
@@ -467,6 +473,7 @@ end
 
 class StandaloneSession
   include Lotus::Action
+  include Lotus::Action::Session
 
   def call(params)
     session[:age] = Time.now.year - 1982
