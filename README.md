@@ -69,11 +69,11 @@ In this case, it's only one method: `#call(params)`.
 Lotus is designed to not interfere with inheritance.
 This is important, because you can implement your own initialization strategy.
 
-An action is an object after all, it's important that you have the full control on it.
+__An action is an object__ after all, it's important that __you have the full control on it__.
 In other words, you have the freedom of instantiate, inject dependencies and test it, both with unit and integration.
 
 In the example below, we're stating that the default repository is `Article`, but during an unit test we can inject a stubbed version, and invoke `#call` with the params that we want to simulate.
-We're avoiding HTTP calls, we're eventually avoiding to hit the database (it depends on the stubbed repository), we're just dealing with message passing.
+__We're avoiding HTTP calls__, we're eventually avoiding to hit the database (it depends on the stubbed repository), __we're just dealing with message passing__.
 Imagine how **fast** can be a unit test like this.
 
 ```ruby
@@ -89,23 +89,91 @@ class Show
   end
 end
 
-action = Show.new(StubArticleRepository)
+action = Show.new(MemoryArticleRepository)
 action.call({ id: 23 })
 ```
 
 ### Params
 
 The request params are passed as an argument to the `#call` method.
-If routed with *Lotus::Router*, it extracts the relevant bits from the Rack `env`.
+If routed with *Lotus::Router*, it extracts the relevant bits from the Rack `env` (eg the requested `:id`).
 Otherwise everything it's passed as it is: the full Rack `env` in production, and the given `Hash` for unit tests.
 
-```ruby
-action   = Show.new
-response = action.call({ id: 23 })
+With Lotus::Router:
 
-assert_equal 200, response[0]
+```ruby
+class Show
+  include Lotus::Action
+
+  def call(params)
+    # ...
+    puts params # => { id: 23 } extracted from Rack env
+  end
+end
 ```
 
+Standalone:
+
+```ruby
+class Show
+  include Lotus::Action
+
+  def call(params)
+    # ...
+    puts params # => { :"rack.version"=>[1, 2], :"rack.input"=>#<StringIO:0x007fa563463948>, ... }
+  end
+end
+```
+
+Unit Testing:
+
+```ruby
+class Show
+  include Lotus::Action
+
+  def call(params)
+    # ...
+    puts params # => { id: 23, key: 'value' } passed as it is from testing
+  end
+end
+
+action   = Show.new
+response = action.call({ id: 23, key: 'value' })
+```
+
+### Response
+
+The output of `#call` is a serialized Rack::Response (see [#finish](http://rack.rubyforge.org/doc/classes/Rack/Response.html#M000182)):
+
+```ruby
+class Show
+  include Lotus::Action
+
+  def call(params)
+    # ...
+  end
+end
+
+action = Show.new
+action.call({}) # => [200, {}, [""]]
+```
+
+It has private accessors to explicitly set status, headers and body:
+
+```ruby
+class Show
+  include Lotus::Action
+
+  def call(params)
+    self.status  = 201
+    self.body    = 'Hi!'
+    self.headers.merge!({ 'X-Custom' => 'OK' })
+  end
+end
+
+action = Show.new
+action.call({}) # => [201, { "X-Custom" => "OK" }, ["Hi!"]]
+```
 ### Exposures
 
 We know that actions are objects and Lotus::Action respects one of the pillars of OOP: __encapsulation__.
@@ -170,40 +238,6 @@ class Show
   def call(params)
   end
 end
-```
-
-### Response
-
-The output of `#call` is a serialized Rack::Response (see [#finish](http://rack.rubyforge.org/doc/classes/Rack/Response.html#M000182)):
-
-```ruby
-class Show
-  include Lotus::Action
-
-  def call(params)
-    # ...
-  end
-end
-
-action = Show.new
-action.call({}) # => [200, {}, [""]]
-```
-
-It has private accessors to explicitly set status, headers and body:
-
-```ruby
-class Show
-  include Lotus::Action
-
-  def call(params)
-    self.status  = 201
-    self.body    = 'Hi!'
-    self.headers.merge!({ 'X-Custom' => 'OK' })
-  end
-end
-
-action = Show.new
-action.call({}) # => [201, { "X-Custom" => "OK" }, ["Hi!"]]
 ```
 
 ### Exceptions management
@@ -371,7 +405,7 @@ While Lotus::Controller supports sessions natively, it's __session store agnosti
 You have to specify the session store in your Rack middleware configuration (eg `config.ru`).
 
 ```ruby
-use Rack::Session::Cookie, secret: SecureRandom.hex(16)
+use Rack::Session::Cookie, secret: SecureRandom.hex(64)
 run Show.new
 ```
 
