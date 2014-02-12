@@ -57,8 +57,6 @@ They are the endpoint that responds to incoming HTTP requests.
 class Show
   include Lotus::Action
 
-  expose :article
-
   def call(params)
     @article = Article.find params[:id]
   end
@@ -81,8 +79,6 @@ Imagine how **fast** can be a unit test like this.
 ```ruby
 class Show
   include Lotus::Action
-
-  expose :article
 
   def initialize(repository = Article)
     @repository = repository
@@ -119,6 +115,16 @@ It's a thin layer on top of `attr_reader`. When used, it creates a getter for th
 Exposures (`#exposures`) is set of exposed attributes, so that the view context can have the information needed to render a page.
 
 ```ruby
+class Show
+  include Lotus::Action
+
+  expose :article
+
+  def call(params)
+    @article = Article.find params[:id]
+  end
+end
+
 action = Show.new
 action.call({ id: 23 })
 
