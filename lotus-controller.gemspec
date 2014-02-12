@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ['me@lucaguidi.com']
   spec.description   = %q{Controller layer for Lotus}
   spec.summary       = %q{Controller layer for Lotus}
-  spec.homepage      = 'http://lotusrb.org/lotus-controller'
+  spec.homepage      = 'http://lotusrb.org'
   spec.license       = 'MIT'
 
   spec.files         = `git ls-files`.split($/)
