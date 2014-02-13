@@ -2,9 +2,10 @@ require 'test_helper'
 require 'lotus/router'
 
 MimeRoutes = Lotus::Router.new do
-  get '/',       to: 'mimes#default'
-  get '/custom', to: 'mimes#custom'
-  get '/accept', to: 'mimes#accept'
+  get '/',           to: 'mimes#default'
+  get '/custom',     to: 'mimes#custom'
+  get '/accept',     to: 'mimes#accept'
+  get '/restricted', to: 'mimes#restricted'
 end
 
 class MimesController
@@ -27,6 +28,13 @@ class MimesController
       self.headers.merge!({'X-AcceptHtml'    => accept?('text/html').to_s })
       self.headers.merge!({'X-AcceptXml'     => accept?('application/xml').to_s })
       self.headers.merge!({'X-AcceptJson'    => accept?('text/json').to_s })
+    end
+  end
+
+  action 'Restricted' do
+    accept :html, :json
+
+    def call(params)
     end
   end
 end
@@ -112,6 +120,55 @@ describe 'Accept' do
         @response.headers['X-AcceptHtml'].must_equal    'true'
         @response.headers['X-AcceptXml'].must_equal     'true'
         @response.headers['X-AcceptJson'].must_equal    'false'
+      end
+    end
+  end
+end
+
+describe 'Restricted Accept' do
+  before do
+    @app      = Rack::MockRequest.new(MimeRoutes)
+    @response = @app.get('/restricted', 'HTTP_ACCEPT' => accept)
+  end
+
+  describe 'when Accept is missing' do
+    let(:accept) { nil }
+
+    it 'returns the mime type according to the application defined policy' do
+      @response.status.must_equal 200
+    end
+  end
+
+  describe 'when Accept is sent' do
+    describe 'when "*/*"' do
+      let(:accept) { '*/*' }
+
+      it 'returns the mime type according to the application defined policy' do
+        @response.status.must_equal 200
+      end
+    end
+
+    describe 'when accepted' do
+      let(:accept) { 'text/html' }
+
+      it 'accepts selected mime types' do
+        @response.status.must_equal 200
+      end
+    end
+
+    describe 'when not accepted' do
+      let(:accept) { 'application/xml' }
+
+      it 'accepts selected mime types' do
+        @response.status.must_equal 406
+      end
+    end
+
+    describe 'when weighted' do
+      let(:accept) { 'text/html,application/xhtml+xml,application/xml;q=0.9' }
+
+      it 'accepts selected mime types' do
+        @response.status.must_equal 200
       end
     end
   end

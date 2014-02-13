@@ -9,6 +9,50 @@ module Lotus
       DEFAULT_ACCEPT       = '*/*'.freeze
       DEFAULT_CONTENT_TYPE = 'application/octet-stream'.freeze
 
+      def self.included(base)
+        base.class_eval do
+          extend ClassMethods
+        end
+      end
+
+      module ClassMethods
+        protected
+
+        # Restrict the access to the specified mime type symbols.
+        #
+        # @param mime_types[Array<Symbol>] one or more symbols representing mime type(s)
+        #
+        # @since 0.1.0
+        #
+        # @example
+        #   require 'lotus/controller'
+        #
+        #   class Show
+        #     include Lotus::Action
+        #     accept :html, :json
+        #
+        #     def call(params)
+        #       # ...
+        #     end
+        #   end
+        #
+        #   # When called with "*/*"              => 200
+        #   # When called with "text/html"        => 200
+        #   # When called with "application/json" => 200
+        #   # When called with "application/xml"  => 406
+        def accept(*mime_types)
+          mime_types = mime_types.map do |mt|
+            ::Rack::Mime.mime_type ".#{ mt }"
+          end
+
+          before do
+            unless mime_types.find {|mt| accept?(mt) }
+              throw 406
+            end
+          end
+        end
+      end
+
       protected
       # Finalize the response by setting the current content type
       #
