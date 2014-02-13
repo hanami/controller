@@ -9,7 +9,6 @@ module Lotus
       DEFAULT_RESPONSE_BODY = []
 
       protected
-
       # Sets the HTTP status code for the response
       #
       # @param status [Fixnum] an HTTP status code

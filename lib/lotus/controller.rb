@@ -1,6 +1,7 @@
 require 'lotus/action'
 require 'lotus/controller/dsl'
 require 'lotus/controller/version'
+require 'rack-patch'
 
 module Lotus
   # A set of logically grouped actions
