@@ -48,15 +48,21 @@ module Lotus
         @content_type = content_type
       end
 
-      # Read the current content type from the request.
-      # This value is automatically set in the response, to override it use
-      #   #content_type=
+      # The content type that will be automatically set in the response.
+      #
+      # It prefers, in order:
+      #   * Explicit set value (see #content_type=)
+      #   * Weighted value from Accept
+      #   * Default content type
+      #
+      # To override the value, use <tt>#content_type=</tt>
       #
       # @return [String] the content type from the request.
       #
       # @since 0.1.0
       #
       # @see Lotus::Action::Mime#content_type=
+      # @see Lotus::Action::Mime#DEFAULT_CONTENT_TYPE
       #
       # @example
       #   require 'lotus/controller'
@@ -73,10 +79,49 @@ module Lotus
         @content_type || accepts || DEFAULT_CONTENT_TYPE
       end
 
+      # Match the given mime type with the Accept header
+      #
+      # @return [Boolean] true if the given mime type matches Accept
+      #
+      # @since 0.1.0
+      #
+      # @example
+      #   require 'lotus/controller'
+      #
+      #   class Show
+      #     include Lotus::Action
+      #
+      #     def call(params)
+      #       # ...
+      #       # @_env['HTTP_ACCEPT'] # => 'text/html,application/xhtml+xml,application/xml;q=0.9'
+      #
+      #       accept?('text/html')        # => true
+      #       accept?('application/xml')  # => true
+      #       accept?('application/json') # => false
+      #
+      #
+      #
+      #       # @_env['HTTP_ACCEPT'] # => '*/*'
+      #
+      #       accept?('text/html')        # => true
+      #       accept?('application/xml')  # => true
+      #       accept?('application/json') # => true
+      #     end
+      #   end
+      def accept?(mime_type)
+        !!::Rack::Utils.q_values(accept).find do |mime, _|
+          ::Rack::Mime.match?(mime_type, mime)
+        end
+      end
+
       private
+      def accept
+        @accept ||= @_env[HTTP_ACCEPT] || DEFAULT_ACCEPT
+      end
+
       def accepts
-        if ( _accept = @_env[HTTP_ACCEPT] ) && _accept != DEFAULT_ACCEPT
-          ::Rack::Utils.best_q_match(_accept, ::Rack::Mime::MIME_TYPES.values)
+        unless accept == DEFAULT_ACCEPT
+          ::Rack::Utils.best_q_match(accept, ::Rack::Mime::MIME_TYPES.values)
         end
       end
     end
