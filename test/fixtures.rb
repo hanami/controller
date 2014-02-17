@@ -360,6 +360,26 @@ class ThrowAfterBlockAction
   end
 end
 
+class RecordNotFound < StandardError
+end
+
+class HandledExceptionAction
+  include Lotus::Action
+  handle_exception RecordNotFound, 404
+
+  def call(params)
+    raise RecordNotFound.new
+  end
+end
+
+class UnhandledExceptionAction
+  include Lotus::Action
+
+  def call(params)
+    raise RecordNotFound.new
+  end
+end
+
 class ParamsAction
   include Lotus::Action
 

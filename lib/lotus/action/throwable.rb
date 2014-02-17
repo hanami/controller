@@ -1,8 +1,74 @@
+require 'lotus/utils/class_attribute'
 require 'lotus/http/status'
 
 module Lotus
   module Action
     module Throwable
+      def self.included(base)
+        base.class_eval do
+          extend ClassMethods
+        end
+      end
+
+      module ClassMethods
+        def self.extended(base)
+          base.class_eval do
+            include Utils::ClassAttribute
+
+            # Action handled exceptions.
+            #
+            # When an handled exception is raised during #call execution, it will be
+            # translated into the associated HTTP status.
+            #
+            # By default there aren't handled exceptions, all the errors are threaded
+            # as a Server Side Error (500).
+            #
+            # @api private
+            # @since 0.1.0
+            #
+            # @see Lotus::Action.handled_exceptions
+            # @see Lotus::Action::Throwable.handle_exception
+            class_attribute :handled_exceptions
+            self.handled_exceptions = Action.handled_exceptions.dup
+          end
+        end
+
+        protected
+
+        # Handle the given exception with an HTTP status code.
+        #
+        # When the exception is raise during #call execution, it will be
+        # translated into the associated HTTP status.
+        #
+        # This is a fine grained control, for a global configuration see
+        # Lotus::Action.handled_exceptions
+        #
+        # @param [Class] the exception class
+        # @param [Fixmun] a valid HTTP status
+        #
+        # @since 0.1.0
+        #
+        # @see Lotus::Action.handled_exceptions
+        #
+        # @example
+        #   require 'lotus/action'
+        #
+        #   class Show
+        #     include Lotus::Action
+        #     handle_exception RecordNotFound, 404
+        #
+        #     def call(params)
+        #       # ...
+        #       raise RecordNotFound.new
+        #     end
+        #   end
+        #
+        #   Show.new.call({id: 1}) # => [404, {}, ['Not Found']]
+        def handle_exception(exception, status)
+          self.handled_exceptions[exception] = status
+        end
+      end
+
       protected
 
       def throw(code)
@@ -20,10 +86,14 @@ module Lotus
         catch :halt do
           begin
             yield
-          rescue
-            throw 500
+          rescue => exception
+            _handle_exception(exception)
           end
         end
+      end
+
+      def _handle_exception(exception)
+        throw self.class.handled_exceptions.fetch(exception.class, 500)
       end
     end
   end

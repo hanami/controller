@@ -1,7 +1,51 @@
 require 'test_helper'
 
 describe Lotus::Action do
-  describe 'throw' do
+  describe '.handle_exception' do
+    it 'handle an exception with the given status' do
+      response = HandledExceptionAction.new.call({})
+
+      response[0].must_equal 404
+    end
+
+    it "returns a 500 if an action isn't handled" do
+      response = UnhandledExceptionAction.new.call({})
+
+      response[0].must_equal 500
+    end
+
+    describe 'with global handled exceptions' do
+      before do
+        class DomainLogicException < StandardError
+        end
+
+        Lotus::Action.handled_exceptions = {DomainLogicException => 400}
+
+        class GlobalHandledExceptionAction
+          include Lotus::Action
+
+          def call(params)
+            raise DomainLogicException.new
+          end
+        end
+      end
+
+      after do
+        Object.send(:remove_const, :DomainLogicException)
+        Object.send(:remove_const, :GlobalHandledExceptionAction)
+
+        Lotus::Action.handled_exceptions = {}
+      end
+
+      it 'handles raised exception' do
+        response = GlobalHandledExceptionAction.new.call({})
+
+        response[0].must_equal 400
+      end
+    end
+  end
+
+  describe '#throw' do
     HTTP_TEST_STATUSES.each do |code, body|
       it "throws an HTTP status code: #{ code }" do
         response = ThrowCodeAction.new.call({ status: code })
