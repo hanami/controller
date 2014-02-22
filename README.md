@@ -44,9 +44,9 @@ $ gem install lotus-controller
 
 ## Usage
 
-Lotus::Controller is a thin layer (**230 LOCs**) for MVC web frameworks.
+Lotus::Controller is a thin layer (**275 LOCs**) for MVC web frameworks.
 It works beautifully with [Lotus::Router](https://github.com/lotus/router), but it can be employed everywhere.
-It's designed with performances and testability in mind.
+It's designed to be fast and testable.
 
 ### Actions
 
@@ -254,7 +254,41 @@ class Show
 end
 
 action = Show.new
-action.call({}) # => [500, {}, [""]]
+action.call({}) # => [500, {}, ["Internal Server Error"]]
+```
+
+You can define how a specific raised exception should be transformed in an HTTP status.
+
+```ruby
+class Show
+  include Lotus::Action
+  handle_exception RecordNotFound, 404
+
+  def call(params)
+    @article = Article.find params[:id]
+  end
+end
+
+action = Show.new
+action.call({id: 'unknown'}) # => [404, {}, ["Not Found"]]
+```
+
+Exception policies can be defined globally, **before** the controllers/actions
+are loaded.
+
+```ruby
+Lotus::Controller.handled_exceptions = { RecordNotFound => 404 }
+
+class Show
+  include Lotus::Action
+
+  def call(params)
+    @article = Article.find params[:id]
+  end
+end
+
+action = Show.new
+action.call({id: 'unknown'}) # => [404, {}, ["Not Found"]]
 ```
 
 ### Throwable HTTP statuses
@@ -516,10 +550,15 @@ end
 
 __Please note that this is subject to change: we're working to remove this constraint.__
 
+Lotus::Router supports lazy loading for controllers. While this policy can be a
+convenient fallback, you should know that it's the slower option. **Be sure of
+loading your controllers before you initialize the router.**
+
+
 ## Rack integration
 
 Lotus::Controller is compatible with Rack. However, it doesn't mount any middleware.
-While a Lotus application's architecture is more web oriented, this framework is designed to be a pure HTTP entpoint.
+While a Lotus application's architecture is more web oriented, this framework is designed to build pure HTTP entpoints.
 
 ## Versioning
 
