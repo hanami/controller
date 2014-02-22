@@ -1,7 +1,7 @@
 require 'test_helper'
 
 describe Lotus::Controller::VERSION do
-  it 'is 0.0.1' do
-    Lotus::Controller::VERSION.must_equal '0.0.1'
+  it 'returns the current version' do
+    Lotus::Controller::VERSION.must_equal '0.1.0'
   end
 end
