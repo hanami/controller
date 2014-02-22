@@ -2,23 +2,30 @@ module Lotus
   module Action
     # Session API
     #
+    # This module isn't included by default.
+    #
     # @since 0.1.0
     module Session
+      # The key that returns raw session from the Rack env
+      #
+      # @since 0.1.0
       SESSION_KEY = 'rack.session'.freeze
 
       protected
 
-      # Gets the session from the request
+      # Gets the session from the request and expose it as an Hash.
       #
       # @return [Hash] the HTTP session from the request
       #
       # @since 0.1.0
       #
       # @example
-      #   require 'lotus/controller'
+      #   require 'lotus/action'
+      #   require 'lotus/action/session'
       #
       #   class Show
       #     include Lotus::Action
+      #     include Lotus::Action::Session
       #
       #     def call(params)
       #       # ...

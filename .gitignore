@@ -5,3 +5,5 @@ tags
 .bundle
 coverage
 tmp
+doc/
+.yardoc

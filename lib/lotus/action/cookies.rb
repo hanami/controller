@@ -4,7 +4,11 @@ module Lotus
   module Action
     # Cookies API
     #
+    # This module isn't included by default.
+    #
     # @since 0.1.0
+    #
+    # @see Lotus::Action::Cookies#cookies
     module Cookies
 
       protected
@@ -20,17 +24,20 @@ module Lotus
         cookies.finish
       end
 
-      # Gets the cookies from the request
+      # Gets the cookies from the request and expose them as an Hash
       #
       # @return [Lotus::Action::CookieJar] the cookies
       #
       # @since 0.1.0
+      # @api public
       #
       # @example
-      #   require 'lotus/controller'
+      #   require 'lotus/action'
+      #   require 'lotus/action/cookies'
       #
       #   class Show
       #     include Lotus::Action
+      #     include Lotus::Action::Cookies
       #
       #     def call(params)
       #       # ...

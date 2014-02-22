@@ -3,10 +3,27 @@ module Lotus
     # Mime type API
     #
     # @since 0.1.0
+    #
+    # @see Lotus::Action::Mime::ClassMethods#accept
     module Mime
+      # The key that returns accepted mime types from the Rack env
+      #
+      # @since 0.1.0
       HTTP_ACCEPT          = 'HTTP_ACCEPT'.freeze
+
+      # The header key to set the mime type of the response
+      #
+      # @since 0.1.0
       CONTENT_TYPE         = 'Content-Type'.freeze
+
+      # The default mime type for an incoming HTTP request
+      #
+      # @since 0.1.0
       DEFAULT_ACCEPT       = '*/*'.freeze
+
+      # The default mime type that is returned in the response
+      #
+      # @since 0.1.0
       DEFAULT_CONTENT_TYPE = 'application/octet-stream'.freeze
 
       def self.included(base)
@@ -25,7 +42,7 @@ module Lotus
         # @since 0.1.0
         #
         # @example
-        #   require 'lotus/controller'
+        #   require 'lotus/action'
         #
         #   class Show
         #     include Lotus::Action

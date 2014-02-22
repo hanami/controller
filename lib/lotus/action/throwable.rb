@@ -3,6 +3,13 @@ require 'lotus/http/status'
 
 module Lotus
   module Action
+    # Throw API
+    #
+    # @since 0.1.0
+    #
+    # @see Lotus::Action::Throwable::ClassMethods#handle_exception
+    # @see Lotus::Action::Throwable#throw
+    # @see Lotus::Action::Throwable#status
     module Throwable
       def self.included(base)
         base.class_eval do
@@ -26,7 +33,7 @@ module Lotus
             # @api private
             # @since 0.1.0
             #
-            # @see Lotus::Action.handled_exceptions
+            # @see Lotus::Controller.handled_exceptions
             # @see Lotus::Action::Throwable.handle_exception
             class_attribute :handled_exceptions
             self.handled_exceptions = Controller.handled_exceptions.dup
@@ -43,8 +50,8 @@ module Lotus
         # This is a fine grained control, for a global configuration see
         # Lotus::Action.handled_exceptions
         #
-        # @param [Class] the exception class
-        # @param [Fixmun] a valid HTTP status
+        # @param exception [Class] the exception class
+        # @param status [Fixmun] a valid HTTP status
         #
         # @since 0.1.0
         #
@@ -71,11 +78,34 @@ module Lotus
 
       protected
 
+      # Throw the given HTTP status code.
+      #
+      # When used, the execution of a callback or of an action is interrupted
+      # and the control returns to the framework, that decides how to handle
+      # the event.
+      #
+      # It also sets the response body with the message associated to the code
+      # (eg 404 will set `"Not Found"`).
+      #
+      # @param code [Fixnum] a valid HTTP status code
+      #
+      # @since 0.1.0
+      #
+      # @see Lotus::Controller#handled_exceptions
+      # @see Lotus::Action::Throwable#handle_exception
+      # @see Lotus::Http::Status:ALL
       def throw(code)
         status(*Http::Status.for_code(code))
         super :halt
       end
 
+      # Sets the given code and message for the response
+      #
+      # @param code [Fixnum] a valid HTTP status code
+      # @param message [String] the response body
+      #
+      # @since 0.1.0
+      # @see Lotus::Http::Status:ALL
       def status(code, message)
         self.status = code
         self.body   = message

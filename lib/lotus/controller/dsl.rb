@@ -1,5 +1,8 @@
 module Lotus
   module Controller
+    # Public DSL
+    #
+    # @since 0.1.0
     module Dsl
       def self.included(base)
         base.class_eval do
@@ -8,6 +11,35 @@ module Lotus
       end
 
       module ClassMethods
+        # Define an action for the given name.
+        # It generates a concrete class for the action, for this reason the name
+        # MUST be a valid name for Ruby.
+        #
+        # @param name [String] the name of the action
+        # @param blk [Proc] the code of the action
+        #
+        # @raise TypeError when the name isn't a valid Ruby name
+        #
+        # @since 0.1.0
+        #
+        # @example
+        #   require 'lotus/controller'
+        #
+        #   class ArticlesController
+        #     include Lotus::Controller
+        #
+        #     action 'Index' do
+        #       def call(params)
+        #         # ...
+        #       end
+        #     end
+        #
+        #     action 'Show' do
+        #       def call(params)
+        #         # ...
+        #       end
+        #     end
+        #   end
         def action(name, &blk)
           const_set(name, Class.new)
 

@@ -480,6 +480,49 @@ action = Show.new
 action.call({ id: 23 }) # => [200, {'Content-Type' => 'application/json'}, '...']
 ```
 
+You can restrict the accepted mime types:
+
+```ruby
+class Show
+  include Lotus::Action
+  accept :html, :json
+
+  def call(params)
+    # ...
+  end
+end
+
+# When called with "\*/\*"            => 200
+# When called with "text/html"        => 200
+# When called with "application/json" => 200
+# When called with "application/xml"  => 406
+```
+
+You can check if the requested mime type is accepted by the client.
+
+```ruby
+class Show
+  include Lotus::Action
+
+  def call(params)
+    # ...
+    # @_env['HTTP_ACCEPT'] # => 'text/html,application/xhtml+xml,application/xml;q=0.9'
+
+    accept?('text/html')        # => true
+    accept?('application/xml')  # => true
+    accept?('application/json') # => false
+
+
+
+    # @_env['HTTP_ACCEPT'] # => '*/*'
+
+    accept?('text/html')        # => true
+    accept?('application/xml')  # => true
+    accept?('application/json') # => true
+  end
+end
+```
+
 ### No rendering, please
 
 Lotus::Controller is designed to be a pure HTTP endpoint, rendering belongs to other layers of MVC.

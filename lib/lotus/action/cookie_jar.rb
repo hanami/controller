@@ -2,11 +2,37 @@ require 'lotus/utils/hash'
 
 module Lotus
   module Action
+    # A set of HTTP Cookies
+    #
+    # It acts as an Hash
+    #
+    # @since 0.1.0
+    #
+    # @see Lotus::Action::Cookies#cookies
     class CookieJar < Utils::Hash
+      # The key that returns raw cookies from the Rack env
+      #
+      # @since 0.1.0
       HTTP_HEADER       = 'HTTP_COOKIE'.freeze
+
+      # The key used by Rack to set the cookies as an Hash in the env
+      #
+      # @since 0.1.0
       COOKIE_HASH_KEY   = 'rack.request.cookie_hash'.freeze
+
+      # The key used by Rack to set the cookies as a String in the env
+      #
+      # @since 0.1.0
       COOKIE_STRING_KEY = 'rack.request.cookie_string'.freeze
 
+      # Initialize the CookieJar
+      #
+      # @param env [Hash] a raw Rack env
+      # @param headers [Hash] the response headers
+      #
+      # @return [CookieJar]
+      #
+      # @since 0.1.0
       def initialize(env, headers)
         @_headers = headers
 
@@ -14,11 +40,25 @@ module Lotus
         symbolize!
       end
 
+      # Finalize itself, by setting the proper headers to add and remove
+      # cookies, before the response is returned to the webserver.
+      #
+      # @return [void]
+      #
+      # @since 0.1.0
+      #
+      # @see Lotus::Action::Cookies#finish
       def finish
         each {|k,v| v.nil? ? delete_cookie(k) : set_cookie(k, v) }
       end
 
       private
+      # Extract the cookies from the raw Rack env.
+      #
+      # This implementation is borrowed from Rack::Request#cookies.
+      #
+      # @since 0.1.0
+      # @api private
       def extract(env)
         hash   = env[COOKIE_HASH_KEY] ||= {}
         string = env[HTTP_HEADER]
@@ -37,10 +77,18 @@ module Lotus
         hash
       end
 
+      # Set a cookie in the headers
+      #
+      # @since 0.1.0
+      # @api private
       def set_cookie(key, value)
         ::Rack::Utils.set_cookie_header!(@_headers, key, value)
       end
 
+      # Remove a cookie from the headers
+      #
+      # @since 0.1.0
+      # @api private
       def delete_cookie(key)
         ::Rack::Utils.delete_cookie_header!(@_headers, key, {})
       end

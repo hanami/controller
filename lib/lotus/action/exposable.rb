@@ -3,6 +3,8 @@ module Lotus
     # Exposures API
     #
     # @since 0.1.0
+    #
+    # @see Lotus::Action::Exposable::ClassMethods#expose
     module Exposable
       def self.included(base)
         base.class_eval do
