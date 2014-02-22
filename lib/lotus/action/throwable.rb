@@ -29,7 +29,7 @@ module Lotus
             # @see Lotus::Action.handled_exceptions
             # @see Lotus::Action::Throwable.handle_exception
             class_attribute :handled_exceptions
-            self.handled_exceptions = Action.handled_exceptions.dup
+            self.handled_exceptions = Controller.handled_exceptions.dup
           end
         end
 

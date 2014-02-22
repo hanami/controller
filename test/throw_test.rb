@@ -19,7 +19,7 @@ describe Lotus::Action do
         class DomainLogicException < StandardError
         end
 
-        Lotus::Action.handled_exceptions = {DomainLogicException => 400}
+        Lotus::Controller.handled_exceptions = {DomainLogicException => 400}
 
         class GlobalHandledExceptionAction
           include Lotus::Action
@@ -34,7 +34,7 @@ describe Lotus::Action do
         Object.send(:remove_const, :DomainLogicException)
         Object.send(:remove_const, :GlobalHandledExceptionAction)
 
-        Lotus::Action.handled_exceptions = {}
+        Lotus::Controller.handled_exceptions = {}
       end
 
       it 'handles raised exception' do
