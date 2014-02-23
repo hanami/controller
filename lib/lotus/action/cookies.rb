@@ -32,7 +32,7 @@ module Lotus
       # @api public
       #
       # @example
-      #   require 'lotus/action'
+      #   require 'lotus/controller'
       #   require 'lotus/action/cookies'
       #
       #   class Show

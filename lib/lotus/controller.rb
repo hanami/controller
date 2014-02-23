@@ -43,7 +43,7 @@ module Lotus
     # @see Lotus::Action::Throwable
     #
     # @example
-    #   require 'lotus/action'
+    #   require 'lotus/controller'
     #
     #   Lotus::Controller.handled_exceptions = { RecordNotFound => 404 }
     #

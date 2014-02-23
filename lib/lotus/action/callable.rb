@@ -26,7 +26,7 @@ module Lotus
       # @since 0.1.0
       #
       # @example with Lotus::Router
-      #   require 'lotus/action'
+      #   require 'lotus/controller'
       #
       #    class Show
       #      include Lotus::Action
@@ -38,7 +38,7 @@ module Lotus
       #    end
       #
       # @example Standalone
-      #   require 'lotus/action'
+      #   require 'lotus/controller'
       #
       #   class Show
       #     include Lotus::Action
@@ -52,7 +52,7 @@ module Lotus
       #   end
       #
       # @example Unit Testing
-      #   require 'lotus/action'
+      #   require 'lotus/controller'
       #
       #   class Show
       #     include Lotus::Action

@@ -20,7 +20,7 @@ module Lotus
       # @since 0.1.0
       #
       # @example
-      #   require 'lotus/action'
+      #   require 'lotus/controller'
       #   require 'lotus/action/session'
       #
       #   class Show

@@ -42,7 +42,7 @@ module Lotus
         # @since 0.1.0
         #
         # @example
-        #   require 'lotus/action'
+        #   require 'lotus/controller'
         #
         #   class Show
         #     include Lotus::Action

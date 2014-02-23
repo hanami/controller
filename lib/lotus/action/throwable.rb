@@ -58,7 +58,7 @@ module Lotus
         # @see Lotus::Action.handled_exceptions
         #
         # @example
-        #   require 'lotus/action'
+        #   require 'lotus/controller'
         #
         #   class Show
         #     include Lotus::Action

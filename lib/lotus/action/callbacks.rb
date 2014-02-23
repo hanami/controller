@@ -44,7 +44,7 @@ module Lotus
         # @since 0.1.0
         #
         # @example Method names (symbols)
-        #   require 'lotus/action'
+        #   require 'lotus/controller'
         #
         #   class Show
         #     include Lotus::Action
@@ -72,7 +72,7 @@ module Lotus
         #   # 3. #call
         #
         # @example Anonymous functions (Procs)
-        #   require 'lotus/action'
+        #   require 'lotus/controller'
         #
         #   class Show
         #     include Lotus::Action
