@@ -322,6 +322,7 @@ It offers convenient access to cookies.
 They are read as an Hash from Rack env:
 
 ```ruby
+require 'lotus/controller'
 require 'lotus/action/cookies'
 
 class ReadCookiesFromRackEnv
@@ -341,6 +342,7 @@ action.call({'HTTP_COOKIE' => 'foo=bar'})
 They are set like an Hash:
 
 ```ruby
+require 'lotus/controller'
 require 'lotus/action/cookies'
 
 class SetCookies
@@ -360,6 +362,7 @@ action.call({}) # => [200, {'Set-Cookie' => 'foo=bar'}, '...']
 They are removed by setting their value to `nil`:
 
 ```ruby
+require 'lotus/controller'
 require 'lotus/action/cookies'
 
 class RemoveCookies
@@ -381,6 +384,7 @@ action.call({}) # => [200, {'Set-Cookie' => "foo=; max-age=0; expires=Thu, 01 Ja
 It has builtin support for Rack sessions:
 
 ```ruby
+require 'lotus/controller'
 require 'lotus/action/session'
 
 class ReadSessionFromRackEnv
@@ -400,6 +404,7 @@ action.call({ 'rack.session' => { 'age' => '31' }})
 Values can be set like an Hash:
 
 ```ruby
+require 'lotus/controller'
 require 'lotus/action/session'
 
 class SetSession
@@ -419,6 +424,7 @@ action.call({}) # => [200, {"Set-Cookie"=>"rack.session=..."}, "..."]
 Values can be removed like an Hash:
 
 ```ruby
+require 'lotus/controller'
 require 'lotus/action/session'
 
 class RemoveSession
@@ -602,6 +608,30 @@ loading your controllers before you initialize the router.**
 
 Lotus::Controller is compatible with Rack. However, it doesn't mount any middleware.
 While a Lotus application's architecture is more web oriented, this framework is designed to build pure HTTP entpoints.
+
+## Thread safety
+
+An Action is **mutable**. When used without Lotus::Router, be sure to instantiate an
+action for each request.
+
+```ruby
+# config.ru
+require 'lotus/controller'
+
+class Action
+  include Lotus::Action
+
+  def self.call(env)
+    new.call(env)
+  end
+
+  def call(params)
+    self.body = object_id.to_s
+  end
+end
+
+run Action
+```
 
 ## Versioning
 
