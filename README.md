@@ -9,6 +9,7 @@ A Rack compatible Controller layer for [Lotus](http://lotusrb.org).
 [![Coverage](https://coveralls.io/repos/lotus/controller/badge.png?branch=master)](https://coveralls.io/r/lotus/controller)
 [![Code Climate](https://codeclimate.com/github/lotus/controller.png)](https://codeclimate.com/github/lotus/controller)
 [![Dependencies](https://gemnasium.com/lotus/controller.png)](https://gemnasium.com/lotus/controller)
+[![Inline docs](http://inch-pages.github.io/github/lotus/controller.png)](http://inch-pages.github.io/github/lotus/controller)
 
 ## Contact
 
