@@ -608,7 +608,7 @@ loading your controllers before you initialize the router.**
 ## Rack integration
 
 Lotus::Controller is compatible with Rack. However, it doesn't mount any middleware.
-While a Lotus application's architecture is more web oriented, this framework is designed to build pure HTTP entpoints.
+While a Lotus application's architecture is more web oriented, this framework is designed to build pure HTTP endpoints.
 
 ## Thread safety
 
