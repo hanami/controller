@@ -89,5 +89,11 @@ describe Lotus::Action do
       response[0].must_equal 408
       response[2].must_equal ['Request Timeout']
     end
+
+    it 'provides access to the exception via error attribute' do
+      action = ErrorCallAction.new
+      response = action.call({})
+      action.send(:error).class.must_equal RuntimeError
+    end
   end
 end
