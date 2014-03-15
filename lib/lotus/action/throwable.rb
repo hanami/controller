@@ -111,6 +111,11 @@ module Lotus
         self.body   = message
       end
 
+      # The exception raised during call (if any)
+      def error
+        @_error
+      end
+
       private
       def _rescue
         catch :halt do
@@ -123,6 +128,7 @@ module Lotus
       end
 
       def _handle_exception(exception)
+        @_error = exception
         throw self.class.handled_exceptions.fetch(exception.class, 500)
       end
     end
