@@ -60,6 +60,37 @@ module Lotus
     class_attribute :handled_exceptions
     self.handled_exceptions = {}
 
+    # Global setting for handling exceptions.
+    #
+    # When an exception is raised during a #call execution it will be
+    # translated into an associated HTTP status by default. You may want to
+    # disable this behavior for your testes.
+    #
+    # **Important:** Be sure to set this configuration, **before** the actions
+    # and controllers of your application are loaded.
+    #
+    # @since 0.2.0
+    #
+    # @see Lotus::Action::Throwable
+    #
+    # @example
+    #   require 'lotus/controller'
+    #
+    #   Lotus::Controller.handle_exceptions = false
+    #
+    #   class Show
+    #     include Lotus::Action
+    #
+    #     def call(params)
+    #       # ...
+    #       raise RecordNotFound.new
+    #     end
+    #   end
+    #
+    #   Show.new.call({id: 1}) # => ERROR RecordNotFound: RecordNotFound
+    class_attribute :handle_exceptions
+    self.handle_exceptions = true
+
     def self.included(base)
       base.class_eval do
         include Dsl

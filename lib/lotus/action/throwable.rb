@@ -37,6 +37,19 @@ module Lotus
             # @see Lotus::Action::Throwable.handle_exception
             class_attribute :handled_exceptions
             self.handled_exceptions = Controller.handled_exceptions.dup
+
+            # Action-level setting for handling exceptions.
+            #
+            # When an exception is raised during a #call execution it will be
+            # translated into an associated HTTP status by default. You may
+            # want to disable this behavior for your testes.
+            #
+            # @api private
+            # @since 0.2.0
+            #
+            # @see Lotus::Controller.handle_exceptions
+            class_attribute :handle_exceptions
+            self.handle_exceptions = Controller.handle_exceptions
           end
         end
 
@@ -123,6 +136,7 @@ module Lotus
       end
 
       def _handle_exception(exception)
+        raise unless self.class.handle_exceptions
         throw self.class.handled_exceptions.fetch(exception.class, 500)
       end
     end
