@@ -29,10 +29,10 @@ module Lotus
     include Utils::ClassAttribute
 
     # Global handled exceptions.
-    # When an handled exception is raised during #call execution, it will be
+    # When a handled exception is raised during #call execution, it will be
     # translated into the associated HTTP status.
     #
-    # By default there aren't handled exceptions, all the errors are threaded
+    # By default there aren't handled exceptions, all the errors are treated
     # as a Server Side Error (500).
     #
     # **Important:** Be sure to set this configuration, **before** the actions
