@@ -27,6 +27,7 @@ module Lotus
   #   end
   module Controller
     include Utils::ClassAttribute
+    include Dsl
 
     # Global handled exceptions.
     # When an handled exception is raised during #call execution, it will be
@@ -59,12 +60,6 @@ module Lotus
     #   Show.new.call({id: 1}) # => [404, {}, ['Not Found']]
     class_attribute :handled_exceptions
     self.handled_exceptions = {}
-
-    def self.included(base)
-      base.class_eval do
-        include Dsl
-      end
-    end
   end
 end
 
