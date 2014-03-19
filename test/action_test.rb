@@ -16,6 +16,22 @@ describe Lotus::Action do
       response[0].must_equal 500
       response[2].must_equal ['Internal Server Error']
     end
+
+    describe 'when exception handling code is disabled' do
+      before do
+        ErrorCallAction.handle_exceptions = false
+      end
+
+      after do
+        ErrorCallAction.handle_exceptions = true
+      end
+
+      it 'should raise an actual exception' do
+        proc {
+          ErrorCallAction.new.call({})
+        }.must_raise RuntimeError
+      end
+    end
   end
 
   describe '#expose' do
