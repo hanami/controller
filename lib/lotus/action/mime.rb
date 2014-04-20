@@ -64,7 +64,7 @@ module Lotus
 
           before do
             unless mime_types.find {|mt| accept?(mt) }
-              throw 406
+              halt 406
             end
           end
         end

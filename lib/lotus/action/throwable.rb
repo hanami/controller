@@ -8,7 +8,7 @@ module Lotus
     # @since 0.1.0
     #
     # @see Lotus::Action::Throwable::ClassMethods#handle_exception
-    # @see Lotus::Action::Throwable#throw
+    # @see Lotus::Action::Throwable#halt
     # @see Lotus::Action::Throwable#status
     module Throwable
       def self.included(base)
@@ -91,7 +91,7 @@ module Lotus
 
       protected
 
-      # Throw the given HTTP status code.
+      # Halt the action execution with the given HTTP status code.
       #
       # When used, the execution of a callback or of an action is interrupted
       # and the control returns to the framework, that decides how to handle
@@ -102,14 +102,14 @@ module Lotus
       #
       # @param code [Fixnum] a valid HTTP status code
       #
-      # @since 0.1.0
+      # @since 0.1.1
       #
       # @see Lotus::Controller#handled_exceptions
       # @see Lotus::Action::Throwable#handle_exception
       # @see Lotus::Http::Status:ALL
-      def throw(code)
+      def halt(code)
         status(*Http::Status.for_code(code))
-        super :halt
+        throw :halt
       end
 
       # Sets the given code and message for the response
@@ -122,6 +122,15 @@ module Lotus
       def status(code, message)
         self.status = code
         self.body   = message
+      end
+
+      def throw(*args)
+        if Fixnum === args.first
+          warn "Passing a status code to `throw` is deprecated and will be removed from Lotus::Controller. Use `halt` method instead."
+          halt(args.first)
+        end
+
+        super
       end
 
       private
@@ -137,7 +146,7 @@ module Lotus
 
       def _handle_exception(exception)
         raise unless self.class.handle_exceptions
-        throw self.class.handled_exceptions.fetch(exception.class, 500)
+        halt self.class.handled_exceptions.fetch(exception.class, 500)
       end
     end
   end
