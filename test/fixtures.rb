@@ -298,6 +298,17 @@ class ThrowCodeAction
   end
 end
 
+class CatchAndThrowSymbolAction
+  include Lotus::Action
+
+  def call(params)
+    return_value = catch :done do
+      throw :done, 1
+      raise "This code shouldn't be reachable"
+    end
+  end
+end
+
 class ThrowBeforeMethodAction
   include Lotus::Action
 

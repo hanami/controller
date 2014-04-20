@@ -90,4 +90,12 @@ describe Lotus::Action do
       response[2].must_equal ['Request Timeout']
     end
   end
+
+  describe 'using Kernel#throw in an action' do
+    it 'should work' do
+      response = CatchAndThrowSymbolAction.new.call({})
+
+      response[0].must_equal 200
+    end
+  end
 end
