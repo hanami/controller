@@ -294,7 +294,18 @@ class ThrowCodeAction
   include Lotus::Action
 
   def call(params)
-    throw params[:status]
+    halt params[:status]
+  end
+end
+
+class CatchAndThrowSymbolAction
+  include Lotus::Action
+
+  def call(params)
+    return_value = catch :done do
+      throw :done, 1
+      raise "This code shouldn't be reachable"
+    end
   end
 end
 
@@ -310,7 +321,7 @@ class ThrowBeforeMethodAction
 
   private
   def authorize!
-    throw 401
+    halt 401
   end
 
   def set_body
@@ -321,7 +332,7 @@ end
 class ThrowBeforeBlockAction
   include Lotus::Action
 
-  before { throw 401 }
+  before { halt 401 }
   before { self.body = 'Hi!' }
 
   def call(params)
@@ -341,7 +352,7 @@ class ThrowAfterMethodAction
 
   private
   def raise_timeout!
-    throw 408
+    halt 408
   end
 
   def set_body
@@ -352,7 +363,7 @@ end
 class ThrowAfterBlockAction
   include Lotus::Action
 
-  after { throw 408 }
+  after { halt 408 }
   after { self.body = 'Later!' }
 
   def call(params)
@@ -461,7 +472,7 @@ class DashboardController
 
     private
     def authenticate!
-      throw 401 unless loggedin?
+      halt 401 unless loggedin?
     end
 
     def loggedin?
