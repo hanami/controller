@@ -8,6 +8,64 @@ module Lotus
       DEFAULT_RESPONSE_CODE = 200
       DEFAULT_RESPONSE_BODY = []
 
+      def self.included(base)
+        base.extend ClassMethods
+      end
+
+      module ClassMethods
+        # Use a Rack middleware as a before callback.
+        #
+        # The middleware will be used as it is, no matter if it's a class or an
+        # instance. If it needs to be initialized, please do it before to pass
+        # it as the argument of this method.
+        #
+        # At the runtime, the middleware be invoked with the raw Rack env.
+        #
+        # Multiple middlewares can be employed, just by using multiple times
+        # this method.
+        #
+        # @param [#call] A Rack middleware
+        #
+        # @since 0.2.0
+        #
+        # @see Lotus::Action::Callbacks::ClassMethods#before
+        #
+        # @example Class Middleware
+        #   require 'lotus/controller'
+        #
+        #   class SessionsController
+        #     include Lotus::Controller
+        #
+        #     action 'Create' do
+        #       use OmniAuth
+        #
+        #       def call(params)
+        #         # ...
+        #       end
+        #     end
+        #   end
+        #
+        # @example Instance Middleware
+        #   require 'lotus/controller'
+        #
+        #   class SessionsController
+        #     include Lotus::Controller
+        #
+        #     action 'Create' do
+        #       use XMiddleware.new('x', 123)
+        #
+        #       def call(params)
+        #         # ...
+        #       end
+        #     end
+        #   end
+        def use(middleware)
+          before do |params|
+            middleware.call(params.env)
+          end
+        end
+      end
+
       protected
       # Sets the HTTP status code for the response
       #

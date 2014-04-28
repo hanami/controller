@@ -24,6 +24,8 @@ module Lotus
       # @since 0.1.0
       ROUTER_PARAMS = 'router.params'.freeze
 
+      attr_reader :env
+
       # Initialize the params and freeze them.
       #
       # @param env [Hash] a Rack env or an hash of params.
@@ -32,13 +34,14 @@ module Lotus
       #
       # @since 0.1.0
       def initialize(env)
-        super _extract(env)
+        @env = env
+        super _extract
         symbolize!
         freeze
       end
 
       private
-      def _extract(env)
+      def _extract
         {}.tap do |result|
           if env.has_key?(RACK_INPUT)
             result.merge! ::Rack::Request.new(env).params

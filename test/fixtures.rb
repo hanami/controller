@@ -111,6 +111,22 @@ class ExposeAction
   end
 end
 
+class XMiddleware
+  def self.call(env)
+    env['X-Middleware'] = 'OK'
+  end
+end
+
+class UseAction
+  include Lotus::Action
+
+  use XMiddleware
+
+  def call(params)
+    headers['X-Middleware'] = params.env.fetch('X-Middleware')
+  end
+end
+
 class BeforeMethodAction
   include Lotus::Action
 
