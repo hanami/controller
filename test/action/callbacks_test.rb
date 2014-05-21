@@ -1,6 +1,14 @@
 require 'test_helper'
 
 describe Lotus::Action do
+  describe 'an action without #call' do
+    it 'does not return with an error' do
+      action = NoCallAction.new
+      response = action.call({})
+      response[0].must_equal 200
+    end
+  end
+
   describe '#before' do
     it 'invokes the method(s) from the given symbol(s) before the action is run' do
       action = BeforeMethodAction.new
