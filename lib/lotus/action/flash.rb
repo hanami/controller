@@ -1,3 +1,4 @@
+require 'lotus/action/session'
 module Lotus
   module Action
     # Flash API
@@ -9,7 +10,6 @@ module Lotus
       def self.included(action)
         action.class_eval do
           include Lotus::Action::Session
-
           prepend InstanceMethods
         end
       end

@@ -31,6 +31,7 @@ module Lotus
         include Exposable
         include Throwable
         include Callbacks
+        include Flash
         prepend Callable
       end
     end
