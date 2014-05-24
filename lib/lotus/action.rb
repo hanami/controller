@@ -5,6 +5,7 @@ require 'lotus/action/exposable'
 require 'lotus/action/throwable'
 require 'lotus/action/callbacks'
 require 'lotus/action/callable'
+require 'lotus/action/flash'
 
 module Lotus
   # An HTTP endpoint
