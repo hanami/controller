@@ -5,6 +5,7 @@ require 'lotus/action/exposable'
 require 'lotus/action/throwable'
 require 'lotus/action/callbacks'
 require 'lotus/action/callable'
+require 'lotus/action/flash'
 
 module Lotus
   # An HTTP endpoint
@@ -30,6 +31,7 @@ module Lotus
         include Exposable
         include Throwable
         include Callbacks
+        include Flash
         prepend Callable
       end
     end

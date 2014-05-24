@@ -526,3 +526,41 @@ class StandaloneSession
     session[:age] = Time.now.year - 1982
   end
 end
+
+class FlashController
+  include Lotus::Controller
+
+  action 'Set' do
+    include Lotus::Action::Flash
+
+    def call(params)
+      flash[:notice] = "Thanks for signing up!"
+    end
+
+    def get_flash
+      flash
+    end
+  end
+
+  action 'Get' do
+    include Lotus::Action::Flash
+
+    def call(params)
+      self.body = flash[:notice]
+    end
+  end
+end
+
+TheSession = {}
+
+class FlashTest
+  include Lotus::Action::Flash
+
+  def session
+    TheSession
+  end
+
+  def get_flash
+    flash
+  end
+end
