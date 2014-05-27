@@ -40,7 +40,7 @@ module Lotus
         #
         #   class Show
         #     include Lotus::Action
-        #     handle_exception RecordNotFound, 404
+        #     handle_exception RecordNotFound => 404
         #
         #     def call(params)
         #       # ...
@@ -49,9 +49,8 @@ module Lotus
         #   end
         #
         #   Show.new.call({id: 1}) # => [404, {}, ['Not Found']]
-        # TODO change signature to handle_exception(exception) like ArgumentError => 400
-        def handle_exception(exception, status)
-          configuration.handle_exception(exception => status)
+        def handle_exception(exception)
+          configuration.handle_exception(exception)
         end
       end
 

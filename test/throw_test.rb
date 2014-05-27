@@ -53,6 +53,10 @@ describe Lotus::Action do
   end
 
   describe '#throw' do
+    before do
+      ThrowCodeAction.configuration.reset!
+    end
+
     HTTP_TEST_STATUSES.each do |code, body|
       it "throws an HTTP status code: #{ code }" do
         response = ThrowCodeAction.new.call({ status: code })

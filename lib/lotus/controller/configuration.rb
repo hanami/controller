@@ -7,8 +7,8 @@ module Lotus
         reset!
       end
 
-      attr_reader :handled_exceptions
-      attr_writer :handle_exceptions
+      attr_accessor :handled_exceptions
+      attr_writer :handle_exceptions, :action_module
 
       def handle_exceptions(value = nil)
         if value.nil?
@@ -26,9 +26,26 @@ module Lotus
         @handled_exceptions.fetch(exception) { DEFAULT_ERROR_CODE }
       end
 
+      def action_module(value = nil)
+        if value.nil?
+          @action_module
+        else
+          @action_module = value
+        end
+      end
+
+      def duplicate
+        Configuration.new.tap do |c|
+          c.handle_exceptions  = handle_exceptions
+          c.handled_exceptions = handled_exceptions.dup
+          c.action_module      = action_module
+        end
+      end
+
       def reset!
         @handle_exceptions  = true
         @handled_exceptions = {}
+        @action_module      = ::Lotus::Action
       end
     end
   end

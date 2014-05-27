@@ -27,8 +27,6 @@ module Lotus
   #     end
   #   end
   module Controller
-    include Utils::ClassAttribute
-
     def self.configuration
       @configuration ||= Configuration.new
     end
@@ -38,8 +36,14 @@ module Lotus
     end
 
     def self.included(base)
+      conf = self.configuration.duplicate
+
       base.class_eval do
         include Dsl
+        include Utils::ClassAttribute
+
+        class_attribute :configuration
+        self.configuration = conf
       end
     end
   end

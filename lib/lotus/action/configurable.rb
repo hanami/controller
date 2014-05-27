@@ -8,7 +8,7 @@ module Lotus
           include Utils::ClassAttribute
 
           class_attribute :configuration
-          self.configuration = Controller.configuration.dup
+          self.configuration ||= Controller.configuration.duplicate
         end
       end
 

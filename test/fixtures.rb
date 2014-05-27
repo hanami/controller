@@ -392,7 +392,7 @@ end
 
 class HandledExceptionAction
   include Lotus::Action
-  handle_exception RecordNotFound, 404
+  handle_exception RecordNotFound => 404
 
   def call(params)
     raise RecordNotFound.new
@@ -524,5 +524,51 @@ class StandaloneSession
 
   def call(params)
     session[:age] = Time.now.year - 1982
+  end
+end
+
+class ArtistNotFound < StandardError
+end
+
+module MusicPlayer
+  Controller = Lotus::Controller.dup
+  Action     = Lotus::Action.dup
+
+  Controller.module_eval do
+    configuration.reset!
+    configure do
+      handle_exception ArgumentError => 400
+      action_module    MusicPlayer::Action
+    end
+  end
+
+  module Controllers
+    class Dashboard
+      include MusicPlayer::Controller
+
+      action 'Index' do
+        def call(params)
+          self.body = 'Muzic!'
+        end
+      end
+
+      action 'Show' do
+        def call(params)
+          raise ArgumentError
+        end
+      end
+    end
+
+    class Artists
+      include MusicPlayer::Controller
+
+      action 'Show' do
+        handle_exception ArtistNotFound => 404
+
+        def call(params)
+          raise ArtistNotFound
+        end
+      end
+    end
   end
 end
