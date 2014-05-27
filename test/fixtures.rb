@@ -531,7 +531,7 @@ class ArtistNotFound < StandardError
 end
 
 module MusicPlayer
-  Controller = Lotus::Controller.dup
+  Controller = Lotus::Controller.duplicate
   Action     = Lotus::Action.dup
 
   Controller.module_eval do

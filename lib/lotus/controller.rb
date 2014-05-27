@@ -27,12 +27,19 @@ module Lotus
   #     end
   #   end
   module Controller
-    def self.configuration
-      @configuration ||= Configuration.new
-    end
+    include Utils::ClassAttribute
+
+    class_attribute :configuration
+    self.configuration = Configuration.new
 
     def self.configure(&blk)
       configuration.instance_eval(&blk)
+    end
+
+    def self.duplicate
+      dup.tap do |duplicated|
+        duplicated.configuration = configuration.duplicate
+      end
     end
 
     def self.included(base)
