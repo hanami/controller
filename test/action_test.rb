@@ -1,6 +1,26 @@
 require 'test_helper'
 
 describe Lotus::Action do
+  describe '.configuration' do
+    after do
+      CallAction.configuration.reset!
+    end
+
+    it 'has the same defaults of Lotus::Controller' do
+      expected = Lotus::Controller.configuration
+      actual   = CallAction.configuration
+
+      actual.handle_exceptions.must_equal(expected.handle_exceptions)
+    end
+
+    it "doesn't interfer with other action's configurations" do
+      CallAction.configuration.handle_exceptions = false
+
+      Lotus::Controller.configuration.handle_exceptions.must_equal(true)
+      ErrorCallAction.configuration.handle_exceptions.must_equal(true)
+    end
+  end
+
   describe '#call' do
     it 'calls an action' do
       response = CallAction.new.call({})
@@ -19,11 +39,11 @@ describe Lotus::Action do
 
     describe 'when exception handling code is disabled' do
       before do
-        ErrorCallAction.handle_exceptions = false
+        ErrorCallAction.configuration.handle_exceptions = false
       end
 
       after do
-        ErrorCallAction.handle_exceptions = true
+        ErrorCallAction.configuration.reset!
       end
 
       it 'should raise an actual exception' do

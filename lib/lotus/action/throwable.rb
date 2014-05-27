@@ -18,41 +18,6 @@ module Lotus
       end
 
       module ClassMethods
-        def self.extended(base)
-          base.class_eval do
-            include Utils::ClassAttribute
-
-            # Action handled exceptions.
-            #
-            # When a handled exception is raised during #call execution, it will be
-            # translated into the associated HTTP status.
-            #
-            # By default there aren't handled exceptions, all the errors are treated
-            # as a Server Side Error (500).
-            #
-            # @api private
-            # @since 0.1.0
-            #
-            # @see Lotus::Controller.handled_exceptions
-            # @see Lotus::Action::Throwable.handle_exception
-            class_attribute :handled_exceptions
-            self.handled_exceptions = Controller.handled_exceptions.dup
-
-            # Action-level setting for handling exceptions.
-            #
-            # When an exception is raised during a #call execution it will be
-            # translated into an associated HTTP status by default. You may
-            # want to disable this behavior for your testes.
-            #
-            # @api private
-            # @since 0.2.0
-            #
-            # @see Lotus::Controller.handle_exceptions
-            class_attribute :handle_exceptions
-            self.handle_exceptions = Controller.handle_exceptions
-          end
-        end
-
         protected
 
         # Handle the given exception with an HTTP status code.
@@ -84,8 +49,9 @@ module Lotus
         #   end
         #
         #   Show.new.call({id: 1}) # => [404, {}, ['Not Found']]
+        # TODO change signature to handle_exception(exception) like ArgumentError => 400
         def handle_exception(exception, status)
-          self.handled_exceptions[exception] = status
+          configuration.handle_exception(exception => status)
         end
       end
 
@@ -145,8 +111,8 @@ module Lotus
       end
 
       def _handle_exception(exception)
-        raise unless self.class.handle_exceptions
-        halt self.class.handled_exceptions.fetch(exception.class, 500)
+        raise unless configuration.handle_exceptions
+        halt configuration.exception_code(exception.class)
       end
     end
   end

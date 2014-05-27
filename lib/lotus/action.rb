@@ -1,3 +1,4 @@
+require 'lotus/action/configurable'
 require 'lotus/action/rack'
 require 'lotus/action/mime'
 require 'lotus/action/redirect'
@@ -24,6 +25,7 @@ module Lotus
   module Action
     def self.included(base)
       base.class_eval do
+        include Configurable
         include Rack
         include Mime
         include Redirect
