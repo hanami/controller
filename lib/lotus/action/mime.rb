@@ -27,9 +27,7 @@ module Lotus
       DEFAULT_CONTENT_TYPE = 'application/octet-stream'.freeze
 
       def self.included(base)
-        base.class_eval do
-          extend ClassMethods
-        end
+        base.extend ClassMethods
       end
 
       module ClassMethods

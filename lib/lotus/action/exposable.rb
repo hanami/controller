@@ -7,9 +7,7 @@ module Lotus
     # @see Lotus::Action::Exposable::ClassMethods#expose
     module Exposable
       def self.included(base)
-        base.class_eval do
-          extend ClassMethods
-        end
+        base.extend ClassMethods
       end
 
       module ClassMethods
@@ -46,8 +44,8 @@ module Lotus
         #   action.exposures # => { :article => #<Article ...>, :tags => [ ... ] }
         def expose(*names)
           class_eval do
-            attr_reader    *names
-            exposures.push *names
+            attr_reader(   *names)
+            exposures.push(*names)
           end
         end
 

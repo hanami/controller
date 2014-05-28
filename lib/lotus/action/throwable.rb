@@ -12,9 +12,7 @@ module Lotus
     # @see Lotus::Action::Throwable#status
     module Throwable
       def self.included(base)
-        base.class_eval do
-          extend ClassMethods
-        end
+        base.extend ClassMethods
       end
 
       module ClassMethods
