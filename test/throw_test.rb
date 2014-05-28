@@ -1,6 +1,11 @@
 require 'test_helper'
 
 describe Lotus::Action do
+  before do
+    Lotus::Controller.configuration.reset!
+    UnhandledExceptionAction.configuration.reset!
+  end
+
   describe '.handle_exception' do
     it 'handle an exception with the given status' do
       response = HandledExceptionAction.new.call({})
@@ -19,7 +24,9 @@ describe Lotus::Action do
         class DomainLogicException < StandardError
         end
 
-        Lotus::Controller.handled_exceptions = {DomainLogicException => 400}
+        Lotus::Controller.configure do
+          handle_exception DomainLogicException => 400
+        end
 
         class GlobalHandledExceptionAction
           include Lotus::Action
@@ -34,7 +41,7 @@ describe Lotus::Action do
         Object.send(:remove_const, :DomainLogicException)
         Object.send(:remove_const, :GlobalHandledExceptionAction)
 
-        Lotus::Controller.handled_exceptions = {}
+        Lotus::Controller.configuration.reset!
       end
 
       it 'handles raised exception' do
@@ -46,6 +53,10 @@ describe Lotus::Action do
   end
 
   describe '#throw' do
+    before do
+      ThrowCodeAction.configuration.reset!
+    end
+
     HTTP_TEST_STATUSES.each do |code, body|
       it "throws an HTTP status code: #{ code }" do
         response = ThrowCodeAction.new.call({ status: code })
