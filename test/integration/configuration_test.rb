@@ -34,4 +34,15 @@ describe 'Framework configuration' do
     code, _, _ = MusicPlayer::Controllers::Artists::Show.new.call({})
     code.must_equal 404
   end
+
+  it 'allows standalone actions to inherith framework configuration' do
+    code, _, _ = MusicPlayer::StandaloneAction.new.call({})
+    code.must_equal 400
+  end
+
+  it 'includes modules from configuration' do
+    modules = MusicPlayer::Controllers::Artists::Show.included_modules
+    modules.must_include(Lotus::Action::Cookies)
+    modules.must_include(Lotus::Action::Session)
+  end
 end

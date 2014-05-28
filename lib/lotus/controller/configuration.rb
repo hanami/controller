@@ -1,7 +1,16 @@
+require 'lotus/utils/string'
+require 'lotus/utils/class'
+
 module Lotus
   module Controller
     class Configuration
       DEFAULT_ERROR_CODE = 500
+
+      def self.for(base)
+        namespace = Utils::String.new(base).namespace
+        framework = Utils::Class.load!("(#{namespace}|Lotus)::Controller")
+        framework.configuration.duplicate
+      end
 
       def initialize
         reset!
@@ -33,23 +42,40 @@ module Lotus
         end
       end
 
+      def modules(&blk)
+        if block_given?
+          @modules.push(blk)
+        else
+          @modules
+        end
+      end
+
       def duplicate
         Configuration.new.tap do |c|
           c.handle_exceptions  = handle_exceptions
           c.handled_exceptions = handled_exceptions.dup
           c.action_module      = action_module
+          c.modules            = modules.dup
         end
       end
 
       def reset!
         @handle_exceptions  = true
         @handled_exceptions = {}
+        @modules            = []
         @action_module      = ::Lotus::Action
+      end
+
+      def load!(base)
+        modules.each do |mod|
+          base.class_eval(&mod)
+        end
       end
 
       protected
       attr_accessor :handled_exceptions
       attr_writer :action_module
+      attr_writer :modules
     end
   end
 end

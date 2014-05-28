@@ -539,6 +539,11 @@ module MusicPlayer
     configure do
       handle_exception ArgumentError => 400
       action_module    MusicPlayer::Action
+
+      modules do
+        include Lotus::Action::Cookies
+        include Lotus::Action::Session
+      end
     end
   end
 
@@ -569,6 +574,14 @@ module MusicPlayer
           raise ArtistNotFound
         end
       end
+    end
+  end
+
+  class StandaloneAction
+    include MusicPlayer::Action
+
+    def call(params)
+      raise ArgumentError
     end
   end
 end

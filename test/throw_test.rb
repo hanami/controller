@@ -25,6 +25,7 @@ describe Lotus::Action do
         end
 
         Lotus::Controller.configure do
+          reset!
           handle_exception DomainLogicException => 400
         end
 

@@ -80,9 +80,80 @@ describe Lotus::Controller::Configuration do
     end
   end
 
+  describe 'modules' do
+    before do
+      class FakeAction
+      end unless defined?(FakeAction)
+
+      module FakeCallable
+        def call(params)
+          [status, {}, ['Callable']]
+        end
+
+        def status
+          200
+        end
+      end unless defined?(FakeCallable)
+
+      module FakeStatus
+        def status
+          318
+        end
+      end
+    end
+
+    after do
+      Object.send(:remove_const, :FakeAction)
+      Object.send(:remove_const, :FakeCallable)
+    end
+
+    describe 'when not previously configured' do
+      it 'is empty' do
+        @configuration.modules.must_be_empty
+      end
+    end
+
+    describe 'when previously configured' do
+      before do
+        @configuration.modules do
+          include FakeCallable
+        end
+      end
+
+      it 'allows to configure additional modules to include' do
+        @configuration.modules do
+          include FakeStatus
+        end
+
+        @configuration.modules.each do |mod|
+          FakeAction.class_eval(&mod)
+        end
+
+        code, _, body = FakeAction.new.call({})
+        code.must_equal 318
+        body.must_equal ['Callable']
+      end
+    end
+
+    it 'allows to configure modules to include' do
+      @configuration.modules do
+        include FakeCallable
+      end
+
+      @configuration.modules.each do |mod|
+        FakeAction.class_eval(&mod)
+      end
+
+      code, _, body = FakeAction.new.call({})
+      code.must_equal 200
+      body.must_equal ['Callable']
+    end
+  end
+
   describe 'duplicate' do
     before do
       @configuration.reset!
+      @configuration.modules { include Kernel }
       @config = @configuration.duplicate
     end
 
@@ -90,20 +161,24 @@ describe Lotus::Controller::Configuration do
       @config.handle_exceptions.must_equal  @configuration.handle_exceptions
       @config.handled_exceptions.must_equal @configuration.handled_exceptions
       @config.action_module.must_equal      @configuration.action_module
+      @config.modules.must_equal            @configuration.modules
     end
 
     it "doesn't affect the original configuration" do
       @config.handle_exceptions = false
       @config.handle_exception ArgumentError => 400
       @config.action_module    CustomAction
+      @config.modules          { include Comparable }
 
       @config.handle_exceptions.must_equal  false
       @config.handled_exceptions.must_equal Hash[ArgumentError => 400]
       @config.action_module.must_equal      CustomAction
+      @config.modules.size.must_equal       2
 
       @configuration.handle_exceptions.must_equal  true
       @configuration.handled_exceptions.must_equal Hash[]
       @configuration.action_module.must_equal      ::Lotus::Action
+      @configuration.modules.size.must_equal       1
     end
   end
 
@@ -112,6 +187,7 @@ describe Lotus::Controller::Configuration do
       @configuration.handle_exceptions = false
       @configuration.handle_exception ArgumentError => 400
       @configuration.action_module    CustomAction
+      @configuration.modules          { include Kernel }
 
       @configuration.reset!
     end
@@ -120,6 +196,7 @@ describe Lotus::Controller::Configuration do
       @configuration.handle_exceptions.must_equal(true)
       @configuration.handled_exceptions.must_equal({})
       @configuration.action_module.must_equal(::Lotus::Action)
+      @configuration.modules.must_equal([])
     end
   end
 end
