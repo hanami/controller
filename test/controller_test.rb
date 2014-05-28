@@ -24,13 +24,13 @@ describe Lotus::Controller do
       expected = Lotus::Controller.configuration
       actual   = ConfigurationController.configuration
 
-      actual.handled_exceptions.must_equal(expected.handled_exceptions)
+      actual.must_equal(expected)
     end
   end
 
   describe '.configure' do
     after do
-      Lotus::Controller.configuration.handle_exceptions = true
+      Lotus::Controller.configuration.reset!
     end
 
     it 'allows to configure the framework' do

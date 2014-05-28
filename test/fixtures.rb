@@ -399,6 +399,25 @@ class HandledExceptionAction
   end
 end
 
+class DomainLogicException < StandardError
+end
+
+Lotus::Controller.class_eval do
+  configure do
+    handle_exception DomainLogicException => 400
+  end
+end
+
+class GlobalHandledExceptionAction
+  include Lotus::Action
+
+  def call(params)
+    raise DomainLogicException.new
+  end
+end
+
+Lotus::Controller.configuration.reset!
+
 class UnhandledExceptionAction
   include Lotus::Action
 
