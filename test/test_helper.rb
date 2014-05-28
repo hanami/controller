@@ -30,4 +30,6 @@ Lotus::Controller::Configuration.class_eval do
       other.handled_exceptions == handled_exceptions &&
       other.action_module      == action_module
   end
+
+  public :handled_exceptions
 end

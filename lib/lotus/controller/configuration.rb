@@ -7,8 +7,7 @@ module Lotus
         reset!
       end
 
-      attr_accessor :handled_exceptions
-      attr_writer :handle_exceptions, :action_module
+      attr_writer :handle_exceptions
 
       def handle_exceptions(value = nil)
         if value.nil?
@@ -47,6 +46,10 @@ module Lotus
         @handled_exceptions = {}
         @action_module      = ::Lotus::Action
       end
+
+      protected
+      attr_accessor :handled_exceptions
+      attr_writer :action_module
     end
   end
 end
