@@ -549,6 +549,37 @@ end
 class ArtistNotFound < StandardError
 end
 
+module App
+  class CustomError < StandardError
+  end
+
+  class StandaloneAction
+    include Lotus::Action
+    handle_exception App::CustomError => 400
+
+    def call(params)
+      raise App::CustomError
+    end
+  end
+end
+
+module App2
+  class CustomError < StandardError
+  end
+
+  class StandaloneController
+    include Lotus::Controller
+
+    configuration.handle_exception App2::CustomError => 400
+
+    action 'Index' do
+      def call(params)
+        raise App2::CustomError
+      end
+    end
+  end
+end
+
 module MusicPlayer
   Controller = Lotus::Controller.duplicate
   Action     = Lotus::Action.dup

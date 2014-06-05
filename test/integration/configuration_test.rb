@@ -40,6 +40,23 @@ describe 'Framework configuration' do
     code.must_equal 400
   end
 
+  it 'allows standalone modulized actions to inherith framework configuration' do
+    Lotus::Controller.configuration.handled_exceptions.wont_include     App::CustomError
+    App::StandaloneAction.configuration.handled_exceptions.must_include App::CustomError
+
+    code, _, _ = App::StandaloneAction.new.call({})
+    code.must_equal 400
+  end
+
+  it 'allows standalone modulized controllers to inherith framework configuration' do
+    Lotus::Controller.configuration.handled_exceptions.wont_include                 App2::CustomError
+    App2::StandaloneController.configuration.handled_exceptions.must_include        App2::CustomError
+    App2::StandaloneController::Index.configuration.handled_exceptions.must_include App2::CustomError
+
+    code, _, _ = App2::StandaloneController::Index.new.call({})
+    code.must_equal 400
+  end
+
   it 'includes modules from configuration' do
     modules = MusicPlayer::Controllers::Artists::Show.included_modules
     modules.must_include(Lotus::Action::Cookies)
