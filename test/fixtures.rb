@@ -275,6 +275,7 @@ class GetCookiesAction
   include Lotus::Action::Cookies
 
   def call(params)
+    self.body = cookies[:foo]
   end
 end
 

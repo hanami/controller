@@ -1,13 +1,21 @@
 require 'test_helper'
 
+Lotus::Action::CookieJar.class_eval do
+  def include?(hash)
+    key, value = *hash
+    @cookies[key] == value
+  end
+end
+
 describe Lotus::Action do
   describe 'cookies' do
     it 'gets cookies' do
       action   = GetCookiesAction.new
       response = action.call({'HTTP_COOKIE' => 'foo=bar'})
 
-      action.send(:cookies).must_equal({foo: 'bar'})
+      action.send(:cookies).must_include({foo: 'bar'})
       response[1].must_equal({'Content-Type' => 'application/octet-stream', 'Set-Cookie' => 'foo=bar'})
+      response[2].must_equal ['bar']
     end
 
     it 'sets cookies' do
