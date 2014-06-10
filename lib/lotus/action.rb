@@ -1,6 +1,7 @@
 require 'lotus/action/configurable'
 require 'lotus/action/rack'
 require 'lotus/action/mime'
+require 'lotus/action/cache_control'
 require 'lotus/action/redirect'
 require 'lotus/action/exposable'
 require 'lotus/action/throwable'
@@ -28,6 +29,7 @@ module Lotus
         include Configurable
         include Rack
         include Mime
+        include CacheControl
         include Redirect
         include Exposable
         include Throwable
