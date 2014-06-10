@@ -2,10 +2,11 @@ require 'test_helper'
 require 'lotus/router'
 
 MimeRoutes = Lotus::Router.new do
-  get '/',           to: 'mimes#default'
-  get '/custom',     to: 'mimes#custom'
-  get '/accept',     to: 'mimes#accept'
-  get '/restricted', to: 'mimes#restricted'
+  get '/',            to: 'mimes#default'
+  get '/custom-xml',  to: 'mimes#custom_xml'
+  get '/custom-json', to: 'mimes#custom_json'
+  get '/accept',      to: 'mimes#accept'
+  get '/restricted',  to: 'mimes#restricted'
 end
 
 class MimesController
@@ -16,9 +17,15 @@ class MimesController
     end
   end
 
-  action 'Custom' do
+  action 'CustomXml' do
     def call(params)
       self.content_type = 'application/xml'
+    end
+  end
+
+  action 'CustomJson' do
+    def call(params)
+      self.content_type = :json
     end
   end
 
@@ -49,9 +56,14 @@ describe 'Content type' do
     response.headers['Content-Type'].must_equal 'application/octet-stream'
   end
 
-  it 'returns the specified "Content-Type" header' do
-    response = @app.get('/custom')
+  it 'returns the string specified "Content-Type" header' do
+    response = @app.get('/custom-xml')
     response.headers['Content-Type'].must_equal 'application/xml'
+  end
+
+  it 'returns the json specified "Content-Type" header' do
+    response = @app.get('/custom-json')
+    response.headers['Content-Type'].must_equal 'application/json'
   end
 
   describe 'when Accept is sent' do
