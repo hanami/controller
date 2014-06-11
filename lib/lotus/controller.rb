@@ -49,6 +49,12 @@ module Lotus
           Action = Lotus::Action.dup
         }
 
+        duplicated.module_eval %{
+          configure do
+            action_module #{mod}::Action
+          end
+        }
+
         duplicated.configure(&blk) if block_given?
       end
     end

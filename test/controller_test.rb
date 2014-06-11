@@ -90,7 +90,7 @@ describe Lotus::Controller do
       actual   = Generated::Controller.configuration
       expected = Lotus::Controller.configuration
 
-      actual.must_equal expected
+      actual.handled_exceptions.must_equal expected.handled_exceptions
     end
 
     it 'generates a namespace for controllers' do
@@ -103,6 +103,11 @@ describe Lotus::Controller do
 
     it 'duplicates Action' do
       assert defined?(Generated::Action), 'Generated::Action expected'
+    end
+
+    it 'sets action_module' do
+      configuration = Generated::Controller.configuration
+      configuration.action_module.must_equal Generated::Action
     end
 
     it 'optionally accepts a block to configure the generated module' do
