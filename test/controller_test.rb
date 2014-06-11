@@ -58,6 +58,61 @@ describe Lotus::Controller do
     end
   end
 
+  describe '.generate' do
+    before do
+      Lotus::Controller.configure { handle_exception ArgumentError => 400 }
+
+      module Generated
+        Controller = Lotus::Controller.generate(self)
+      end
+
+      module GeneratedCustom
+        Controller = Lotus::Controller.generate(self, 'Controllerz')
+      end
+
+      module GeneratedConfigure
+        Controller = Lotus::Controller.generate(self) do
+          reset!
+          handle_exception StandardError => 400
+        end
+      end
+    end
+
+    after do
+      Lotus::Controller.configuration.reset!
+
+      Object.send(:remove_const, :Generated)
+      Object.send(:remove_const, :GeneratedCustom)
+      Object.send(:remove_const, :GeneratedConfigure)
+    end
+
+    it 'duplicates the configuration of the framework' do
+      actual   = Generated::Controller.configuration
+      expected = Lotus::Controller.configuration
+
+      actual.must_equal expected
+    end
+
+    it 'generates a namespace for controllers' do
+      assert defined?(Generated::Controllers), 'Generated::Controllers expected'
+    end
+
+    it 'generates a custom namespace for controllers' do
+      assert defined?(GeneratedCustom::Controllerz), 'GeneratedCustom::Controllerz expected'
+    end
+
+    it 'duplicates Action' do
+      assert defined?(Generated::Action), 'Generated::Action expected'
+    end
+
+    it 'optionally accepts a block to configure the generated module' do
+      configuration = GeneratedConfigure::Controller.configuration
+
+      configuration.handled_exceptions.wont_include(ArgumentError)
+      configuration.handled_exceptions.must_include(StandardError)
+    end
+  end
+
   describe '.action' do
     it 'creates an action for the given name' do
       action = TestController::Index.new

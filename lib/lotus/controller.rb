@@ -42,6 +42,17 @@ module Lotus
       end
     end
 
+    def self.generate(mod, controllers = 'Controllers', &blk)
+      duplicate.tap do |duplicated|
+        mod.module_eval %{
+          module #{ controllers }; end
+          Action = Lotus::Action.dup
+        }
+
+        duplicated.configure(&blk) if block_given?
+      end
+    end
+
     def self.included(base)
       conf = self.configuration.duplicate
 
