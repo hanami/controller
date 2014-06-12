@@ -500,6 +500,7 @@ module Lotus
       end
 
       protected
+
       attr_accessor :handled_exceptions
       attr_accessor :formats
       attr_writer :action_module

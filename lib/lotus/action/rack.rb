@@ -90,6 +90,31 @@ module Lotus
       end
 
       protected
+
+      # Gets the headers from the response
+      #
+      # @return [Hash] the HTTP headers from the response
+      #
+      # @since 0.1.0
+      #
+      # @example
+      #   require 'lotus/controller'
+      #
+      #   class Show
+      #     include Lotus::Action
+      #
+      #     def call(params)
+      #       # ...
+      #       self.headers            # => { ... }
+      #       self.headers.merge!({'X-Custom' => 'OK'})
+      #     end
+      #   end
+      def headers
+        @headers
+      end
+
+      private
+
       # Sets the HTTP status code for the response
       #
       # @param status [Fixnum] an HTTP status code
@@ -133,28 +158,6 @@ module Lotus
       def body=(body)
         body   = Array(body) unless body.respond_to?(:each)
         @_body = body
-      end
-
-      # Gets the headers from the response
-      #
-      # @return [Hash] the HTTP headers from the response
-      #
-      # @since 0.1.0
-      #
-      # @example
-      #   require 'lotus/controller'
-      #
-      #   class Show
-      #     include Lotus::Action
-      #
-      #     def call(params)
-      #       # ...
-      #       self.headers            # => { ... }
-      #       self.headers.merge!({'X-Custom' => 'OK'})
-      #     end
-      #   end
-      def headers
-        @headers
       end
 
       # Returns a serialized Rack response (Array), according to the current

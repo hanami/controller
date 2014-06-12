@@ -10,7 +10,7 @@ module Lotus
       # @api private
       LOCATION = 'Location'.freeze
 
-      protected
+      private
 
       # Redirect to the given URL
       #

@@ -50,7 +50,7 @@ module Lotus
             raise Lotus::Controller::UnknownFormatError.new(format)
         end
 
-        protected
+        private
 
         # Restrict the access to the specified mime type symbols.
         #
@@ -176,7 +176,8 @@ module Lotus
         @content_type || accepts || default_content_type || DEFAULT_CONTENT_TYPE
       end
 
-      protected
+      private
+
       # Finalize the response by setting the current content type
       #
       # @since 0.1.0
