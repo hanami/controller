@@ -109,10 +109,24 @@ module Lotus
       end
 
       def _reference_in_rack_errors(exception)
-        if @_env['rack.errors']
-          @_env['rack.errors'].puts(exception)
-          @_env['rack.errors'].flush
+        if errors = @_env['rack.errors']
+          errors.write(_exception_message(exception))
+          errors.write(_exception_backtrace(exception))
+
+          errors.flush
         end
+      end
+
+      def _exception_message(exception)
+        if !exception.message.empty?
+          "#{exception.class}: #{exception.message}\n"
+        else
+          "#{exception.class}\n"
+        end
+      end
+
+      def _exception_backtrace(exception)
+        exception.backtrace.join("\n")
       end
 
       def _handle_exception(exception)

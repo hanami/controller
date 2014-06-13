@@ -10,7 +10,7 @@ end
 AuthException       = Class.new(StandardError)
 CustomAuthException = Class.new(StandardError) do
   def to_s
-    "AuthException: #{super} :("
+    "#{super} :("
   end
 end
 
@@ -25,7 +25,7 @@ class ErrorsController
 
   action 'WithMessage' do
     def call(params)
-      raise AuthException, %q{AuthException: you're not authorized to see this page!}
+      raise AuthException, %q{you're not authorized to see this page!}
     end
   end
 
@@ -43,16 +43,16 @@ describe 'Reference exception in rack.errors' do
 
   it 'adds exception to rack.errors' do
     response = @app.get('/without_message')
-    response.errors.must_equal "AuthException\n"
+    response.errors.must_include "AuthException\n"
   end
 
   it 'adds exception message to rack.errors' do
     response = @app.get('/with_message')
-    response.errors.must_equal "AuthException: you're not authorized to see this page!\n"
+    response.errors.must_include "AuthException: you're not authorized to see this page!\n"
   end
 
   it 'uses exception string representation' do
     response = @app.get('/with_custom_message')
-    response.errors.must_equal "AuthException: plz go away!! :(\n"
+    response.errors.must_include "CustomAuthException: plz go away!! :(\n"
   end
 end
