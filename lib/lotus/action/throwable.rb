@@ -102,8 +102,16 @@ module Lotus
           begin
             yield
           rescue => exception
+            _reference_in_rack_errors(exception)
             _handle_exception(exception)
           end
+        end
+      end
+
+      def _reference_in_rack_errors(exception)
+        if @_env['rack.errors']
+          @_env['rack.errors'].puts(exception)
+          @_env['rack.errors'].flush
         end
       end
 
