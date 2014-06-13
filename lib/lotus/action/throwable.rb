@@ -118,11 +118,7 @@ module Lotus
       end
 
       def _exception_message(exception)
-        if !exception.message.empty?
-          "#{exception.class}: #{exception.message}\n"
-        else
-          "#{exception.class}\n"
-        end
+        [exception.class.to_s, exception.message].uniq.join(': ') + "\n"
       end
 
       def _exception_backtrace(exception)
