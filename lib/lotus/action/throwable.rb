@@ -91,15 +91,6 @@ module Lotus
         self.body   = message
       end
 
-      def throw(*args)
-        if Fixnum === args.first
-          warn "Passing a status code to `throw` is deprecated and will be removed from Lotus::Controller. Use `halt` method instead."
-          halt(args.first)
-        end
-
-        super
-      end
-
       private
       # @since 0.1.0
       # @api private
