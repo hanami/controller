@@ -17,7 +17,8 @@ A Rack compatible Controller layer for [Lotus](http://lotusrb.org).
 * Mailing List: http://lotusrb.org/mailing-list
 * API Doc: http://rdoc.info/gems/lotus-controller
 * Bugs/Issues: https://github.com/lotus/controller/issues
-* Support: http://stackoverflow.com/questions/tagged/lotusrb
+* Support: http://stackoverflow.com/questions/tagged/lotus-ruby
+* Chat: https://gitter.im/lotus/chat
 
 ## Rubies
 
@@ -45,7 +46,7 @@ $ gem install lotus-controller
 
 ## Usage
 
-Lotus::Controller is a thin layer (**275 LOCs**) for MVC web frameworks.
+Lotus::Controller is a micro library for web frameworks.
 It works beautifully with [Lotus::Router](https://github.com/lotus/router), but it can be employed everywhere.
 It's designed to be fast and testable.
 
@@ -263,7 +264,7 @@ You can define how a specific raised exception should be transformed in an HTTP 
 ```ruby
 class Show
   include Lotus::Action
-  handle_exception RecordNotFound, 404
+  handle_exception RecordNotFound => 404
 
   def call(params)
     @article = Article.find params[:id]
@@ -278,7 +279,9 @@ Exception policies can be defined globally, **before** the controllers/actions
 are loaded.
 
 ```ruby
-Lotus::Controller.handled_exceptions = { RecordNotFound => 404 }
+Lotus::Controller.configure do
+  handle_exception RecordNotFound => 404
+end
 
 class Show
   include Lotus::Action
@@ -292,9 +295,33 @@ action = Show.new
 action.call({id: 'unknown'}) # => [404, {}, ["Not Found"]]
 ```
 
+This feature can be turned off globally, in a controller or in a single action.
+
+```ruby
+Lotus::Controller.configure do
+  handle_exceptions false
+end
+
+# or
+
+class Show
+  include Lotus::Action
+  configure do
+    handle_exceptions false
+  end
+
+  def call(params)
+    @article = Article.find params[:id]
+  end
+end
+
+action = Show.new
+action.call({id: 'unknown'}) # => [404, {}, ["Not Found"]]
+```
+
 ### Throwable HTTP statuses
 
-When [#throw](http://ruby-doc.org/core-2.1.0/Kernel.html#method-i-throw) is used with a valid HTTP code, it stops the execution and sets the proper status and body for the response:
+When `#halt` is used with a valid HTTP code, it stops the execution and sets the proper status and body for the response:
 
 ```ruby
 class Show
@@ -308,7 +335,7 @@ class Show
 
   private
   def authenticate!
-    throw 401 unless authenticated?
+    halt 401 unless authenticated?
   end
 end
 
@@ -609,6 +636,50 @@ loading your controllers before you initialize the router.**
 
 Lotus::Controller is compatible with Rack. However, it doesn't mount any middleware.
 While a Lotus application's architecture is more web oriented, this framework is designed to build pure HTTP endpoints.
+
+## Rack middleware
+
+Rack middleware can be configured globally in `config.ru`, but often they add an
+unnecessary overhead for all those endpoints who aren't direct users of a
+certain middleware. Think about a middleware to create sessions, where only
+`SessionsController::Create` may be involved and the rest of the application
+shouldn't pay the performance ticket of calling that middleware.
+
+An action can employ one or more Rack middleware, with `.use`.
+
+```ruby
+require 'lotus/controller'
+
+class SessionsController
+  include Lotus::Controller
+
+  action 'Create' do
+    use OmniAuth
+
+    def call(params)
+      # ...
+    end
+  end
+end
+```
+
+```ruby
+require 'lotus/controller'
+
+class SessionsController
+  include Lotus::Controller
+
+  action 'Create' do
+    use XMiddleware.new('x', 123)
+    use YMiddleware.new
+    use ZMiddleware
+
+    def call(params)
+      # ...
+    end
+  end
+end
+```
 
 ## Thread safety
 
