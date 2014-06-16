@@ -25,7 +25,7 @@ class ErrorsController
 
   action 'WithMessage' do
     def call(params)
-      raise AuthException, %q{you're not authorized to see this page!}
+      raise AuthException.new %q{you're not authorized to see this page!}
     end
   end
 
@@ -43,7 +43,7 @@ describe 'Reference exception in rack.errors' do
 
   it 'adds exception to rack.errors' do
     response = @app.get('/without_message')
-    response.errors.must_include "AuthException\n"
+    response.errors.must_include "AuthException"
   end
 
   it 'adds exception message to rack.errors' do
