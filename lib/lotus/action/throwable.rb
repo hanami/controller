@@ -11,6 +11,10 @@ module Lotus
     # @see Lotus::Action::Throwable#halt
     # @see Lotus::Action::Throwable#status
     module Throwable
+      # @since 0.2.0
+      # @api private
+      RACK_ERRORS = 'rack.errors'.freeze
+
       def self.included(base)
         base.extend ClassMethods
       end
@@ -97,16 +101,36 @@ module Lotus
       end
 
       private
+      # @since 0.1.0
+      # @api private
       def _rescue
         catch :halt do
           begin
             yield
           rescue => exception
+            _reference_in_rack_errors(exception)
             _handle_exception(exception)
           end
         end
       end
 
+      # @since 0.2.0
+      # @api private
+      def _reference_in_rack_errors(exception)
+        if errors = @_env[RACK_ERRORS]
+          errors.write(_dump_exception(exception))
+          errors.flush
+        end
+      end
+
+      # @since 0.2.0
+      # @api private
+      def _dump_exception(exception)
+        [[exception.class, exception.message].compact.join(": "), *exception.backtrace].join("\n\t")
+      end
+
+      # @since 0.1.0
+      # @api private
       def _handle_exception(exception)
         raise unless configuration.handle_exceptions
         halt configuration.exception_code(exception.class)
