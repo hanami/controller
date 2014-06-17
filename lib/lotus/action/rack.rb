@@ -47,7 +47,7 @@ module Lotus
         # Multiple middlewares can be employed, just by using multiple times
         # this method.
         #
-        # @param [#call] A Rack middleware
+        # @param middleware [#call] A Rack middleware
         #
         # @since 0.2.0
         #
