@@ -30,8 +30,8 @@ module Lotus
         # This is a fine grained control, for a global configuration see
         # Lotus::Action.handled_exceptions
         #
-        # @param exception [Class] the exception class
-        # @param status [Fixmun] a valid HTTP status
+        # @param exception [Hash] the exception class must be the key and the
+        #   HTTP status the value of the hash
         #
         # @since 0.1.0
         #
