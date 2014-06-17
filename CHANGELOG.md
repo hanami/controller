@@ -1,6 +1,16 @@
 ## v0.2.0
 ### Feb 23, 2014
 
+328153b 2014-06-17 **Luca Guidi** Bump version to v0.2.0
+
+b2e5c85 2014-06-17 **Luca Guidi** Depend on lotus-utils ~> 0.2
+
+166a3c8 2014-06-17 **Luca Guidi** Controller.duplicate can accept nil controllers namespace
+
+c11bc96 2014-06-17 **Luca Guidi** Lotus::Controller: .duplicate => .dup, .generate => .duplicate
+
+9488c66 2014-06-16 **Luca Guidi** Gem: build only with lib/ and essential files
+
 cd7038c 2014-06-16 **Luca Guidi** [breaking] Removed Lotus::Action::Throwable#throw in favor of #halt
 
 c200e68 2014-06-16 **Luca Guidi** Pretty print exceptions in rack.errors
