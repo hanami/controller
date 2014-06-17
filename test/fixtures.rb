@@ -582,7 +582,7 @@ module App2
 end
 
 module MusicPlayer
-  Controller = Lotus::Controller.duplicate
+  Controller = Lotus::Controller.dupe
   Action     = Lotus::Action.dup
 
   Controller.module_eval do

@@ -36,14 +36,14 @@ module Lotus
       configuration.instance_eval(&blk)
     end
 
-    def self.duplicate
+    def self.dupe
       dup.tap do |duplicated|
         duplicated.configuration = configuration.duplicate
       end
     end
 
-    def self.generate(mod, controllers = 'Controllers', &blk)
-      duplicate.tap do |duplicated|
+    def self.duplicate(mod, controllers = 'Controllers', &blk)
+      dupe.tap do |duplicated|
         mod.module_eval %{
           module #{ controllers }; end
           Action = Lotus::Action.dup

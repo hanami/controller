@@ -58,20 +58,20 @@ describe Lotus::Controller do
     end
   end
 
-  describe '.generate' do
+  describe '.duplicate' do
     before do
       Lotus::Controller.configure { handle_exception ArgumentError => 400 }
 
-      module Generated
-        Controller = Lotus::Controller.generate(self)
+      module Duplicated
+        Controller = Lotus::Controller.duplicate(self)
       end
 
-      module GeneratedCustom
-        Controller = Lotus::Controller.generate(self, 'Controllerz')
+      module DuplicatedCustom
+        Controller = Lotus::Controller.duplicate(self, 'Controllerz')
       end
 
-      module GeneratedConfigure
-        Controller = Lotus::Controller.generate(self) do
+      module DuplicatedConfigure
+        Controller = Lotus::Controller.duplicate(self) do
           reset!
           handle_exception StandardError => 400
         end
@@ -81,37 +81,37 @@ describe Lotus::Controller do
     after do
       Lotus::Controller.configuration.reset!
 
-      Object.send(:remove_const, :Generated)
-      Object.send(:remove_const, :GeneratedCustom)
-      Object.send(:remove_const, :GeneratedConfigure)
+      Object.send(:remove_const, :Duplicated)
+      Object.send(:remove_const, :DuplicatedCustom)
+      Object.send(:remove_const, :DuplicatedConfigure)
     end
 
     it 'duplicates the configuration of the framework' do
-      actual   = Generated::Controller.configuration
+      actual   = Duplicated::Controller.configuration
       expected = Lotus::Controller.configuration
 
       actual.handled_exceptions.must_equal expected.handled_exceptions
     end
 
-    it 'generates a namespace for controllers' do
-      assert defined?(Generated::Controllers), 'Generated::Controllers expected'
+    it 'duplicates a namespace for controllers' do
+      assert defined?(Duplicated::Controllers), 'Duplicated::Controllers expected'
     end
 
-    it 'generates a custom namespace for controllers' do
-      assert defined?(GeneratedCustom::Controllerz), 'GeneratedCustom::Controllerz expected'
+    it 'duplicates a custom namespace for controllers' do
+      assert defined?(DuplicatedCustom::Controllerz), 'DuplicatedCustom::Controllerz expected'
     end
 
     it 'duplicates Action' do
-      assert defined?(Generated::Action), 'Generated::Action expected'
+      assert defined?(Duplicated::Action), 'Duplicated::Action expected'
     end
 
     it 'sets action_module' do
-      configuration = Generated::Controller.configuration
-      configuration.action_module.must_equal Generated::Action
+      configuration = Duplicated::Controller.configuration
+      configuration.action_module.must_equal Duplicated::Action
     end
 
-    it 'optionally accepts a block to configure the generated module' do
-      configuration = GeneratedConfigure::Controller.configuration
+    it 'optionally accepts a block to configure the duplicated module' do
+      configuration = DuplicatedConfigure::Controller.configuration
 
       configuration.handled_exceptions.wont_include(ArgumentError)
       configuration.handled_exceptions.must_include(StandardError)
