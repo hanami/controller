@@ -10,6 +10,6 @@ else
   gem 'lotus-router', require: false
 end
 
-gem 'lotus-utils',  require: false, github: 'lotus/utils'
-gem 'simplecov', require: false
-gem 'coveralls', require: false
+gem 'lotus-utils', require: false, github: 'lotus/utils'
+gem 'simplecov',   require: false
+gem 'coveralls',   require: false
