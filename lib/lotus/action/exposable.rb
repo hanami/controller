@@ -6,6 +6,15 @@ module Lotus
     #
     # @see Lotus::Action::Exposable::ClassMethods#expose
     module Exposable
+      # Override Ruby's hook for modules.
+      # It includes exposures logic
+      #
+      # @param base [Class] the target action
+      #
+      # @since 0.1.0
+      # @api private
+      #
+      # @see http://www.ruby-doc.org/core-2.1.2/Module.html#method-i-included
       def self.included(base)
         base.extend ClassMethods
       end

@@ -4,10 +4,33 @@ module Lotus
     #
     # @since 0.1.0
     module Rack
+      # The default session key for Rack
+      #
+      # @since 0.1.0
+      # @api private
       SESSION_KEY           = 'rack.session'.freeze
+
+      # The default HTTP response code
+      #
+      # @since 0.1.0
+      # @api private
       DEFAULT_RESPONSE_CODE = 200
+
+      # The default Rack response body
+      #
+      # @since 0.1.0
+      # @api private
       DEFAULT_RESPONSE_BODY = []
 
+      # Override Ruby's hook for modules.
+      # It includes basic Lotus::Action modules to the given class.
+      #
+      # @param base [Class] the target action
+      #
+      # @since 0.1.0
+      # @api private
+      #
+      # @see http://www.ruby-doc.org/core-2.1.2/Module.html#method-i-included
       def self.included(base)
         base.extend ClassMethods
       end

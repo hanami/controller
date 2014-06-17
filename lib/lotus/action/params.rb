@@ -24,6 +24,10 @@ module Lotus
       # @since 0.1.0
       ROUTER_PARAMS = 'router.params'.freeze
 
+      # @attr_reader env [Hash] the Rack env
+      #
+      # @since 0.2.0
+      # @api private
       attr_reader :env
 
       # Initialize the params and freeze them.

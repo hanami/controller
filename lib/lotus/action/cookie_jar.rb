@@ -13,16 +13,19 @@ module Lotus
       # The key that returns raw cookies from the Rack env
       #
       # @since 0.1.0
+      # @api private
       HTTP_HEADER       = 'HTTP_COOKIE'.freeze
 
       # The key used by Rack to set the cookies as an Hash in the env
       #
       # @since 0.1.0
+      # @api private
       COOKIE_HASH_KEY   = 'rack.request.cookie_hash'.freeze
 
       # The key used by Rack to set the cookies as a String in the env
       #
       # @since 0.1.0
+      # @api private
       COOKIE_STRING_KEY = 'rack.request.cookie_string'.freeze
 
       # Initialize the CookieJar

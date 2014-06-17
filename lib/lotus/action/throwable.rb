@@ -69,7 +69,7 @@ module Lotus
       #
       # @param code [Fixnum] a valid HTTP status code
       #
-      # @since 0.1.1
+      # @since 0.2.0
       #
       # @see Lotus::Controller#handled_exceptions
       # @see Lotus::Action::Throwable#handle_exception
