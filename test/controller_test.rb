@@ -70,6 +70,10 @@ describe Lotus::Controller do
         Controller = Lotus::Controller.duplicate(self, 'Controllerz')
       end
 
+      module DuplicatedWithoutNamespace
+        Controller = Lotus::Controller.duplicate(self, nil)
+      end
+
       module DuplicatedConfigure
         Controller = Lotus::Controller.duplicate(self) do
           reset!
@@ -83,6 +87,7 @@ describe Lotus::Controller do
 
       Object.send(:remove_const, :Duplicated)
       Object.send(:remove_const, :DuplicatedCustom)
+      Object.send(:remove_const, :DuplicatedWithoutNamespace)
       Object.send(:remove_const, :DuplicatedConfigure)
     end
 
@@ -97,8 +102,12 @@ describe Lotus::Controller do
       assert defined?(Duplicated::Controllers), 'Duplicated::Controllers expected'
     end
 
-    it 'duplicates a custom namespace for controllers' do
+    it 'generates a custom namespace for controllers' do
       assert defined?(DuplicatedCustom::Controllerz), 'DuplicatedCustom::Controllerz expected'
+    end
+
+    it 'does not create a custom namespace for controllers' do
+      assert !defined?(DuplicatedWithoutNamespace::Controllers), "DuplicatedWithoutNamespace::Controllers wasn't expected"
     end
 
     it 'duplicates Action' do

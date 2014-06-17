@@ -214,14 +214,12 @@ module Lotus
     #   MyApp::Controller.configuration.handle_exceptions # => false
     def self.duplicate(mod, controllers = 'Controllers', &blk)
       dupe.tap do |duplicated|
-        mod.module_eval %{
-          module #{ controllers }; end
-          Action = Lotus::Action.dup
-        }
+        mod.module_eval %{ module #{ controllers }; end } if controllers
+        mod.module_eval %{ Action = Lotus::Action.dup }
 
         duplicated.module_eval %{
           configure do
-            action_module #{mod}::Action
+            action_module #{ mod }::Action
           end
         }
 
