@@ -89,7 +89,7 @@ module Lotus
         headers.merge! CONTENT_TYPE => content_type
       end
 
-      # Sets the given format and coresponding content type
+      # Sets the given format and corresponding content type
       #
       # Lotus::Action sets the proper content type automatically, this method
       #   is designed to override that value.
