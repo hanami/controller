@@ -118,7 +118,7 @@ module Lotus
       end
 
       def format
-        @format || default_format
+        @format || detect_format
       end
 
       # The content type that will be automatically set in the response.
@@ -199,12 +199,14 @@ module Lotus
         end
       end
 
-      def default_format
-        ::Rack::Mime::MIME_TYPES.key(content_type).gsub(/\A\./, '').to_sym
+      def detect_format
+        configuration.format_for(content_type) ||
+          ::Rack::Mime::MIME_TYPES.key(content_type).gsub(/\A\./, '').to_sym
       end
 
       def format_to_mime_type(format)
-        ::Rack::Mime.mime_type(".#{format}")
+        # FIXME lookup configuration first, then fallback to Rack::Mime
+        ::Rack::Mime.mime_type(".#{ format }")
       end
     end
   end

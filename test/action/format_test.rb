@@ -27,7 +27,7 @@ describe Lotus::Action do
 
     it 'lookup to #content_type if was not explicitly set (default: application/octet-stream)' do
       @action.call({})
-      @action.send(:format).must_equal :a
+      @action.send(:format).must_equal :all
     end
   end
 
@@ -64,7 +64,7 @@ describe Lotus::Action do
       end
     end
 
-    describe 'json' do
+    describe 'xml' do
       before do
         @action.call({ format: :xml })
       end

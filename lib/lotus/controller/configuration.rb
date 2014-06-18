@@ -25,6 +25,16 @@ module Lotus
       # @api private
       DEFAULT_ERROR_CODE = 500
 
+      # Default Mime type to format mapping
+      #
+      # @since 0.2.0
+      # @api private
+      DEFAULT_FORMATS = {
+        '*/*'                      => :all,
+        'application/octet-stream' => :all,
+        'text/html'                => :html
+      }.freeze
+
       # Return a copy of the configuration of the framework instance associated
       # with the given class.
       #
@@ -323,6 +333,14 @@ module Lotus
         end
       end
 
+      def format(symbol, mime_type)
+        @formats.merge! mime_type => symbol
+      end
+
+      def format_for(mime_type)
+        @formats[mime_type]
+      end
+
       # Duplicate by copying the settings in a new instance.
       #
       # @return [Lotus::Controller::Configuration] a copy of the configuration
@@ -335,6 +353,7 @@ module Lotus
           c.handled_exceptions = handled_exceptions.dup
           c.action_module      = action_module
           c.modules            = modules.dup
+          c.formats            = formats.dup
         end
       end
 
@@ -346,6 +365,7 @@ module Lotus
         @handle_exceptions  = true
         @handled_exceptions = {}
         @modules            = []
+        @formats            = DEFAULT_FORMATS.dup
         @action_module      = ::Lotus::Action
       end
 
@@ -361,6 +381,7 @@ module Lotus
 
       protected
       attr_accessor :handled_exceptions
+      attr_accessor :formats
       attr_writer :action_module
       attr_writer :modules
     end

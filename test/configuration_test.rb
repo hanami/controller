@@ -150,10 +150,29 @@ describe Lotus::Controller::Configuration do
     end
   end
 
+  describe '#register_format' do
+    before do
+      @configuration.format :custom, 'custom/format'
+    end
+
+    it 'registers the given format' do
+      @configuration.format_for('custom/format').must_equal :custom
+    end
+  end
+
+  describe 'default formats' do
+    it 'declares default formats' do
+      @configuration.format_for('*/*').must_equal                      :all
+      @configuration.format_for('application/octet-stream').must_equal :all
+      @configuration.format_for('text/html').must_equal                :html
+    end
+  end
+
   describe 'duplicate' do
     before do
       @configuration.reset!
       @configuration.modules { include Kernel }
+      @configuration.format :custom, 'custom/format'
       @config = @configuration.duplicate
     end
 
@@ -162,6 +181,7 @@ describe Lotus::Controller::Configuration do
       @config.handled_exceptions.must_equal @configuration.handled_exceptions
       @config.action_module.must_equal      @configuration.action_module
       @config.modules.must_equal            @configuration.modules
+      @config.send(:formats).must_equal     @configuration.send(:formats)
     end
 
     it "doesn't affect the original configuration" do
@@ -169,16 +189,19 @@ describe Lotus::Controller::Configuration do
       @config.handle_exception ArgumentError => 400
       @config.action_module    CustomAction
       @config.modules          { include Comparable }
+      @config.format :another, 'another/format'
 
-      @config.handle_exceptions.must_equal  false
-      @config.handled_exceptions.must_equal Hash[ArgumentError => 400]
-      @config.action_module.must_equal      CustomAction
-      @config.modules.size.must_equal       2
+      @config.handle_exceptions.must_equal           false
+      @config.handled_exceptions.must_equal          Hash[ArgumentError => 400]
+      @config.action_module.must_equal               CustomAction
+      @config.modules.size.must_equal                2
+      @config.format_for('another/format').must_equal :another
 
       @configuration.handle_exceptions.must_equal  true
       @configuration.handled_exceptions.must_equal Hash[]
       @configuration.action_module.must_equal      ::Lotus::Action
       @configuration.modules.size.must_equal       1
+      @configuration.format_for('another/format').must_be_nil
     end
   end
 
@@ -188,6 +211,7 @@ describe Lotus::Controller::Configuration do
       @configuration.handle_exception ArgumentError => 400
       @configuration.action_module    CustomAction
       @configuration.modules          { include Kernel }
+      @configuration.format :another, 'another/format'
 
       @configuration.reset!
     end
@@ -197,6 +221,7 @@ describe Lotus::Controller::Configuration do
       @configuration.handled_exceptions.must_equal({})
       @configuration.action_module.must_equal(::Lotus::Action)
       @configuration.modules.must_equal([])
+      @configuration.send(:formats).must_equal(Lotus::Controller::Configuration::DEFAULT_FORMATS)
     end
   end
 end
