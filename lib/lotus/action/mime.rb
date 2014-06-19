@@ -89,17 +89,17 @@ module Lotus
         headers.merge! CONTENT_TYPE => content_type
       end
 
-      # Sets the given content type
+      # Sets the given format and corresponding content type
       #
       # Lotus::Action sets the proper content type automatically, this method
       #   is designed to override that value.
       #
-      # @param content_type [String] the content type
+      # @param format [Symbol] the format
       # @return [void]
       #
-      # @since 0.1.0
+      # @since x.x.x
       #
-      # @see Lotus::Action::Mime#content_type
+      # @see Lotus::Action::Mime#format
       #
       # @example
       #   require 'lotus/controller'
@@ -109,11 +109,16 @@ module Lotus
       #
       #     def call(params)
       #       # ...
-      #       self.content_type = 'application/json'
+      #       self.format = :json
       #     end
       #   end
-      def content_type=(content_type)
-        @content_type = content_type
+      def format=(format)
+        @format       = format.to_sym
+        @content_type = format_to_mime_type(format)
+      end
+
+      def format
+        @format || default_format
       end
 
       # The content type that will be automatically set in the response.
@@ -183,6 +188,7 @@ module Lotus
       end
 
       private
+
       def accept
         @accept ||= @_env[HTTP_ACCEPT] || DEFAULT_ACCEPT
       end
@@ -191,6 +197,14 @@ module Lotus
         unless accept == DEFAULT_ACCEPT
           ::Rack::Utils.best_q_match(accept, ::Rack::Mime::MIME_TYPES.values)
         end
+      end
+
+      def default_format
+        ::Rack::Mime::MIME_TYPES.key(content_type).gsub(/\A\./, '').to_sym
+      end
+
+      def format_to_mime_type(format)
+        ::Rack::Mime.mime_type(".#{format}")
       end
     end
   end

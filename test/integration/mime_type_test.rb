@@ -18,7 +18,7 @@ class MimesController
 
   action 'Custom' do
     def call(params)
-      self.content_type = 'application/xml'
+      self.format = :xml
     end
   end
 
