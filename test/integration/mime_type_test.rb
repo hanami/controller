@@ -64,6 +64,7 @@ describe 'Content type' do
     it 'sets "Content-Type" header according to "Accept"' do
       response = @app.get('/', 'HTTP_ACCEPT' => '*/*')
       response.headers['Content-Type'].must_equal 'application/octet-stream'
+      response.body.must_equal                    'all'
     end
 
     it 'sets "Content-Type" header according to "Accept"' do
