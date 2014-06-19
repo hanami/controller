@@ -500,8 +500,26 @@ action.call({ article: { title: 'Hello' }}) # => [302, {'Location' => '/articles
 
 ### Mime types
 
-Lotus::Action automatically sets the mime type, according to the request headers.
-However, you can override this value:
+Lotus::Action automatically sets the `Content-Type` header, according to the request.
+
+```ruby
+class Show
+  include Lotus::Action
+
+  def call(params)
+  end
+end
+
+action = Show.new
+
+action.call({ 'HTTP_ACCEPT' => '*/*' }) # Content-Type "application/octet-stream"
+action.format                           # :all
+
+action.call({ 'HTTP_ACCEPT' => 'text/html' }) # Content-Type "text/html"
+action.format                                 # :html
+```
+
+However, you can force this value:
 
 ```ruby
 class Show
@@ -509,12 +527,17 @@ class Show
 
   def call(params)
     # ...
-    self.content_type = 'application/json'
+    self.format = :json
   end
 end
 
 action = Show.new
-action.call({ id: 23 }) # => [200, {'Content-Type' => 'application/json'}, '...']
+
+action.call({ 'HTTP_ACCEPT' => '*/*' }) # Content-Type "application/json"
+action.format                           # :json
+
+action.call({ 'HTTP_ACCEPT' => 'text/html' }) # Content-Type "application/json"
+action.format                                 # :json
 ```
 
 You can restrict the accepted mime types:
@@ -548,6 +571,7 @@ class Show
     accept?('text/html')        # => true
     accept?('application/xml')  # => true
     accept?('application/json') # => false
+    self.format                 # :html
 
 
 
@@ -556,8 +580,44 @@ class Show
     accept?('text/html')        # => true
     accept?('application/xml')  # => true
     accept?('application/json') # => true
+    self.format                 # :html
   end
 end
+```
+
+Lotus::Controller is shipped with an extensive list of the most common mime types.
+Also, you can register your own:
+
+```ruby
+Lotus::Controller.configure do
+  format custom: 'application/custom'
+end
+
+class Index
+  include Lotus::Action
+
+  def call(params)
+  end
+end
+
+action = Index.new
+
+action.call({ 'HTTP_ACCEPT' => 'application/custom' }) # => Content-Type 'application/custom'
+action.format                                          # => :custom
+
+class Show
+  include Lotus::Action
+
+  def call(params)
+    # ...
+    self.format = :custom
+  end
+end
+
+action = Show.new
+
+action.call({ 'HTTP_ACCEPT' => '*/*' }) # => Content-Type 'application/custom'
+action.format                           # => :custom
 ```
 
 ### No rendering, please
@@ -603,7 +663,7 @@ end
 ArticlesController::Index.new.call({})
 ```
 
-## Lotus::Router integration
+### Lotus::Router integration
 
 While Lotus::Router works great with this framework, Lotus::Controller doesn't depend from it.
 You, as developer, are free to choose your own routing system.
@@ -635,12 +695,12 @@ convenient fallback, you should know that it's the slower option. **Be sure of
 loading your controllers before you initialize the router.**
 
 
-## Rack integration
+### Rack integration
 
 Lotus::Controller is compatible with Rack. However, it doesn't mount any middleware.
 While a Lotus application's architecture is more web oriented, this framework is designed to build pure HTTP endpoints.
 
-## Rack middleware
+### Rack middleware
 
 Rack middleware can be configured globally in `config.ru`, but often they add an
 unnecessary overhead for all those endpoints who aren't direct users of a
@@ -684,7 +744,7 @@ class SessionsController
 end
 ```
 
-## Configuration
+### Configuration
 
 Lotus::Controller can be configured with a DSL that determines its behavior.
 It supports a few options:
@@ -708,6 +768,16 @@ Lotus::Controller.configure do
   # Argument: module, defaults to Lotus::Action
   #
   action_module MyApp::Action # module, defaults to Lotus::Action
+
+  # Register a format to mime type mapping
+  # Argument: hash, key: format symbol, value: mime type string, empty by default
+  #
+  format custom: 'application/custom'
+
+  # Set the default format
+  # Argument: symbol, the default format
+  #
+  default_format :html
 
   # Configure the modules to be included/extended/prepended by default.
   # Argument: proc, empty by default
@@ -761,7 +831,7 @@ ArticlesController::Create.new.call({})
   # => raises ArgumentError because we set handle_exceptions to false
 ```
 
-## Reusability
+### Reusability
 
 Lotus::Controller can be used as a singleton framework as seen in this README.
 The application code includes `Lotus::Controller` or `Lotus::Action` directly
@@ -788,7 +858,7 @@ The code above defines `WebApp::Controller` and `WebApp::Action`, to be used for
 the `WebApp` endpoints, while `ApiApp::Controller` and `ApiApp::Action` have 
 a different configuration.
 
-## Thread safety
+### Thread safety
 
 An Action is **mutable**. When used without Lotus::Router, be sure to instantiate an
 action for each request.
