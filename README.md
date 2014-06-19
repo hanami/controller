@@ -585,7 +585,7 @@ class ArticlesController
 end
 ```
 
-Which is a bit verboses. Instead, just do:
+Which is a bit verbose. Instead, just do:
 
 ```ruby
 class ArticlesController
