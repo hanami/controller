@@ -4,7 +4,9 @@ describe Lotus::Action do
   class FormatController
     include Lotus::Controller
 
-    action 'Default' do
+    configuration.handle_exceptions = false
+
+    action 'Lookup' do
       def call(params)
       end
     end
@@ -16,18 +18,49 @@ describe Lotus::Action do
     end
   end
 
-  before do
-    @mime   = ::Rack::Mime::MIME_TYPES
-  end
-
   describe '#format' do
     before do
-      @action = FormatController::Default.new
+      @action = FormatController::Lookup.new
     end
 
     it 'lookup to #content_type if was not explicitly set (default: application/octet-stream)' do
-      @action.call({})
-      @action.send(:format).must_equal :all
+      status, headers, _ = @action.call({})
+
+      @action.send(:format).must_equal   :all
+      headers['Content-Type'].must_equal 'application/octet-stream'
+      status.must_equal                  200
+    end
+
+    it "accepts 'text/html' and returns :html" do
+      status, headers, _ = @action.call({ 'HTTP_ACCEPT' => 'text/html' })
+
+      @action.send(:format).must_equal    :html
+      headers['Content-Type'].must_equal 'text/html'
+      status.must_equal                   200
+    end
+
+    it "accepts unknown mime type and returns :all" do
+      status, headers, _ = @action.call({ 'HTTP_ACCEPT' => 'application/unknown' })
+
+      @action.send(:format).must_equal    :all
+      headers['Content-Type'].must_equal 'application/octet-stream'
+      status.must_equal                   200
+    end
+
+    mime_types = ['application/octet-stream', 'text/html']
+    Rack::Mime::MIME_TYPES.each do |format, mime_type|
+      next if mime_types.include?(mime_type)
+      mime_types.push mime_type
+
+      format = format.gsub(/\A\./, '').to_sym
+
+      it "accepts '#{ mime_type }' and returns :#{ format }" do
+        status, headers, _ = @action.call({ 'HTTP_ACCEPT' => mime_type })
+
+        @action.send(:format).must_equal   format
+        headers['Content-Type'].must_equal mime_type
+        status.must_equal                  200
+      end
     end
   end
 
@@ -36,73 +69,43 @@ describe Lotus::Action do
       @action = FormatController::Custom.new
     end
 
-    describe 'html' do
-      before do
-        @action.call({ format: :html })
-      end
+    it "sets :all and returns 'application/octet-stream'" do
+      status, headers, _ = @action.call({ format: 'all' })
 
-      it 'sets format' do
-        @action.send(:format).must_equal :html
-      end
+      @action.send(:format).must_equal   :all
+      headers['Content-Type'].must_equal 'application/octet-stream'
+      status.must_equal                  200
+    end
 
-      it 'sets content-type' do
-        @action.send(:content_type).must_equal 'text/html'
+    it "sets nil and raises an error" do
+      -> { @action.call({ format: nil }) }.must_raise TypeError
+    end
+
+    it "sets '' and raises an error" do
+      -> { @action.call({ format: '' }) }.must_raise TypeError
+    end
+
+    it "sets a value that can't be coerced to Symbol and raises an error" do
+      -> { @action.call({ format: 23 }) }.must_raise TypeError
+    end
+
+    it "sets an unknown format and raises an error" do
+      begin
+        @action.call({ format: :unknown })
+      rescue => e
+        e.must_be_kind_of(Lotus::Controller::UnknownFormatError)
+        e.message.must_equal "Cannot find a corresponding Mime type for 'unknown'. Please configure it with Lotus::Controller::Configuration#format."
       end
     end
 
-    describe 'json' do
-      before do
-        @action.call({ format: :json })
-      end
+    Rack::Mime::MIME_TYPES.each do |format, mime_type|
+      format = format.gsub(/\A\./, '')
 
-      it 'sets format' do
-        @action.send(:format).must_equal :json
-      end
+      it "sets :#{ format } and returns '#{ mime_type }'" do
+        _, headers, _ = @action.call({ format: format })
 
-      it 'sets content-type' do
-        @action.send(:content_type).must_equal 'application/json'
-      end
-    end
-
-    describe 'xml' do
-      before do
-        @action.call({ format: :xml })
-      end
-
-      it 'sets format' do
-        @action.send(:format).must_equal :xml
-      end
-
-      it 'sets content-type' do
-        @action.send(:content_type).must_equal 'application/xml'
-      end
-    end
-
-    describe 'atom' do
-      before do
-        @action.call({ format: :atom })
-      end
-
-      it 'sets format' do
-        @action.send(:format).must_equal :atom
-      end
-
-      it 'sets content-type' do
-        @action.send(:content_type).must_equal 'application/atom+xml'
-      end
-    end
-
-    describe 'js' do
-      before do
-        @action.call({ format: :js })
-      end
-
-      it 'sets format' do
-        @action.send(:format).must_equal :js
-      end
-
-      it 'sets content-type' do
-        @action.send(:content_type).must_equal 'application/javascript'
+        @action.send(:format).must_equal   format.to_sym
+        headers['Content-Type'].must_equal mime_type
       end
     end
   end

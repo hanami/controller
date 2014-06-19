@@ -27,6 +27,20 @@ module Lotus
   #     end
   #   end
   module Controller
+    # Unknown format error
+    #
+    # This error is raised when a action sets a format that it isn't recognized
+    # both by `Lotus::Controller::Configuration` and the list of Rack mime types
+    #
+    # @since 0.2.0
+    #
+    # @see Lotus::Action::Mime#format=
+    class UnknownFormatError < ::StandardError
+      def initialize(format)
+        super("Cannot find a corresponding Mime type for '#{ format }'. Please configure it with Lotus::Controller::Configuration#format.")
+      end
+    end
+
     include Utils::ClassAttribute
 
     # Framework configuration

@@ -89,19 +89,64 @@ module Lotus
         headers.merge! CONTENT_TYPE => content_type
       end
 
-      # Sets the given format and corresponding content type
+      # Sets the given format and corresponding content type.
       #
-      # Lotus::Action sets the proper content type automatically, this method
-      #   is designed to override that value.
+      # The framework detects the `HTTP_ACCEPT` header of the request and sets
+      # the proper `Content-Type` header in the response.
+      # Within this default scenario, `#format` returns a symbol that
+      # corresponds to `#content_type`.
+      # For instance, if a client sends an `HTTP_ACCEPT` with `text/html`,
+      # `#content_type` will return `text/html` and `#format` `:html`.
       #
-      # @param format [Symbol] the format
+      # However, it's possible to override what the framework have detected.
+      # If a client asks for an `HTTP_ACCEPT` `*/*`, but we want to force the
+      # response to be a `text/html` we can use this method.
+      #
+      # When the format is set, the framework searchs for a corresponding mime
+      # type to be set as the `Content-Type` header of the response.
+      # This lookup is performed first in the configuration, and then in
+      # `Rack::Mime::MIME_TYPES`. If the lookup fails, it raises an error.
+      #
+      # PERFORMANCE: Because `Lotus::Controller::Configuration#formats` is
+      # smaller and looked up first than `Rack::Mime::MIME_TYPES`, we suggest to
+      # configure the most common mime types used by your application, **even
+      # if they are already present in that Rack constant**.
+      #
+      # @param format [#to_sym] the format
+      #
       # @return [void]
       #
-      # @since x.x.x
+      # @raise [TypeError] if the format cannot be coerced into a Symbol
+      # @raise [Lotus::Controller::UnknownFormatError] if the format doesn't
+      #   have a corresponding mime type
+      #
+      # @since 0.2.0
       #
       # @see Lotus::Action::Mime#format
+      # @see Lotus::Action::Mime#content_type
+      # @see Lotus::Controller::Configuration#format
       #
-      # @example
+      # @example Default scenario
+      #   require 'lotus/controller'
+      #
+      #   class Show
+      #     include Lotus::Action
+      #
+      #     def call(params)
+      #     end
+      #   end
+      #
+      #   action = Show.new
+      #
+      #   _, headers, _ = action.call({ 'HTTP_ACCEPT' => '*/*' })
+      #   headers['Content-Type'] # => 'application/octet-stream'
+      #   action.format           # => :all
+      #
+      #   _, headers, _ = action.call({ 'HTTP_ACCEPT' => 'text/html' })
+      #   headers['Content-Type'] # => 'text/html'
+      #   action.format           # => :html
+      #
+      # @example Simple usage
       #   require 'lotus/controller'
       #
       #   class Show
@@ -112,29 +157,120 @@ module Lotus
       #       self.format = :json
       #     end
       #   end
+      #
+      #   action = Show.new
+      #
+      #   _, headers, _ = action.call({ 'HTTP_ACCEPT' => '*/*' })
+      #   headers['Content-Type'] # => 'application/json'
+      #   action.format           # => :json
+      #
+      # @example Unknown format
+      #   require 'lotus/controller'
+      #
+      #   class Show
+      #     include Lotus::Action
+      #
+      #     def call(params)
+      #       # ...
+      #       self.format = :unknown
+      #     end
+      #   end
+      #
+      #   action = Show.new
+      #   action.call({ 'HTTP_ACCEPT' => '*/*' })
+      #     # => raise Lotus::Controller::UnknownFormatError
+      #
+      # @example Custom mime type/format
+      #   require 'lotus/controller'
+      #
+      #   Lotus::Controller.configure do
+      #     format :custom, 'application/custom'
+      #   end
+      #
+      #   class Show
+      #     include Lotus::Action
+      #
+      #     def call(params)
+      #       # ...
+      #       self.format = :custom
+      #     end
+      #   end
+      #
+      #   _, headers, _ = action.call({ 'HTTP_ACCEPT' => '*/*' })
+      #   headers['Content-Type'] # => 'application/custom'
+      #   action.format           # => :custom
       def format=(format)
+        raise TypeError if format.nil? || '' == format || !format.respond_to?(:to_sym)
+
         @format       = format.to_sym
-        @content_type = format_to_mime_type(format)
+        @content_type = format_to_mime_type(@format)
       end
 
+      # Returns a symbol representation of the content type.
+      #
+      # The framework automatically detects the request mime type, and returns
+      # the corresponding format.
+      #
+      # However, if this value was explicitely set by `#format=`, it will return
+      # that value
+      #
+      # @return [Symbol] a symbol that corresponds to the content type
+      #
+      # @since 0.2.0
+      #
+      # @see Lotus::Action::Mime#format=
+      # @see Lotus::Action::Mime#content_type
+      #
+      # @example Default scenario
+      #   require 'lotus/controller'
+      #
+      #   class Show
+      #     include Lotus::Action
+      #
+      #     def call(params)
+      #     end
+      #   end
+      #
+      #   action = Show.new
+      #
+      #   _, headers, _ = action.call({ 'HTTP_ACCEPT' => 'text/html' })
+      #   headers['Content-Type'] # => 'text/html'
+      #   action.format           # => :html
+      #
+      # @example Set value
+      #   require 'lotus/controller'
+      #
+      #   class Show
+      #     include Lotus::Action
+      #
+      #     def call(params)
+      #       self.format = :xml
+      #     end
+      #   end
+      #
+      #   action = Show.new
+      #
+      #   _, headers, _ = action.call({ 'HTTP_ACCEPT' => 'text/html' })
+      #   headers['Content-Type'] # => 'application/xml'
+      #   action.format           # => :xml
       def format
-        @format || detect_format
+        @format ||= detect_format
       end
 
       # The content type that will be automatically set in the response.
       #
       # It prefers, in order:
-      #   * Explicit set value (see #content_type=)
+      #   * Explicit set value (see #format=)
       #   * Weighted value from Accept
       #   * Default content type
       #
-      # To override the value, use <tt>#content_type=</tt>
+      # To override the value, use <tt>#format=</tt>
       #
       # @return [String] the content type from the request.
       #
       # @since 0.1.0
       #
-      # @see Lotus::Action::Mime#content_type=
+      # @see Lotus::Action::Mime#format=
       # @see Lotus::Action::Mime#DEFAULT_CONTENT_TYPE
       #
       # @example
@@ -189,24 +325,33 @@ module Lotus
 
       private
 
+      # @since 0.1.0
+      # @api private
       def accept
         @accept ||= @_env[HTTP_ACCEPT] || DEFAULT_ACCEPT
       end
 
+      # @since 0.1.0
+      # @api private
       def accepts
         unless accept == DEFAULT_ACCEPT
           ::Rack::Utils.best_q_match(accept, ::Rack::Mime::MIME_TYPES.values)
         end
       end
 
+      # @since 0.2.0
+      # @api private
       def detect_format
         configuration.format_for(content_type) ||
           ::Rack::Mime::MIME_TYPES.key(content_type).gsub(/\A\./, '').to_sym
       end
 
+      # @since 0.2.0
+      # @api private
       def format_to_mime_type(format)
-        # FIXME lookup configuration first, then fallback to Rack::Mime
-        ::Rack::Mime.mime_type(".#{ format }")
+        configuration.mime_type_for(format) ||
+          ::Rack::Mime.mime_type(".#{ format }", nil) or
+          raise Lotus::Controller::UnknownFormatError.new(format)
       end
     end
   end

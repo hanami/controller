@@ -30,8 +30,8 @@ module Lotus
       # @since 0.2.0
       # @api private
       DEFAULT_FORMATS = {
-        '*/*'                      => :all,
         'application/octet-stream' => :all,
+        '*/*'                      => :all,
         'text/html'                => :html
       }.freeze
 
@@ -333,12 +333,38 @@ module Lotus
         end
       end
 
+      # FIXME coerce symbol to String or raise TypeError
+      # FIXME coerce symbol to Symbol or raise TypeError
       def format(symbol, mime_type)
         @formats.merge! mime_type => symbol
       end
 
+      # Returns a format for the given mime type
+      #
+      # @param mime_type [#to_s,#to_str] A mime type
+      #
+      # @return [Symbol,nil] the corresponding format, if present
+      #
+      # @see Lotus::Controller::Configuration#format
+      #
+      # @since 0.2.0
+      # @api private
       def format_for(mime_type)
         @formats[mime_type]
+      end
+
+      # Returns a mime type for the given format
+      #
+      # @param format [#to_sym] a format
+      #
+      # @return [String,nil] the corresponding mime type, if present
+      #
+      # @see Lotus::Controller::Configuration#format
+      #
+      # @since 0.2.0
+      # @api private
+      def mime_type_for(format)
+        @formats.key(format)
       end
 
       # Duplicate by copying the settings in a new instance.

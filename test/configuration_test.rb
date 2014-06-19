@@ -150,7 +150,7 @@ describe Lotus::Controller::Configuration do
     end
   end
 
-  describe '#register_format' do
+  describe '#format' do
     before do
       @configuration.format :custom, 'custom/format'
     end
@@ -160,11 +160,46 @@ describe Lotus::Controller::Configuration do
     end
   end
 
-  describe 'default formats' do
-    it 'declares default formats' do
+  describe '#format_for' do
+    it 'returns a symbol from the given mime type' do
       @configuration.format_for('*/*').must_equal                      :all
       @configuration.format_for('application/octet-stream').must_equal :all
       @configuration.format_for('text/html').must_equal                :html
+    end
+
+    describe 'with custom defined formats' do
+      before do
+        @configuration.format :htm, 'text/html'
+      end
+
+      after do
+        @configuration.reset!
+      end
+
+      it 'returns the custom defined mime type, which takes the precedence over the builtin value' do
+        @configuration.format_for('text/html').must_equal :htm
+      end
+    end
+  end
+
+  describe '#mime_type_for' do
+    it 'returns a mime type from the given symbol' do
+      @configuration.mime_type_for(:all).must_equal  'application/octet-stream'
+      @configuration.mime_type_for(:html).must_equal 'text/html'
+    end
+
+    describe 'with custom defined formats' do
+      before do
+        @configuration.format :htm, 'text/html'
+      end
+
+      after do
+        @configuration.reset!
+      end
+
+      it 'returns the custom defined format, which takes the precedence over the builtin value' do
+        @configuration.mime_type_for(:htm).must_equal 'text/html'
+      end
     end
   end
 

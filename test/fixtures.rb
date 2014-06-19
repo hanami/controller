@@ -71,6 +71,39 @@ HTTP_TEST_STATUSES = {
   599 => 'Network connect timeout error'
 }
 
+MIME_TYPES = {
+  ".aif"       => "audio/x-aiff",
+  ".atom"      => "application/atom+xml",
+  ".bz"        => "application/x-bzip",
+  ".bz2"       => "application/x-bzip2",
+  ".css"       => "text/css",
+  ".csv"       => "text/csv",
+  ".der"       => "application/x-x509-ca-cert",
+  ".diff"      => "text/x-diff",
+  ".dll"       => "application/x-msdownload",
+  ".dmg"       => "application/octet-stream",
+  ".doc"       => "application/msword",
+  ".docx"      => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  ".dot"       => "application/msword",
+  ".dtd"       => "application/xml-dtd",
+  ".eml"       => "message/rfc822",
+  ".eps"       => "application/postscript",
+  ".gem"       => "application/octet-stream",
+  ".gemspec"   => "text/x-script.ruby",
+  ".gif"       => "image/gif",
+  ".gv"        => "text/vnd.graphviz",
+  ".gz"        => "application/x-gzip",
+  ".h261"      => "video/h261",
+  ".h263"      => "video/h263",
+  ".h264"      => "video/h264",
+  ".html"      => "text/html",
+  ".ico"       => "image/vnd.microsoft.icon",
+  ".ics"       => "text/calendar",
+  ".ief"       => "image/ief",
+  ".ifb"       => "text/calendar",
+  ".iso"       => "application/octet-stream",
+}
+
 class TestController
   include Lotus::Controller
 
