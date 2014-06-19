@@ -152,11 +152,29 @@ describe Lotus::Controller::Configuration do
 
   describe '#format' do
     before do
-      @configuration.format :custom, 'custom/format'
+      @configuration.format custom: 'custom/format'
+
+      BaseObject = Class.new(BasicObject) do
+        def hash
+          23
+        end
+      end
+    end
+
+    after do
+      Object.send(:remove_const, :BaseObject)
     end
 
     it 'registers the given format' do
       @configuration.format_for('custom/format').must_equal :custom
+    end
+
+    it 'raises an error if the given format cannot be coerced into symbol' do
+      -> { @configuration.format(23 => 'boom') }.must_raise TypeError
+    end
+
+    it 'raises an error if the given mime type cannot be coerced into string' do
+      -> { @configuration.format(boom: BaseObject.new) }.must_raise TypeError
     end
   end
 
@@ -169,7 +187,7 @@ describe Lotus::Controller::Configuration do
 
     describe 'with custom defined formats' do
       before do
-        @configuration.format :htm, 'text/html'
+        @configuration.format htm: 'text/html'
       end
 
       after do
@@ -190,7 +208,7 @@ describe Lotus::Controller::Configuration do
 
     describe 'with custom defined formats' do
       before do
-        @configuration.format :htm, 'text/html'
+        @configuration.format htm: 'text/html'
       end
 
       after do
@@ -207,7 +225,7 @@ describe Lotus::Controller::Configuration do
     before do
       @configuration.reset!
       @configuration.modules { include Kernel }
-      @configuration.format :custom, 'custom/format'
+      @configuration.format custom: 'custom/format'
       @config = @configuration.duplicate
     end
 
@@ -224,7 +242,7 @@ describe Lotus::Controller::Configuration do
       @config.handle_exception ArgumentError => 400
       @config.action_module    CustomAction
       @config.modules          { include Comparable }
-      @config.format :another, 'another/format'
+      @config.format another: 'another/format'
 
       @config.handle_exceptions.must_equal           false
       @config.handled_exceptions.must_equal          Hash[ArgumentError => 400]
@@ -246,7 +264,7 @@ describe Lotus::Controller::Configuration do
       @configuration.handle_exception ArgumentError => 400
       @configuration.action_module    CustomAction
       @configuration.modules          { include Kernel }
-      @configuration.format :another, 'another/format'
+      @configuration.format another: 'another/format'
 
       @configuration.reset!
     end

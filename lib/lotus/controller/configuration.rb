@@ -1,5 +1,6 @@
-require 'lotus/utils/string'
 require 'lotus/utils/class'
+require 'lotus/utils/kernel'
+require 'lotus/utils/string'
 
 module Lotus
   module Controller
@@ -333,10 +334,61 @@ module Lotus
         end
       end
 
-      # FIXME coerce symbol to String or raise TypeError
-      # FIXME coerce symbol to Symbol or raise TypeError
-      def format(symbol, mime_type)
-        @formats.merge! mime_type => symbol
+      # Register a format
+      #
+      # @param hash [Hash] the symbol format must be the key and the mime type
+      #   string must be the value of the hash
+      #
+      # @since 0.2.0
+      #
+      # @see Lotus::Action::Mime
+      #
+      # @example
+      #   require 'lotus/controller'
+      #
+      #   Lotus::Controller.configure do
+      #     format custom: 'application/custom'
+      #   end
+      #
+      #   class ArticlesController
+      #     include Lotus::Controller
+      #
+      #     action 'Index' do
+      #       def call(params)
+      #         # ...
+      #       end
+      #     end
+      #
+      #     action 'Show' do
+      #       def call(params)
+      #         # ...
+      #         self.format = :custom
+      #       end
+      #     end
+      #   end
+      #
+      #   action = ArticlesController::Index.new
+      #
+      #   action.call({ 'HTTP_ACCEPT' => 'text/html' })
+      #     # => Content-Type "text/html"
+      #   action.format # => :html
+      #
+      #   action.call({ 'HTTP_ACCEPT' => 'application/custom' })
+      #     # => Content-Type "application/custom"
+      #   action.format # => :custom
+      #
+      #
+      #
+      #   action = ArticlesController::Show.new
+      #
+      #   action.call({ 'HTTP_ACCEPT' => 'text/html' })
+      #     # => Content-Type "application/custom"
+      #   action.format # => :custom
+      def format(hash)
+        symbol, mime_type = *Utils::Kernel.Array(hash)
+
+        @formats.merge! Utils::Kernel.String(mime_type) =>
+          Utils::Kernel.Symbol(symbol)
       end
 
       # Returns a format for the given mime type
@@ -358,11 +410,6 @@ module Lotus
       # @param format [#to_sym] a format
       #
       # @return [String,nil] the corresponding mime type, if present
-      #
-      # @see Lotus::Controller::Configuration#format
-      #
-      # @since 0.2.0
-      # @api private
       def mime_type_for(format)
         @formats.key(format)
       end

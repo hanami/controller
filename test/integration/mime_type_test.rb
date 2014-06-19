@@ -36,7 +36,8 @@ class MimesController
   end
 
   action 'Restricted' do
-    accept :html, :json
+    configuration.format custom: 'application/custom'
+    accept :html, :json, :custom
 
     def call(params)
     end
@@ -163,6 +164,14 @@ describe 'Restricted Accept' do
 
     describe 'when accepted' do
       let(:accept) { 'text/html' }
+
+      it 'accepts selected mime types' do
+        @response.status.must_equal 200
+      end
+    end
+
+    describe 'when custom mime type' do
+      let(:accept) { 'application/custom' }
 
       it 'accepts selected mime types' do
         @response.status.must_equal 200

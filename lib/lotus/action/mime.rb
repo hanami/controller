@@ -40,13 +40,26 @@ module Lotus
       end
 
       module ClassMethods
+        # @since 0.2.0
+        # @api private
+        def format_to_mime_type(format)
+          configuration.mime_type_for(format) ||
+            ::Rack::Mime.mime_type(".#{ format }", nil) or
+            raise Lotus::Controller::UnknownFormatError.new(format)
+        end
+
         protected
 
         # Restrict the access to the specified mime type symbols.
         #
         # @param mime_types[Array<Symbol>] one or more symbols representing mime type(s)
         #
+        # @raise [Lotus::Controller::UnknownFormatError] if the symbol cannot
+        #   be converted into a mime type
+        #
         # @since 0.1.0
+        #
+        # @see Lotus::Controller::Configuration#format
         #
         # @example
         #   require 'lotus/controller'
@@ -64,9 +77,9 @@ module Lotus
         #   # When called with "text/html"        => 200
         #   # When called with "application/json" => 200
         #   # When called with "application/xml"  => 406
-        def accept(*mime_types)
-          mime_types = mime_types.map do |mt|
-            ::Rack::Mime.mime_type ".#{ mt }"
+        def accept(*formats)
+          mime_types = formats.map do |format|
+            format_to_mime_type(format)
           end
 
           before do
@@ -254,7 +267,7 @@ module Lotus
         raise TypeError if format.nil? || '' == format || !format.respond_to?(:to_sym)
 
         @format       = format.to_sym
-        @content_type = format_to_mime_type(@format)
+        @content_type = self.class.format_to_mime_type(@format)
       end
 
       # The content type that will be automatically set in the response.
@@ -344,14 +357,6 @@ module Lotus
       def detect_format
         configuration.format_for(content_type) ||
           ::Rack::Mime::MIME_TYPES.key(content_type).gsub(/\A\./, '').to_sym
-      end
-
-      # @since 0.2.0
-      # @api private
-      def format_to_mime_type(format)
-        configuration.mime_type_for(format) ||
-          ::Rack::Mime.mime_type(".#{ format }", nil) or
-          raise Lotus::Controller::UnknownFormatError.new(format)
       end
     end
   end
