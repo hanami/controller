@@ -77,6 +77,57 @@ module Lotus
         end
       end
 
+      # Returns a symbol representation of the content type.
+      #
+      # The framework automatically detects the request mime type, and returns
+      # the corresponding format.
+      #
+      # However, if this value was explicitely set by `#format=`, it will return
+      # that value
+      #
+      # @return [Symbol] a symbol that corresponds to the content type
+      #
+      # @since 0.2.0
+      #
+      # @see Lotus::Action::Mime#format=
+      # @see Lotus::Action::Mime#content_type
+      #
+      # @example Default scenario
+      #   require 'lotus/controller'
+      #
+      #   class Show
+      #     include Lotus::Action
+      #
+      #     def call(params)
+      #     end
+      #   end
+      #
+      #   action = Show.new
+      #
+      #   _, headers, _ = action.call({ 'HTTP_ACCEPT' => 'text/html' })
+      #   headers['Content-Type'] # => 'text/html'
+      #   action.format           # => :html
+      #
+      # @example Set value
+      #   require 'lotus/controller'
+      #
+      #   class Show
+      #     include Lotus::Action
+      #
+      #     def call(params)
+      #       self.format = :xml
+      #     end
+      #   end
+      #
+      #   action = Show.new
+      #
+      #   _, headers, _ = action.call({ 'HTTP_ACCEPT' => 'text/html' })
+      #   headers['Content-Type'] # => 'application/xml'
+      #   action.format           # => :xml
+      def format
+        @format ||= detect_format
+      end
+
       protected
       # Finalize the response by setting the current content type
       #
@@ -204,57 +255,6 @@ module Lotus
 
         @format       = format.to_sym
         @content_type = format_to_mime_type(@format)
-      end
-
-      # Returns a symbol representation of the content type.
-      #
-      # The framework automatically detects the request mime type, and returns
-      # the corresponding format.
-      #
-      # However, if this value was explicitely set by `#format=`, it will return
-      # that value
-      #
-      # @return [Symbol] a symbol that corresponds to the content type
-      #
-      # @since 0.2.0
-      #
-      # @see Lotus::Action::Mime#format=
-      # @see Lotus::Action::Mime#content_type
-      #
-      # @example Default scenario
-      #   require 'lotus/controller'
-      #
-      #   class Show
-      #     include Lotus::Action
-      #
-      #     def call(params)
-      #     end
-      #   end
-      #
-      #   action = Show.new
-      #
-      #   _, headers, _ = action.call({ 'HTTP_ACCEPT' => 'text/html' })
-      #   headers['Content-Type'] # => 'text/html'
-      #   action.format           # => :html
-      #
-      # @example Set value
-      #   require 'lotus/controller'
-      #
-      #   class Show
-      #     include Lotus::Action
-      #
-      #     def call(params)
-      #       self.format = :xml
-      #     end
-      #   end
-      #
-      #   action = Show.new
-      #
-      #   _, headers, _ = action.call({ 'HTTP_ACCEPT' => 'text/html' })
-      #   headers['Content-Type'] # => 'application/xml'
-      #   action.format           # => :xml
-      def format
-        @format ||= detect_format
       end
 
       # The content type that will be automatically set in the response.

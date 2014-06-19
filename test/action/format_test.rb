@@ -26,7 +26,7 @@ describe Lotus::Action do
     it 'lookup to #content_type if was not explicitly set (default: application/octet-stream)' do
       status, headers, _ = @action.call({})
 
-      @action.send(:format).must_equal   :all
+      @action.format.must_equal   :all
       headers['Content-Type'].must_equal 'application/octet-stream'
       status.must_equal                  200
     end
@@ -34,7 +34,7 @@ describe Lotus::Action do
     it "accepts 'text/html' and returns :html" do
       status, headers, _ = @action.call({ 'HTTP_ACCEPT' => 'text/html' })
 
-      @action.send(:format).must_equal    :html
+      @action.format.must_equal    :html
       headers['Content-Type'].must_equal 'text/html'
       status.must_equal                   200
     end
@@ -42,7 +42,7 @@ describe Lotus::Action do
     it "accepts unknown mime type and returns :all" do
       status, headers, _ = @action.call({ 'HTTP_ACCEPT' => 'application/unknown' })
 
-      @action.send(:format).must_equal    :all
+      @action.format.must_equal    :all
       headers['Content-Type'].must_equal 'application/octet-stream'
       status.must_equal                   200
     end
@@ -57,7 +57,7 @@ describe Lotus::Action do
       it "accepts '#{ mime_type }' and returns :#{ format }" do
         status, headers, _ = @action.call({ 'HTTP_ACCEPT' => mime_type })
 
-        @action.send(:format).must_equal   format
+        @action.format.must_equal   format
         headers['Content-Type'].must_equal mime_type
         status.must_equal                  200
       end
@@ -72,7 +72,7 @@ describe Lotus::Action do
     it "sets :all and returns 'application/octet-stream'" do
       status, headers, _ = @action.call({ format: 'all' })
 
-      @action.send(:format).must_equal   :all
+      @action.format.must_equal   :all
       headers['Content-Type'].must_equal 'application/octet-stream'
       status.must_equal                  200
     end
@@ -104,7 +104,7 @@ describe Lotus::Action do
       it "sets :#{ format } and returns '#{ mime_type }'" do
         _, headers, _ = @action.call({ format: format })
 
-        @action.send(:format).must_equal   format.to_sym
+        @action.format.must_equal   format.to_sym
         headers['Content-Type'].must_equal mime_type
       end
     end
