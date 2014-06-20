@@ -774,11 +774,6 @@ Lotus::Controller.configure do
   #
   format custom: 'application/custom'
 
-  # Set the default format
-  # Argument: symbol, the default format
-  #
-  default_format :html
-
   # Configure the modules to be included/extended/prepended by default.
   # Argument: proc, empty by default
   #
