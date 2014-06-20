@@ -298,7 +298,7 @@ module Lotus
       #     end
       #   end
       def content_type
-        @content_type || accepts || DEFAULT_CONTENT_TYPE
+        @content_type || accepts || default_content_type
       end
 
       # Match the given mime type with the Accept header
@@ -350,6 +350,12 @@ module Lotus
         unless accept == DEFAULT_ACCEPT
           ::Rack::Utils.best_q_match(accept, ::Rack::Mime::MIME_TYPES.values)
         end
+      end
+
+      # @since 0.2.0
+      # @api private
+      def default_content_type
+        DEFAULT_CONTENT_TYPE
       end
 
       # @since 0.2.0
