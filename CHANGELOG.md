@@ -1,6 +1,8 @@
 ## v0.2.0
 ### Feb 23, 2014
 
+48a5715 2014-06-22 **Luca Guidi** Made Lotus::Action#content_type public
+
 2d7b0cc 2014-06-22 **Luca Guidi** Let to specify a default format for all the requests that aren't strict about the requested Mime type (eg. `*/*`).
 
 401c1af 2014-06-19 **Luca Guidi** [breaking] Raise error if Lotus::Controller::Configuration#format doesn't receive the proper argument. Let Lotus::Action::Mime#accept to work with registered mime types
