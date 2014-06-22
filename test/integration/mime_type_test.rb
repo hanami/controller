@@ -2,16 +2,25 @@ require 'test_helper'
 require 'lotus/router'
 
 MimeRoutes = Lotus::Router.new do
-  get '/',           to: 'mimes#default'
-  get '/custom',     to: 'mimes#custom'
-  get '/accept',     to: 'mimes#accept'
-  get '/restricted', to: 'mimes#restricted'
+  get '/',              to: 'mimes#default'
+  get '/custom',        to: 'mimes#custom'
+  get '/configuration', to: 'mimes#configuration'
+  get '/accept',        to: 'mimes#accept'
+  get '/restricted',    to: 'mimes#restricted'
 end
 
 class MimesController
   include Lotus::Controller
 
   action 'Default' do
+    def call(params)
+      self.body = format
+    end
+  end
+
+  action 'Configuration' do
+    configuration.default_format :html
+
     def call(params)
       self.body = format
     end
@@ -53,6 +62,12 @@ describe 'Content type' do
     response = @app.get('/')
     response.headers['Content-Type'].must_equal 'application/octet-stream'
     response.body.must_equal                    'all'
+  end
+
+  it 'fallbacks to the default format, set in the configuration' do
+    response = @app.get('/configuration')
+    response.headers['Content-Type'].must_equal 'text/html'
+    response.body.must_equal                    'html'
   end
 
   it 'returns the specified "Content-Type" header' do

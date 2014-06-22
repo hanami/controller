@@ -284,6 +284,8 @@ module Lotus
       # @since 0.1.0
       #
       # @see Lotus::Action::Mime#format=
+      # @see Lotus::Configuration#default_format
+      # @see Lotus::Action::Mime#default_content_type
       # @see Lotus::Action::Mime#DEFAULT_CONTENT_TYPE
       #
       # @example
@@ -298,7 +300,7 @@ module Lotus
       #     end
       #   end
       def content_type
-        @content_type || accepts || default_content_type
+        @content_type || accepts || default_content_type || DEFAULT_CONTENT_TYPE
       end
 
       # Match the given mime type with the Accept header
@@ -355,7 +357,9 @@ module Lotus
       # @since 0.2.0
       # @api private
       def default_content_type
-        DEFAULT_CONTENT_TYPE
+        self.class.format_to_mime_type(
+          configuration.default_format
+        ) if configuration.default_format
       end
 
       # @since 0.2.0

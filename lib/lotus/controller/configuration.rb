@@ -391,6 +391,51 @@ module Lotus
           Utils::Kernel.Symbol(symbol)
       end
 
+      # Set a format as default fallback for all the requests without a strict
+      # requirement for the mime type.
+      #
+      # The given format must be coercible to a symbol, and be a valid mime type
+      # alias. If it isn't, at the runtime the framework will raise a 
+      # `Lotus::Controller::UnknownFormatError`.
+      #
+      # By default this value is nil.
+      #
+      # This is part of a DSL, for this reason when this method is called with
+      # an argument, it will set the corresponding instance variable. When
+      # called without, it will return the already set value, or the default.
+      #
+      # @overload default_format(format)
+      #   Sets the given value
+      #   @param format [#to_sym] the symbol format
+      #   @raise [TypeError] if it cannot be coerced to a symbol
+      #
+      # @overload default_format
+      #   Gets the value
+      #   @return [Symbol,nil]
+      #
+      # @since 0.2.0
+      #
+      # @see Lotus::Action::Mime
+      #
+      # @example Getting the value
+      #   require 'lotus/controller'
+      #
+      #   Lotus::Controller.configuration.default_format # => nil
+      #
+      # @example Setting the value
+      #   require 'lotus/controller'
+      #
+      #   Lotus::Controller.configure do
+      #     default_format :html
+      #   end
+      def default_format(format = nil)
+        if format
+          @default_format = Utils::Kernel.Symbol(format)
+        else
+          @default_format
+        end
+      end
+
       # Returns a format for the given mime type
       #
       # @param mime_type [#to_s,#to_str] A mime type
@@ -427,6 +472,7 @@ module Lotus
           c.action_module      = action_module
           c.modules            = modules.dup
           c.formats            = formats.dup
+          c.default_format     = default_format
         end
       end
 
@@ -439,6 +485,7 @@ module Lotus
         @handled_exceptions = {}
         @modules            = []
         @formats            = DEFAULT_FORMATS.dup
+        @default_format     = nil
         @action_module      = ::Lotus::Action
       end
 
@@ -457,6 +504,7 @@ module Lotus
       attr_accessor :formats
       attr_writer :action_module
       attr_writer :modules
+      attr_writer :default_format
     end
   end
 end
