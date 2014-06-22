@@ -1,7 +1,7 @@
 ## v0.2.0
 ### Feb 23, 2014
 
-4bbf85a 2014-06-20 **Luca Guidi** Implemented private method for default_content_type, so that an action can decouple from Action::Mime::DEFAULT_CONTENT_TYPE. This is declared as a private api for now.
+2d7b0cc 2014-06-22 **Luca Guidi** Let to specify a default format for all the requests that aren't strict about the requested Mime type (eg. `*/*`).
 
 401c1af 2014-06-19 **Luca Guidi** [breaking] Raise error if Lotus::Controller::Configuration#format doesn't receive the proper argument. Let Lotus::Action::Mime#accept to work with registered mime types
 
