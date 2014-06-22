@@ -1,3 +1,5 @@
+require 'lotus/utils/kernel'
+
 module Lotus
   module Action
     # Mime type API
@@ -297,9 +299,7 @@ module Lotus
       #   headers['Content-Type'] # => 'application/custom'
       #   action.format           # => :custom
       def format=(format)
-        raise TypeError if format.nil? || '' == format || !format.respond_to?(:to_sym)
-
-        @format       = format.to_sym
+        @format       = Utils::Kernel.Symbol(format)
         @content_type = self.class.format_to_mime_type(@format)
       end
 
