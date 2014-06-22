@@ -141,6 +141,39 @@ module Lotus
         @format ||= detect_format
       end
 
+      # The content type that will be automatically set in the response.
+      #
+      # It prefers, in order:
+      #   * Explicit set value (see #format=)
+      #   * Weighted value from Accept
+      #   * Default content type
+      #
+      # To override the value, use <tt>#format=</tt>
+      #
+      # @return [String] the content type from the request.
+      #
+      # @since 0.1.0
+      #
+      # @see Lotus::Action::Mime#format=
+      # @see Lotus::Configuration#default_format
+      # @see Lotus::Action::Mime#default_content_type
+      # @see Lotus::Action::Mime#DEFAULT_CONTENT_TYPE
+      #
+      # @example
+      #   require 'lotus/controller'
+      #
+      #   class Show
+      #     include Lotus::Action
+      #
+      #     def call(params)
+      #       # ...
+      #       content_type # => 'text/html'
+      #     end
+      #   end
+      def content_type
+        @content_type || accepts || default_content_type || DEFAULT_CONTENT_TYPE
+      end
+
       protected
       # Finalize the response by setting the current content type
       #
@@ -268,39 +301,6 @@ module Lotus
 
         @format       = format.to_sym
         @content_type = self.class.format_to_mime_type(@format)
-      end
-
-      # The content type that will be automatically set in the response.
-      #
-      # It prefers, in order:
-      #   * Explicit set value (see #format=)
-      #   * Weighted value from Accept
-      #   * Default content type
-      #
-      # To override the value, use <tt>#format=</tt>
-      #
-      # @return [String] the content type from the request.
-      #
-      # @since 0.1.0
-      #
-      # @see Lotus::Action::Mime#format=
-      # @see Lotus::Configuration#default_format
-      # @see Lotus::Action::Mime#default_content_type
-      # @see Lotus::Action::Mime#DEFAULT_CONTENT_TYPE
-      #
-      # @example
-      #   require 'lotus/controller'
-      #
-      #   class Show
-      #     include Lotus::Action
-      #
-      #     def call(params)
-      #       # ...
-      #       content_type # => 'text/html'
-      #     end
-      #   end
-      def content_type
-        @content_type || accepts || default_content_type || DEFAULT_CONTENT_TYPE
       end
 
       # Match the given mime type with the Accept header
