@@ -1,5 +1,5 @@
 ## v0.2.0
-### Feb 23, 2014
+### Jun 23, 2014
 
 48a5715 2014-06-22 **Luca Guidi** Made Lotus::Action#content_type public
 
