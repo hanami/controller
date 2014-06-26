@@ -138,7 +138,7 @@ module Lotus
         # @api private
         def call(params)
           _run_before_callbacks(params)
-          super
+          super if defined?(super)
           _run_after_callbacks(params)
         end
 

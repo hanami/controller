@@ -93,6 +93,10 @@ class CallAction
   end
 end
 
+class NoCallAction
+  include Lotus::Action
+end
+
 class ErrorCallAction
   include Lotus::Action
 
