@@ -20,6 +20,8 @@ module Lotus
         #
         # @since 0.1.0
         #
+        # @see Lotus::Controller::Configuration#action_module
+        #
         # @example
         #   require 'lotus/controller'
         #

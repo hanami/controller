@@ -58,6 +58,75 @@ describe Lotus::Controller do
     end
   end
 
+  describe '.duplicate' do
+    before do
+      Lotus::Controller.configure { handle_exception ArgumentError => 400 }
+
+      module Duplicated
+        Controller = Lotus::Controller.duplicate(self)
+      end
+
+      module DuplicatedCustom
+        Controller = Lotus::Controller.duplicate(self, 'Controllerz')
+      end
+
+      module DuplicatedWithoutNamespace
+        Controller = Lotus::Controller.duplicate(self, nil)
+      end
+
+      module DuplicatedConfigure
+        Controller = Lotus::Controller.duplicate(self) do
+          reset!
+          handle_exception StandardError => 400
+        end
+      end
+    end
+
+    after do
+      Lotus::Controller.configuration.reset!
+
+      Object.send(:remove_const, :Duplicated)
+      Object.send(:remove_const, :DuplicatedCustom)
+      Object.send(:remove_const, :DuplicatedWithoutNamespace)
+      Object.send(:remove_const, :DuplicatedConfigure)
+    end
+
+    it 'duplicates the configuration of the framework' do
+      actual   = Duplicated::Controller.configuration
+      expected = Lotus::Controller.configuration
+
+      actual.handled_exceptions.must_equal expected.handled_exceptions
+    end
+
+    it 'duplicates a namespace for controllers' do
+      assert defined?(Duplicated::Controllers), 'Duplicated::Controllers expected'
+    end
+
+    it 'generates a custom namespace for controllers' do
+      assert defined?(DuplicatedCustom::Controllerz), 'DuplicatedCustom::Controllerz expected'
+    end
+
+    it 'does not create a custom namespace for controllers' do
+      assert !defined?(DuplicatedWithoutNamespace::Controllers), "DuplicatedWithoutNamespace::Controllers wasn't expected"
+    end
+
+    it 'duplicates Action' do
+      assert defined?(Duplicated::Action), 'Duplicated::Action expected'
+    end
+
+    it 'sets action_module' do
+      configuration = Duplicated::Controller.configuration
+      configuration.action_module.must_equal Duplicated::Action
+    end
+
+    it 'optionally accepts a block to configure the duplicated module' do
+      configuration = DuplicatedConfigure::Controller.configuration
+
+      configuration.handled_exceptions.wont_include(ArgumentError)
+      configuration.handled_exceptions.must_include(StandardError)
+    end
+  end
+
   describe '.action' do
     it 'creates an action for the given name' do
       action = TestController::Index.new

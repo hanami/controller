@@ -24,6 +24,24 @@ module Lotus
   #     end
   #   end
   module Action
+    # Override Ruby's hook for modules.
+    # It includes basic Lotus::Action modules to the given class.
+    #
+    # @param base [Class] the target action
+    #
+    # @since 0.1.0
+    # @api private
+    #
+    # @see http://www.ruby-doc.org/core-2.1.2/Module.html#method-i-included
+    #
+    # @see Lotus::Action::Configurable
+    # @see Lotus::Action::Rack
+    # @see Lotus::Action::Mime
+    # @see Lotus::Action::Redirect
+    # @see Lotus::Action::Exposable
+    # @see Lotus::Action::Throwable
+    # @see Lotus::Action::Callbacks
+    # @see Lotus::Action::Callable
     def self.included(base)
       base.class_eval do
         include Configurable

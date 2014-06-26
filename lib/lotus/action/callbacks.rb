@@ -9,6 +9,15 @@ module Lotus
     # @see Lotus::Action::ClassMethods#before
     # @see Lotus::Action::ClassMethods#after
     module Callbacks
+      # Override Ruby's hook for modules.
+      # It includes callbacks logic
+      #
+      # @param base [Class] the target action
+      #
+      # @since 0.1.0
+      # @api private
+      #
+      # @see http://www.ruby-doc.org/core-2.1.2/Module.html#method-i-included
       def self.included(base)
         base.class_eval do
           extend  ClassMethods
@@ -17,6 +26,15 @@ module Lotus
       end
 
       module ClassMethods
+        # Override Ruby's hook for modules.
+        # It includes callbacks logic
+        #
+        # @param base [Class] the target action
+        #
+        # @since 0.1.0
+        # @api private
+        #
+        # @see http://www.ruby-doc.org/core-2.1.2/Module.html#method-i-extended
         def self.extended(base)
           base.class_eval do
             include Utils::ClassAttribute
@@ -90,7 +108,7 @@ module Lotus
         #   # 2. set the article
         #   # 3. #call
         def before(*callbacks, &blk)
-          before_callbacks.add *callbacks, &blk
+          before_callbacks.add(*callbacks, &blk)
         end
 
         # Define a callback for an Action.
@@ -109,7 +127,7 @@ module Lotus
         #
         # @see Lotus::Action::Callbacks::ClassMethods#before
         def after(*callbacks, &blk)
-          after_callbacks.add *callbacks, &blk
+          after_callbacks.add(*callbacks, &blk)
         end
       end
 

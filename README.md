@@ -17,7 +17,8 @@ A Rack compatible Controller layer for [Lotus](http://lotusrb.org).
 * Mailing List: http://lotusrb.org/mailing-list
 * API Doc: http://rdoc.info/gems/lotus-controller
 * Bugs/Issues: https://github.com/lotus/controller/issues
-* Support: http://stackoverflow.com/questions/tagged/lotusrb
+* Support: http://stackoverflow.com/questions/tagged/lotus-ruby
+* Chat: https://gitter.im/lotus/chat
 
 ## Rubies
 
@@ -45,7 +46,7 @@ $ gem install lotus-controller
 
 ## Usage
 
-Lotus::Controller is a thin layer (**275 LOCs**) for MVC web frameworks.
+Lotus::Controller is a micro library for web frameworks.
 It works beautifully with [Lotus::Router](https://github.com/lotus/router), but it can be employed everywhere.
 It's designed to be fast and testable.
 
@@ -263,7 +264,7 @@ You can define how a specific raised exception should be transformed in an HTTP 
 ```ruby
 class Show
   include Lotus::Action
-  handle_exception RecordNotFound, 404
+  handle_exception RecordNotFound => 404
 
   def call(params)
     @article = Article.find params[:id]
@@ -278,7 +279,9 @@ Exception policies can be defined globally, **before** the controllers/actions
 are loaded.
 
 ```ruby
-Lotus::Controller.handled_exceptions = { RecordNotFound => 404 }
+Lotus::Controller.configure do
+  handle_exception RecordNotFound => 404
+end
 
 class Show
   include Lotus::Action
@@ -292,9 +295,36 @@ action = Show.new
 action.call({id: 'unknown'}) # => [404, {}, ["Not Found"]]
 ```
 
+This feature can be turned off globally, in a controller or in a single action.
+
+```ruby
+Lotus::Controller.configure do
+  handle_exceptions false
+end
+
+# or
+
+class ArticlesController
+  include Lotus::Controller
+
+  configure do
+    handle_exceptions false
+  end
+
+  action 'Show' do
+    def call(params)
+      @article = Article.find params[:id]
+    end
+  end
+end
+
+action = ArticlesController::Show.new
+action.call({id: 'unknown'}) # => [404, {}, ["Not Found"]]
+```
+
 ### Throwable HTTP statuses
 
-When [#throw](http://ruby-doc.org/core-2.1.0/Kernel.html#method-i-throw) is used with a valid HTTP code, it stops the execution and sets the proper status and body for the response:
+When `#halt` is used with a valid HTTP code, it stops the execution and sets the proper status and body for the response:
 
 ```ruby
 class Show
@@ -308,7 +338,7 @@ class Show
 
   private
   def authenticate!
-    throw 401 unless authenticated?
+    halt 401 unless authenticated?
   end
 end
 
@@ -470,8 +500,26 @@ action.call({ article: { title: 'Hello' }}) # => [302, {'Location' => '/articles
 
 ### Mime types
 
-Lotus::Action automatically sets the mime type, according to the request headers.
-However, you can override this value:
+Lotus::Action automatically sets the `Content-Type` header, according to the request.
+
+```ruby
+class Show
+  include Lotus::Action
+
+  def call(params)
+  end
+end
+
+action = Show.new
+
+action.call({ 'HTTP_ACCEPT' => '*/*' }) # Content-Type "application/octet-stream"
+action.format                           # :all
+
+action.call({ 'HTTP_ACCEPT' => 'text/html' }) # Content-Type "text/html"
+action.format                                 # :html
+```
+
+However, you can force this value:
 
 ```ruby
 class Show
@@ -479,12 +527,17 @@ class Show
 
   def call(params)
     # ...
-    self.content_type = 'application/json'
+    self.format = :json
   end
 end
 
 action = Show.new
-action.call({ id: 23 }) # => [200, {'Content-Type' => 'application/json'}, '...']
+
+action.call({ 'HTTP_ACCEPT' => '*/*' }) # Content-Type "application/json"
+action.format                           # :json
+
+action.call({ 'HTTP_ACCEPT' => 'text/html' }) # Content-Type "application/json"
+action.format                                 # :json
 ```
 
 You can restrict the accepted mime types:
@@ -518,6 +571,7 @@ class Show
     accept?('text/html')        # => true
     accept?('application/xml')  # => true
     accept?('application/json') # => false
+    self.format                 # :html
 
 
 
@@ -526,8 +580,44 @@ class Show
     accept?('text/html')        # => true
     accept?('application/xml')  # => true
     accept?('application/json') # => true
+    self.format                 # :html
   end
 end
+```
+
+Lotus::Controller is shipped with an extensive list of the most common mime types.
+Also, you can register your own:
+
+```ruby
+Lotus::Controller.configure do
+  format custom: 'application/custom'
+end
+
+class Index
+  include Lotus::Action
+
+  def call(params)
+  end
+end
+
+action = Index.new
+
+action.call({ 'HTTP_ACCEPT' => 'application/custom' }) # => Content-Type 'application/custom'
+action.format                                          # => :custom
+
+class Show
+  include Lotus::Action
+
+  def call(params)
+    # ...
+    self.format = :custom
+  end
+end
+
+action = Show.new
+
+action.call({ 'HTTP_ACCEPT' => '*/*' }) # => Content-Type 'application/custom'
+action.format                           # => :custom
 ```
 
 ### No rendering, please
@@ -555,7 +645,7 @@ class ArticlesController
 end
 ```
 
-Which is a bit verboses. Instead, just do:
+Which is a bit verbose. Instead, just do:
 
 ```ruby
 class ArticlesController
@@ -573,7 +663,7 @@ end
 ArticlesController::Index.new.call({})
 ```
 
-## Lotus::Router integration
+### Lotus::Router integration
 
 While Lotus::Router works great with this framework, Lotus::Controller doesn't depend from it.
 You, as developer, are free to choose your own routing system.
@@ -605,12 +695,165 @@ convenient fallback, you should know that it's the slower option. **Be sure of
 loading your controllers before you initialize the router.**
 
 
-## Rack integration
+### Rack integration
 
 Lotus::Controller is compatible with Rack. However, it doesn't mount any middleware.
 While a Lotus application's architecture is more web oriented, this framework is designed to build pure HTTP endpoints.
 
-## Thread safety
+### Rack middleware
+
+Rack middleware can be configured globally in `config.ru`, but often they add an
+unnecessary overhead for all those endpoints who aren't direct users of a
+certain middleware. Think about a middleware to create sessions, where only
+`SessionsController::Create` may be involved and the rest of the application
+shouldn't pay the performance ticket of calling that middleware.
+
+An action can employ one or more Rack middleware, with `.use`.
+
+```ruby
+require 'lotus/controller'
+
+class SessionsController
+  include Lotus::Controller
+
+  action 'Create' do
+    use OmniAuth
+
+    def call(params)
+      # ...
+    end
+  end
+end
+```
+
+```ruby
+require 'lotus/controller'
+
+class SessionsController
+  include Lotus::Controller
+
+  action 'Create' do
+    use XMiddleware.new('x', 123)
+    use YMiddleware.new
+    use ZMiddleware
+
+    def call(params)
+      # ...
+    end
+  end
+end
+```
+
+### Configuration
+
+Lotus::Controller can be configured with a DSL that determines its behavior.
+It supports a few options:
+
+```ruby
+require 'lotus/controller'
+
+Lotus::Controller.configure do
+  # Handle exceptions with HTTP statuses (true) or don't catch them (false)
+  # Argument: boolean, defaults to true
+  #
+  handle_exceptions true
+
+  # If the given exception is raised, return that HTTP status
+  # It can be used multiple times
+  # Argument: hash, empty by default
+  #
+  handle_exception ArgumentError => 404
+
+  # Configure which module to include when Lotus::Controller.action is used
+  # Argument: module, defaults to Lotus::Action
+  #
+  action_module MyApp::Action # module, defaults to Lotus::Action
+
+  # Register a format to mime type mapping
+  # Argument: hash, key: format symbol, value: mime type string, empty by default
+  #
+  format custom: 'application/custom'
+
+  # Configure the modules to be included/extended/prepended by default.
+  # Argument: proc, empty by default
+  #
+  modules do
+    include Lotus::Action::Sessions
+    prepend MyLibrary::Session::Store
+  end
+end
+```
+
+All those global configurations can be overwritten at a finer grained level:
+controllers. Each controller and action has its own copy of the global
+configuration, so that changes are inherited from the top to the bottom, but
+not bubbled up in the opposite direction.
+
+```ruby
+require 'lotus/controller'
+
+Lotus::Controller.configure do
+  handle_exception ArgumentError => 404
+end
+
+class ArticlesController
+  include Lotus::Controller
+
+  configure do
+    handle_exceptions false
+  end
+
+  action 'Create' do
+    def call(params)
+      raise ArgumentError
+    end
+  end
+end
+
+class UsersController
+  include Lotus::Controller
+
+  action 'Create' do
+    def call(params)
+      raise ArgumentError
+    end
+  end
+end
+
+UsersController::Create.new.call({}) # => HTTP 400
+
+ArticlesController::Create.new.call({})
+  # => raises ArgumentError because we set handle_exceptions to false
+```
+
+### Reusability
+
+Lotus::Controller can be used as a singleton framework as seen in this README.
+The application code includes `Lotus::Controller` or `Lotus::Action` directly
+and the configuration is unique per Ruby process.
+
+While this is convenient for tiny applications, it doesn't fit well for more
+complex scenarios, where we want micro applications to coexist together.
+
+```ruby
+require 'lotus/controller'
+
+module WebApp
+  Controller = Lotus::Controller.duplicate
+end
+
+module ApiApp
+  Controller = Lotus::Controller.duplicate(self) do
+    handle_exception ArgumentError => 400
+  end
+end
+```
+
+The code above defines `WebApp::Controller` and `WebApp::Action`, to be used for
+the `WebApp` endpoints, while `ApiApp::Controller` and `ApiApp::Action` have 
+a different configuration.
+
+### Thread safety
 
 An Action is **mutable**. When used without Lotus::Router, be sure to instantiate an
 action for each request.

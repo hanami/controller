@@ -12,7 +12,7 @@ module Lotus
     #   * Default: it returns the given hash as it is. It's useful for testing purposes.
     #
     # @since 0.1.0
-    class Params < Utils::Hash
+    class Params
       # The key that returns raw input from the Rack env
       #
       # @since 0.1.0
@@ -24,6 +24,10 @@ module Lotus
       # @since 0.1.0
       ROUTER_PARAMS = 'router.params'.freeze
 
+      # @attr_reader env [Hash] the Rack env
+      #
+      # @since 0.2.0
+      # @api private
       attr_reader :env
 
       # Initialize the params and freeze them.
@@ -34,10 +38,20 @@ module Lotus
       #
       # @since 0.1.0
       def initialize(env)
-        @env = env
-        super _extract
-        symbolize!
+        @env    = env
+        @params = Utils::Hash.new(_extract).symbolize!
         freeze
+      end
+
+      # Returns the object associated with the given key
+      #
+      # @param key [Symbol] the key
+      #
+      # @return [Object,nil] return the associated object, if found
+      #
+      # @since 0.2.0
+      def [](key)
+        @params[key]
       end
 
       private

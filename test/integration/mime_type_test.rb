@@ -2,10 +2,11 @@ require 'test_helper'
 require 'lotus/router'
 
 MimeRoutes = Lotus::Router.new do
-  get '/',           to: 'mimes#default'
-  get '/custom',     to: 'mimes#custom'
-  get '/accept',     to: 'mimes#accept'
-  get '/restricted', to: 'mimes#restricted'
+  get '/',              to: 'mimes#default'
+  get '/custom',        to: 'mimes#custom'
+  get '/configuration', to: 'mimes#configuration'
+  get '/accept',        to: 'mimes#accept'
+  get '/restricted',    to: 'mimes#restricted'
 end
 
 class MimesController
@@ -13,12 +14,22 @@ class MimesController
 
   action 'Default' do
     def call(params)
+      self.body = format
+    end
+  end
+
+  action 'Configuration' do
+    configuration.default_format :html
+
+    def call(params)
+      self.body = format
     end
   end
 
   action 'Custom' do
     def call(params)
-      self.content_type = 'application/xml'
+      self.format = :xml
+      self.body   = format
     end
   end
 
@@ -28,11 +39,14 @@ class MimesController
       self.headers.merge!({'X-AcceptHtml'    => accept?('text/html').to_s })
       self.headers.merge!({'X-AcceptXml'     => accept?('application/xml').to_s })
       self.headers.merge!({'X-AcceptJson'    => accept?('text/json').to_s })
+
+      self.body = format
     end
   end
 
   action 'Restricted' do
-    accept :html, :json
+    configuration.format custom: 'application/custom'
+    accept :html, :json, :custom
 
     def call(params)
     end
@@ -47,27 +61,38 @@ describe 'Content type' do
   it 'fallbacks to the default "Content-Type" header when the request is lacking of this information' do
     response = @app.get('/')
     response.headers['Content-Type'].must_equal 'application/octet-stream'
+    response.body.must_equal                    'all'
+  end
+
+  it 'fallbacks to the default format, set in the configuration' do
+    response = @app.get('/configuration')
+    response.headers['Content-Type'].must_equal 'text/html'
+    response.body.must_equal                    'html'
   end
 
   it 'returns the specified "Content-Type" header' do
     response = @app.get('/custom')
     response.headers['Content-Type'].must_equal 'application/xml'
+    response.body.must_equal                    'xml'
   end
 
   describe 'when Accept is sent' do
     it 'sets "Content-Type" header according to "Accept"' do
       response = @app.get('/', 'HTTP_ACCEPT' => '*/*')
       response.headers['Content-Type'].must_equal 'application/octet-stream'
+      response.body.must_equal                    'all'
     end
 
     it 'sets "Content-Type" header according to "Accept"' do
       response = @app.get('/', 'HTTP_ACCEPT' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8')
       response.headers['Content-Type'].must_equal 'text/html'
+      response.body.must_equal                    'html'
     end
 
     it 'sets "Content-Type" header according to "Accept" quality scale' do
       response = @app.get('/', 'HTTP_ACCEPT' => 'application/json;q=0.6,application/xml;q=0.9,*/*;q=0.8')
       response.headers['Content-Type'].must_equal 'application/xml'
+      response.body.must_equal                    'xml'
     end
   end
 end
@@ -86,6 +111,7 @@ describe 'Accept' do
       @response.headers['X-AcceptHtml'].must_equal    'true'
       @response.headers['X-AcceptXml'].must_equal     'true'
       @response.headers['X-AcceptJson'].must_equal    'true'
+      @response.body.must_equal                       'all'
     end
   end
 
@@ -98,6 +124,7 @@ describe 'Accept' do
         @response.headers['X-AcceptHtml'].must_equal    'true'
         @response.headers['X-AcceptXml'].must_equal     'true'
         @response.headers['X-AcceptJson'].must_equal    'true'
+        @response.body.must_equal                       'all'
       end
     end
 
@@ -109,6 +136,7 @@ describe 'Accept' do
         @response.headers['X-AcceptHtml'].must_equal    'true'
         @response.headers['X-AcceptXml'].must_equal     'false'
         @response.headers['X-AcceptJson'].must_equal    'false'
+        @response.body.must_equal                       'html'
       end
     end
 
@@ -120,6 +148,7 @@ describe 'Accept' do
         @response.headers['X-AcceptHtml'].must_equal    'true'
         @response.headers['X-AcceptXml'].must_equal     'true'
         @response.headers['X-AcceptJson'].must_equal    'false'
+        @response.body.must_equal                       'html'
       end
     end
   end
@@ -150,6 +179,14 @@ describe 'Restricted Accept' do
 
     describe 'when accepted' do
       let(:accept) { 'text/html' }
+
+      it 'accepts selected mime types' do
+        @response.status.must_equal 200
+      end
+    end
+
+    describe 'when custom mime type' do
+      let(:accept) { 'application/custom' }
 
       it 'accepts selected mime types' do
         @response.status.must_equal 200

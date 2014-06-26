@@ -13,15 +13,15 @@ Gem::Specification.new do |spec|
   spec.homepage      = 'http://lotusrb.org'
   spec.license       = 'MIT'
 
-  spec.files         = `git ls-files`.split($/)
+  spec.files         = `git ls-files -- lib/* CHANGELOG.md LICENSE.md README.md lotus-controller.gemspec`.split($/)
   spec.executables   = []
   spec.test_files    = spec.files.grep(%r{^(test)/})
   spec.require_paths = ['lib']
 
   spec.add_dependency 'rack',        '~> 1.5'
-  spec.add_dependency 'lotus-utils', '~> 0.1'
+  spec.add_dependency 'lotus-utils', '~> 0.2'
 
-  spec.add_development_dependency 'bundler',   '~> 1.5'
+  spec.add_development_dependency 'bundler',   '~> 1.6'
   spec.add_development_dependency 'minitest',  '~> 5'
   spec.add_development_dependency 'rack-test', '~> 0.6'
   spec.add_development_dependency 'rake',      '~> 10'

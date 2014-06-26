@@ -4,6 +4,11 @@ module Lotus
     #
     # @since 0.1.0
     module Redirect
+      # The HTTP header for redirects
+      #
+      # @since 0.2.0
+      # @api private
+      LOCATION = 'Location'.freeze
 
       protected
 
@@ -26,7 +31,7 @@ module Lotus
       #     end
       #   end
       def redirect_to(url, status: 302)
-        headers.merge!('Location' => url)
+        headers.merge!(LOCATION => url)
         self.status = status
       end
     end

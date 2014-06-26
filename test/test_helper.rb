@@ -33,3 +33,7 @@ Lotus::Controller::Configuration.class_eval do
 
   public :handled_exceptions
 end
+
+Lotus::Action::Params.class_eval do
+  attr_reader :params
+end

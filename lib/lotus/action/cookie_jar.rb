@@ -9,20 +9,23 @@ module Lotus
     # @since 0.1.0
     #
     # @see Lotus::Action::Cookies#cookies
-    class CookieJar < Utils::Hash
+    class CookieJar
       # The key that returns raw cookies from the Rack env
       #
       # @since 0.1.0
+      # @api private
       HTTP_HEADER       = 'HTTP_COOKIE'.freeze
 
       # The key used by Rack to set the cookies as an Hash in the env
       #
       # @since 0.1.0
+      # @api private
       COOKIE_HASH_KEY   = 'rack.request.cookie_hash'.freeze
 
       # The key used by Rack to set the cookies as a String in the env
       #
       # @since 0.1.0
+      # @api private
       COOKIE_STRING_KEY = 'rack.request.cookie_string'.freeze
 
       # Initialize the CookieJar
@@ -35,9 +38,7 @@ module Lotus
       # @since 0.1.0
       def initialize(env, headers)
         @_headers = headers
-
-        super(extract(env))
-        symbolize!
+        @cookies  = Utils::Hash.new(extract(env)).symbolize!
       end
 
       # Finalize itself, by setting the proper headers to add and remove
@@ -49,7 +50,30 @@ module Lotus
       #
       # @see Lotus::Action::Cookies#finish
       def finish
-        each {|k,v| v.nil? ? delete_cookie(k) : set_cookie(k, v) }
+        @cookies.each {|k,v| v.nil? ? delete_cookie(k) : set_cookie(k, v) }
+      end
+
+      # Returns the object associated with the given key
+      #
+      # @param key [Symbol] the key
+      #
+      # @return [Object,nil] return the associated object, if found
+      #
+      # @since 0.2.0
+      def [](key)
+        @cookies[key]
+      end
+
+      # Associate the given value with the given key and store them
+      #
+      # @param key [Symbol] the key
+      # @param value [Object] the value
+      #
+      # @return [void]
+      #
+      # @since 0.2.0
+      def []=(key, value)
+        @cookies[key] = value
       end
 
       private

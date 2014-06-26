@@ -9,6 +9,7 @@ module Lotus
       # The key that returns raw session from the Rack env
       #
       # @since 0.1.0
+      # @api private
       SESSION_KEY = 'rack.session'.freeze
 
       protected

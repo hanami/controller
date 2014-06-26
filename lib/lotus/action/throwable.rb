@@ -11,6 +11,10 @@ module Lotus
     # @see Lotus::Action::Throwable#halt
     # @see Lotus::Action::Throwable#status
     module Throwable
+      # @since 0.2.0
+      # @api private
+      RACK_ERRORS = 'rack.errors'.freeze
+
       def self.included(base)
         base.extend ClassMethods
       end
@@ -26,8 +30,8 @@ module Lotus
         # This is a fine grained control, for a global configuration see
         # Lotus::Action.handled_exceptions
         #
-        # @param exception [Class] the exception class
-        # @param status [Fixmun] a valid HTTP status
+        # @param exception [Hash] the exception class must be the key and the
+        #   HTTP status the value of the hash
         #
         # @since 0.1.0
         #
@@ -65,7 +69,7 @@ module Lotus
       #
       # @param code [Fixnum] a valid HTTP status code
       #
-      # @since 0.1.1
+      # @since 0.2.0
       #
       # @see Lotus::Controller#handled_exceptions
       # @see Lotus::Action::Throwable#handle_exception
@@ -87,26 +91,37 @@ module Lotus
         self.body   = message
       end
 
-      def throw(*args)
-        if Fixnum === args.first
-          warn "Passing a status code to `throw` is deprecated and will be removed from Lotus::Controller. Use `halt` method instead."
-          halt(args.first)
-        end
-
-        super
-      end
-
       private
+      # @since 0.1.0
+      # @api private
       def _rescue
         catch :halt do
           begin
             yield
           rescue => exception
+            _reference_in_rack_errors(exception)
             _handle_exception(exception)
           end
         end
       end
 
+      # @since 0.2.0
+      # @api private
+      def _reference_in_rack_errors(exception)
+        if errors = @_env[RACK_ERRORS]
+          errors.write(_dump_exception(exception))
+          errors.flush
+        end
+      end
+
+      # @since 0.2.0
+      # @api private
+      def _dump_exception(exception)
+        [[exception.class, exception.message].compact.join(": "), *exception.backtrace].join("\n\t")
+      end
+
+      # @since 0.1.0
+      # @api private
       def _handle_exception(exception)
         raise unless configuration.handle_exceptions
         halt configuration.exception_code(exception.class)

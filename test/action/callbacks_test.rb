@@ -28,7 +28,7 @@ describe Lotus::Action do
       action.call(params = {bang: '!'})
 
       action.article.must_equal 'Bonjour!!'.reverse
-      action.exposed_params.must_equal(params)
+      action.exposed_params.params.must_equal(params)
     end
 
     it 'yields params when the callback is a block' do
@@ -36,7 +36,7 @@ describe Lotus::Action do
       response = action.call(params = { twentythree: '23' })
 
       response[0].must_equal 200
-      action.yielded_params.must_equal params
+      action.yielded_params.params.must_equal params
     end
 
     describe 'on error' do
@@ -83,7 +83,7 @@ describe Lotus::Action do
       action = YieldAfterBlockAction.new
       action.call(params = { fortytwo: '42' })
 
-      action.meaning_of_life_params.must_equal params
+      action.meaning_of_life_params.params.must_equal params
     end
 
     describe 'on error' do
