@@ -54,7 +54,7 @@ module Lotus
 
         # Restrict the access to the specified mime type symbols.
         #
-        # @param mime_types[Array<Symbol>] one or more symbols representing mime type(s)
+        # @param formats[Array<Symbol>] one or more symbols representing mime type(s)
         #
         # @raise [Lotus::Controller::UnknownFormatError] if the symbol cannot
         #   be converted into a mime type
