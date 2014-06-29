@@ -809,7 +809,7 @@ not bubbled up in the opposite direction.
 require 'lotus/controller'
 
 Lotus::Controller.configure do
-  handle_exception ArgumentError => 404
+  handle_exception ArgumentError => 400
 end
 
 class ArticlesController
