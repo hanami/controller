@@ -37,7 +37,7 @@ module Lotus
       # @example
       #   require 'lotus/http/status'
       #
-      #   Lotus::Http::Status.for_code(418) # => [418, "I'm a teapot (RFC 2324)"]
+      #   Lotus::Http::Status.for_code(418) # => [418, "I'm a teapot"]
       def self.for_code(code)
         ALL.assoc(code)
       end
