@@ -319,7 +319,7 @@ class ArticlesController
 end
 
 action = ArticlesController::Show.new
-action.call({id: 'unknown'}) # => [404, {}, ["Not Found"]]
+action.call({id: 'unknown'}) # => raises RecordNotFound
 ```
 
 ### Throwable HTTP statuses
