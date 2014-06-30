@@ -498,6 +498,22 @@ action = Create.new
 action.call({ article: { title: 'Hello' }}) # => [302, {'Location' => '/articles/23'}, '']
 ```
 
+You can also redirect with a custom status code:
+
+```ruby
+class Create
+  include Lotus::Action
+
+  def call(params)
+    # ...
+    redirect_to 'http://example.com/articles/23', status: 301
+  end
+end
+
+action = Create.new
+action.call({ article: { title: 'Hello' }}) # => [301, {'Location' => '/articles/23'}, '']
+```
+
 ### Mime types
 
 Lotus::Action automatically sets the `Content-Type` header, according to the request.

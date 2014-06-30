@@ -19,7 +19,7 @@ module Lotus
       #
       # @since 0.1.0
       #
-      # @example
+      # @example With default status code (302)
       #   require 'lotus/controller'
       #
       #   class Create
@@ -30,6 +30,24 @@ module Lotus
       #       redirect_to 'http://example.com/articles/23'
       #     end
       #   end
+      #
+      #   action = Create.new
+      #   action.call({}) # => [302, {'Location' => '/articles/23'}, '']
+      #
+      # @example With custom status code
+      #   require 'lotus/controller'
+      #
+      #   class Create
+      #     include Lotus::Action
+      #
+      #     def call(params)
+      #       # ...
+      #       redirect_to 'http://example.com/articles/23', status: 301
+      #     end
+      #   end
+      #
+      #   action = Create.new
+      #   action.call({}) # => [301, {'Location' => '/articles/23'}, '']
       def redirect_to(url, status: 302)
         headers.merge!(LOCATION => url)
         self.status = status
