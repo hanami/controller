@@ -75,14 +75,18 @@ module Lotus
       #
       # @since 0.2.0
       def self.param(name)
-        _names << name
+        names << name
         nil
       end
 
-      def self._names
+      # Returns the names of the params which have been whitelisted
+      #
+      # @return [Object] return Set of whitelisted param names
+      #
+      # @since 0.2.0
+      def self.names
         @names ||= Set.new
       end
-      private_class_method :_names
 
       # Returns whether or not params are being whitelisted
       #
@@ -90,24 +94,14 @@ module Lotus
       #
       # @since 0.2.0
       def self.whitelisting?
-        _names.any?
-      end
-
-      # Returns whether the named param has been whitelisted
-      #
-      # @param name [Symbol] the key
-      #
-      # @return [true, false] return whether the named param is whitelisted
-      #
-      # @since 0.2.0
-      def self.whitelisted?(name)
-        _names.include?(name)
+        names.any?
       end
 
       private
       def _compute_params
-        params = Utils::Hash.new(_extract).symbolize!
+        params = _extract
         params = _whitelist(params)
+        Utils::Hash.new(params).symbolize!
       end
 
       def _extract
@@ -123,8 +117,15 @@ module Lotus
 
       def _whitelist(raw_params)
         if self.class.whitelisting?
-          raw_params.select do |k, v|
-            self.class.whitelisted?(k)
+          self.class.names.reduce({}) do |params, name|
+            case
+            when raw_params.has_key?(name)
+              params[name] = raw_params[name]
+            when raw_params.has_key?(name.to_s)
+              params[name] = raw_params[name]
+            else
+            end
+            params
           end
         else
           raw_params
