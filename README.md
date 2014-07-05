@@ -350,7 +350,7 @@ action.call({}) # => [401, {}, ["Unauthorized"]]
 
 It offers convenient access to cookies.
 
-They are read as an Hash from Rack env:
+They are read as a Hash from Rack env:
 
 ```ruby
 require 'lotus/controller'
@@ -370,7 +370,7 @@ action = ReadCookiesFromRackEnv.new
 action.call({'HTTP_COOKIE' => 'foo=bar'})
 ```
 
-They are set like an Hash:
+They are set like a Hash:
 
 ```ruby
 require 'lotus/controller'
@@ -432,7 +432,7 @@ action = ReadSessionFromRackEnv.new
 action.call({ 'rack.session' => { 'age' => '31' }})
 ```
 
-Values can be set like an Hash:
+Values can be set like a Hash:
 
 ```ruby
 require 'lotus/controller'
@@ -452,7 +452,7 @@ action = SetSession.new
 action.call({}) # => [200, {"Set-Cookie"=>"rack.session=..."}, "..."]
 ```
 
-Values can be removed like an Hash:
+Values can be removed like a Hash:
 
 ```ruby
 require 'lotus/controller'
