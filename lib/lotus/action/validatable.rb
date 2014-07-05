@@ -4,7 +4,7 @@ module Lotus
 
       def self.included(base)
         base.class_eval do
-          extend  ClassMethods
+          extend ClassMethods
         end
       end
 
