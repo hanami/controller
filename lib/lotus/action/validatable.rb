@@ -3,9 +3,7 @@ module Lotus
     module Validatable
 
       def self.included(base)
-        base.class_eval do
-          extend ClassMethods
-        end
+        base.extend ClassMethods
       end
 
       module ClassMethods

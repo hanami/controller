@@ -99,9 +99,11 @@ module Lotus
 
       private
       def _compute_params
-        params = _extract
-        params = _whitelist(params)
-        Utils::Hash.new(params).symbolize!
+        Utils::Hash.new(
+          _whitelist(
+            _extract
+          )
+        ).symbolize!
       end
 
       def _extract
