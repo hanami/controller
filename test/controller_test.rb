@@ -134,6 +134,18 @@ describe Lotus::Controller do
       action.xyz.must_equal 'test'
     end
 
+    it 'creates an action given an underscored name' do
+      action = TestControllerWithUnderscoredActions::SetXyz.new
+      action.call({name: 'test'})
+      action.xyz.must_equal 'test'
+    end
+
+    it 'creates an action given a symbol' do
+      action = TestControllerWithUnderscoredActions::SetAsd.new
+      action.call({name: 'test'})
+      action.asd.must_equal 'test'
+    end
+
     it "raises an error when the given name isn't a valid Ruby identifier" do
       -> {
         class Controller
@@ -144,7 +156,7 @@ describe Lotus::Controller do
             end
           end
         end
-      }.must_raise TypeError
+      }.must_raise NameError
     end
 
     describe 'when configured with a custom module' do
