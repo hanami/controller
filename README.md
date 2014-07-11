@@ -658,6 +658,12 @@ class ArticlesController
 
     # ...
   end
+
+  class UpdatePricing
+    include Lotus::Action
+
+    # ...
+  end
 end
 ```
 
@@ -667,11 +673,15 @@ Which is a bit verbose. Instead, just do:
 class ArticlesController
   include Lotus::Controller
 
-  action 'Index' do
+  action 'Index' do # You may use valid Ruby class names as strings ...
     # ...
   end
 
-  action 'Show' do
+  action 'show' do # ... or 'underscored' strings ...
+    # ...
+  end
+
+  action :update_pricing do #  ... or symbols.
     # ...
   end
 end
