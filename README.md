@@ -145,7 +145,7 @@ response = action.call({ id: 23, key: 'value' })
 
 ### Response
 
-The output of `#call` is a serialized Rack::Response (see [#finish](http://rack.rubyforge.org/doc/classes/Rack/Response.html#M000182)):
+The output of `#call` is a serialized Rack::Response (see [#finish](http://rubydoc.info/github/rack/rack/master/Rack/Response#finish-instance_method)):
 
 ```ruby
 class Show
