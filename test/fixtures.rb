@@ -83,6 +83,26 @@ class TestController
   end
 end
 
+class TestControllerWithUnderscoredActions
+  include Lotus::Controller
+
+  action 'set_xyz' do
+    expose :xyz
+
+    def call(params)
+      @xyz = params[:name]
+    end
+  end
+
+  action :set_asd do
+    expose :asd
+
+    def call(params)
+      @asd = params[:name]
+    end
+  end
+end
+
 class CallAction
   include Lotus::Action
 

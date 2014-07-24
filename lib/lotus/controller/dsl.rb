@@ -16,7 +16,7 @@ module Lotus
         # @param name [String] the name of the action
         # @param blk [Proc] the code of the action
         #
-        # @raise TypeError when the name isn't a valid Ruby name
+        # @raise NameError when the name can't be converted to a valid Ruby name
         #
         # @since 0.1.0
         #
@@ -42,9 +42,10 @@ module Lotus
         #   end
         def action(name, &blk)
           config = configuration.duplicate
-          const_set(name, Class.new)
+          class_name = Lotus::Utils::String.new(name).underscore.classify
+          const_set(class_name, Class.new)
 
-          const_get(name).tap do |klass|
+          const_get(class_name).tap do |klass|
             klass.class_eval { include config.action_module }
             klass.configuration = config
             klass.class_eval(&blk)
