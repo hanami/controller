@@ -75,7 +75,7 @@ module Lotus
         finish
       end
 
-      protected
+      private
 
       # Prepare the Rack response before the control is returned to the
       # webserver.

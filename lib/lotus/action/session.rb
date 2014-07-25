@@ -12,7 +12,7 @@ module Lotus
       # @api private
       SESSION_KEY = 'rack.session'.freeze
 
-      protected
+      private
 
       # Gets the session from the request and expose it as an Hash.
       #

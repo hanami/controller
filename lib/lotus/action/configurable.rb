@@ -39,7 +39,8 @@ module Lotus
         config.load!(base)
       end
 
-      protected
+      private
+
       def configuration
         self.class.configuration
       end

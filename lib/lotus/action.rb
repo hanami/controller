@@ -54,7 +54,7 @@ module Lotus
       end
     end
 
-    protected
+    private
 
     # Finalize the response
     #
