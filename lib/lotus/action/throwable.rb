@@ -20,7 +20,7 @@ module Lotus
       end
 
       module ClassMethods
-        protected
+        private
 
         # Handle the given exception with an HTTP status code.
         #

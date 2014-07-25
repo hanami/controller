@@ -10,8 +10,7 @@ module Lotus
     #
     # @see Lotus::Action::Cookies#cookies
     module Cookies
-
-      protected
+      private
 
       # Finalize the response by flushing cookies into the response
       #
