@@ -636,3 +636,33 @@ module MusicPlayer
     end
   end
 end
+
+class VisibilityAction
+  include Lotus::Action
+  include Lotus::Action::Cookies
+  include Lotus::Action::Session
+
+  self.configuration.handle_exceptions false
+
+  def call(params)
+    self.body   = 'x'
+    self.status = 201
+    self.format = :json
+
+    self.headers.merge!('X-Custom' => 'OK')
+    headers.merge!('Y-Custom'      => 'YO')
+
+    # PRIVATE
+    # self.configuration
+    # self.finish
+
+    # PROTECTED
+    self.response
+    self.cookies
+    self.session
+
+    response
+    cookies
+    session
+  end
+end

@@ -10,18 +10,7 @@ module Lotus
     #
     # @see Lotus::Action::Cookies#cookies
     module Cookies
-      private
-
-      # Finalize the response by flushing cookies into the response
-      #
-      # @since 0.1.0
-      # @api private
-      #
-      # @see Lotus::Action#finish
-      def finish
-        super
-        cookies.finish
-      end
+      protected
 
       # Gets the cookies from the request and expose them as an Hash
       #
@@ -53,6 +42,19 @@ module Lotus
       #   end
       def cookies
         @cookies ||= CookieJar.new(@_env.dup, headers)
+      end
+
+      private
+
+      # Finalize the response by flushing cookies into the response
+      #
+      # @since 0.1.0
+      # @api private
+      #
+      # @see Lotus::Action#finish
+      def finish
+        super
+        cookies.finish
       end
     end
   end

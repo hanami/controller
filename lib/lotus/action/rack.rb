@@ -113,6 +113,23 @@ module Lotus
         @headers
       end
 
+      # Returns a serialized Rack response (Array), according to the current
+      #   status code, headers, and body.
+      #
+      # @return [Array] the serialized response
+      #
+      # @since 0.1.0
+      # @api private
+      #
+      # @see Lotus::Action::Rack::DEFAULT_RESPONSE_CODE
+      # @see Lotus::Action::Rack::DEFAULT_RESPONSE_BODY
+      # @see Lotus::Action::Rack#status=
+      # @see Lotus::Action::Rack#headers
+      # @see Lotus::Action::Rack#body=
+      def response
+        [ @_status || DEFAULT_RESPONSE_CODE, headers, @_body || DEFAULT_RESPONSE_BODY.dup ]
+      end
+
       private
 
       # Sets the HTTP status code for the response
@@ -158,23 +175,6 @@ module Lotus
       def body=(body)
         body   = Array(body) unless body.respond_to?(:each)
         @_body = body
-      end
-
-      # Returns a serialized Rack response (Array), according to the current
-      #   status code, headers, and body.
-      #
-      # @return [Array] the serialized response
-      #
-      # @since 0.1.0
-      # @api private
-      #
-      # @see Lotus::Action::Rack::DEFAULT_RESPONSE_CODE
-      # @see Lotus::Action::Rack::DEFAULT_RESPONSE_BODY
-      # @see Lotus::Action::Rack#status=
-      # @see Lotus::Action::Rack#headers
-      # @see Lotus::Action::Rack#body=
-      def response
-        [ @_status || DEFAULT_RESPONSE_CODE, headers, @_body || DEFAULT_RESPONSE_BODY.dup ]
       end
     end
   end
