@@ -124,7 +124,7 @@ module Lotus
             when raw_params.has_key?(name)
               params[name] = raw_params[name]
             when raw_params.has_key?(name.to_s)
-              params[name] = raw_params[name]
+              params[name] = raw_params[name.to_s]
             end
             params
           end

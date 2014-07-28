@@ -435,11 +435,16 @@ class ParamsAction
   end
 end
 
-def anonymous_params_action_class(&block)
-  if block_given?
-    Class.new(ParamsAction, &block)
-  else
-    Class.new(ParamsAction)    
+class WhitelistedParamsAction
+  class Params < Lotus::Action::Params
+    param :id
+  end
+
+  include Lotus::Action
+  params Params
+
+  def call(params)
+    self.body = params.params.inspect
   end
 end
 

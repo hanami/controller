@@ -2,54 +2,64 @@ require 'test_helper'
 require 'rack'
 
 describe Lotus::Action::Params do
-  it 'accepts params from "router.params"' do
-    action   = ParamsAction.new
-    response = action.call({ 'router.params' => {id: '23'} })
-
-    response[2].must_equal ["{:id=>\"23\"}"]
-  end
-
-  it 'accepts params as they are, for testing purposes' do
-    action   = ParamsAction.new
-    response = action.call({id: '23'})
-
-    response[2].must_equal ["{:id=>\"23\"}"]
-  end
-
-  it 'accepts params from "rack.input" as request body' do
-    response = Rack::MockRequest.new(ParamsAction.new).request('PATCH', "?id=23", params: { x: { foo: 'bar' } })
-    response.body.must_match "{:id=>\"23\", :x=>{:foo=>\"bar\"}}"
-  end
-
   it 'is frozen' do
     params = Lotus::Action::Params.new({id: '23'})
     params.must_be :frozen?
   end
 
-  it 'accepts a parameter description' do
-    Lotus::Action::Params.must_respond_to :param
-  end
+  describe 'whitelisting' do
+    describe "when this feature isn't enabled" do
+      before do
+        @action = ParamsAction.new
+      end
 
-  it 'returns all params when the params are undescribed' do
-    action   = anonymous_params_action_class.new
-    response = action.call({id: '23', email: 'foo@example.com'})
+      describe "in testing mode" do
+        it 'returns all the params as they are' do
+          _, _, body = @action.call({a: 1, b: 2, c: 3})
+          body.must_equal [%({:a=>1, :b=>2, :c=>3})]
+        end
+      end
 
-    response[2].must_equal ["{:id=>\"23\", :email=>\"foo@example.com\"}"]
-  end
+      describe "in a Rack context" do
+        it 'returns all the params as they are' do
+          response = Rack::MockRequest.new(@action).request('PATCH', "?id=23", params: { x: { foo: 'bar' } })
+          response.body.must_match %({:id=>"23", :x=>{:foo=>"bar"}})
+        end
+      end
 
-  it 'passes through only whitelisted params when params are described' do
-    params_class = Class.new(Lotus::Action::Params) do
-      param :id
+      describe "with Lotus::Router" do
+        it 'returns all the params as they are' do
+          _, _, body = @action.call({ 'router.params' => {id: 23}})
+          body.must_equal [%({:id=>23})]
+        end
+      end
     end
 
-    action_class = anonymous_params_action_class do
-      params params_class
+    describe "when this feature is enabled" do
+      before do
+        @action = WhitelistedParamsAction.new
+      end
+
+      describe "in testing mode" do
+        it 'returns only the listed params' do
+          _, _, body = @action.call({id: 23, unknown: 4})
+          body.must_equal [%({:id=>23})]
+        end
+      end
+
+      describe "in a Rack context" do
+        it 'returns only the listed params' do
+          response = Rack::MockRequest.new(@action).request('PATCH', "?id=23", params: { x: { foo: 'bar' } })
+          response.body.must_match %({:id=>"23"})
+        end
+      end
+
+      describe "with Lotus::Router" do
+        it 'returns only the listed params' do
+          _, _, body = @action.call({ 'router.params' => {id: 23, another: 'x'}})
+          body.must_equal [%({:id=>23})]
+        end
+      end
     end
-
-    action   = action_class.new
-    response = action.call({id: '23', email: 'foo@example.com'})
-
-    response[2].must_equal ["{:id=>\"23\"}"]
   end
-
 end
