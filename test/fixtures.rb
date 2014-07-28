@@ -435,6 +435,14 @@ class ParamsAction
   end
 end
 
+def anonymous_params_action_class(&block)
+  if block_given?
+    Class.new(ParamsAction, &block)
+  else
+    Class.new(ParamsAction)    
+  end
+end
+
 class Root
   include Lotus::Action
 

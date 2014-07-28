@@ -5,6 +5,7 @@ require 'lotus/action/redirect'
 require 'lotus/action/exposable'
 require 'lotus/action/throwable'
 require 'lotus/action/callbacks'
+require 'lotus/action/validatable'
 require 'lotus/action/callable'
 
 module Lotus
@@ -40,6 +41,7 @@ module Lotus
     # @see Lotus::Action::Exposable
     # @see Lotus::Action::Throwable
     # @see Lotus::Action::Callbacks
+    # @see Lotus::Action::Validatable
     # @see Lotus::Action::Callable
     def self.included(base)
       base.class_eval do
@@ -50,6 +52,7 @@ module Lotus
         include Exposable
         include Throwable
         include Callbacks
+        include Validatable
         prepend Callable
       end
     end
@@ -71,5 +74,7 @@ module Lotus
     # @see Lotus::Action::Callable
     def finish
     end
+
+
   end
 end

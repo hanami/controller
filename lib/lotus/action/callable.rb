@@ -69,7 +69,7 @@ module Lotus
         _rescue do
           @_env    = env
           @headers = ::Rack::Utils::HeaderHash.new
-          super        Params.new(@_env)
+          super        self.class.params_class.new(@_env)
         end
 
         finish
