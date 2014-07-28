@@ -143,6 +143,32 @@ action   = Show.new
 response = action.call({ id: 23, key: 'value' })
 ```
 
+#### Whitelisting
+
+Because params represent an untrusted input, it's recommended to whitelist them.
+
+```ruby
+require 'lotus/controller'
+
+class Signup
+  include Lotus::Action
+
+  params do
+    param :first_name
+    param :last_name
+    param :email
+  end
+
+  def call(params)
+    puts params.class            # => Signup::Params
+    puts params.class.superclass # => Lotus::Action::Params
+
+    puts params[:first_name]     # => "Luca"
+    puts params[:admin]          # => nil
+  end
+end
+```
+
 ### Response
 
 The output of `#call` is a serialized Rack::Response (see [#finish](http://rubydoc.info/github/rack/rack/master/Rack/Response#finish-instance_method)):
