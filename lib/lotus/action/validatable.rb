@@ -1,33 +1,71 @@
 module Lotus
   module Action
     module Validatable
+      # Defines the class name for anoymous params
+      #
+      # @api private
+      # @since x.x.x
+      PARAMS_CLASS_NAME = 'Params'.freeze
 
       def self.included(base)
         base.extend ClassMethods
       end
 
       module ClassMethods
-        # Define valid parameters to be passed to #call
+        # Whitelist valid parameters to be passed to Lotus::Action#call.
         #
-        # Uses the specific class to define the parameters which
-        # will ultimately be passed to Lotus::Action#call.
+        # This feature isn't mandatory, but higly recommended for security
+        # reasons.
         #
-        # Any parameters definited by this class will be whitelisted
-        # and all other ignored.  If no parameters are defined then
-        # all params are whitelisted.
+        # Because params come into your application from untrusted sources, it's
+        # a good practice to filter only the wanted keys that serve for your
+        # specific use case.
         #
-        # @example
+        # Once whitelisted, the params are available as an Hash with symbols
+        # as keys.
+        #
+        #
+        #
+        # It accepts an anonymous block where all the params can be listed.
+        # It internally creates an inner class which inherits from
+        # Lotus::Action::Params.
+        #
+        #
+        # Alternatively, it accepts an concrete class that should inherit from
+        # Lotus::Action::Params.
+        #
+        # @param klass [Class,nil] a Lotus::Action::Params subclass
+        # @param blk [Proc] a block which defines the whitelisted params
+        #
+        # @return void
+        #
+        # @since x.x.x
+        #
+        # @see Lotus::Action::Params
+        #
+        # @example Anonymous Block
+        #   require 'lotus/controller'
         #
         #   class Signup
         #     include Lotus::Action
-        #     params SignupParams
+        #
+        #     params do
+        #       param :first_name
+        #       param :last_name
+        #       param :email
+        #     end
         #
         #     def call(params)
-        #       params.class   # => SignupParams
-        #       params[:email] # => 'foo@example.com'
-        #       params[:admin] # => nil
+        #       puts params.class            # => Signup::Params
+        #       puts params.class.superclass # => Lotus::Action::Params
+        #
+        #       puts params[:first_name]     # => "Luca"
+        #       puts params[:admin]          # => nil
         #     end
         #   end
+        #
+        # @example Concrete class
+        #   require 'lotus/controller'
         #
         #   class SignupParams < Lotus::Action::Params
         #     param :first_name
@@ -35,23 +73,37 @@ module Lotus
         #     param :email
         #   end
         #
-        # @return [nil] return nil
+        #   class Signup
+        #     include Lotus::Action
+        #     params SignupParams
         #
-        # @since 0.2.0
+        #     def call(params)
+        #       puts params.class            # => SignupParams
+        #       puts params.class.superclass # => Lotus::Action::Params
         #
-        # @see Lotus::Action::Params
-        def params(params_class)
-          @params_class = params_class
+        #       params[:first_name]          # => "Luca"
+        #       params[:admin]               # => nil
+        #     end
+        #   end
+        def params(klass = nil, &blk)
+          if block_given?
+            @params_class = const_set(PARAMS_CLASS_NAME,
+                                      Class.new(Params, &blk))
+          else
+            @params_class = klass
+          end
         end
 
         # Returns the class which defines the params
         #
         # Returns the class which has been provided to define the
-        # params.  By default this will be Lotus::Action::Params.
+        # params. By default this will be Lotus::Action::Params.
         #
-        # @return [Object] return the associated object, if found
+        # @return [Class] A params class (when whitelisted) or
+        #   Lotus::Action::Params
         #
-        # @since 0.2.0
+        # @api private
+        # @since x.x.x
         def params_class
           @params_class ||= Params
         end

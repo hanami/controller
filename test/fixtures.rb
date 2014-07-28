@@ -448,6 +448,18 @@ class WhitelistedParamsAction
   end
 end
 
+class WhitelistedDslAction
+  include Lotus::Action
+
+  params do
+    param :username
+  end
+
+  def call(params)
+    self.body = params.params.inspect
+  end
+end
+
 class Root
   include Lotus::Action
 

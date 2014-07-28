@@ -36,28 +36,68 @@ describe Lotus::Action::Params do
     end
 
     describe "when this feature is enabled" do
-      before do
-        @action = WhitelistedParamsAction.new
-      end
+      describe "with an explicit class" do
+        before do
+          @action = WhitelistedParamsAction.new
+        end
 
-      describe "in testing mode" do
-        it 'returns only the listed params' do
-          _, _, body = @action.call({id: 23, unknown: 4})
-          body.must_equal [%({:id=>23})]
+        describe "in testing mode" do
+          it 'returns only the listed params' do
+            _, _, body = @action.call({id: 23, unknown: 4})
+            body.must_equal [%({:id=>23})]
+          end
+        end
+
+        describe "in a Rack context" do
+          it 'returns only the listed params' do
+            response = Rack::MockRequest.new(@action).request('PATCH', "?id=23", params: { x: { foo: 'bar' } })
+            response.body.must_match %({:id=>"23"})
+          end
+        end
+
+        describe "with Lotus::Router" do
+          it 'returns only the listed params' do
+            _, _, body = @action.call({ 'router.params' => {id: 23, another: 'x'}})
+            body.must_equal [%({:id=>23})]
+          end
         end
       end
 
-      describe "in a Rack context" do
-        it 'returns only the listed params' do
-          response = Rack::MockRequest.new(@action).request('PATCH', "?id=23", params: { x: { foo: 'bar' } })
-          response.body.must_match %({:id=>"23"})
+      describe "with an anoymous class" do
+        before do
+          @action = WhitelistedDslAction.new
         end
-      end
 
-      describe "with Lotus::Router" do
-        it 'returns only the listed params' do
-          _, _, body = @action.call({ 'router.params' => {id: 23, another: 'x'}})
-          body.must_equal [%({:id=>23})]
+        it 'creates a Params innerclass' do
+          assert defined?(WhitelistedDslAction::Params),
+            "expected WhitelistedDslAction::Params to be defined"
+
+          assert WhitelistedDslAction::Params.ancestors.include?(Lotus::Action::Params),
+            "expected WhitelistedDslAction::Params to be a Lotus::Action::Params subclass"
+
+          assert WhitelistedDslAction::Params.whitelisting?,
+            "expected WhitelistedDslAction::Params to be whitelisted"
+        end
+
+        describe "in testing mode" do
+          it 'returns only the listed params' do
+            _, _, body = @action.call({username: 'jodosha', unknown: 'field'})
+            body.must_equal [%({:username=>"jodosha"})]
+          end
+        end
+
+        describe "in a Rack context" do
+          it 'returns only the listed params' do
+            response = Rack::MockRequest.new(@action).request('PATCH', "?username=jodosha", params: { x: { foo: 'bar' } })
+            response.body.must_match %({:username=>"jodosha"})
+          end
+        end
+
+        describe "with Lotus::Router" do
+          it 'returns only the listed params' do
+            _, _, body = @action.call({ 'router.params' => {username: 'jodosha', y: 'x'}})
+            body.must_equal [%({:username=>"jodosha"})]
+          end
         end
       end
     end
