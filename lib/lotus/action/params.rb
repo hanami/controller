@@ -1,4 +1,5 @@
 require 'lotus/utils/hash'
+require 'set'
 
 module Lotus
   module Action
@@ -39,7 +40,7 @@ module Lotus
       # @since 0.1.0
       def initialize(env)
         @env    = env
-        @params = Utils::Hash.new(_extract).symbolize!
+        @params = _compute_params
         freeze
       end
 
@@ -54,7 +55,57 @@ module Lotus
         @params[key]
       end
 
+      # Whitelists the named parameter
+      #
+      # Whitelist the named parameter.  Whitelisted parameters
+      # will be stored while unwhitelisted parater values will
+      # be ignored.
+      #
+      # @example
+      #
+      #   class SignupParams < Lotus::Action::Params
+      #     param :email
+      #   end
+      #
+      #   params = SignupParams.new({id: 23, email: 'mjb@example.com'})
+      #   params[:email] # => 'mjb@example.com'
+      #   params[:id]]   # => nil
+      #
+      # @return [nil] return nil
+      #
+      # @since 0.2.0
+      def self.param(name)
+        names << name
+        nil
+      end
+
+      # Returns the names of the params which have been whitelisted
+      #
+      # @return [Object] return Set of whitelisted param names
+      #
+      # @since 0.2.0
+      def self.names
+        @names ||= Set.new
+      end
+
+      # Returns whether or not params are being whitelisted
+      #
+      # @return [true, false] return whether whitelisting is being used
+      #
+      # @since 0.2.0
+      def self.whitelisting?
+        names.any?
+      end
+
       private
+      def _compute_params
+        Utils::Hash.new(
+          _whitelist(
+            _extract
+          )
+        ).symbolize!
+      end
+
       def _extract
         {}.tap do |result|
           if env.has_key?(RACK_INPUT)
@@ -65,6 +116,23 @@ module Lotus
           end
         end
       end
+
+      def _whitelist(raw_params)
+        if self.class.whitelisting?
+          self.class.names.reduce({}) do |params, name|
+            case
+            when raw_params.has_key?(name)
+              params[name] = raw_params[name]
+            when raw_params.has_key?(name.to_s)
+              params[name] = raw_params[name]
+            end
+            params
+          end
+        else
+          raw_params
+        end
+      end
+
     end
   end
 end
