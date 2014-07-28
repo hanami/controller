@@ -105,7 +105,7 @@ module Lotus
         # @api private
         # @since x.x.x
         def params_class
-          @params_class ||= Params
+          @params_class ||= params { }
         end
 
       end

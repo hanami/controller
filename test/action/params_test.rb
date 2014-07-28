@@ -24,6 +24,17 @@ describe Lotus::Action::Params do
         @action = ParamsAction.new
       end
 
+      it 'creates a Params innerclass' do
+        assert defined?(ParamsAction::Params),
+          "expected ParamsAction::Params to be defined"
+
+        assert ParamsAction::Params.ancestors.include?(Lotus::Action::Params),
+          "expected ParamsAction::Params to be a Lotus::Action::Params subclass"
+
+        assert !ParamsAction::Params.whitelisting?,
+          "expected ParamsAction::Params to not be whitelisted"
+      end
+
       describe "in testing mode" do
         it 'returns all the params as they are' do
           _, _, body = @action.call({a: 1, b: 2, c: 3})
