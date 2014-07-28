@@ -57,11 +57,14 @@ module Lotus
 
       # Whitelists the named parameter
       #
-      # Whitelist the named parameter.  Whitelisted parameters
-      # will be stored while unwhitelisted parater values will
-      # be ignored.
+      # @param name [#to_sym] The name of the param to whitelist
+      #
+      # @return void
+      #
+      # @since x.x.x
       #
       # @example
+      #   require 'lotus/controller'
       #
       #   class SignupParams < Lotus::Action::Params
       #     param :email
@@ -69,35 +72,34 @@ module Lotus
       #
       #   params = SignupParams.new({id: 23, email: 'mjb@example.com'})
       #   params[:email] # => 'mjb@example.com'
-      #   params[:id]]   # => nil
-      #
-      # @return [nil] return nil
-      #
-      # @since 0.2.0
+      #   params[:id]    # => nil
       def self.param(name)
-        names << name
+        names << name.to_sym
         nil
       end
 
+      private
+
       # Returns the names of the params which have been whitelisted
       #
-      # @return [Object] return Set of whitelisted param names
+      # @return [Set] return the names of the whitelisted params
       #
-      # @since 0.2.0
+      # @api private
+      # @since x.x.x
       def self.names
         @names ||= Set.new
       end
 
       # Returns whether or not params are being whitelisted
       #
-      # @return [true, false] return whether whitelisting is being used
+      # @return [TrueClass, FalseClass] return whether whitelisting is being used
       #
-      # @since 0.2.0
+      # @api private
+      # @since x.x.x
       def self.whitelisting?
         names.any?
       end
 
-      private
       def _compute_params
         Utils::Hash.new(
           _whitelist(

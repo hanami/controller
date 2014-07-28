@@ -8,6 +8,17 @@ describe Lotus::Action::Params do
   end
 
   describe 'whitelisting' do
+    before do
+      @params = Class.new(Lotus::Action::Params)
+    end
+
+    it 'accepts both string and symbols as names' do
+      @params.param :id
+      @params.param 'first_name'
+
+      @params.send(:names).must_equal Set.new([:id, :first_name])
+    end
+
     describe "when this feature isn't enabled" do
       before do
         @action = ParamsAction.new
