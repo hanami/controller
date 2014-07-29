@@ -62,4 +62,10 @@ describe 'Framework configuration' do
     modules.must_include(Lotus::Action::Cookies)
     modules.must_include(Lotus::Action::Session)
   end
+
+  it 'correctly includes user defined modules' do
+    code, _, body = MusicPlayer::Controllers::Artists::Index.new.call({})
+    code.must_equal 200
+    body.must_equal ['Luca']
+  end
 end

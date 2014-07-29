@@ -34,7 +34,6 @@ module Lotus
     #
     # @see http://www.ruby-doc.org/core-2.1.2/Module.html#method-i-included
     #
-    # @see Lotus::Action::Configurable
     # @see Lotus::Action::Rack
     # @see Lotus::Action::Mime
     # @see Lotus::Action::Redirect
@@ -42,10 +41,10 @@ module Lotus
     # @see Lotus::Action::Throwable
     # @see Lotus::Action::Callbacks
     # @see Lotus::Action::Validatable
+    # @see Lotus::Action::Configurable
     # @see Lotus::Action::Callable
     def self.included(base)
       base.class_eval do
-        include Configurable
         include Rack
         include Mime
         include Redirect
@@ -53,6 +52,7 @@ module Lotus
         include Throwable
         include Callbacks
         include Validatable
+        include Configurable
         prepend Callable
       end
     end

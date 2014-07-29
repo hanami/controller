@@ -619,11 +619,23 @@ module MusicPlayer
       modules do
         include Lotus::Action::Cookies
         include Lotus::Action::Session
+        include MusicPlayer::Controllers::Authentication
       end
     end
   end
 
   module Controllers
+    module Authentication
+      def self.included(action)
+        action.class_eval { expose :current_user }
+      end
+
+      private
+      def current_user
+        'Luca'
+      end
+    end
+
     class Dashboard
       include MusicPlayer::Controller
 
@@ -642,6 +654,12 @@ module MusicPlayer
 
     class Artists
       include MusicPlayer::Controller
+
+      action 'Index' do
+        def call(params)
+          self.body = current_user
+        end
+      end
 
       action 'Show' do
         handle_exception ArtistNotFound => 404

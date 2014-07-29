@@ -53,7 +53,10 @@ module Lotus
         #   action.exposures # => { :article => #<Article ...>, :tags => [ ... ] }
         def expose(*names)
           class_eval do
-            attr_reader(   *names)
+            names.each do |name|
+              attr_reader(name) unless attr_reader?(name)
+            end
+
             exposures.push(*names)
           end
         end
@@ -66,6 +69,15 @@ module Lotus
         # @api private
         def exposures
           @exposures ||= []
+        end
+
+        private
+        # Check if the attr_reader is already defined
+        #
+        # @since x.x.x
+        # @api private
+        def attr_reader?(name)
+          (instance_methods | private_instance_methods).include?(name)
         end
       end
 
