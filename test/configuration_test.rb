@@ -100,19 +100,12 @@ describe Lotus::Controller::Configuration do
           318
         end
       end unless defined?(FakeStatus)
-
-      module TestAuth
-        def self.included(base)
-          base.class_eval { expose :current_user }
-        end
-      end unless defined?(TestAuth)
     end
 
     after do
       Object.send(:remove_const, :FakeAction)
       Object.send(:remove_const, :FakeCallable)
       Object.send(:remove_const, :FakeStatus)
-      Object.send(:remove_const, :TestAuth)
     end
 
     describe 'when not previously configured' do
