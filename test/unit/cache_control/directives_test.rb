@@ -96,5 +96,12 @@ describe 'Directives' do
         end
       end
     end
+
+    describe "value and non value directives" do
+      it 'creates one directive for each valid symbol' do
+        subject = Lotus::Action::CacheControl::Directives.new(:public, max_age: 600, max_stale: 600)
+        subject.values.size.must_equal(3)
+      end
+    end
   end
 end
