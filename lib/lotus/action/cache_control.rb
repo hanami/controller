@@ -8,6 +8,8 @@ module Lotus
     # @see Lotus::Action::CacheControl::ClassMethods#expires
     module CacheControl
 
+      require 'lotus/action/cache_control/directives'
+
       # The HTTP header for Cache-Control
       #
       # @since 0.2.1
@@ -19,22 +21,6 @@ module Lotus
       # @since 0.2.1
       # @api private
       EXPIRES               = 'Expires'.freeze
-
-      # Cache-Control directives which have values
-      #
-      # @since 0.2.1
-      # @api private
-      VALUE_DIRECTIVES      = %i(max_age s_maxage min_fresh max_stale).freeze
-
-      # Cache-Control directives which are implicitly true
-      #
-      # @since 0.2.1
-      # @api private
-      NON_VALUE_DIRECTIVES  = %i(public private no_cache no_store no_transform must_revalidate proxy_revalidate).freeze
-
-      (NON_VALUE_DIRECTIVES | VALUE_DIRECTIVES).each do |d|
-        const_set(d.upcase, d.to_s.tr('_', '-'))
-      end
 
       protected
 
@@ -72,25 +58,10 @@ module Lotus
       #   end
       #
       def cache_control(*values)
-        cc_directives = {}
+        directives = Directives.new(*values)
 
-        cache_control_values(*values).each do |segment|
-          directive, argument = segment.split('=', 2)
-          cc_directives[directive.tr('-', '_').to_sym] = argument || true
-        end
-
-        unless cc_directives.empty?
-          cc_header = []
-          cc_directives.delete(:public) if cc_directives.key? :private
-          cc_directives.delete(:private) if cc_directives.key? :public
-          cc_directives.each do |k, v|
-            if VALUE_DIRECTIVES.include?(k)
-              cc_header << "#{CacheControl.const_get(k.upcase)}=#{v.to_i}"
-            elsif NON_VALUE_DIRECTIVES.include?(k) && Lotus::Utils::Kernel.Boolean(v)
-              cc_header << CacheControl.const_get(k.upcase)
-            end
-          end
-          headers.merge!(CACHE_CONTROL => cc_header.join(', '))
+        if directives.any?
+          headers.merge!(CACHE_CONTROL => directives.join(', '))
         end
       end
 
@@ -139,24 +110,6 @@ module Lotus
         headers.merge!(EXPIRES => time.httpdate)
         cache_control(*directives)
       end
-
-      private
-
-      def cache_control_values(*values)
-        cache_control_values = []
-        values.each do |value|
-          if value.is_a? Hash
-            cache_control_values.concat(value.map { |k, v|
-              argument = v.is_a?(Time) ? v - Time.now : v
-              "#{CacheControl.const_get(k.upcase)}=#{argument}"
-            })
-          elsif value.is_a? Symbol
-            cache_control_values << "#{value}=true"
-          end
-        end
-        cache_control_values
-      end
-
     end
   end
 end

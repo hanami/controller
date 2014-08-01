@@ -77,6 +77,10 @@ module Lotus
             directive.name == :public && @directives.map(&:name).include?(:private)
           end
         end
+
+        def join(separator)
+          values.join(separator)
+        end
       end
     end
   end
