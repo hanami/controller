@@ -107,7 +107,9 @@ module Lotus
 
         directives = *values
         directives << { max_age: max_age }
+
         headers.merge!(EXPIRES => time.httpdate)
+
         cache_control(*directives)
       end
     end
