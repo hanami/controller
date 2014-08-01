@@ -67,13 +67,14 @@ class ExpiresController
 
   action 'Hash' do
     def call(params)
-      expires 900, :public, :no_store, s_maxage: 86400
+      expires 900, :public, :no_store, s_maxage: 86400, min_fresh: 500, max_stale: 700
     end
   end
 
   action 'HashContainingTime' do
     def call(params)
-      expires (Time.now + 900), :public, :no_store, s_maxage: (Time.now + 86400)
+      expires (Time.now + 900), :public, :no_store, s_maxage: (Time.now + 86400), min_fresh: (Time.now + 500), max_stale: (Time.now + 700)
+
     end
   end
 end
@@ -140,7 +141,7 @@ describe 'Expires' do
     Time.stub(:now, Time.now) do
       response = @app.get('/hash')
       response.headers.fetch('Expires').must_equal (Time.now + 900).httpdate
-      response.headers.fetch('Cache-Control').split(', ').must_equal %w(public no-store s-maxage=86400 max-age=900)
+      response.headers.fetch('Cache-Control').split(', ').must_equal %w(public no-store s-maxage=86400 min-fresh=500 max-stale=700 max-age=900)
     end
   end
 
@@ -148,7 +149,7 @@ describe 'Expires' do
     Time.stub(:now, Time.now) do
       response = @app.get('/hash-containing-time')
       response.headers.fetch('Expires').must_equal (Time.now + 900).httpdate
-      response.headers.fetch('Cache-Control').split(', ').must_equal %w(public no-store s-maxage=86400 max-age=900)
+      response.headers.fetch('Cache-Control').split(', ').must_equal %w(public no-store s-maxage=86400 min-fresh=500 max-stale=700 max-age=900)
     end
   end
 end
