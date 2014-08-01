@@ -42,7 +42,7 @@ module Lotus
         end
 
         def to_str
-          @name
+          @name.to_s.tr('_', '-')
         end
 
         def valid?

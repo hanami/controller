@@ -127,3 +127,12 @@ describe 'ValueDirective' do
     end
   end
 end
+
+describe 'NonValueDirective' do
+  describe '#to_str' do
+    it 'returns as http cache format' do
+      subject = Lotus::Action::CacheControl::NonValueDirective.new(:no_cache)
+      subject.to_str.must_equal('no-cache')
+    end
+  end
+end
