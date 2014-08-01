@@ -65,7 +65,7 @@ module Lotus
       #
       #       # overwrite previous Cache-Control directives
       #       cache_control :private, :no_cache, :no_store
-      #       
+      #
       #       => Cache-Control: private, no-store, max-age=900
       #
       #     end
@@ -118,7 +118,7 @@ module Lotus
       #
       #       # overwrite Cache-Control directives and Expires
       #       expires 300, :private, :no_cache, :no_store
-      #       
+      #
       #       => Expires: Thu, 26 Jun 2014 12:00:00 GMT
       #       => Cache-Control: private, no-cache, no-store max-age=300
       #
