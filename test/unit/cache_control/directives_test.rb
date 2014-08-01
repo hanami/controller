@@ -2,7 +2,7 @@ require 'test_helper'
 
 describe 'Directives' do
   describe '#directives' do
-    describe "non value directives" do
+    describe 'non value directives' do
       it 'accepts public symbol' do
         subject = Lotus::Action::CacheControl::Directives.new(:public)
         subject.values.size.must_equal(1)
@@ -38,32 +38,32 @@ describe 'Directives' do
         subject.values.size.must_equal(1)
       end
 
-      it "does not accept weird symbol" do
+      it 'does not accept weird symbol' do
         subject = Lotus::Action::CacheControl::Directives.new(:weird)
         subject.values.size.must_equal(0)
       end
 
-      describe "multiple symbols" do
+      describe 'multiple symbols' do
         it 'creates one directive for each valid symbol' do
           subject = Lotus::Action::CacheControl::Directives.new(:private, :proxy_revalidate)
           subject.values.size.must_equal(2)
         end
       end
 
-      describe "private and public at the same time" do
-        it "ignores public directive" do
+      describe 'private and public at the same time' do
+        it 'ignores public directive' do
           subject = Lotus::Action::CacheControl::Directives.new(:private, :public)
           subject.values.size.must_equal(1)
         end
 
-        it "creates one private directive" do
+        it 'creates one private directive' do
           subject = Lotus::Action::CacheControl::Directives.new(:private, :public)
           subject.values.first.name.must_equal(:private)
         end
       end
     end
 
-    describe "value directives" do
+    describe 'value directives' do
       it 'accepts max_age symbol' do
         subject = Lotus::Action::CacheControl::Directives.new(max_age: 600)
         subject.values.size.must_equal(1)
@@ -84,12 +84,12 @@ describe 'Directives' do
         subject.values.size.must_equal(1)
       end
 
-      it "does not accept weird symbol" do
+      it 'does not accept weird symbol' do
         subject = Lotus::Action::CacheControl::Directives.new(weird: 600)
         subject.values.size.must_equal(0)
       end
 
-      describe "multiple symbols" do
+      describe 'multiple symbols' do
         it 'creates one directive for each valid symbol' do
           subject = Lotus::Action::CacheControl::Directives.new(max_age: 600, max_stale: 600)
           subject.values.size.must_equal(2)
@@ -97,10 +97,32 @@ describe 'Directives' do
       end
     end
 
-    describe "value and non value directives" do
+    describe 'value and non value directives' do
       it 'creates one directive for each valid symbol' do
         subject = Lotus::Action::CacheControl::Directives.new(:public, max_age: 600, max_stale: 600)
         subject.values.size.must_equal(3)
+      end
+    end
+  end
+end
+
+describe 'ValueDirective' do
+  describe '#to_str' do
+    it 'returns as http cache format' do
+      subject = Lotus::Action::CacheControl::ValueDirective.new(:max_age, 600)
+      subject.to_str.must_equal('max-age=600')
+    end
+
+    describe 'value is a time instance' do
+      before do
+        @now = Time.now
+      end
+
+      it 'returns as http cache format with value as integer' do
+        Time.stub(:now, @now) do
+          subject = Lotus::Action::CacheControl::ValueDirective.new(:max_age, (@now + 1600))
+          subject.to_str.must_equal('max-age=1600')
+        end
       end
     end
   end

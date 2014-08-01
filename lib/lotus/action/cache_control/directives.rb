@@ -22,11 +22,15 @@ module Lotus
         end
 
         def to_str
-          "#{@name.to_s.tr('_', '-')}=#{@value}"
+          "#{@name.to_s.tr('_', '-')}=#{value.to_i}"
         end
 
         def valid?
           VALUE_DIRECTIVES.include? @name
+        end
+
+        def value
+          @value.is_a?(Time) ? @value - Time.now : @value
         end
       end
 
