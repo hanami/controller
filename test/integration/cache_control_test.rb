@@ -33,13 +33,13 @@ class CacheControlController
 
   action 'Hash' do
     def call(params)
-      cache_control :public, :no_store, max_age: 900, s_maxage: 86400
+      cache_control :public, :no_store, max_age: 900, s_maxage: 86400, min_fresh: 500, max_stale: 700
     end
   end
 
   action 'HashContainingTime' do
     def call(params)
-      cache_control :public, :no_store, max_age: (Time.now + 900), s_maxage: (Time.now + 86400)
+      cache_control :public, :no_store, max_age: (Time.now + 900), s_maxage: (Time.now + 86400), min_fresh: (Time.now + 500), max_stale: (Time.now + 700)
     end
   end
 
@@ -96,14 +96,14 @@ describe 'Cache control' do
   it 'accepts a Hash' do
     Time.stub(:now, Time.now) do
       response = @app.get('/hash')
-      response.headers.fetch('Cache-Control').split(', ').must_equal %w(public no-store max-age=900 s-maxage=86400)
+      response.headers.fetch('Cache-Control').split(', ').must_equal %w(public no-store max-age=900 s-maxage=86400 min-fresh=500 max-stale=700)
     end
   end
 
   it 'accepts a Hash containing Time objects' do
     Time.stub(:now, Time.now) do
       response = @app.get('/hash-containing-time')
-      response.headers.fetch('Cache-Control').split(', ').must_equal %w(public no-store max-age=900 s-maxage=86400)
+      response.headers.fetch('Cache-Control').split(', ').must_equal %w(public no-store max-age=900 s-maxage=86400 min-fresh=500 max-stale=700)
     end
   end
 

@@ -24,7 +24,7 @@ module Lotus
       #
       # @since 0.2.1
       # @api private
-      VALUE_DIRECTIVES      = %i(max_age s_maxage).freeze
+      VALUE_DIRECTIVES      = %i(max_age s_maxage min_fresh max_stale).freeze
 
       # Cache-Control directives which are implicitly true
       #
