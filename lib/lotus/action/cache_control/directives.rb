@@ -15,6 +15,8 @@ module Lotus
       NON_VALUE_DIRECTIVES  = %i(public private no_cache no_store no_transform must_revalidate proxy_revalidate).freeze
 
       class ValueDirective
+        attr_reader :name
+
         def initialize(name, value)
           @name, @value = name, value
         end
@@ -29,6 +31,8 @@ module Lotus
       end
 
       class NonValueDirective
+        attr_reader :name
+
         def initialize(name)
           @name = name
         end
@@ -44,7 +48,6 @@ module Lotus
 
       class Directives
         include Enumerable
-        attr_reader :directives
 
         def initialize(*values)
           values.each do |directive_key|
@@ -63,6 +66,12 @@ module Lotus
         def <<(directive)
           @directives ||= []
           @directives << directive if directive.valid?
+        end
+
+        def values
+          @directives.delete_if do |directive|
+            directive.name == :public && @directives.map(&:name).include?(:private)
+          end
         end
       end
     end
