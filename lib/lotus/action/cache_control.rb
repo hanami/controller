@@ -9,6 +9,7 @@ module Lotus
     module CacheControl
 
       require 'lotus/action/cache_control/directives'
+      require 'lotus/action/cache_control/conditional_get'
 
       # The HTTP header for Cache-Control
       #
@@ -21,12 +22,6 @@ module Lotus
       # @since 0.2.1
       # @api private
       EXPIRES               = 'Expires'.freeze
-
-      # The HTTP header for ETag
-      #
-      # @since 0.2.1
-      # @api private
-      ETAG                  = 'ETag'.freeze
 
       protected
 
@@ -153,10 +148,11 @@ module Lotus
       #     end
       #   end
       def fresh(options)
-        headers.merge!(ETAG => options[:etag])
+        conditional_get = ConditionalGet.new(@_env, options)
+        headers.merge!(conditional_get.headers)
 
-        if current_etag = @_env['IF_NONE_MATCH']
-          halt 304 if current_etag == options[:etag]
+        conditional_get.fresh? do
+          halt 304
         end
       end
     end
