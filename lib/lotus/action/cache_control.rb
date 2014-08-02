@@ -22,6 +22,12 @@ module Lotus
       # @api private
       EXPIRES               = 'Expires'.freeze
 
+      # The HTTP header for ETag
+      #
+      # @since 0.2.1
+      # @api private
+      ETAG                  = 'ETag'.freeze
+
       protected
 
       # Specify response freshness policy for HTTP caches (Cache-Control header).
@@ -147,6 +153,8 @@ module Lotus
       #     end
       #   end
       def fresh(options)
+        headers.merge!(ETAG => options[:etag])
+
         if current_etag = @_env['IF_NONE_MATCH']
           halt 304 if current_etag == options[:etag]
         end

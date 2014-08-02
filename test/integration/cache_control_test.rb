@@ -192,12 +192,22 @@ describe 'Fresh' do
         response = @app.get('/etag', {'IF_NONE_MATCH' => 'updated'})
         response.status.must_equal 304
       end
+
+      it 'keeps the same etag header' do
+        response = @app.get('/etag', {'IF_NONE_MATCH' => 'outdated'})
+        response.headers.fetch('ETag').must_equal 'updated'
+      end
     end
 
     describe 'when etag does not match IF_NONE_MATCH header' do
       it 'completes request' do
         response = @app.get('/etag', {'IF_NONE_MATCH' => 'outdated'})
         response.status.must_equal 200
+      end
+
+      it 'returns etag header' do
+        response = @app.get('/etag', {'IF_NONE_MATCH' => 'outdated'})
+        response.headers.fetch('ETag').must_equal 'updated'
       end
     end
   end
