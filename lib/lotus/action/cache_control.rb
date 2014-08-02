@@ -112,6 +112,45 @@ module Lotus
 
         cache_control(*directives)
       end
+
+      # Set the etag, last_modified, or both headers on the response
+      # and halts a 304 Not Modified if the request is still fresh
+      # respecting IfNoneMatch and IfModifiedSince request headers
+      #
+      # @since 0.2.1
+      # @api public
+      #
+      # @example
+      #   require 'lotus/controller'
+      #   require 'lotus/action/cache_control'
+      #
+      #   class Show
+      #     include Lotus::Action
+      #     include Lotus::Action::CacheControl
+      #
+      #     def call(params)
+      #       # ...
+      #
+      #       # set etag response header and halt 304
+      #       # if request matches IF_NONE_MATCH header
+      #       fresh etag: @resource.updated_at.to_i
+      #
+      #       # set last_modified response header and halt 304
+      #       # if request matches IF_MODIFIED_SINCE
+      #       fresh last_modified: @resource.updated_at
+      #
+      #       # set etag and last_modified response header,
+      #       # halt 304 if request matches IF_MODIFIED_SINCE
+      #       # and IF_NONE_MATCH
+      #       fresh last_modified: @resource.updated_at
+      #
+      #     end
+      #   end
+      def fresh(options)
+        if current_etag = @_env['IF_NONE_MATCH']
+          halt 304 if current_etag == options[:etag]
+        end
+      end
     end
   end
 end

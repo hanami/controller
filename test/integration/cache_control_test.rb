@@ -16,6 +16,12 @@ ExpiresRoutes = Lotus::Router.new do
   get '/hash-containing-time', to: 'expires#hash_containing_time'
 end
 
+ConditionalGetRoutes = Lotus::Router.new do
+  get '/etag',               to: 'conditional_get#etag'
+  get '/last-modified',      to: 'conditional_get#last_modified'
+  get '/etag-last-modified', to: 'conditional_get#etag_last_modified'
+end
+
 class CacheControlController
   include Lotus::Controller
 
@@ -74,7 +80,28 @@ class ExpiresController
   action 'HashContainingTime' do
     def call(params)
       expires (Time.now + 900), :public, :no_store, s_maxage: (Time.now + 86400), min_fresh: (Time.now + 500), max_stale: (Time.now + 700)
+    end
+  end
+end
 
+class ConditionalGetController
+  include Lotus::Controller
+
+  action 'Etag' do
+    def call(params)
+      fresh etag: 'updated'
+    end
+  end
+
+  action 'LastModified' do
+    def call(params)
+      fresh last_modified: Time.now
+    end
+  end
+
+  action 'EtagLastModified' do
+    def call(params)
+      fresh etag: 'updated', last_modified: Time.now
     end
   end
 end
@@ -150,6 +177,28 @@ describe 'Expires' do
       response = @app.get('/hash-containing-time')
       response.headers.fetch('Expires').must_equal (Time.now + 900).httpdate
       response.headers.fetch('Cache-Control').split(', ').must_equal %w(public no-store s-maxage=86400 min-fresh=500 max-stale=700 max-age=900)
+    end
+  end
+end
+
+describe 'Fresh' do
+  before do
+    @app = Rack::MockRequest.new(ConditionalGetRoutes)
+  end
+
+  describe 'etag' do
+    describe 'when etag matches IF_NONE_MATCH header' do
+      it 'halts 304 not modified' do
+        response = @app.get('/etag', {'IF_NONE_MATCH' => 'updated'})
+        response.status.must_equal 304
+      end
+    end
+
+    describe 'when etag does not match IF_NONE_MATCH header' do
+      it 'completes request' do
+        response = @app.get('/etag', {'IF_NONE_MATCH' => 'outdated'})
+        response.status.must_equal 200
+      end
     end
   end
 end
