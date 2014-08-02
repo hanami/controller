@@ -211,4 +211,45 @@ describe 'Fresh' do
       end
     end
   end
+
+  describe 'last_modified' do
+    describe 'when last modified is less than or equal to IF_MODIFIED_SINCE header' do
+      before { @modified_since = Time.new(2014, 1, 8, 0, 0, 0) }
+
+      it 'halts 304 not modified' do
+        Time.stub(:now, @modified_since) do
+          response = @app.get('/last-modified', {'IF_MODIFIED_SINCE' => @modified_since.httpdate})
+          response.status.must_equal 304
+        end
+      end
+
+      it 'keeps the same IfModifiedSince header' do
+        Time.stub(:now, @modified_since) do
+          response = @app.get('/last-modified', {'IF_MODIFIED_SINCE' => @modified_since.httpdate})
+          response.headers.fetch('Last-Modified').must_equal @modified_since.httpdate
+        end
+      end
+    end
+
+    describe 'when last modified is bigger than IF_MODIFIED_SINCE header' do
+      before do
+        @last_modified = Time.new(2014, 1, 8, 0, 0, 0)
+        @now           = Time.new(2014, 2, 8, 0, 0, 0)
+      end
+
+      it 'completes request' do
+        Time.stub(:now, @last_modified) do
+          response = @app.get('/last-modified', {'IF_MODIFIED_SINCE' => @last_modified.httpdate})
+          response.status.must_equal 200
+        end
+      end
+
+      it 'returns etag header' do
+        Time.stub(:now, @last_modified) do
+          response = @app.get('/last-modified', {'IF_MODIFIED_SINCE' => @last_modified.httpdate})
+          response.headers.fetch('Last-Modified').must_equal @last_modified.httpdate
+        end
+      end
+    end
+  end
 end
