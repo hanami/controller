@@ -59,7 +59,7 @@ module Lotus
         end
 
         def headers
-          @validations.map &:header
+          @validations.map(&:header).compact.reduce Hash.new, :merge
         end
       end
     end
