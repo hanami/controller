@@ -3,7 +3,7 @@ module Lotus
     module CacheControl
       # @since 0.2.1
       # @api private
-      IF_NONE_MATCH = 'IF_NONE_MATCH'.freeze
+      IF_NONE_MATCH = 'HTTP_IF_NONE_MATCH'.freeze
 
       # The HTTP header for ETag
       #
@@ -13,7 +13,7 @@ module Lotus
 
       # @since 0.2.1
       # @api private
-      IF_MODIFIED_SINCE = 'IF_MODIFIED_SINCE'.freeze
+      IF_MODIFIED_SINCE = 'HTTP_IF_MODIFIED_SINCE'.freeze
 
       # The HTTP header for Last-Modified
       #
