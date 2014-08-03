@@ -233,20 +233,20 @@ describe 'Fresh' do
 
     describe 'when last modified is bigger than IF_MODIFIED_SINCE header' do
       before do
-        @last_modified = Time.new(2014, 1, 8, 0, 0, 0)
-        @now           = Time.new(2014, 2, 8, 0, 0, 0)
+        @modified_since = Time.new(2014, 1, 8, 0, 0, 0)
+        @last_modified  = Time.new(2014, 2, 8, 0, 0, 0)
       end
 
       it 'completes request' do
         Time.stub(:now, @last_modified) do
-          response = @app.get('/last-modified', {'IF_MODIFIED_SINCE' => @last_modified.httpdate})
+          response = @app.get('/last-modified', {'IF_MODIFIED_SINCE' => @modified_since.httpdate})
           response.status.must_equal 200
         end
       end
 
       it 'returns etag header' do
         Time.stub(:now, @last_modified) do
-          response = @app.get('/last-modified', {'IF_MODIFIED_SINCE' => @last_modified.httpdate})
+          response = @app.get('/last-modified', {'IF_MODIFIED_SINCE' => @modified_since.httpdate})
           response.headers.fetch('Last-Modified').must_equal @last_modified.httpdate
         end
       end

@@ -149,6 +149,7 @@ module Lotus
       #   end
       def fresh(options)
         conditional_get = ConditionalGet.new(@_env, options)
+
         headers.merge!(conditional_get.headers)
 
         conditional_get.fresh? do

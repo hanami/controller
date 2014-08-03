@@ -27,11 +27,17 @@ module Lotus
         end
 
         def fresh?
-          @env[IF_NONE_MATCH] && @value == @env[IF_NONE_MATCH]
+          none_match && @value == none_match
         end
 
         def header
-          { ETAG => @value } if fresh?
+          { ETAG => @value } if none_match
+        end
+
+        private
+
+        def none_match
+          @env[IF_NONE_MATCH]
         end
       end
 
@@ -41,11 +47,17 @@ module Lotus
         end
 
         def fresh?
-          @env[IF_MODIFIED_SINCE] && @value.to_i >= Time.httpdate(@env[IF_MODIFIED_SINCE]).to_i
+          modified_since && Time.httpdate(modified_since).to_i >= @value.to_i
         end
 
         def header
-          { LAST_MODIFIED => @value } if fresh?
+          { LAST_MODIFIED => @value.httpdate } if modified_since
+        end
+
+        private
+
+        def modified_since
+          @env[IF_MODIFIED_SINCE]
         end
       end
 
