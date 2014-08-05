@@ -49,7 +49,7 @@ module Lotus
       #   action = Create.new
       #   action.call({}) # => [301, {'Location' => '/articles/23'}, '']
       def redirect_to(url, status: 302)
-        headers.merge!(LOCATION => url)
+        headers[LOCATION] = url
         self.status = status
       end
     end
