@@ -21,10 +21,16 @@ module Lotus
         end
 
         module ClassMethods
-          attr_reader :expires_directives
-
           def expires(amount, *values)
             @expires_directives ||= Directives.new(amount, *values)
+          end
+
+          def expires_directives
+            @expires_directives || Object.new.tap do |null_object|
+              def null_object.headers
+                Hash.new
+              end
+            end
           end
         end
 
@@ -36,9 +42,7 @@ module Lotus
         # @see Lotus::Action#finish
         def finish
           super
-          if self.class.expires_directives
-            headers.merge!(self.class.expires_directives.headers) unless headers.include? HEADER
-          end
+          headers.merge!(self.class.expires_directives.headers) unless headers.include? HEADER
         end
 
         # Class which stores Expires directives

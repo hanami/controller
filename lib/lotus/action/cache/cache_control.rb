@@ -21,10 +21,16 @@ module Lotus
         end
 
         module ClassMethods
-          attr_reader :cache_directives
-
           def cache_control(*values)
-            @cache_directives ||= Directives.new(*values)
+            @cache_control_directives ||= Directives.new(*values)
+          end
+
+          def cache_control_directives
+            @cache_control_directives || Object.new.tap do |null_object|
+              def null_object.headers
+                Hash.new
+              end
+            end
           end
         end
 
@@ -36,9 +42,7 @@ module Lotus
         # @see Lotus::Action#finish
         def finish
           super
-          if self.class.cache_directives
-            headers.merge!(self.class.cache_directives.headers) unless headers.include? HEADER
-          end
+          headers.merge!(self.class.cache_control_directives.headers) unless headers.include? HEADER
         end
 
         # Class which stores CacheControl values
