@@ -6,6 +6,7 @@ module Lotus
     #
     # @see Lotus::Action::CacheControl::ClassMethods#cache_control
     # @see Lotus::Action::CacheControl::ClassMethods#expires
+    # @see Lotus::Action::CacheControl::ClassMethods#fresh
     module CacheControl
 
       require 'lotus/action/cache_control/directives'
