@@ -50,6 +50,7 @@ module Lotus
         include Enumerable
 
         def initialize(*values)
+          @directives = []
           values.each do |directive_key|
             if directive_key.kind_of? Hash
               directive_key.each { |name, value| self.<< ValueDirective.new(name, value) }
@@ -64,7 +65,6 @@ module Lotus
         end
 
         def <<(directive)
-          @directives ||= []
           @directives << directive if directive.valid?
         end
 

@@ -2,11 +2,7 @@ module Lotus
   module Action
     module Cache
 
-      # The HTTP header for Cache-Control
-      #
-      # @since 0.2.1
-      # @api private
-      CACHE_CONTROL = 'Cache-Control'.freeze
+      require 'lotus/action/cache/directives'
 
       # Class which stores CacheControl values
       #
@@ -14,16 +10,21 @@ module Lotus
       #
       # @api private
       #
-      require 'lotus/action/cache/directives'
-
       class CacheControl
+
+        # The HTTP header for Cache-Control
+        #
+        # @since 0.2.1
+        # @api private
+        HEADER = 'Cache-Control'.freeze
+
         def initialize(*values)
           @directives = Lotus::Action::Cache::Directives.new(*values)
         end
 
         def headers
           if @directives.any?
-            { CACHE_CONTROL => @directives.join(', ') }
+            { HEADER => @directives.join(', ') }
           else
             {}
           end

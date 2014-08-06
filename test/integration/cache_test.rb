@@ -7,6 +7,8 @@ end
 
 
 CacheControlRoutes = Lotus::Router.new do
+  get '/default',              to: 'cache_control#default'
+  get '/overriding',           to: 'cache_control#overriding'
   get '/symbol',               to: 'cache_control#symbol'
   get '/symbols',              to: 'cache_control#symbols'
   get '/hash',                 to: 'cache_control#hash'
@@ -27,6 +29,21 @@ end
 
 class CacheControlController
   include Lotus::Controller
+
+  action 'Default' do
+    cache_control :public, max_age: 600
+
+    def call(params)
+    end
+  end
+
+  action 'Overriding' do
+    cache_control :public, max_age: 600
+
+    def call(params)
+      cache_control :private
+    end
+  end
 
   action 'Symbol' do
     def call(params)
@@ -100,6 +117,20 @@ end
 describe 'Cache control' do
   before do
     @app = Rack::MockRequest.new(CacheControlRoutes)
+  end
+
+  describe 'default cache control' do
+    it 'returns default Cache-Control headers' do
+      response = @app.get('/default')
+      response.headers.fetch('Cache-Control').split(', ').must_equal %w(public max-age=600)
+    end
+
+    describe 'but some action overrides it' do
+      it 'returns more specific Cache-Control headers' do
+        response = @app.get('/overriding')
+        response.headers.fetch('Cache-Control').split(', ').must_equal %w(private)
+      end
+    end
   end
 
   it 'accepts a Symbol' do

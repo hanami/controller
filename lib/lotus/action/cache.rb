@@ -13,6 +13,27 @@ module Lotus
       require 'lotus/action/cache/expires'
       require 'lotus/action/cache/conditional_get'
 
+      # Override Ruby's hook for modules.
+      # It includes exposures logic
+      #
+      # @param base [Class] the target action
+      #
+      # @since 0.1.0
+      # @api private
+      #
+      # @see http://www.ruby-doc.org/core-2.1.2/Module.html#method-i-included
+      def self.included(base)
+        base.extend ClassMethods
+      end
+
+      module ClassMethods
+        attr_reader :cache_control
+
+        def cache_control(*values)
+          @cache_control ||= CacheControl.new(*values)
+        end
+      end
+
       protected
 
       # Specify response freshness policy for HTTP caches (Cache-Control header).
@@ -130,6 +151,16 @@ module Lotus
         conditional_get.fresh? do
           halt 304
         end
+      end
+
+      # Finalize the response including default cache headers into the response
+      #
+      # @since 0.2.1
+      # @api private
+      #
+      # @see Lotus::Action#finish
+      def finish
+        headers.merge!(self.class.cache_control.headers) unless headers.include? CacheControl::HEADER
       end
     end
   end
