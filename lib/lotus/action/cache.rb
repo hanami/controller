@@ -27,10 +27,14 @@ module Lotus
       end
 
       module ClassMethods
-        attr_reader :cache_control
+        attr_reader :_cache_control, :_expires
 
         def cache_control(*values)
-          @cache_control ||= CacheControl.new(*values)
+          @_cache_control ||= CacheControl.new(*values)
+        end
+
+        def expires(amount, *values)
+          @_expires ||= Expires.new(amount, *values)
         end
       end
 
@@ -160,7 +164,13 @@ module Lotus
       #
       # @see Lotus::Action#finish
       def finish
-        headers.merge!(self.class.cache_control.headers) unless headers.include? CacheControl::HEADER
+        if self.class._cache_control
+          headers.merge!(self.class._cache_control.headers) unless headers.include? CacheControl::HEADER
+        end
+
+        if self.class._expires
+          headers.merge!(self.class._expires.headers) unless headers.include? Expires::HEADER
+        end
       end
     end
   end

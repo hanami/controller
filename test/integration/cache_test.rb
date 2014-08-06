@@ -16,6 +16,8 @@ CacheControlRoutes = Lotus::Router.new do
 end
 
 ExpiresRoutes = Lotus::Router.new do
+  get '/default',              to: 'expires#default'
+  get '/overriding',           to: 'expires#overriding'
   get '/symbol',               to: 'expires#symbol'
   get '/symbols',              to: 'expires#symbols'
   get '/hash',                 to: 'expires#hash'
@@ -72,6 +74,21 @@ end
 
 class ExpiresController
   include Lotus::Controller
+
+  action 'Default' do
+    expires 900, :public, :no_cache
+
+    def call(params)
+    end
+  end
+
+  action 'Overriding' do
+    expires 900, :public, :no_cache
+
+    def call(params)
+      expires 600, :private
+    end
+  end
 
   action 'Symbol' do
     def call(params)
@@ -161,6 +178,22 @@ end
 describe 'Expires' do
   before do
     @app = Rack::MockRequest.new(ExpiresRoutes)
+  end
+
+  describe 'default cache control' do
+    it 'returns default Cache-Control headers' do
+      response = @app.get('/default')
+      response.headers.fetch('Expires').must_equal (Time.now + 900).httpdate
+      response.headers.fetch('Cache-Control').split(', ').must_equal %w(public no-cache max-age=900)
+    end
+
+    describe 'but some action overrides it' do
+      it 'returns more specific Cache-Control headers' do
+        response = @app.get('/overriding')
+        response.headers.fetch('Expires').must_equal (Time.now + 600).httpdate
+        response.headers.fetch('Cache-Control').split(', ').must_equal %w(private max-age=600)
+      end
+    end
   end
 
   it 'accepts a Symbol' do
