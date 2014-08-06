@@ -23,7 +23,9 @@ module Lotus
       #
       # @see http://www.ruby-doc.org/core-2.1.2/Module.html#method-i-included
       def self.included(base)
-        base.include CacheControl, Expires
+        base.class_eval do
+          include CacheControl, Expires
+        end
       end
 
       protected
