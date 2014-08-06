@@ -23,19 +23,7 @@ module Lotus
       #
       # @see http://www.ruby-doc.org/core-2.1.2/Module.html#method-i-included
       def self.included(base)
-        base.extend ClassMethods
-      end
-
-      module ClassMethods
-        attr_reader :_cache_control, :_expires
-
-        def cache_control(*values)
-          @_cache_control ||= CacheControl.new(*values)
-        end
-
-        def expires(amount, *values)
-          @_expires ||= Expires.new(amount, *values)
-        end
+        base.include CacheControl, Expires
       end
 
       protected
@@ -74,7 +62,7 @@ module Lotus
       #   end
       #
       def cache_control(*values)
-        cache_control = CacheControl.new(*values)
+        cache_control = CacheControl::Directives.new(*values)
         headers.merge!(cache_control.headers)
       end
 
@@ -110,7 +98,7 @@ module Lotus
       #   end
       #
       def expires(amount, *values)
-        expires = Expires.new(amount, *values)
+        expires = Expires::Directives.new(amount, *values)
         headers.merge!(expires.headers)
       end
 
@@ -154,22 +142,6 @@ module Lotus
 
         conditional_get.fresh? do
           halt 304
-        end
-      end
-
-      # Finalize the response including default cache headers into the response
-      #
-      # @since 0.2.1
-      # @api private
-      #
-      # @see Lotus::Action#finish
-      def finish
-        if self.class._cache_control
-          headers.merge!(self.class._cache_control.headers) unless headers.include? CacheControl::HEADER
-        end
-
-        if self.class._expires
-          headers.merge!(self.class._expires.headers) unless headers.include? Expires::HEADER
         end
       end
     end
