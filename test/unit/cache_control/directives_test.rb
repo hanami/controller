@@ -112,19 +112,6 @@ describe 'ValueDirective' do
       subject = Lotus::Action::CacheControl::ValueDirective.new(:max_age, 600)
       subject.to_str.must_equal('max-age=600')
     end
-
-    describe 'value is a time instance' do
-      before do
-        @now = Time.now
-      end
-
-      it 'returns as http cache format with value as integer' do
-        Time.stub(:now, @now) do
-          subject = Lotus::Action::CacheControl::ValueDirective.new(:max_age, (@now + 1600))
-          subject.to_str.must_equal('max-age=1600')
-        end
-      end
-    end
   end
 end
 

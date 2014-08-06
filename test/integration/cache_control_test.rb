@@ -5,7 +5,6 @@ CacheControlRoutes = Lotus::Router.new do
   get '/symbol',               to: 'cache_control#symbol'
   get '/symbols',              to: 'cache_control#symbols'
   get '/hash',                 to: 'cache_control#hash'
-  get '/hash-containing-time', to: 'cache_control#hash_containing_time'
   get '/private-and-public',   to: 'cache_control#private_public'
 end
 
@@ -13,7 +12,6 @@ ExpiresRoutes = Lotus::Router.new do
   get '/symbol',               to: 'expires#symbol'
   get '/symbols',              to: 'expires#symbols'
   get '/hash',                 to: 'expires#hash'
-  get '/hash-containing-time', to: 'expires#hash_containing_time'
 end
 
 ConditionalGetRoutes = Lotus::Router.new do
@@ -43,12 +41,6 @@ class CacheControlController
     end
   end
 
-  action 'HashContainingTime' do
-    def call(params)
-      cache_control :public, :no_store, max_age: (Time.now + 900), s_maxage: (Time.now + 86400), min_fresh: (Time.now + 500), max_stale: (Time.now + 700)
-    end
-  end
-
   action 'PrivatePublic' do
     def call(params)
       cache_control :private, :public
@@ -74,12 +66,6 @@ class ExpiresController
   action 'Hash' do
     def call(params)
       expires 900, :public, :no_store, s_maxage: 86400, min_fresh: 500, max_stale: 700
-    end
-  end
-
-  action 'HashContainingTime' do
-    def call(params)
-      expires (Time.now + 900), :public, :no_store, s_maxage: (Time.now + 86400), min_fresh: (Time.now + 500), max_stale: (Time.now + 700)
     end
   end
 end
@@ -128,13 +114,6 @@ describe 'Cache control' do
     end
   end
 
-  it 'accepts a Hash containing Time objects' do
-    Time.stub(:now, Time.now) do
-      response = @app.get('/hash-containing-time')
-      response.headers.fetch('Cache-Control').split(', ').must_equal %w(public no-store max-age=900 s-maxage=86400 min-fresh=500 max-stale=700)
-    end
-  end
-
   describe "private and public directives" do
     it "ignores public directive" do
       response = @app.get('/private-and-public')
@@ -167,14 +146,6 @@ describe 'Expires' do
   it 'accepts a Hash' do
     Time.stub(:now, Time.now) do
       response = @app.get('/hash')
-      response.headers.fetch('Expires').must_equal (Time.now + 900).httpdate
-      response.headers.fetch('Cache-Control').split(', ').must_equal %w(public no-store s-maxage=86400 min-fresh=500 max-stale=700 max-age=900)
-    end
-  end
-
-  it 'accepts a Hash containing Time objects' do
-    Time.stub(:now, Time.now) do
-      response = @app.get('/hash-containing-time')
       response.headers.fetch('Expires').must_equal (Time.now + 900).httpdate
       response.headers.fetch('Cache-Control').split(', ').must_equal %w(public no-store s-maxage=86400 min-fresh=500 max-stale=700 max-age=900)
     end

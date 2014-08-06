@@ -98,13 +98,8 @@ module Lotus
       #   end
       #
       def expires(amount, *values)
-        if amount.is_a? Integer
-          time    = Time.now + amount.to_i
-          max_age = amount
-        else
-          time    = amount
-          max_age = time - Time.now
-        end
+        time    = Time.now + amount.to_i
+        max_age = amount
 
         directives = *values
         directives << { max_age: max_age }

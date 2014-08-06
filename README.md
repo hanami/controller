@@ -501,23 +501,6 @@ class HttpCacheControlController
 end
 ```
 
-It allows you specify value directives using `Time` instances:
-
-```ruby
-require 'lotus/controller'
-require 'lotus/action/cache_control'
-
-class HttpCacheControlController
-  include Lotus::Action
-  include Lotus::Action::CacheControl
-
-  def call(params)
-    # ...
-    cache_control :public, max_age: Time.now + 600 # => Cache-Control: public, max-age=600
-  end
-end
-```
-
 You can set the Expires header too:
 
 ```ruby
