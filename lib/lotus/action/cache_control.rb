@@ -1,16 +1,16 @@
 module Lotus
   module Action
-    # CacheControl type API
+    # Cache type API
     #
     # @since 0.2.1
     #
-    # @see Lotus::Action::CacheControl::ClassMethods#cache_control
-    # @see Lotus::Action::CacheControl::ClassMethods#expires
-    # @see Lotus::Action::CacheControl::ClassMethods#fresh
-    module CacheControl
+    # @see Lotus::Action::Cache::ClassMethods#cache_control
+    # @see Lotus::Action::Cache::ClassMethods#expires
+    # @see Lotus::Action::Cache::ClassMethods#fresh
+    module Cache
 
-      require 'lotus/action/cache_control/directives'
-      require 'lotus/action/cache_control/conditional_get'
+      require 'lotus/action/cache/directives'
+      require 'lotus/action/cache/conditional_get'
 
       # The HTTP header for Cache-Control
       #
@@ -39,11 +39,11 @@ module Lotus
       #
       # @example
       #   require 'lotus/controller'
-      #   require 'lotus/action/cache_control'
+      #   require 'lotus/action/cache'
       #
       #   class Show
       #     include Lotus::Action
-      #     include Lotus::Action::CacheControl
+      #     include Lotus::Action::Cache
       #
       #     def call(params)
       #       # ...
@@ -77,11 +77,11 @@ module Lotus
       #
       # @example
       #   require 'lotus/controller'
-      #   require 'lotus/action/cache_control'
+      #   require 'lotus/action/cache'
       #
       #   class Show
       #     include Lotus::Action
-      #     include Lotus::Action::CacheControl
+      #     include Lotus::Action::Cache
       #
       #     def call(params)
       #       # ...
@@ -119,11 +119,11 @@ module Lotus
       #
       # @example
       #   require 'lotus/controller'
-      #   require 'lotus/action/cache_control'
+      #   require 'lotus/action/cache'
       #
       #   class Show
       #     include Lotus::Action
-      #     include Lotus::Action::CacheControl
+      #     include Lotus::Action::Cache
       #
       #     def call(params)
       #       # ...

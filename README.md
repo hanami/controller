@@ -488,11 +488,11 @@ You can easily set the Cache-Control header:
 
 ```ruby
 require 'lotus/controller'
-require 'lotus/action/cache_control'
+require 'lotus/action/cache'
 
-class HttpCacheControlController
+class HttpCacheController
   include Lotus::Action
-  include Lotus::Action::CacheControl
+  include Lotus::Action::Cache
 
   def call(params)
     # ...
@@ -505,11 +505,11 @@ You can set the Expires header too:
 
 ```ruby
 require 'lotus/controller'
-require 'lotus/action/cache_control'
+require 'lotus/action/cache'
 
-class HttpCacheControlController
+class HttpCacheController
   include Lotus::Action
-  include Lotus::Action::CacheControl
+  include Lotus::Action::Cache
 
   def call(params)
     # ...
@@ -529,11 +529,11 @@ You can easily take advantage of Conditional Get using `#fresh` method:
 
 ```ruby
 require 'lotus/controller'
-require 'lotus/action/cache_control'
+require 'lotus/action/cache'
 
 class ConditionalGetController
   include Lotus::Action
-  include Lotus::Action::CacheControl
+  include Lotus::Action::Cache
 
   def call(params)
     # ...
@@ -549,11 +549,11 @@ The same behavior is accomplished using `last_modified`:
 
 ```ruby
 require 'lotus/controller'
-require 'lotus/action/cache_control'
+require 'lotus/action/cache'
 
 class ConditionalGetController
   include Lotus::Action
-  include Lotus::Action::CacheControl
+  include Lotus::Action::Cache
 
   def call(params)
     # ...

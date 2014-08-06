@@ -1,6 +1,6 @@
 module Lotus
   module Action
-    module CacheControl
+    module Cache
 
       # Cache-Control directives which have values
       #

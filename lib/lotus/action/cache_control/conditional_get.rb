@@ -1,6 +1,6 @@
 module Lotus
   module Action
-    module CacheControl
+    module Cache
       # @since 0.2.1
       # @api private
       IF_NONE_MATCH = 'HTTP_IF_NONE_MATCH'.freeze
