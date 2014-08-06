@@ -1,11 +1,6 @@
 require 'test_helper'
 require 'lotus/router'
 
-Lotus::Controller.configure do
-  handle_exceptions false
-end
-
-
 CacheControlRoutes = Lotus::Router.new do
   get '/default',              to: 'cache_control#default'
   get '/overriding',           to: 'cache_control#overriding'
