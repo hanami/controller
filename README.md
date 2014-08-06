@@ -501,6 +501,27 @@ class HttpCacheController
 end
 ```
 
+If you want to set the same `Cache-Control` for all the responses, you can call `cache_control`
+in the class scope:
+
+```ruby
+require 'lotus/controller'
+require 'lotus/action/cache'
+
+class HttpCacheController
+  include Lotus::Action
+  include Lotus::Action::Cache
+
+  cache_control :public, max_age: 600 # => Cache-Control: public, max-age=600
+
+  def call(params)
+    # ...
+  end
+end
+```
+
+It's important to emphasize that `cache_control` inside of `call` method will override the global one.
+
 You can set the Expires header too:
 
 ```ruby
@@ -516,6 +537,26 @@ class HttpCacheController
     expires 60, :public, max_age: 600
     # => Expires: Sun, 03 Aug 2014 17:47:02 GMT
     # => Cache-Control: public, max-age=600
+  end
+end
+```
+
+If you want to set the same `Expires` for all the responses, you can call `cache_control`
+in the class scope like `cache_control`:
+
+```ruby
+require 'lotus/controller'
+require 'lotus/action/cache'
+
+class HttpCacheController
+  include Lotus::Action
+  include Lotus::Action::Cache
+
+  expires 60, :public, max_age: 600
+  # => Expires: Sun, 03 Aug 2014 17:47:02 GMT, Cache-Control: public, max-age=600
+
+  def call(params)
+    # ...
   end
 end
 ```
