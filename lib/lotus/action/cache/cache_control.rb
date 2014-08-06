@@ -4,12 +4,10 @@ module Lotus
 
       require 'lotus/action/cache/directives'
 
-      # Class which stores CacheControl values
+      # Module with Cache-Control logic
       #
       # @since 0.2.1
-      #
       # @api private
-      #
       module CacheControl
 
         # The HTTP header for Cache-Control
@@ -43,6 +41,12 @@ module Lotus
           end
         end
 
+        # Class which stores CacheControl values
+        #
+        # @since 0.2.1
+        #
+        # @api private
+        #
         class Directives
           def initialize(*values)
             @directives = Lotus::Action::Cache::Directives.new(*values)

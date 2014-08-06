@@ -4,12 +4,10 @@ module Lotus
 
       require 'lotus/action/cache/cache_control'
 
-      # Class which stores Expires values
+      # Module with Expires logic
       #
       # @since 0.2.1
-      #
       # @api private
-      #
       module Expires
 
         # The HTTP header for Expires
@@ -43,6 +41,12 @@ module Lotus
           end
         end
 
+        # Class which stores Expires directives
+        #
+        # @since 0.2.1
+        #
+        # @api private
+        #
         class Directives
           def initialize(amount, *values)
             @amount = amount
