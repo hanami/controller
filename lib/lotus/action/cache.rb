@@ -10,13 +10,8 @@ module Lotus
     module Cache
 
       require 'lotus/action/cache/cache_control'
+      require 'lotus/action/cache/expires'
       require 'lotus/action/cache/conditional_get'
-
-      # The HTTP header for Expires
-      #
-      # @since 0.2.1
-      # @api private
-      EXPIRES               = 'Expires'.freeze
 
       protected
 
@@ -90,15 +85,8 @@ module Lotus
       #   end
       #
       def expires(amount, *values)
-        time    = Time.now + amount.to_i
-        max_age = amount
-
-        directives = *values
-        directives << { max_age: max_age }
-
-        headers.merge!(EXPIRES => time.httpdate)
-
-        cache_control(*directives)
+        expires = Expires.new(amount, *values)
+        headers.merge!(expires.headers)
       end
 
       # Set the etag, last_modified, or both headers on the response
