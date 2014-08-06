@@ -1,6 +1,11 @@
 require 'test_helper'
 require 'lotus/router'
 
+Lotus::Controller.configure do
+  handle_exceptions false
+end
+
+
 CacheControlRoutes = Lotus::Router.new do
   get '/symbol',               to: 'cache_control#symbol'
   get '/symbols',              to: 'cache_control#symbols'

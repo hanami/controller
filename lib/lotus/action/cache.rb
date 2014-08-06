@@ -9,14 +9,8 @@ module Lotus
     # @see Lotus::Action::Cache::ClassMethods#fresh
     module Cache
 
-      require 'lotus/action/cache/directives'
+      require 'lotus/action/cache/cache_control'
       require 'lotus/action/cache/conditional_get'
-
-      # The HTTP header for Cache-Control
-      #
-      # @since 0.2.1
-      # @api private
-      CACHE_CONTROL         = 'Cache-Control'.freeze
 
       # The HTTP header for Expires
       #
@@ -60,11 +54,8 @@ module Lotus
       #   end
       #
       def cache_control(*values)
-        directives = Directives.new(*values)
-
-        if directives.any?
-          headers.merge!(CACHE_CONTROL => directives.join(', '))
-        end
+        cache_control = CacheControl.new(*values)
+        headers.merge!(cache_control.headers)
       end
 
       # Set the Expires header and Cache-Control/max-age directive. Amount
