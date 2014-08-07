@@ -1,26 +1,32 @@
 module Lotus
   module Action
     module Cache
-      # @since 0.2.1
+      # @since x.x.x
       # @api private
       IF_NONE_MATCH = 'HTTP_IF_NONE_MATCH'.freeze
 
       # The HTTP header for ETag
       #
-      # @since 0.2.1
+      # @since x.x.x
       # @api private
       ETAG          = 'ETag'.freeze
 
-      # @since 0.2.1
+      # @since x.x.x
       # @api private
       IF_MODIFIED_SINCE = 'HTTP_IF_MODIFIED_SINCE'.freeze
 
       # The HTTP header for Last-Modified
       #
-      # @since 0.2.1
+      # @since x.x.x
       # @api private
       LAST_MODIFIED = 'Last-Modified'.freeze
 
+      # ETag value object
+      #
+      # @since x.x.x
+      #
+      # @api private
+      #
       class ETag
         def initialize(env, value)
           @env, @value = env, value
@@ -41,6 +47,12 @@ module Lotus
         end
       end
 
+      # LastModified value object
+      #
+      # @since x.x.x
+      #
+      # @api private
+      #
       class LastModified
         def initialize(env, value)
           @env, @value = env, value
@@ -61,6 +73,13 @@ module Lotus
         end
       end
 
+      # Class responsible to determine if a given request is fresh
+      # based on IF_NONE_MATCH and IF_MODIFIED_SINCE headers
+      #
+      # @since x.x.x
+      #
+      # @api private
+      #
       class ConditionalGet
         def initialize(env, options)
           @validations = [ ETag.new(env, options[:etag]), LastModified.new(env, options[:last_modified]) ]

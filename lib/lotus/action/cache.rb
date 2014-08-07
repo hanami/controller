@@ -2,7 +2,7 @@ module Lotus
   module Action
     # Cache type API
     #
-    # @since 0.2.1
+    # @since x.x.x
     #
     # @see Lotus::Action::Cache::ClassMethods#cache_control
     # @see Lotus::Action::Cache::ClassMethods#expires
@@ -18,7 +18,7 @@ module Lotus
       #
       # @param base [Class] the target action
       #
-      # @since 0.1.0
+      # @since x.x.x
       # @api private
       #
       # @see http://www.ruby-doc.org/core-2.1.2/Module.html#method-i-included
@@ -38,7 +38,7 @@ module Lotus
       # See RFC 2616 / 14.9 for more on standard cache control directives:
       # http://tools.ietf.org/html/rfc2616#section-14.9.1
       #
-      # @since 0.2.1
+      # @since x.x.x
       # @api public
       #
       # @example
@@ -73,7 +73,7 @@ module Lotus
       # indicating when the response should be considered "stale". The remaining
       # "values" arguments are passed to the #cache_control helper:
       #
-      # @since 0.2.1
+      # @since x.x.x
       # @api public
       #
       # @example
@@ -108,7 +108,7 @@ module Lotus
       # and halts a 304 Not Modified if the request is still fresh
       # respecting IfNoneMatch and IfModifiedSince request headers
       #
-      # @since 0.2.1
+      # @since x.x.x
       # @api public
       #
       # @example

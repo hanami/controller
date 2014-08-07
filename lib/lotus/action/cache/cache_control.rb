@@ -6,13 +6,13 @@ module Lotus
 
       # Module with Cache-Control logic
       #
-      # @since 0.2.1
+      # @since x.x.x
       # @api private
       module CacheControl
 
         # The HTTP header for Cache-Control
         #
-        # @since 0.2.1
+        # @since x.x.x
         # @api private
         HEADER = 'Cache-Control'.freeze
 
@@ -36,7 +36,7 @@ module Lotus
 
         # Finalize the response including default cache headers into the response
         #
-        # @since 0.2.1
+        # @since x.x.x
         # @api private
         #
         # @see Lotus::Action#finish
@@ -47,7 +47,7 @@ module Lotus
 
         # Class which stores CacheControl values
         #
-        # @since 0.2.1
+        # @since x.x.x
         #
         # @api private
         #
