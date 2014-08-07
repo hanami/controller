@@ -72,6 +72,7 @@ module Lotus
     # @see Lotus::Action::Mime
     # @see Lotus::Action::Cookies
     # @see Lotus::Action::Callable
+    # @see Lotus::Action::Cache
     def finish
     end
 
