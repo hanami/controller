@@ -1,7 +1,6 @@
 require 'lotus/action/configurable'
 require 'lotus/action/rack'
 require 'lotus/action/mime'
-require 'lotus/action/cache'
 require 'lotus/action/redirect'
 require 'lotus/action/exposable'
 require 'lotus/action/throwable'
@@ -47,7 +46,6 @@ module Lotus
         include Configurable
         include Rack
         include Mime
-        include Cache
         include Redirect
         include Exposable
         include Throwable
@@ -71,6 +69,7 @@ module Lotus
     # @see Lotus::Action::Mime
     # @see Lotus::Action::Cookies
     # @see Lotus::Action::Callable
+    # @see Lotus::Action::Cache
     def finish
     end
   end

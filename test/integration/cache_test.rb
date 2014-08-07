@@ -1,5 +1,6 @@
 require 'test_helper'
 require 'lotus/router'
+require 'lotus/action/cache'
 
 CacheControlRoutes = Lotus::Router.new do
   get '/default',              to: 'cache_control#default'
@@ -28,6 +29,8 @@ class CacheControlController
   include Lotus::Controller
 
   action 'Default' do
+    include Lotus::Action::Cache
+
     cache_control :public, max_age: 600
 
     def call(params)
@@ -35,6 +38,8 @@ class CacheControlController
   end
 
   action 'Overriding' do
+    include Lotus::Action::Cache
+
     cache_control :public, max_age: 600
 
     def call(params)
@@ -43,24 +48,32 @@ class CacheControlController
   end
 
   action 'Symbol' do
+    include Lotus::Action::Cache
+
     def call(params)
       cache_control :private
     end
   end
 
   action 'Symbols' do
+    include Lotus::Action::Cache
+
     def call(params)
       cache_control :private, :no_cache, :no_store
     end
   end
 
   action 'Hash' do
+    include Lotus::Action::Cache
+
     def call(params)
       cache_control :public, :no_store, max_age: 900, s_maxage: 86400, min_fresh: 500, max_stale: 700
     end
   end
 
   action 'PrivatePublic' do
+    include Lotus::Action::Cache
+
     def call(params)
       cache_control :private, :public
     end
@@ -71,6 +84,8 @@ class ExpiresController
   include Lotus::Controller
 
   action 'Default' do
+    include Lotus::Action::Cache
+
     expires 900, :public, :no_cache
 
     def call(params)
@@ -78,6 +93,8 @@ class ExpiresController
   end
 
   action 'Overriding' do
+    include Lotus::Action::Cache
+
     expires 900, :public, :no_cache
 
     def call(params)
@@ -86,18 +103,24 @@ class ExpiresController
   end
 
   action 'Symbol' do
+    include Lotus::Action::Cache
+
     def call(params)
       expires 900, :private
     end
   end
 
   action 'Symbols' do
+    include Lotus::Action::Cache
+
     def call(params)
       expires 900, :private, :no_cache, :no_store
     end
   end
 
   action 'Hash' do
+    include Lotus::Action::Cache
+
     def call(params)
       expires 900, :public, :no_store, s_maxage: 86400, min_fresh: 500, max_stale: 700
     end
@@ -108,18 +131,24 @@ class ConditionalGetController
   include Lotus::Controller
 
   action 'Etag' do
+    include Lotus::Action::Cache
+
     def call(params)
       fresh etag: 'updated'
     end
   end
 
   action 'LastModified' do
+    include Lotus::Action::Cache
+
     def call(params)
       fresh last_modified: Time.now
     end
   end
 
   action 'EtagLastModified' do
+    include Lotus::Action::Cache
+
     def call(params)
       fresh etag: 'updated', last_modified: Time.now
     end
