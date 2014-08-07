@@ -1,4 +1,5 @@
 require 'lotus/utils/hash'
+require 'lotus/validations'
 require 'set'
 
 module Lotus
@@ -24,6 +25,8 @@ module Lotus
       #
       # @since 0.1.0
       ROUTER_PARAMS = 'router.params'.freeze
+
+      include Lotus::Validations
 
       # @attr_reader env [Hash] the Rack env
       #
@@ -55,7 +58,7 @@ module Lotus
         @params[key]
       end
 
-      # Whitelists the named parameter
+      # Whitelist and validate a parameter
       #
       # @param name [#to_sym] The name of the param to whitelist
       #
@@ -63,7 +66,7 @@ module Lotus
       #
       # @since x.x.x
       #
-      # @example
+      # @example Whitelisting
       #   require 'lotus/controller'
       #
       #   class SignupParams < Lotus::Action::Params
@@ -71,24 +74,27 @@ module Lotus
       #   end
       #
       #   params = SignupParams.new({id: 23, email: 'mjb@example.com'})
+      #
       #   params[:email] # => 'mjb@example.com'
       #   params[:id]    # => nil
-      def self.param(name)
-        names << name.to_sym
+      #
+      # @example Validation
+      #   require 'lotus/controller'
+      #
+      #   class SignupParams < Lotus::Action::Params
+      #     param :email, required: true
+      #   end
+      #
+      #   params = SignupParams.new({})
+      #
+      #   params[:email] # => nil
+      #   params.valid?  # => false
+      def self.param(name, options = {})
+        attribute name, options
         nil
       end
 
       private
-
-      # Returns the names of the params which have been whitelisted
-      #
-      # @return [Set] return the names of the whitelisted params
-      #
-      # @api private
-      # @since x.x.x
-      def self.names
-        @names ||= Set.new
-      end
 
       # Returns whether or not params are being whitelisted
       #
@@ -97,7 +103,7 @@ module Lotus
       # @api private
       # @since x.x.x
       def self.whitelisting?
-        names.any?
+        attributes.any?
       end
 
       def _compute_params
@@ -121,7 +127,7 @@ module Lotus
 
       def _whitelist(raw_params)
         if self.class.whitelisting?
-          self.class.names.reduce({}) do |params, name|
+          _attributes.reduce({}) do |params, (name,_)|
             case
             when raw_params.has_key?(name)
               params[name] = raw_params[name]

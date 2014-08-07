@@ -16,7 +16,7 @@ describe Lotus::Action::Params do
       @params.param :id
       @params.param 'first_name'
 
-      @params.send(:names).must_equal Set.new([:id, :first_name])
+      @params.send(:attributes).keys.must_equal([:id, :first_name])
     end
 
     describe "when this feature isn't enabled" do
