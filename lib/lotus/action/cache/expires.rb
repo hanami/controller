@@ -1,8 +1,8 @@
+require 'lotus/action/cache/cache_control'
+
 module Lotus
   module Action
     module Cache
-
-      require 'lotus/action/cache/cache_control'
 
       # Module with Expires logic
       #

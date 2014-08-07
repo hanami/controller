@@ -1,8 +1,8 @@
+require 'lotus/action/cache/directives'
+
 module Lotus
   module Action
     module Cache
-
-      require 'lotus/action/cache/directives'
 
       # Module with Cache-Control logic
       #
