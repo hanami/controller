@@ -1,3 +1,7 @@
+require 'lotus/action/cache/cache_control'
+require 'lotus/action/cache/expires'
+require 'lotus/action/cache/conditional_get'
+
 module Lotus
   module Action
     # Cache type API
@@ -8,11 +12,6 @@ module Lotus
     # @see Lotus::Action::Cache::ClassMethods#expires
     # @see Lotus::Action::Cache::ClassMethods#fresh
     module Cache
-
-      require 'lotus/action/cache/cache_control'
-      require 'lotus/action/cache/expires'
-      require 'lotus/action/cache/conditional_get'
-
       # Override Ruby's hook for modules.
       # It includes exposures logic
       #
