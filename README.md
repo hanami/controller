@@ -484,25 +484,7 @@ run Show.new
 
 It sets your headers correctly according to RFC 2616 / 14.9 for more on standard cache control directives: http://tools.ietf.org/html/rfc2616#section-14.9.1
 
-You can easily set the Cache-Control header:
-
-```ruby
-require 'lotus/controller'
-require 'lotus/action/cache'
-
-class HttpCacheController
-  include Lotus::Action
-  include Lotus::Action::Cache
-
-  def call(params)
-    # ...
-    cache_control :public, max_age: 600 # => Cache-Control: public, max-age=600
-  end
-end
-```
-
-If you want to set the same `Cache-Control` for all the responses, you can call `cache_control`
-in the class scope:
+You can easily set the Cache-Control header for your actions:
 
 ```ruby
 require 'lotus/controller'
@@ -520,9 +502,7 @@ class HttpCacheController
 end
 ```
 
-It's important to emphasize that `cache_control` inside of `call` method will override the global one.
-
-You can set the Expires header too:
+Expires header can be specified using `expires` method:
 
 ```ruby
 require 'lotus/controller'
@@ -532,28 +512,7 @@ class HttpCacheController
   include Lotus::Action
   include Lotus::Action::Cache
 
-  def call(params)
-    # ...
-    expires 60, :public, max_age: 600
-    # => Expires: Sun, 03 Aug 2014 17:47:02 GMT
-    # => Cache-Control: public, max-age=600
-  end
-end
-```
-
-If you want to set the same `Expires` for all the responses, you can call `cache_control`
-in the class scope like `cache_control`:
-
-```ruby
-require 'lotus/controller'
-require 'lotus/action/cache'
-
-class HttpCacheController
-  include Lotus::Action
-  include Lotus::Action::Cache
-
-  expires 60, :public, max_age: 600
-  # => Expires: Sun, 03 Aug 2014 17:47:02 GMT, Cache-Control: public, max-age=600
+  expires 60, :public, max_age: 600 # => Expires: Sun, 03 Aug 2014 17:47:02 GMT, Cache-Control: public, max-age=600
 
   def call(params)
     # ...
