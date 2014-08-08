@@ -460,6 +460,18 @@ class WhitelistedDslAction
   end
 end
 
+class ParamsValidationAction
+  include Lotus::Action
+
+  params do
+    param :email, type: String, presence: true
+  end
+
+  def call(params)
+    halt 400 unless params.valid?
+  end
+end
+
 class Root
   include Lotus::Action
 

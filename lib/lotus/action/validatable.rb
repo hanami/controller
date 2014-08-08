@@ -8,7 +8,10 @@ module Lotus
       PARAMS_CLASS_NAME = 'Params'.freeze
 
       def self.included(base)
-        base.extend ClassMethods
+        base.class_eval do
+          extend ClassMethods
+          expose :params, :errors
+        end
       end
 
       module ClassMethods
@@ -109,6 +112,13 @@ module Lotus
         end
 
       end
+    end
+
+    # Expose validation errors
+    #
+    # @since x.x.x
+    def errors
+      params.errors
     end
   end
 end

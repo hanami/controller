@@ -16,7 +16,7 @@ describe Lotus::Action::Params do
       @params.param :id
       @params.param 'first_name'
 
-      @params.send(:names).must_equal Set.new([:id, :first_name])
+      @params.send(:attributes).keys.must_equal([:id, :first_name])
     end
 
     describe "when this feature isn't enabled" do
@@ -122,6 +122,37 @@ describe Lotus::Action::Params do
           end
         end
       end
+    end
+  end
+
+  describe 'validations' do
+    before do
+      TestParams = Class.new(Lotus::Action::Params) do
+        param :email, presence:   true, format: /\A.+@.+\z/
+        param :name,  presence:   true
+        param :tos,   acceptance: true
+      end
+    end
+
+    after do
+      Object.send(:remove_const, :TestParams)
+    end
+
+    it "isn't valid with empty params" do
+      params = TestParams.new({})
+
+      params.valid?.must_equal false
+
+      params.errors.for(:email).must_include Lotus::Validations::Error.new(:email, :presence, true, nil)
+      params.errors.for(:name).must_include  Lotus::Validations::Error.new(:name, :presence, true, nil)
+      params.errors.for(:tos).must_include   Lotus::Validations::Error.new(:tos, :acceptance, true, nil)
+    end
+
+    it "is it valid when all the validation criteria are met" do
+      params = TestParams.new({email: 'test@lotusrb.org', name: 'Luca', tos: '1'})
+
+      params.valid?.must_equal true
+      params.errors.must_be_empty
     end
   end
 end

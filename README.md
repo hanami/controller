@@ -145,7 +145,8 @@ response = action.call({ id: 23, key: 'value' })
 
 #### Whitelisting
 
-Because params represent an untrusted input, it's recommended to whitelist them.
+Params represent an untrusted input, for security reasons it's recommended to
+whitelist them.
 
 ```ruby
 require 'lotus/controller'
@@ -160,13 +161,58 @@ class Signup
   end
 
   def call(params)
+    # Describe inheritance hierarchy
     puts params.class            # => Signup::Params
     puts params.class.superclass # => Lotus::Action::Params
 
+    # Whitelist :first_name, but not :admin
     puts params[:first_name]     # => "Luca"
     puts params[:admin]          # => nil
   end
 end
+```
+
+#### Validations & Coercions
+
+Because params are a well defined set of data required to fulfill a feature
+in your application, you can validate them and avoid to hit lower MVC layers
+when they are invalid.
+
+If you specify the `:type` option, the param will be coerced.
+
+```ruby
+require 'lotus/controller'
+
+class Signup
+  MEGABYTE = 1024 ** 2
+  include Lotus::Action
+
+  params do
+    param :first_name,       presence: true
+    param :last_name,        presence: true
+    param :email,            presence: true, format: /@/,   confirmation: true
+    param :password,         presence: true,                confirmation: true
+    param :terms_of_service, acceptance: true
+    param :avatar,           size: 0..(MEGABYTE * 3)
+    param :age,              type: Integer, size: 18..99
+  end
+
+  def call(params)
+    halt 400 unless params.valid?
+    # ...
+  end
+end
+
+action = Signup.new
+
+action.call(valid_params) # => [200, {}, ...]
+action.errors.empty?      # => true
+
+action.call(invalid_params) # => [400, {}, ...]
+action.errors               # =>  #<Lotus::Validations::Errors:0x007fabe4b433d0 @errors={...}>
+
+action.errors.for(:email)
+  # => [#<Lotus::Validations::Error:0x007fabe4b432e0 @attribute=:email, @validation=:presence, @expected=true, @actual=nil>]
 ```
 
 ### Response
@@ -202,6 +248,7 @@ end
 action = Show.new
 action.call({}) # => [201, { "X-Custom" => "OK" }, ["Hi!"]]
 ```
+
 ### Exposures
 
 We know that actions are objects and Lotus::Action respects one of the pillars of OOP: __encapsulation__.
@@ -209,6 +256,8 @@ Other frameworks extract instance variables (`@ivar`) and make them available to
 The solution of Lotus::Action is a simple and powerful DSL: `expose`.
 It's a thin layer on top of `attr_reader`. When used, it creates a getter for the given attribute, and adds it to the _exposures_.
 Exposures (`#exposures`) is set of exposed attributes, so that the view context can have the information needed to render a page.
+
+By default, all the actions expose `#params` and `#errors`.
 
 ```ruby
 class Show

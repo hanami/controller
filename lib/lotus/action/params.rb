@@ -1,4 +1,5 @@
 require 'lotus/utils/hash'
+require 'lotus/validations'
 require 'set'
 
 module Lotus
@@ -25,6 +26,67 @@ module Lotus
       # @since 0.1.0
       ROUTER_PARAMS = 'router.params'.freeze
 
+      # Whitelist and validate a parameter
+      #
+      # @param name [#to_sym] The name of the param to whitelist
+      #
+      # @raise [ArgumentError] if one the validations is unknown, or if
+      #   the size validator is used with an object that can't be coerced to
+      #   integer.
+      #
+      # @return void
+      #
+      # @since x.x.x
+      #
+      # @see http://rdoc.info/gems/lotus-validations/Lotus/Validations
+      #
+      # @example Whitelisting
+      #   require 'lotus/controller'
+      #
+      #   class SignupParams < Lotus::Action::Params
+      #     param :email
+      #   end
+      #
+      #   params = SignupParams.new({id: 23, email: 'mjb@example.com'})
+      #
+      #   params[:email] # => 'mjb@example.com'
+      #   params[:id]    # => nil
+      #
+      # @example Validation
+      #   require 'lotus/controller'
+      #
+      #   class SignupParams < Lotus::Action::Params
+      #     param :email, presence: true
+      #   end
+      #
+      #   params = SignupParams.new({})
+      #
+      #   params[:email] # => nil
+      #   params.valid?  # => false
+      #
+      # @example Unknown validation
+      #   require 'lotus/controller'
+      #
+      #   class SignupParams < Lotus::Action::Params
+      #     param :email, unknown: true # => raise ArgumentError
+      #   end
+      #
+      # @example Wrong size validation
+      #   require 'lotus/controller'
+      #
+      #   class SignupParams < Lotus::Action::Params
+      #     param :email, size: 'twentythree'
+      #   end
+      #
+      #   params = SignupParams.new({})
+      #   params.valid? # => raise ArgumentError
+      def self.param(name, options = {})
+        attribute name, options
+        nil
+      end
+
+      include Lotus::Validations
+
       # @attr_reader env [Hash] the Rack env
       #
       # @since 0.2.0
@@ -39,8 +101,9 @@ module Lotus
       #
       # @since 0.1.0
       def initialize(env)
-        @env    = env
-        @params = _compute_params
+        @env        = env
+        @attributes = _compute_params
+        @errors     = Validations::Errors.new
         freeze
       end
 
@@ -52,43 +115,10 @@ module Lotus
       #
       # @since 0.2.0
       def [](key)
-        @params[key]
-      end
-
-      # Whitelists the named parameter
-      #
-      # @param name [#to_sym] The name of the param to whitelist
-      #
-      # @return void
-      #
-      # @since x.x.x
-      #
-      # @example
-      #   require 'lotus/controller'
-      #
-      #   class SignupParams < Lotus::Action::Params
-      #     param :email
-      #   end
-      #
-      #   params = SignupParams.new({id: 23, email: 'mjb@example.com'})
-      #   params[:email] # => 'mjb@example.com'
-      #   params[:id]    # => nil
-      def self.param(name)
-        names << name.to_sym
-        nil
+        @attributes[key]
       end
 
       private
-
-      # Returns the names of the params which have been whitelisted
-      #
-      # @return [Set] return the names of the whitelisted params
-      #
-      # @api private
-      # @since x.x.x
-      def self.names
-        @names ||= Set.new
-      end
 
       # Returns whether or not params are being whitelisted
       #
@@ -97,7 +127,7 @@ module Lotus
       # @api private
       # @since x.x.x
       def self.whitelisting?
-        names.any?
+        attributes.any?
       end
 
       def _compute_params
@@ -121,7 +151,7 @@ module Lotus
 
       def _whitelist(raw_params)
         if self.class.whitelisting?
-          self.class.names.reduce({}) do |params, name|
+          _attributes.reduce({}) do |params, (name,_)|
             case
             when raw_params.has_key?(name)
               params[name] = raw_params[name]
