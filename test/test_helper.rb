@@ -35,5 +35,7 @@ Lotus::Controller::Configuration.class_eval do
 end
 
 Lotus::Action::Params.class_eval do
-  attr_reader :params
+  def params
+    @attributes
+  end
 end

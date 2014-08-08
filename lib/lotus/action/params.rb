@@ -26,45 +26,19 @@ module Lotus
       # @since 0.1.0
       ROUTER_PARAMS = 'router.params'.freeze
 
-      include Lotus::Validations
-
-      # @attr_reader env [Hash] the Rack env
-      #
-      # @since 0.2.0
-      # @api private
-      attr_reader :env
-
-      # Initialize the params and freeze them.
-      #
-      # @param env [Hash] a Rack env or an hash of params.
-      #
-      # @return [Params]
-      #
-      # @since 0.1.0
-      def initialize(env)
-        @env    = env
-        @params = _compute_params
-        freeze
-      end
-
-      # Returns the object associated with the given key
-      #
-      # @param key [Symbol] the key
-      #
-      # @return [Object,nil] return the associated object, if found
-      #
-      # @since 0.2.0
-      def [](key)
-        @params[key]
-      end
-
       # Whitelist and validate a parameter
       #
       # @param name [#to_sym] The name of the param to whitelist
       #
+      # @raise [ArgumentError] if one the validations is unknown, or if
+      #   the size validator is used with an object that can't be coerced to
+      #   integer.
+      #
       # @return void
       #
       # @since x.x.x
+      #
+      # @see http://rdoc.info/gems/lotus-validations/Lotus/Validations
       #
       # @example Whitelisting
       #   require 'lotus/controller'
@@ -82,16 +56,66 @@ module Lotus
       #   require 'lotus/controller'
       #
       #   class SignupParams < Lotus::Action::Params
-      #     param :email, required: true
+      #     param :email, presence: true
       #   end
       #
       #   params = SignupParams.new({})
       #
       #   params[:email] # => nil
       #   params.valid?  # => false
+      #
+      # @example Unknown validation
+      #   require 'lotus/controller'
+      #
+      #   class SignupParams < Lotus::Action::Params
+      #     param :email, unknown: true # => raise ArgumentError
+      #   end
+      #
+      # @example Wrong size validation
+      #   require 'lotus/controller'
+      #
+      #   class SignupParams < Lotus::Action::Params
+      #     param :email, size: 'twentythree'
+      #   end
+      #
+      #   params = SignupParams.new({})
+      #   params.valid? # => raise ArgumentError
       def self.param(name, options = {})
         attribute name, options
         nil
+      end
+
+      include Lotus::Validations
+
+      # @attr_reader env [Hash] the Rack env
+      #
+      # @since 0.2.0
+      # @api private
+      attr_reader :env
+
+      # Initialize the params and freeze them.
+      #
+      # @param env [Hash] a Rack env or an hash of params.
+      #
+      # @return [Params]
+      #
+      # @since 0.1.0
+      def initialize(env)
+        @env        = env
+        @attributes = _compute_params
+        @errors     = Validations::Errors.new
+        freeze
+      end
+
+      # Returns the object associated with the given key
+      #
+      # @param key [Symbol] the key
+      #
+      # @return [Object,nil] return the associated object, if found
+      #
+      # @since 0.2.0
+      def [](key)
+        @attributes[key]
       end
 
       private

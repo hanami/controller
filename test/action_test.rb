@@ -37,6 +37,14 @@ describe Lotus::Action do
       response[2].must_equal ['Internal Server Error']
     end
 
+    it 'exposes validation errors' do
+      action     = ParamsValidationAction.new
+      code, _, _ = action.call({})
+
+      code.must_equal 400
+      action.errors.for(:email).must_include Lotus::Validations::Error.new(:email, :presence, true, nil)
+    end
+
     describe 'when exception handling code is disabled' do
       before do
         ErrorCallAction.configuration.handle_exceptions = false
@@ -61,7 +69,8 @@ describe Lotus::Action do
       response = action.call({})
       response[0].must_equal 200
 
-      action.exposures.must_equal({ film: '400 ASA', time: nil })
+      action.exposures.fetch(:film).must_equal '400 ASA'
+      action.exposures.fetch(:time).must_equal nil
     end
   end
 end
