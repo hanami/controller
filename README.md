@@ -76,7 +76,7 @@ In other words, you have the freedom to instantiate, inject dependencies and tes
 
 In the example below, we're stating that the default repository is `Article`, but during a unit test we can inject a stubbed version, and invoke `#call` with the params that we want to simulate.
 __We're avoiding HTTP calls__, we're eventually avoiding to hit the database (it depends on the stubbed repository), __we're just dealing with message passing__.
-Imagine how **fast** can be a unit test like this.
+Imagine how **fast** a unit test can be like this.
 
 ```ruby
 class Show
