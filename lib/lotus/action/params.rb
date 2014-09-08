@@ -118,6 +118,15 @@ module Lotus
         @attributes[key]
       end
 
+      # Returns the Ruby's hash
+      #
+      # @return [Hash]
+      #
+      # @since x.x.x
+      def to_h
+        @attributes.to_h
+      end
+
       private
 
       # Returns whether or not params are being whitelisted
