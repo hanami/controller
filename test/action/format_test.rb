@@ -47,6 +47,20 @@ describe Lotus::Action do
       status.must_equal                   200
     end
 
+    it "returns detected mime type when it is not specified explicitly" do
+      status, headers, _ = @action.call({ 'HTTP_ACCEPT' => 'text/html' })
+
+      @action.format.must_equal    :html
+      headers['Content-Type'].must_equal 'text/html'
+      status.must_equal                   200
+
+      status, headers, _ = @action.call({ 'HTTP_ACCEPT' => 'application/xml' })
+
+      @action.format.must_equal    :xml
+      headers['Content-Type'].must_equal 'application/xml'
+      status.must_equal                   200
+    end
+
     mime_types = ['application/octet-stream', 'text/html']
     Rack::Mime::MIME_TYPES.each do |format, mime_type|
       next if mime_types.include?(mime_type)
