@@ -140,7 +140,7 @@ module Lotus
       #   headers['Content-Type'] # => 'application/xml'
       #   action.format           # => :xml
       def format
-        @format ||= detect_format
+        @format || detect_format
       end
 
       # The content type that will be automatically set in the response.
@@ -344,7 +344,7 @@ module Lotus
       # @since 0.1.0
       # @api private
       def accept
-        @accept ||= @_env[HTTP_ACCEPT] || DEFAULT_ACCEPT
+        @accept || @_env[HTTP_ACCEPT] || DEFAULT_ACCEPT
       end
 
       # @since 0.1.0
