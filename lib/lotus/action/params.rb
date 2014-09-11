@@ -80,8 +80,8 @@ module Lotus
       #
       #   params = SignupParams.new({})
       #   params.valid? # => raise ArgumentError
-      def self.param(name, options = {})
-        attribute name, options
+      def self.param(name, options = {}, &blk)
+        attribute name, options, &blk
         nil
       end
 

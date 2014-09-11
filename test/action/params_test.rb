@@ -127,10 +127,18 @@ describe Lotus::Action::Params do
 
   describe 'validations' do
     before do
+
       TestParams = Class.new(Lotus::Action::Params) do
         param :email, presence:   true, format: /\A.+@.+\z/
         param :name,  presence:   true
         param :tos,   acceptance: true
+        param :block do |value|
+          if value == 'foo'
+            [true, 'bar']
+          else
+            [false, 'Foo']
+          end
+        end
       end
     end
 
@@ -148,11 +156,22 @@ describe Lotus::Action::Params do
       params.errors.for(:tos).must_include   Lotus::Validations::Error.new(:tos, :acceptance, true, nil)
     end
 
+    it "isn't valid with unvalid params" do
+      params = TestParams.new(email: 'lotusrb.org', name: 'Luca', tos: '0', block: 'bar')
+
+      params.valid?.must_equal false
+
+      params.errors.for(:email).must_include Lotus::Validations::Error.new(:email, :format, /\A.+@.+\z/, 'lotusrb.org')
+      params.errors.for(:tos).must_include   Lotus::Validations::Error.new(:tos, :acceptance, true, '0')
+      params.errors.for(:block).must_include  Lotus::Validations::Error.new(:block, :block, 'Foo', 'bar')
+    end
+
     it "is it valid when all the validation criteria are met" do
-      params = TestParams.new({email: 'test@lotusrb.org', name: 'Luca', tos: '1'})
+      params = TestParams.new(email: 'test@lotusrb.org', name: 'Luca', tos: '1', block: 'foo')
 
       params.valid?.must_equal true
       params.errors.must_be_empty
+      params[:block].must_equal 'bar'
     end
   end
 end
