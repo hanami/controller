@@ -11,6 +11,6 @@ else
 end
 
 gem 'lotus-utils',       require: false, github: 'lotus/utils'
-gem 'lotus-validations', require: false, github: 'lotus/validations'
+gem 'lotus-validations', require: false, github: 'rail44/validations', branch: 'add-block-validation'
 gem 'simplecov',         require: false
 gem 'coveralls',         require: false
