@@ -155,4 +155,15 @@ describe Lotus::Action::Params do
       params.errors.must_be_empty
     end
   end
+
+  describe '#to_h' do
+    let(:params) { Lotus::Action::Params.new(id: '23', name: 'John Doe') }
+    it "returns ruby's Hash" do
+      params.to_h.must_be :is_a?, Hash
+    end
+
+    it "returns unfrozened Hash" do
+      params.to_h.wont_be :frozen?
+    end
+  end
 end
