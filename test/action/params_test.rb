@@ -157,13 +157,40 @@ describe Lotus::Action::Params do
   end
 
   describe '#to_h' do
-    let(:params) { Lotus::Action::Params.new(id: '23', name: 'John Doe') }
-    it "returns ruby's Hash" do
-      params.to_h.must_be :is_a?, Hash
+    let(:params) { Lotus::Action::Params.new(id: '23') }
+
+    it "returns a Ruby Hash" do
+      params.to_h.must_be_kind_of Hash
     end
 
-    it "returns unfrozened Hash" do
+    it "returns unfrozen Hash" do
       params.to_h.wont_be :frozen?
+    end
+
+    it "prevents informations escape" do
+      hash = params.to_h
+      hash.merge!({name: 'L'})
+
+      params.to_h.must_equal(Hash[id: '23'])
+    end
+  end
+
+  describe '#to_hash' do
+    let(:params) { Lotus::Action::Params.new(id: '23') }
+
+    it "returns a Ruby Hash" do
+      params.to_hash.must_be_kind_of Hash
+    end
+
+    it "returns unfrozen Hash" do
+      params.to_hash.wont_be :frozen?
+    end
+
+    it "prevents informations escape" do
+      hash = params.to_hash
+      hash.merge!({name: 'L'})
+
+      params.to_hash.must_equal(Hash[id: '23'])
     end
   end
 end
