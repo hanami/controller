@@ -126,6 +126,7 @@ module Lotus
       def to_h
         @attributes.to_h
       end
+      alias_method :to_hash, :to_h
 
       private
 
