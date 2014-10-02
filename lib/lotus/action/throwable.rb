@@ -74,8 +74,8 @@ module Lotus
       # @see Lotus::Controller#handled_exceptions
       # @see Lotus::Action::Throwable#handle_exception
       # @see Lotus::Http::Status:ALL
-      def halt(code)
-        status(*Http::Status.for_code(code))
+      def halt(code = nil)
+        status(*Http::Status.for_code(code)) if code
         throw :halt
       end
 
@@ -124,7 +124,14 @@ module Lotus
       # @api private
       def _handle_exception(exception)
         raise unless configuration.handle_exceptions
-        halt configuration.exception_code(exception.class)
+        handler = configuration.exception_handler(exception.class)
+
+        if handler.is_a?(Symbol)
+          method(handler).call(exception)
+          halt
+        else
+          halt handler
+        end
       end
     end
   end

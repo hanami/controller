@@ -101,6 +101,31 @@ class ErrorCallAction
   end
 end
 
+class ErrorCallWithMethodNameAsHandlerAction
+  include Lotus::Action
+
+  handle_exception StandardError => :handler
+
+  def call(params)
+    raise StandardError
+  end
+
+  private
+  def handler(exception)
+    status 501, 'Please go away!'
+  end
+end
+
+class ErrorCallWithSpecifiedStatusCodeAction
+  include Lotus::Action
+
+  handle_exception StandardError => 422
+
+  def call(params)
+    raise StandardError
+  end
+end
+
 class ExposeAction
   include Lotus::Action
 
