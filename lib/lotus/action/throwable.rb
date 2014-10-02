@@ -128,6 +128,7 @@ module Lotus
 
         code = if handler.is_a?(Symbol)
           method(handler).call(exception)
+          nil
         else
           configuration.exception_code(exception.class)
         end
