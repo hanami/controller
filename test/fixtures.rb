@@ -110,15 +110,16 @@ class ErrorCallWithMethodNameAsHandlerAction
     raise StandardError
   end
 
+  private
   def handler(exception)
-    [501, 'Please go away!']
+    status 501, 'Please go away!'
   end
 end
 
-class ErrorCallWithProcAsHandlerAction
+class ErrorCallWithSpecifiedStatusCodeAction
   include Lotus::Action
 
-  handle_exception StandardError => ->(action, exception){ [422, '{"json": true}'] }
+  handle_exception StandardError => 422
 
   def call(params)
     raise StandardError

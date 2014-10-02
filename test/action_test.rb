@@ -53,11 +53,11 @@ describe Lotus::Action do
         response[2].must_equal ['Please go away!']
       end
 
-      it 'handles exception with specified proc' do
-        response = ErrorCallWithProcAsHandlerAction.new.call({})
+      it 'handles exception with specified status code' do
+        response = ErrorCallWithSpecifiedStatusCodeAction.new.call({})
 
         response[0].must_equal 422
-        response[2].must_equal ['{"json": true}']
+        response[2].must_equal ['Unprocessable Entity']
       end
     end
 
