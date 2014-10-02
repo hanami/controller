@@ -101,6 +101,30 @@ class ErrorCallAction
   end
 end
 
+class ErrorCallWithMethodNameAsHandlerAction
+  include Lotus::Action
+
+  handle_exception StandardError => :handler
+
+  def call(params)
+    raise StandardError
+  end
+
+  def handler(exception)
+    [501, 'Please go away!']
+  end
+end
+
+class ErrorCallWithProcAsHandlerAction
+  include Lotus::Action
+
+  handle_exception StandardError => ->(action, exception){ [422, '{"json": true}'] }
+
+  def call(params)
+    raise StandardError
+  end
+end
+
 class ExposeAction
   include Lotus::Action
 
