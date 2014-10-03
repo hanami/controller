@@ -116,7 +116,7 @@ class ErrorCallWithMethodNameAsHandlerAction
   end
 end
 
-class ErrorCallWithSpecifiedStatusCodeAction
+class ErrorCallWithDefaultHandlerAction
   include Lotus::Action
 
   handle_exception StandardError => :unprocessable_entity
