@@ -180,20 +180,8 @@ module Lotus
         @handled_exceptions.merge!(exception)
       end
 
-      # Return the HTTP status for the given exception
-      #
-      # Raised exceptions will return the configured HTTP status, only if
-      #   `handled_exceptions` is set on `true`.
-      #
-      # @param exception [Hash] the exception class must be the key and the HTTP
-      #   status the value of the hash
-      #
-      # @since 0.2.0
-      # @api private
-      #
-      # @see Lotus::Controller::Configuration#handle_exception
-      def exception_code(exception)
-        @handled_exceptions.fetch(exception) { DEFAULT_ERROR_CODE }
+      def exception_handler(exception)
+        handled_exceptions.find{|ex, _| exception.is_a?(ex) }.to_a.last || :default_exception_handler
       end
 
       # Specify which is the default action module to be included when we use

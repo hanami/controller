@@ -1,5 +1,6 @@
 require 'lotus/utils/class_attribute'
 require 'lotus/http/status'
+require 'lotus/action/throwable/handlers'
 
 module Lotus
   module Action
@@ -17,6 +18,7 @@ module Lotus
 
       def self.included(base)
         base.extend ClassMethods
+        base.include Throwable::Handlers
       end
 
       module ClassMethods
@@ -120,20 +122,17 @@ module Lotus
         [[exception.class, exception.message].compact.join(": "), *exception.backtrace].join("\n\t")
       end
 
+
+      def default_exception_handler(exception)
+        internal_server_error(exception)
+      end
+
       # @since 0.1.0
       # @api private
       def _handle_exception(exception)
         raise unless configuration.handle_exceptions
-        handler = configuration.handled_exceptions[exception.class]
-
-        code = if handler.is_a?(Symbol)
-          method(handler).call(exception)
-          nil
-        else
-          configuration.exception_code(exception.class)
-        end
-
-        halt code
+        method(configuration.exception_handler(exception)).call(exception)
+        halt
       end
     end
   end
