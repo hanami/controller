@@ -126,14 +126,12 @@ module Lotus
         raise unless configuration.handle_exceptions
         handler = configuration.handled_exceptions[exception.class]
 
-        code = if handler.is_a?(Symbol)
+        if handler.is_a?(Symbol)
           method(handler).call(exception)
-          nil
+          halt
         else
-          configuration.exception_code(exception.class)
+          halt configuration.exception_code(exception.class)
         end
-
-        halt code
       end
     end
   end
