@@ -116,7 +116,7 @@ class ErrorCallWithMethodNameAsHandlerAction
   end
 end
 
-class ErrorCallWithDefaultHandlerAction
+class ErrorCallWithSpecifiedStatusCodeAction
   include Lotus::Action
 
   handle_exception StandardError => 422

@@ -54,7 +54,7 @@ describe Lotus::Action do
       end
 
       it 'handles exception with specified status code' do
-        response = ErrorCallWithDefaultHandlerAction.new.call({})
+        response = ErrorCallWithSpecifiedStatusCodeAction.new.call({})
 
         response[0].must_equal 422
         response[2].must_equal ['Unprocessable Entity']
