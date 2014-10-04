@@ -192,7 +192,7 @@ module Lotus
       # @api private
       #
       # @see Lotus::Controller::Configuration#handle_exception
-      def exception_code(exception)
+      def exception_handler(exception)
         @handled_exceptions.fetch(exception) { DEFAULT_ERROR_CODE }
       end
 

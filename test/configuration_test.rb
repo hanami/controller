@@ -44,10 +44,10 @@ describe Lotus::Controller::Configuration do
     end
   end
 
-  describe 'exception_code' do
+  describe 'exception_handler' do
     describe 'when the given error is unknown' do
       it 'returns the default value' do
-        @configuration.exception_code(Exception).must_equal 500
+        @configuration.exception_handler(Exception).must_equal 500
       end
     end
 
@@ -56,8 +56,8 @@ describe Lotus::Controller::Configuration do
         @configuration.handle_exception NotImplementedError => 400
       end
 
-      it 'returns the default value' do
-        @configuration.exception_code(NotImplementedError).must_equal 400
+      it 'returns given value' do
+        @configuration.exception_handler(NotImplementedError).must_equal 400
       end
     end
   end

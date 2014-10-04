@@ -124,13 +124,13 @@ module Lotus
       # @api private
       def _handle_exception(exception)
         raise unless configuration.handle_exceptions
-        handler = configuration.handled_exceptions[exception.class]
+        handler = configuration.exception_handler(exception.class)
 
         if handler.is_a?(Symbol)
           method(handler).call(exception)
           halt
         else
-          halt configuration.exception_code(exception.class)
+          halt handler
         end
       end
     end
