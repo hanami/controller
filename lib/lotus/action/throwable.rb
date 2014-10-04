@@ -11,7 +11,6 @@ module Lotus
     # @see Lotus::Action::Throwable#halt
     # @see Lotus::Action::Throwable#status
     module Throwable
-      include Throwable::Handlers
       # @since 0.2.0
       # @api private
       RACK_ERRORS = 'rack.errors'.freeze
