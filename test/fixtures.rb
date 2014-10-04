@@ -119,7 +119,7 @@ end
 class ErrorCallWithDefaultHandlerAction
   include Lotus::Action
 
-  handle_exception StandardError => :unprocessable_entity
+  handle_exception StandardError => 422
 
   def call(params)
     raise StandardError
@@ -418,7 +418,7 @@ end
 
 class HandledExceptionAction
   include Lotus::Action
-  handle_exception RecordNotFound => :not_found
+  handle_exception RecordNotFound => 404
 
   def call(params)
     raise RecordNotFound.new
@@ -430,7 +430,7 @@ end
 
 Lotus::Controller.class_eval do
   configure do
-    handle_exception DomainLogicException => :bad_request
+    handle_exception DomainLogicException => 400
   end
 end
 
@@ -618,7 +618,7 @@ module App
 
   class StandaloneAction
     include Lotus::Action
-    handle_exception App::CustomError => :bad_request
+    handle_exception App::CustomError => 400
 
     def call(params)
       raise App::CustomError
@@ -633,7 +633,7 @@ module App2
   class StandaloneController
     include Lotus::Controller
 
-    configuration.handle_exception App2::CustomError => :bad_request
+    configuration.handle_exception App2::CustomError => 400
 
     action 'Index' do
       def call(params)
@@ -650,7 +650,7 @@ module MusicPlayer
   Controller.module_eval do
     configuration.reset!
     configure do
-      handle_exception ArgumentError => :bad_request
+      handle_exception ArgumentError => 400
       action_module    MusicPlayer::Action
 
       modules do
@@ -699,7 +699,7 @@ module MusicPlayer
       end
 
       action 'Show' do
-        handle_exception ArtistNotFound => :not_found
+        handle_exception ArtistNotFound => 404
 
         def call(params)
           raise ArtistNotFound
