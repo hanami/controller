@@ -30,19 +30,35 @@ describe Lotus::Action do
       response[2].must_equal ['Hi from TestAction!']
     end
 
-    it 'returns an HTTP 500 status code when an exception is raised' do
-      response = ErrorCallAction.new.call({})
-
-      response[0].must_equal 500
-      response[2].must_equal ['Internal Server Error']
-    end
-
     it 'exposes validation errors' do
       action     = ParamsValidationAction.new
       code, _, _ = action.call({})
 
       code.must_equal 400
       action.errors.for(:email).must_include Lotus::Validations::Error.new(:email, :presence, true, nil)
+    end
+
+    describe 'when exception handling code is enabled' do
+      it 'returns an HTTP 500 status code when an exception is raised' do
+        response = ErrorCallAction.new.call({})
+
+        response[0].must_equal 500
+        response[2].must_equal ['Internal Server Error']
+      end
+
+      it 'handles exception with specified method' do
+        response = ErrorCallWithMethodNameAsHandlerAction.new.call({})
+
+        response[0].must_equal 501
+        response[2].must_equal ['Please go away!']
+      end
+
+      it 'handles exception with specified status code' do
+        response = ErrorCallWithSpecifiedStatusCodeAction.new.call({})
+
+        response[0].must_equal 422
+        response[2].must_equal ['Unprocessable Entity']
+      end
     end
 
     describe 'when exception handling code is disabled' do
