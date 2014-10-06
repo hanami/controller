@@ -56,8 +56,8 @@ describe Lotus::Controller::Configuration do
         @configuration.handle_exception NotImplementedError => 400
       end
 
-      it 'returns given value' do
-        @configuration.exception_handler(NotImplementedError).must_equal 400
+      it 'returns configured value when an exception instance is given' do
+        @configuration.exception_handler(NotImplementedError.new).must_equal 400
       end
     end
   end

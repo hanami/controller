@@ -350,6 +350,27 @@ action = Show.new
 action.call({id: 'unknown'}) # => [404, {}, ["Not Found"]]
 ```
 
+In alternative, you can define custom handlers for exceptions.
+
+```ruby
+class Create
+  include Lotus::Action
+  handle_exception ArgumentError => :my_custom_handler
+
+  def call(params)
+    raise ArgumentError.new("Invalid arguments")
+  end
+
+  private
+  def my_custom_handler(exception)
+    status 400, exception.message
+  end
+end
+
+action = Create.new
+action.call({}) # => [400, {}, ["Invalid arguments"]]
+```
+
 Exception policies can be defined globally, **before** the controllers/actions
 are loaded.
 

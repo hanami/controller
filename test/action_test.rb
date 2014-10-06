@@ -46,11 +46,18 @@ describe Lotus::Action do
         response[2].must_equal ['Internal Server Error']
       end
 
-      it 'handles exception with specified method' do
-        response = ErrorCallWithMethodNameAsHandlerAction.new.call({})
+      it 'handles exception with specified method (symbol)' do
+        response = ErrorCallWithSymbolMethodNameAsHandlerAction.new.call({})
 
         response[0].must_equal 501
         response[2].must_equal ['Please go away!']
+      end
+
+      it 'handles exception with specified method (string)' do
+        response = ErrorCallWithStringMethodNameAsHandlerAction.new.call({})
+
+        response[0].must_equal 502
+        response[2].must_equal ['StandardError']
       end
 
       it 'handles exception with specified status code' do
@@ -58,6 +65,13 @@ describe Lotus::Action do
 
         response[0].must_equal 422
         response[2].must_equal ['Unprocessable Entity']
+      end
+
+      it "returns a successful response if the code and status aren't set" do
+        response = ErrorCallWithUnsetStatusResponse.new.call({})
+
+        response[0].must_equal 200
+        response[2].must_equal []
       end
     end
 
