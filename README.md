@@ -52,8 +52,8 @@ It's designed to be fast and testable.
 
 ### Actions
 
-The core of this frameworks are the actions.
-They are the endpoint that responds to incoming HTTP requests.
+The core of this framework are the actions.
+They are the endpoints that respond to incoming HTTP requests.
 
 ```ruby
 class Show
@@ -66,17 +66,17 @@ end
 ```
 
 The usage of `Lotus::Action` follows the Lotus philosophy: include a module and implement a minimal interface.
-In this case, it's only one method: `#call(params)`.
+In this case, the interface is one method: `#call(params)`.
 
 Lotus is designed to not interfere with inheritance.
 This is important, because you can implement your own initialization strategy.
 
-__An action is an object__ after all, it's important that __you have the full control on it__.
-In other words, you have the freedom to instantiate, inject dependencies and test it, both with unit and integration.
+__An action is an object__. That's important because __you have the full control on it__.
+In other words, you have the freedom to instantiate, inject dependencies and test it, both at the unit and integration level.
 
-In the example below, we're stating that the default repository is `Article`, but during a unit test we can inject a stubbed version, and invoke `#call` with the params that we want to simulate.
+In the example below, the default repository is `Article`. During a unit test we can inject a stubbed version, and invoke `#call` with the params.
 __We're avoiding HTTP calls__, we're eventually avoiding to hit the database (it depends on the stubbed repository), __we're just dealing with message passing__.
-Imagine how **fast** a unit test can be like this.
+Imagine how **fast** the unit test could be.
 
 ```ruby
 class Show
@@ -99,7 +99,7 @@ action.call({ id: 23 })
 
 The request params are passed as an argument to the `#call` method.
 If routed with *Lotus::Router*, it extracts the relevant bits from the Rack `env` (eg the requested `:id`).
-Otherwise everything it's passed as it is: the full Rack `env` in production, and the given `Hash` for unit tests.
+Otherwise everything passed as is: the full Rack `env` in production, and the given `Hash` for unit tests.
 
 With Lotus::Router:
 
@@ -145,8 +145,8 @@ response = action.call({ id: 23, key: 'value' })
 
 #### Whitelisting
 
-Params represent an untrusted input, for security reasons it's recommended to
-whitelist them.
+Params represent an untrusted input.
+For security reasons it's recommended to whitelist them.
 
 ```ruby
 require 'lotus/controller'
@@ -175,8 +175,8 @@ end
 #### Validations & Coercions
 
 Because params are a well defined set of data required to fulfill a feature
-in your application, you can validate them and avoid to hit lower MVC layers
-when they are invalid.
+in your application, you can validate them. So you can avoid hitting lower MVC layers
+when params are invalid.
 
 If you specify the `:type` option, the param will be coerced.
 
@@ -253,11 +253,15 @@ action.call({}) # => [201, { "X-Custom" => "OK" }, ["Hi!"]]
 
 We know that actions are objects and Lotus::Action respects one of the pillars of OOP: __encapsulation__.
 Other frameworks extract instance variables (`@ivar`) and make them available to the view context.
-The solution of Lotus::Action is a simple and powerful DSL: `expose`.
-It's a thin layer on top of `attr_reader`. When used, it creates a getter for the given attribute, and adds it to the _exposures_.
-Exposures (`#exposures`) is set of exposed attributes, so that the view context can have the information needed to render a page.
 
-By default, all the actions expose `#params` and `#errors`.
+Lotus::Action's solution is the simple and powerful DSL: `expose`.
+It's a thin layer on top of `attr_reader`.
+
+Using `expose` creates a getter for the given attribute, and adds it to the _exposures_.
+Exposures (`#exposures`) are a set of attributes exposed to the view.
+That is to say the variables necessary for rendering a view.
+
+By default, all Lotus::Actions expose `#params` and `#errors`.
 
 ```ruby
 class Show
@@ -280,7 +284,7 @@ puts action.exposures # => { article: <Article:0x007f965c1d0318 @id=23> }
 
 ### Callbacks
 
-It offers powerful, inheritable callbacks chain which is executed before and/or after your `#call` method invocation:
+It offers a powerful, inheritable callback chain which is executed before and/or after your `#call` method invocation:
 
 ```ruby
 class Show
@@ -334,7 +338,7 @@ action = Show.new
 action.call({}) # => [500, {}, ["Internal Server Error"]]
 ```
 
-You can define how a specific raised exception should be transformed in an HTTP status.
+You can map a specific raised exception to a different HTTP status.
 
 ```ruby
 class Show
@@ -350,7 +354,7 @@ action = Show.new
 action.call({id: 'unknown'}) # => [404, {}, ["Not Found"]]
 ```
 
-In alternative, you can define custom handlers for exceptions.
+You can also define custom handlers for exceptions.
 
 ```ruby
 class Create
@@ -444,7 +448,7 @@ action.call({}) # => [401, {}, ["Unauthorized"]]
 
 ### Cookies
 
-It offers convenient access to cookies.
+Lotus::Controller offers convenient access to cookies.
 
 They are read as a Hash from Rack env:
 
@@ -578,7 +582,7 @@ run Show.new
 
 ### Http Cache
 
-It sets your headers correctly according to RFC 2616 / 14.9 for more on standard cache control directives: http://tools.ietf.org/html/rfc2616#section-14.9.1
+Lotus::Controller sets your headers correctly according to RFC 2616 / 14.9 for more on standard cache control directives: http://tools.ietf.org/html/rfc2616#section-14.9.1
 
 You can easily set the Cache-Control header for your actions:
 
@@ -617,7 +621,8 @@ end
 ```
 
 ### Conditional Get
-According to HTTP specification, conditional gets provide a way for web servers to inform clients that the response to a GET request hasn't change since the last request returning a Not Modified header (304).
+
+According to HTTP specification, conditional GETs provide a way for web servers to inform clients that the response to a GET request hasn't change since the last request returning a Not Modified header (304).
 
 Passing the HTTP_IF_NONE_MATCH (content identifier) or HTTP_IF_MODIFIED_SINCE (timestamp) headers allows the web server define if the client has a fresh version of a given resource.
 
@@ -695,7 +700,7 @@ action = Create.new
 action.call({ article: { title: 'Hello' }}) # => [301, {'Location' => '/articles/23'}, '']
 ```
 
-### Mime types
+### Mime Types
 
 Lotus::Action automatically sets the `Content-Type` header, according to the request.
 
@@ -862,7 +867,7 @@ ArticlesController::Index.new.call({})
 
 ### Lotus::Router integration
 
-While Lotus::Router works great with this framework, Lotus::Controller doesn't depend from it.
+While Lotus::Router works great with this framework, Lotus::Controller doesn't depend on it.
 You, as developer, are free to choose your own routing system.
 
 But, if you use them together, the **only constraint is that an action must support _arity 0_ in its constructor**.
@@ -900,12 +905,12 @@ While a Lotus application's architecture is more web oriented, this framework is
 ### Rack middleware
 
 Rack middleware can be configured globally in `config.ru`, but often they add an
-unnecessary overhead for all those endpoints who aren't direct users of a
-certain middleware. Think about a middleware to create sessions, where only
-`SessionsController::Create` may be involved and the rest of the application
-shouldn't pay the performance ticket of calling that middleware.
+unnecessary overhead for all those endpoints that aren't direct users of a
+certain middleware.
 
-An action can employ one or more Rack middleware, with `.use`.
+Think about a middleware to create sessions, where only `SessionsController::Create` needs that middleware, but every other action pays the performance price for that middleware.
+
+The solution is that an action can employ one or more Rack middleware, with `.use`.
 
 ```ruby
 require 'lotus/controller'
@@ -943,7 +948,7 @@ end
 
 ### Configuration
 
-Lotus::Controller can be configured with a DSL that determines its behavior.
+Lotus::Controller can be configured with a DSL.
 It supports a few options:
 
 ```ruby
@@ -981,10 +986,10 @@ Lotus::Controller.configure do
 end
 ```
 
-All those global configurations can be overwritten at a finer grained level:
-controllers. Each controller and action has its own copy of the global
-configuration, so that changes are inherited from the top to the bottom, but
-not bubbled up in the opposite direction.
+All of the global configurations can be overwritten at the controller level.
+Each controller and action has its own copy of the global configuration.
+
+This means changes are inherited from the top to the bottom, but do not bubble back up.
 
 ```ruby
 require 'lotus/controller'
