@@ -186,6 +186,12 @@ describe Lotus::Action::Params do
 
       actual = Lotus::Action::Params.new(hash).to_h
       actual.must_equal(hash)
+
+      actual.must_be_kind_of(::Hash)
+      actual[:tutorial].must_be_kind_of(::Hash)
+      actual[:tutorial][:instructions].each do |h|
+        h.must_be_kind_of(::Hash)
+      end
     end
   end
 
@@ -217,8 +223,14 @@ describe Lotus::Action::Params do
         }
       }
 
-      actual = Lotus::Action::Params.new(hash).to_h
+      actual = Lotus::Action::Params.new(hash).to_hash
       actual.must_equal(hash)
+
+      actual.must_be_kind_of(::Hash)
+      actual[:tutorial].must_be_kind_of(::Hash)
+      actual[:tutorial][:instructions].each do |h|
+        h.must_be_kind_of(::Hash)
+      end
     end
   end
 end
