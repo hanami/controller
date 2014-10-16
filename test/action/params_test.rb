@@ -173,6 +173,20 @@ describe Lotus::Action::Params do
 
       params.to_h.must_equal(Hash[id: '23'])
     end
+
+    it 'handles nested params' do
+      hash = {
+        tutorial: {
+          instructions: [
+            {title: 'foo',  body: 'bar'},
+            {title: 'hoge', body: 'fuga'}
+          ]
+        }
+      }
+
+      actual = Lotus::Action::Params.new(hash).to_h
+      actual.must_equal(hash)
+    end
   end
 
   describe '#to_hash' do
@@ -191,6 +205,20 @@ describe Lotus::Action::Params do
       hash.merge!({name: 'L'})
 
       params.to_hash.must_equal(Hash[id: '23'])
+    end
+
+    it 'handles nested params' do
+      hash = {
+        tutorial: {
+          instructions: [
+            {title: 'foo',  body: 'bar'},
+            {title: 'hoge', body: 'fuga'}
+          ]
+        }
+      }
+
+      actual = Lotus::Action::Params.new(hash).to_h
+      actual.must_equal(hash)
     end
   end
 end
