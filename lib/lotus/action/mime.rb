@@ -28,6 +28,11 @@ module Lotus
       # @since 0.1.0
       DEFAULT_CONTENT_TYPE = 'application/octet-stream'.freeze
 
+      # The default charset that is returned in the response
+      #
+      # @since 0.1.0
+      DEFAULT_CHARSET = 'utf-8'.freeze
+
       # Override Ruby's hook for modules.
       # It includes Mime types logic
       #
@@ -176,6 +181,58 @@ module Lotus
         @content_type || accepts || default_content_type || DEFAULT_CONTENT_TYPE
       end
 
+      # Action charset setter, receives new charset value
+      #
+      # @return [String] the charset of the request.
+      #
+      # @example
+      #   require 'lotus/controller'
+      #
+      #   class Show
+      #     include Lotus::Action
+      #
+      #     def call(params)
+      #       # ...
+      #       self.charset = 'koi8-r'
+      #     end
+      #   end
+      def charset=(value)
+        @charset = value
+      end
+
+      # The charset that will be automatically set in the response.
+      #
+      # It prefers, in order:
+      #   * Explicit set value (see #charset=)
+      #   * Default configuration charset
+      #   * Default content type
+      #
+      # To override the value, use <tt>#charset=</tt>
+      #
+      # @return [String] the charset of the request.
+      #
+      # @since 0.1.0
+      #
+      # @see Lotus::Action::Mime#charset=
+      # @see Lotus::Configuration#default_charset
+      # @see Lotus::Action::Mime#default_charset
+      # @see Lotus::Action::Mime#DEFAULT_CHARSET
+      #
+      # @example
+      #   require 'lotus/controller'
+      #
+      #   class Show
+      #     include Lotus::Action
+      #
+      #     def call(params)
+      #       # ...
+      #       charset # => 'text/html'
+      #     end
+      #   end
+      def charset
+        @charset || default_charset || DEFAULT_CHARSET
+      end
+
       private
 
       # Finalize the response by setting the current content type
@@ -186,7 +243,7 @@ module Lotus
       # @see Lotus::Action#finish
       def finish
         super
-        headers.merge! CONTENT_TYPE => content_type
+        headers[CONTENT_TYPE] = content_type_with_charset
       end
 
       # Sets the given format and corresponding content type.
@@ -369,6 +426,19 @@ module Lotus
         configuration.format_for(content_type) ||
           ::Rack::Mime::MIME_TYPES.key(content_type).gsub(/\A\./, '').to_sym
       end
+
+      # @since 0.2.0
+      # @api private
+      def default_charset
+        configuration.default_charset
+      end
+
+      # @since 0.2.0
+      # @api private
+      def content_type_with_charset
+        "#{content_type}; charset=#{charset}"
+      end
+
     end
   end
 end

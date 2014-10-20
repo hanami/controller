@@ -27,7 +27,7 @@ describe Lotus::Action do
       status, headers, _ = @action.call({})
 
       @action.format.must_equal   :all
-      headers['Content-Type'].must_equal 'application/octet-stream'
+      headers['Content-Type'].must_equal 'application/octet-stream; charset=utf-8'
       status.must_equal                  200
     end
 
@@ -35,7 +35,7 @@ describe Lotus::Action do
       status, headers, _ = @action.call({ 'HTTP_ACCEPT' => 'text/html' })
 
       @action.format.must_equal    :html
-      headers['Content-Type'].must_equal 'text/html'
+      headers['Content-Type'].must_equal 'text/html; charset=utf-8'
       status.must_equal                   200
     end
 
@@ -43,7 +43,7 @@ describe Lotus::Action do
       status, headers, _ = @action.call({ 'HTTP_ACCEPT' => 'application/unknown' })
 
       @action.format.must_equal    :all
-      headers['Content-Type'].must_equal 'application/octet-stream'
+      headers['Content-Type'].must_equal 'application/octet-stream; charset=utf-8'
       status.must_equal                   200
     end
 
@@ -58,7 +58,7 @@ describe Lotus::Action do
         status, headers, _ = @action.call({ 'HTTP_ACCEPT' => mime_type })
 
         @action.format.must_equal   format
-        headers['Content-Type'].must_equal mime_type
+        headers['Content-Type'].must_equal "#{mime_type}; charset=utf-8"
         status.must_equal                  200
       end
     end
@@ -73,7 +73,7 @@ describe Lotus::Action do
       status, headers, _ = @action.call({ format: 'all' })
 
       @action.format.must_equal   :all
-      headers['Content-Type'].must_equal 'application/octet-stream'
+      headers['Content-Type'].must_equal 'application/octet-stream; charset=utf-8'
       status.must_equal                  200
     end
 
@@ -105,7 +105,7 @@ describe Lotus::Action do
         _, headers, _ = @action.call({ format: format })
 
         @action.format.must_equal   format.to_sym
-        headers['Content-Type'].must_equal mime_type
+        headers['Content-Type'].must_equal "#{mime_type}; charset=utf-8"
       end
     end
   end
