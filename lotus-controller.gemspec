@@ -21,6 +21,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'rack',        '~> 1.5'
   spec.add_dependency 'lotus-utils', '~> 0.2'
+  spec.add_dependency 'lotus-validations'
 
   spec.add_development_dependency 'bundler',   '~> 1.6'
   spec.add_development_dependency 'minitest',  '~> 5'
