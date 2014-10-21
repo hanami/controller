@@ -437,7 +437,7 @@ module Lotus
       #
       # By default this value is nil.
       #
-      # @since 0.2.0
+      # @since x.x.x
       #
       # @see Lotus::Action::Mime
       #
@@ -497,6 +497,7 @@ module Lotus
           c.modules            = modules.dup
           c.formats            = formats.dup
           c.default_format     = default_format
+          c.default_charset    = default_charset
         end
       end
 
@@ -510,6 +511,7 @@ module Lotus
         @modules            = []
         @formats            = DEFAULT_FORMATS.dup
         @default_format     = nil
+        @default_charset    = nil
         @action_module      = ::Lotus::Action
       end
 
@@ -530,6 +532,7 @@ module Lotus
       attr_writer :action_module
       attr_writer :modules
       attr_writer :default_format
+      attr_writer :default_charset
     end
   end
 end

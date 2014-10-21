@@ -30,7 +30,7 @@ module Lotus
 
       # The default charset that is returned in the response
       #
-      # @since 0.1.0
+      # @since x.x.x
       DEFAULT_CHARSET = 'utf-8'.freeze
 
       # Override Ruby's hook for modules.
@@ -185,6 +185,8 @@ module Lotus
       #
       # @return [String] the charset of the request.
       #
+      # @since x.x.x
+      #
       # @example
       #   require 'lotus/controller'
       #
@@ -211,7 +213,7 @@ module Lotus
       #
       # @return [String] the charset of the request.
       #
-      # @since 0.1.0
+      # @since x.x.x
       #
       # @see Lotus::Action::Mime#charset=
       # @see Lotus::Configuration#default_charset
@@ -427,13 +429,13 @@ module Lotus
           ::Rack::Mime::MIME_TYPES.key(content_type).gsub(/\A\./, '').to_sym
       end
 
-      # @since 0.2.0
+      # @since x.x.x
       # @api private
       def default_charset
         configuration.default_charset
       end
 
-      # @since 0.2.0
+      # @since x.x.x
       # @api private
       def content_type_with_charset
         "#{content_type}; charset=#{charset}"
