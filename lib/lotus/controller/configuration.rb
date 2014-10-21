@@ -391,7 +391,7 @@ module Lotus
       # requirement for the mime type.
       #
       # The given format must be coercible to a symbol, and be a valid mime type
-      # alias. If it isn't, at the runtime the framework will raise a 
+      # alias. If it isn't, at the runtime the framework will raise a
       # `Lotus::Controller::UnknownFormatError`.
       #
       # By default this value is nil.
@@ -429,6 +429,34 @@ module Lotus
           @default_format = Utils::Kernel.Symbol(format)
         else
           @default_format
+        end
+      end
+
+      # Set a charset as default fallback for all the requests without a strict
+      # requirement for the charset.
+      #
+      # By default this value is nil.
+      #
+      # @since 0.2.0
+      #
+      # @see Lotus::Action::Mime
+      #
+      # @example Getting the value
+      #   require 'lotus/controller'
+      #
+      #   Lotus::Controller.configuration.default_charset # => nil
+      #
+      # @example Setting the value
+      #   require 'lotus/controller'
+      #
+      #   Lotus::Controller.configure do
+      #     default_charset 'koi8-r'
+      #   end
+      def default_charset(charset = nil)
+        if charset
+          @default_charset = charset
+        else
+          @default_charset
         end
       end
 

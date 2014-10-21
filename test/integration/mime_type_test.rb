@@ -7,6 +7,7 @@ MimeRoutes = Lotus::Router.new do
   get '/configuration', to: 'mimes#configuration'
   get '/accept',        to: 'mimes#accept'
   get '/restricted',    to: 'mimes#restricted'
+  get '/latin',    to: 'mimes#latin'
 end
 
 class MimesController
@@ -20,6 +21,7 @@ class MimesController
 
   action 'Configuration' do
     configuration.default_format :html
+    configuration.default_charset 'ISO-8859-1'
 
     def call(params)
       self.body = format
@@ -29,6 +31,14 @@ class MimesController
   action 'Custom' do
     def call(params)
       self.format = :xml
+      self.body   = format
+    end
+  end
+
+  action 'Latin' do
+    def call(params)
+      self.charset = 'latin1'
+      self.format = :html
       self.body   = format
     end
   end
@@ -60,38 +70,44 @@ describe 'Content type' do
 
   it 'fallbacks to the default "Content-Type" header when the request is lacking of this information' do
     response = @app.get('/')
-    response.headers['Content-Type'].must_equal 'application/octet-stream'
+    response.headers['Content-Type'].must_equal 'application/octet-stream; charset=utf-8'
     response.body.must_equal                    'all'
   end
 
-  it 'fallbacks to the default format, set in the configuration' do
+  it 'fallbacks to the default format and charset, set in the configuration' do
     response = @app.get('/configuration')
-    response.headers['Content-Type'].must_equal 'text/html'
+    response.headers['Content-Type'].must_equal 'text/html; charset=ISO-8859-1'
     response.body.must_equal                    'html'
   end
 
   it 'returns the specified "Content-Type" header' do
     response = @app.get('/custom')
-    response.headers['Content-Type'].must_equal 'application/xml'
+    response.headers['Content-Type'].must_equal 'application/xml; charset=utf-8'
     response.body.must_equal                    'xml'
+  end
+
+  it 'returns the custom charser header' do
+    response = @app.get('/latin')
+    response.headers['Content-Type'].must_equal 'text/html; charset=latin1'
+    response.body.must_equal                    'html'
   end
 
   describe 'when Accept is sent' do
     it 'sets "Content-Type" header according to "Accept"' do
       response = @app.get('/', 'HTTP_ACCEPT' => '*/*')
-      response.headers['Content-Type'].must_equal 'application/octet-stream'
+      response.headers['Content-Type'].must_equal 'application/octet-stream; charset=utf-8'
       response.body.must_equal                    'all'
     end
 
     it 'sets "Content-Type" header according to "Accept"' do
       response = @app.get('/', 'HTTP_ACCEPT' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8')
-      response.headers['Content-Type'].must_equal 'text/html'
+      response.headers['Content-Type'].must_equal 'text/html; charset=utf-8'
       response.body.must_equal                    'html'
     end
 
     it 'sets "Content-Type" header according to "Accept" quality scale' do
       response = @app.get('/', 'HTTP_ACCEPT' => 'application/json;q=0.6,application/xml;q=0.9,*/*;q=0.8')
-      response.headers['Content-Type'].must_equal 'application/xml'
+      response.headers['Content-Type'].must_equal 'application/xml; charset=utf-8'
       response.body.must_equal                    'xml'
     end
   end

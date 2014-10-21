@@ -26,7 +26,7 @@ describe Lotus::Action do
       response = CallAction.new.call({})
 
       response[0].must_equal 201
-      response[1].must_equal({'Content-Type' => 'application/octet-stream', 'X-Custom' => 'OK'})
+      response[1].must_equal({'Content-Type' => 'application/octet-stream; charset=utf-8', 'X-Custom' => 'OK'})
       response[2].must_equal ['Hi from TestAction!']
     end
 
