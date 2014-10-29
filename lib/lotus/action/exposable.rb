@@ -19,6 +19,10 @@ module Lotus
         base.extend ClassMethods
       end
 
+      # Exposures API class methods
+      #
+      # @since 0.1.0
+      # @api private
       module ClassMethods
         # Expose the given attributes on the outside of the object with
         # a getter and a special method called #exposures.

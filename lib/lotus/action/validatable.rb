@@ -14,6 +14,10 @@ module Lotus
         end
       end
 
+      # Validatable API class methods
+      #
+      # @since 0.1.0
+      # @api private
       module ClassMethods
         # Whitelist valid parameters to be passed to Lotus::Action#call.
         #

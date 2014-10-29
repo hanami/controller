@@ -25,6 +25,10 @@ module Lotus
         end
       end
 
+      # Callbacks API class methods
+      #
+      # @since 0.1.0
+      # @api private
       module ClassMethods
         # Override Ruby's hook for modules.
         # It includes callbacks logic
@@ -131,6 +135,10 @@ module Lotus
         end
       end
 
+      # Callbacks API instance methods
+      #
+      # @since 0.1.0
+      # @api private
       module InstanceMethods
         # Implements the Rack/Lotus::Action protocol
         #
