@@ -519,8 +519,14 @@ module Lotus
 
       # Load the configuration for the given action
       #
+      # @param base [Class] the target action
+      #
+      # @return void
+      #
       # @since 0.2.0
       # @api private
+      #
+      # @see Lotus::Controller::Configurable.included
       def load!(base)
         modules.each do |mod|
           base.class_eval(&mod)
