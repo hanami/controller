@@ -19,6 +19,10 @@ module Lotus
         base.extend ClassMethods
       end
 
+      # Throw API class methods
+      #
+      # @since 0.1.0
+      # @api private
       module ClassMethods
         private
 

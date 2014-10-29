@@ -103,15 +103,17 @@ module Lotus
         reset!
       end
 
-      # @attr_writer handle_exceptions [TrueClass,FalseClass] Decide if handle
-      #   exceptions with an HTTP status or not
+      # @attr_writer handle_exceptions [TrueClass,FalseClass] Handle exceptions
+      #   with an HTTP status or leave them uncaught
       #
       # @since 0.2.0
+      #
+      # @return void
       #
       # @see Lotus::Controller::Configuration#handle_exceptions
       attr_writer :handle_exceptions
 
-      # Decide if handle exceptions with an HTTP status or let them uncaught
+      # Handle exceptions with an HTTP status or let them uncaught
       #
       # If this value is set to `true`, the configured exceptions will return
       # the specified HTTP status, the rest of them with `500`.
@@ -517,8 +519,14 @@ module Lotus
 
       # Load the configuration for the given action
       #
+      # @param base [Class] the target action
+      #
+      # @return void
+      #
       # @since 0.2.0
       # @api private
+      #
+      # @see Lotus::Controller::Configurable.included
       def load!(base)
         modules.each do |mod|
           base.class_eval(&mod)
