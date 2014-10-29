@@ -72,6 +72,11 @@ module Lotus
       # indicating when the response should be considered "stale". The remaining
       # "values" arguments are passed to the #cache_control helper:
       #
+      # @param amount [Integer,Time] number of seconds or point in time
+      # @param values [Array<Symbols>] mapped to cache_control directives
+      #
+      # @return void
+      #
       # @since x.x.x
       # @api public
       #
