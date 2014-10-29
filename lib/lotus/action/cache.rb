@@ -37,6 +37,19 @@ module Lotus
       # See RFC 2616 / 14.9 for more on standard cache control directives:
       # http://tools.ietf.org/html/rfc2616#section-14.9.1
       #
+      # @param values [Array<Symbols, Hash>] mapped to cache_control directives
+      # @option values [Symbol] :public
+      # @option values [Symbol] :private
+      # @option values [Symbol] :no_cache
+      # @option values [Symbol] :no_store
+      # @option values [Symbol] :must_validate
+      # @option values [Symbol] :proxy_revalidate
+      # @option values [Hash] :max_age
+      # @option values [Hash] :min_stale
+      # @option values [Hash] :s_max_age
+      #
+      # @return void
+      #
       # @since x.x.x
       # @api public
       #
