@@ -107,6 +107,12 @@ module Lotus
       # and halts a 304 Not Modified if the request is still fresh
       # respecting IfNoneMatch and IfModifiedSince request headers
       #
+      # @param options [Hash]
+      # @option options [Integer] :etag for testing IfNoneMatch conditions
+      # @option options [Date] :last_modified for testing IfModifiedSince conditions
+      #
+      # @return void
+      #
       # @since x.x.x
       # @api public
       #
