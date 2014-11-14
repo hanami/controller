@@ -89,7 +89,7 @@ module Lotus
       #     # => will duplicate from MyApp::Controller
       def self.for(base)
         namespace = Utils::String.new(base).namespace
-        framework = Utils::Class.load!("(#{namespace}|Lotus)::Controller")
+        framework = Utils::Class.load_from_pattern!("(#{namespace}|Lotus)::Controller")
         framework.configuration.duplicate
       end
 

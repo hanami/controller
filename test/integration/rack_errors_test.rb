@@ -14,7 +14,7 @@ CustomAuthException = Class.new(StandardError) do
   end
 end
 
-class ErrorsController
+module Errors
   include Lotus::Controller
 
   action 'WithoutMessage' do

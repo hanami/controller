@@ -49,11 +49,11 @@ describe 'Framework configuration' do
   end
 
   it 'allows standalone modulized controllers to inherith framework configuration' do
-    Lotus::Controller.configuration.handled_exceptions.wont_include                 App2::CustomError
-    App2::StandaloneController.configuration.handled_exceptions.must_include        App2::CustomError
-    App2::StandaloneController::Index.configuration.handled_exceptions.must_include App2::CustomError
+    Lotus::Controller.configuration.handled_exceptions.wont_include       App2::CustomError
+    App2::Standalone.configuration.handled_exceptions.must_include        App2::CustomError
+    App2::Standalone::Index.configuration.handled_exceptions.must_include App2::CustomError
 
-    code, _, _ = App2::StandaloneController::Index.new.call({})
+    code, _, _ = App2::Standalone::Index.new.call({})
     code.must_equal 400
   end
 

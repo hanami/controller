@@ -71,7 +71,7 @@ HTTP_TEST_STATUSES = {
   599 => 'Network connect timeout error'
 }
 
-class TestController
+module Test
   include Lotus::Controller
 
   action 'Index' do
@@ -535,7 +535,7 @@ class Root
   end
 end
 
-class AboutController
+module About
   include Lotus::Controller
 
   class Team < Root
@@ -548,7 +548,7 @@ class AboutController
   end
 end
 
-class IdentityController
+module Identity
   include Lotus::Controller
 
   class Action
@@ -567,7 +567,7 @@ class IdentityController
   Destroy = Class.new(Action)
 end
 
-class FlowersController
+module Flowers
   include Lotus::Controller
 
   class Action
@@ -587,7 +587,7 @@ class FlowersController
   Destroy = Class.new(Action)
 end
 
-class DashboardController
+module Dashboard
   include Lotus::Controller
 
   action 'Index' do
@@ -608,7 +608,7 @@ class DashboardController
   end
 end
 
-class SessionsController
+module Sessions
   include Lotus::Controller
 
   action 'Create' do
@@ -659,7 +659,7 @@ module App2
   class CustomError < StandardError
   end
 
-  class StandaloneController
+  module Standalone
     include Lotus::Controller
 
     configuration.handle_exception App2::CustomError => 400

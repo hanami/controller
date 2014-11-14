@@ -10,7 +10,7 @@ MimeRoutes = Lotus::Router.new do
   get '/latin',    to: 'mimes#latin'
 end
 
-class MimesController
+module Mimes
   include Lotus::Controller
 
   action 'Default' do

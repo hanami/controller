@@ -25,7 +25,7 @@ ConditionalGetRoutes = Lotus::Router.new do
   get '/etag-last-modified', to: 'conditional_get#etag_last_modified'
 end
 
-class CacheControlController
+module CacheControl
   include Lotus::Controller
 
   action 'Default' do
@@ -80,7 +80,7 @@ class CacheControlController
   end
 end
 
-class ExpiresController
+module Expires
   include Lotus::Controller
 
   action 'Default' do
@@ -127,7 +127,7 @@ class ExpiresController
   end
 end
 
-class ConditionalGetController
+module ConditionalGet
   include Lotus::Controller
 
   action 'Etag' do
