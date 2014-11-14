@@ -37,6 +37,19 @@ module Lotus
       # See RFC 2616 / 14.9 for more on standard cache control directives:
       # http://tools.ietf.org/html/rfc2616#section-14.9.1
       #
+      # @param values [Array<Symbols, Hash>] mapped to cache_control directives
+      # @option values [Symbol] :public
+      # @option values [Symbol] :private
+      # @option values [Symbol] :no_cache
+      # @option values [Symbol] :no_store
+      # @option values [Symbol] :must_validate
+      # @option values [Symbol] :proxy_revalidate
+      # @option values [Hash] :max_age
+      # @option values [Hash] :min_stale
+      # @option values [Hash] :s_max_age
+      #
+      # @return void
+      #
       # @since x.x.x
       # @api public
       #
@@ -72,6 +85,11 @@ module Lotus
       # indicating when the response should be considered "stale". The remaining
       # "values" arguments are passed to the #cache_control helper:
       #
+      # @param amount [Integer,Time] number of seconds or point in time
+      # @param values [Array<Symbols>] mapped to cache_control directives
+      #
+      # @return void
+      #
       # @since x.x.x
       # @api public
       #
@@ -106,6 +124,12 @@ module Lotus
       # Set the etag, last_modified, or both headers on the response
       # and halts a 304 Not Modified if the request is still fresh
       # respecting IfNoneMatch and IfModifiedSince request headers
+      #
+      # @param options [Hash]
+      # @option options [Integer] :etag for testing IfNoneMatch conditions
+      # @option options [Date] :last_modified for testing IfModifiedSince conditions
+      #
+      # @return void
       #
       # @since x.x.x
       # @api public
