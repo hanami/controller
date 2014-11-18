@@ -485,7 +485,7 @@ class ParamsAction
   include Lotus::Action
 
   def call(params)
-    self.body = params.params.inspect
+    self.body = params.to_h.inspect
   end
 end
 
@@ -498,7 +498,7 @@ class WhitelistedParamsAction
   params Params
 
   def call(params)
-    self.body = params.params.inspect
+    self.body = params.to_h.inspect
   end
 end
 
@@ -510,7 +510,7 @@ class WhitelistedDslAction
   end
 
   def call(params)
-    self.body = params.params.inspect
+    self.body = params.to_h.inspect
   end
 end
 
@@ -530,7 +530,7 @@ class Root
   include Lotus::Action
 
   def call(params)
-    self.body = params.params.inspect
+    self.body = params.to_h.inspect
     headers.merge!({'X-Test' => 'test'})
   end
 end
@@ -543,7 +543,7 @@ module About
 
   action 'Contacts' do
     def call(params)
-      self.body = params.params.inspect
+      self.body = params.to_h.inspect
     end
   end
 end
@@ -555,7 +555,7 @@ module Identity
     include Lotus::Action
 
     def call(params)
-      self.body = params.params.inspect
+      self.body = params.to_h.inspect
     end
   end
 
@@ -574,7 +574,7 @@ module Flowers
     include Lotus::Action
 
     def call(params)
-      self.body = params.params.inspect
+      self.body = params.to_h.inspect
     end
   end
 

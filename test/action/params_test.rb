@@ -16,7 +16,7 @@ describe Lotus::Action::Params do
       @params.param :id
       @params.param 'first_name'
 
-      @params.send(:attributes).keys.must_equal([:id, :first_name])
+      @params.__send__(:attributes).instance_variable_get(:@attributes).keys.must_equal([:id, :first_name])
     end
 
     describe "when this feature isn't enabled" do
@@ -30,9 +30,6 @@ describe Lotus::Action::Params do
 
         assert ParamsAction::Params.ancestors.include?(Lotus::Action::Params),
           "expected ParamsAction::Params to be a Lotus::Action::Params subclass"
-
-        assert !ParamsAction::Params.whitelisting?,
-          "expected ParamsAction::Params to not be whitelisted"
       end
 
       describe "in testing mode" do
@@ -96,9 +93,6 @@ describe Lotus::Action::Params do
 
           assert WhitelistedDslAction::Params.ancestors.include?(Lotus::Action::Params),
             "expected WhitelistedDslAction::Params to be a Lotus::Action::Params subclass"
-
-          assert WhitelistedDslAction::Params.whitelisting?,
-            "expected WhitelistedDslAction::Params to be whitelisted"
         end
 
         describe "in testing mode" do

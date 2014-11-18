@@ -33,9 +33,3 @@ Lotus::Controller::Configuration.class_eval do
 
   public :handled_exceptions
 end
-
-Lotus::Action::Params.class_eval do
-  def params
-    @attributes
-  end
-end

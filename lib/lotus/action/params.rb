@@ -101,10 +101,14 @@ module Lotus
       #
       # @since 0.1.0
       def initialize(env)
-        @env        = env
-        @attributes = _compute_params
-        @errors     = Validations::Errors.new
+        @env = env
+        super(_compute_params)
         freeze
+      end
+
+      def self.defined_attributes
+        result = super
+        return result if result.to_ary.any?
       end
 
       # Returns the object associated with the given key
@@ -115,7 +119,7 @@ module Lotus
       #
       # @since 0.2.0
       def [](key)
-        @attributes[key]
+        @attributes.get(key)
       end
 
       # Returns the Ruby's hash
@@ -129,22 +133,9 @@ module Lotus
       alias_method :to_hash, :to_h
 
       private
-
-      # Returns whether or not params are being whitelisted
-      #
-      # @return [TrueClass, FalseClass] return whether whitelisting is being used
-      #
-      # @api private
-      # @since x.x.x
-      def self.whitelisting?
-        attributes.any?
-      end
-
       def _compute_params
         Utils::Hash.new(
-          _whitelist(
-            _extract
-          )
+          _extract
         ).symbolize!
       end
 
@@ -158,23 +149,6 @@ module Lotus
           end
         end
       end
-
-      def _whitelist(raw_params)
-        if self.class.whitelisting?
-          _attributes.reduce({}) do |params, (name,_)|
-            case
-            when raw_params.has_key?(name)
-              params[name] = raw_params[name]
-            when raw_params.has_key?(name.to_s)
-              params[name] = raw_params[name.to_s]
-            end
-            params
-          end
-        else
-          raw_params
-        end
-      end
-
     end
   end
 end
