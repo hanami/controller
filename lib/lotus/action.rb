@@ -75,7 +75,5 @@ module Lotus
     # @see Lotus::Action::Cache
     def finish
     end
-
-
   end
 end

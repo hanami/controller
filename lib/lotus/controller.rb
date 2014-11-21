@@ -264,6 +264,11 @@ module Lotus
         self.configuration = conf
       end
     end
+
+    # @since x.x.x
+    def self.load!
+      configuration.load!
+    end
   end
 end
 

@@ -3,6 +3,8 @@ require 'test_helper'
 describe Lotus::Controller do
   describe '.configuration' do
     before do
+      Lotus::Controller.unload!
+
       module ConfigurationController
         include Lotus::Controller
       end
@@ -29,8 +31,12 @@ describe Lotus::Controller do
   end
 
   describe '.configure' do
+    before do
+      Lotus::Controller.unload!
+    end
+
     after do
-      Lotus::Controller.configuration.reset!
+      Lotus::Controller.unload!
     end
 
     it 'allows to configure the framework' do
@@ -83,7 +89,7 @@ describe Lotus::Controller do
     end
 
     after do
-      Lotus::Controller.configuration.reset!
+      Lotus::Controller.unload!
 
       Object.send(:remove_const, :Duplicated)
       Object.send(:remove_const, :DuplicatedCustom)
@@ -165,6 +171,7 @@ describe Lotus::Controller do
           end
         end
 
+        Lotus::Controller.unload!
         Lotus::Controller.class_eval do
           configure do
             action_module CustomActionModule

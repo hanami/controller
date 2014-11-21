@@ -23,6 +23,13 @@ require 'lotus/action/cookies'
 require 'lotus/action/session'
 require 'fixtures'
 
+Lotus::Controller.class_eval do
+  def self.unload!
+    self.configuration = configuration.duplicate
+    configuration.reset!
+  end
+end
+
 Lotus::Controller::Configuration.class_eval do
   def ==(other)
     other.kind_of?(self.class) &&

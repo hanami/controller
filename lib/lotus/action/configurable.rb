@@ -36,7 +36,7 @@ module Lotus
           self.configuration = config
         end
 
-        config.load!(base)
+        config.copy!(base)
       end
 
       private
