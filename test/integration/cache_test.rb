@@ -26,8 +26,6 @@ ConditionalGetRoutes = Lotus::Router.new do
 end
 
 module CacheControl
-  include Lotus::Controller
-
   class Default
     include Lotus::Action
     include Lotus::Action::Cache
@@ -87,8 +85,6 @@ module CacheControl
 end
 
 module Expires
-  include Lotus::Controller
-
   class Default
     include Lotus::Action
     include Lotus::Action::Cache
@@ -139,8 +135,6 @@ module Expires
 end
 
 module ConditionalGet
-  include Lotus::Controller
-
   class Etag
     include Lotus::Action
     include Lotus::Action::Cache

@@ -5,13 +5,13 @@ describe Lotus::Controller do
     before do
       Lotus::Controller.unload!
 
-      module ConfigurationController
-        include Lotus::Controller
+      module ConfigurationAction
+        include Lotus::Action
       end
     end
 
     after do
-      Object.send(:remove_const, :ConfigurationController)
+      Object.send(:remove_const, :ConfigurationAction)
     end
 
     it 'exposes class configuration' do
@@ -24,7 +24,7 @@ describe Lotus::Controller do
 
     it 'inheriths the configuration from the framework' do
       expected = Lotus::Controller.configuration
-      actual   = ConfigurationController.configuration
+      actual   = ConfigurationAction.configuration
 
       actual.must_equal(expected)
     end

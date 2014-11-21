@@ -11,8 +11,6 @@ MimeRoutes = Lotus::Router.new do
 end
 
 module Mimes
-  include Lotus::Controller
-
   class Default
     include Lotus::Action
 

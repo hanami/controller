@@ -21,7 +21,6 @@ $:.unshift 'lib'
 require 'lotus/controller'
 require 'lotus/action/cookies'
 require 'lotus/action/session'
-require 'fixtures'
 
 Lotus::Controller.class_eval do
   def self.unload!
@@ -29,6 +28,8 @@ Lotus::Controller.class_eval do
     configuration.reset!
   end
 end
+
+require 'fixtures'
 
 Lotus::Controller::Configuration.class_eval do
   def ==(other)

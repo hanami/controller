@@ -2,8 +2,6 @@ require 'test_helper'
 
 describe Lotus::Action do
   class FormatController
-    include Lotus::Controller
-
     class Lookup
       include Lotus::Action
       configuration.handle_exceptions = false
