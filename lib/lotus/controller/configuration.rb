@@ -517,20 +517,28 @@ module Lotus
         @action_module      = ::Lotus::Action
       end
 
-      # Load the configuration for the given action
+      # Copy the configuration for the given action
       #
       # @param base [Class] the target action
       #
       # @return void
       #
-      # @since 0.2.0
+      # @since x.x.x
       # @api private
       #
       # @see Lotus::Controller::Configurable.included
-      def load!(base)
+      def copy!(base)
         modules.each do |mod|
           base.class_eval(&mod)
         end
+      end
+
+      # Load the framework
+      #
+      # @since x.x.x
+      # @api private
+      def load!
+        freeze
       end
 
       protected

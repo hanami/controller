@@ -2,7 +2,7 @@ require 'test_helper'
 
 describe Lotus::Action do
   before do
-    Lotus::Controller.configuration.reset!
+    Lotus::Controller.unload!
   end
 
   describe '.handle_exception' do
