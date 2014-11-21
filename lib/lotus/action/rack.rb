@@ -56,10 +56,9 @@ module Lotus
         # @example Class Middleware
         #   require 'lotus/controller'
         #
-        #   class SessionsController
-        #     include Lotus::Controller
-        #
-        #     action 'Create' do
+        #   module Sessions
+        #     class Create
+        #       include Lotus::Action
         #       use OmniAuth
         #
         #       def call(params)
@@ -71,10 +70,9 @@ module Lotus
         # @example Instance Middleware
         #   require 'lotus/controller'
         #
-        #   class SessionsController
-        #     include Lotus::Controller
-        #
-        #     action 'Create' do
+        #   module Sessions
+        #     class Create
+        #       include Lotus::Controller
         #       use XMiddleware.new('x', 123)
         #
         #       def call(params)

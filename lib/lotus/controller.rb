@@ -14,14 +14,16 @@ module Lotus
   # @example
   #   require 'lotus/controller'
   #
-  #   class ArticlesController
-  #     include Lotus::Controller
+  #   module Articles
+  #     class Index
+  #       include Lotus::Action
   #
-  #     action 'Index' do
   #       # ...
   #     end
   #
-  #     action 'Show' do
+  #     class Show
+  #       include Lotus::Action
+  #
   #       # ...
   #     end
   #   end
