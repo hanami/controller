@@ -74,7 +74,8 @@ HTTP_TEST_STATUSES = {
 module Test
   include Lotus::Controller
 
-  action 'Index' do
+  class Index
+    include Lotus::Action
     expose :xyz
 
     def call(params)
@@ -541,7 +542,9 @@ module About
   class Team < Root
   end
 
-  action 'Contacts' do
+  class Contacts
+    include Lotus::Action
+
     def call(params)
       self.body = params.to_h.inspect
     end
@@ -590,7 +593,8 @@ end
 module Dashboard
   include Lotus::Controller
 
-  action 'Index' do
+  class Index
+    include Lotus::Action
     include Lotus::Action::Session
     before :authenticate!
 
@@ -611,7 +615,8 @@ end
 module Sessions
   include Lotus::Controller
 
-  action 'Create' do
+  class Create
+    include Lotus::Action
     include Lotus::Action::Session
 
     def call(params)
@@ -620,7 +625,8 @@ module Sessions
     end
   end
 
-  action 'Destroy' do
+  class Destroy
+    include Lotus::Action
     include Lotus::Action::Session
 
     def call(params)
@@ -662,9 +668,10 @@ module App2
   module Standalone
     include Lotus::Controller
 
-    configuration.handle_exception App2::CustomError => 400
+    class Index
+      include Lotus::Action
+      configuration.handle_exception App2::CustomError => 400
 
-    action 'Index' do
       def call(params)
         raise App2::CustomError
       end
@@ -705,13 +712,17 @@ module MusicPlayer
     class Dashboard
       include MusicPlayer::Controller
 
-      action 'Index' do
+      class Index
+        include MusicPlayer::Action
+
         def call(params)
           self.body = 'Muzic!'
         end
       end
 
-      action 'Show' do
+      class Show
+        include MusicPlayer::Action
+
         def call(params)
           raise ArgumentError
         end
@@ -721,13 +732,17 @@ module MusicPlayer
     class Artists
       include MusicPlayer::Controller
 
-      action 'Index' do
+      class Index
+        include MusicPlayer::Action
+
         def call(params)
           self.body = current_user
         end
       end
 
-      action 'Show' do
+      class Show
+        include MusicPlayer::Action
+
         handle_exception ArtistNotFound => 404
 
         def call(params)

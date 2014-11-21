@@ -28,7 +28,8 @@ end
 module CacheControl
   include Lotus::Controller
 
-  action 'Default' do
+  class Default
+    include Lotus::Action
     include Lotus::Action::Cache
 
     cache_control :public, max_age: 600
@@ -37,7 +38,8 @@ module CacheControl
     end
   end
 
-  action 'Overriding' do
+  class Overriding
+    include Lotus::Action
     include Lotus::Action::Cache
 
     cache_control :public, max_age: 600
@@ -47,7 +49,8 @@ module CacheControl
     end
   end
 
-  action 'Symbol' do
+  class Symbol
+    include Lotus::Action
     include Lotus::Action::Cache
 
     def call(params)
@@ -55,7 +58,8 @@ module CacheControl
     end
   end
 
-  action 'Symbols' do
+  class Symbols
+    include Lotus::Action
     include Lotus::Action::Cache
 
     def call(params)
@@ -63,7 +67,8 @@ module CacheControl
     end
   end
 
-  action 'Hash' do
+  class Hash
+    include Lotus::Action
     include Lotus::Action::Cache
 
     def call(params)
@@ -71,7 +76,8 @@ module CacheControl
     end
   end
 
-  action 'PrivatePublic' do
+  class PrivatePublic
+    include Lotus::Action
     include Lotus::Action::Cache
 
     def call(params)
@@ -83,7 +89,8 @@ end
 module Expires
   include Lotus::Controller
 
-  action 'Default' do
+  class Default
+    include Lotus::Action
     include Lotus::Action::Cache
 
     expires 900, :public, :no_cache
@@ -92,7 +99,8 @@ module Expires
     end
   end
 
-  action 'Overriding' do
+  class Overriding
+    include Lotus::Action
     include Lotus::Action::Cache
 
     expires 900, :public, :no_cache
@@ -102,7 +110,8 @@ module Expires
     end
   end
 
-  action 'Symbol' do
+  class Symbol
+    include Lotus::Action
     include Lotus::Action::Cache
 
     def call(params)
@@ -110,7 +119,8 @@ module Expires
     end
   end
 
-  action 'Symbols' do
+  class Symbols
+    include Lotus::Action
     include Lotus::Action::Cache
 
     def call(params)
@@ -118,7 +128,8 @@ module Expires
     end
   end
 
-  action 'Hash' do
+  class Hash
+    include Lotus::Action
     include Lotus::Action::Cache
 
     def call(params)
@@ -130,7 +141,8 @@ end
 module ConditionalGet
   include Lotus::Controller
 
-  action 'Etag' do
+  class Etag
+    include Lotus::Action
     include Lotus::Action::Cache
 
     def call(params)
@@ -138,7 +150,8 @@ module ConditionalGet
     end
   end
 
-  action 'LastModified' do
+  class LastModified
+    include Lotus::Action
     include Lotus::Action::Cache
 
     def call(params)
@@ -146,7 +159,8 @@ module ConditionalGet
     end
   end
 
-  action 'EtagLastModified' do
+  class EtagLastModified
+    include Lotus::Action
     include Lotus::Action::Cache
 
     def call(params)
