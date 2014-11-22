@@ -148,6 +148,26 @@ describe Lotus::Action::Params do
       params.valid?.must_equal true
       params.errors.must_be_empty
     end
+
+    describe "with nested parameters" do
+      before do
+        TestNestedParams = Class.new(Lotus::Action::Params) do
+          param :user do
+            param :email, presence: true
+          end
+        end
+      end
+
+      after do
+        Object.send(:remove_const, :TestNestedParams)
+      end
+
+      it "validates" do
+        params = TestNestedParams.new({ user: { email: "test@lotusrb.org" } })
+
+        refute params.valid?, "Expected nested parameters to be valid."
+      end
+    end
   end
 
   describe '#to_h' do
