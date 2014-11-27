@@ -14,6 +14,9 @@ module Lotus
       ALL = ::Rack::Utils::HTTP_STATUS_CODES.dup.merge({
         103 => 'Checkpoint',
         122 => 'Request-URI too long',
+        413 => 'Payload Too Large',                            # Rack 1.5 compat
+        414 => 'URI Too Long',                                 # Rack 1.5 compat
+        416 => 'Range Not Satisfiable',                        # Rack 1.5 compat
         418 => 'I\'m a teapot',
         420 => 'Enhance Your Calm',
         444 => 'No Response',
@@ -21,6 +24,7 @@ module Lotus
         450 => 'Blocked by Windows Parental Controls',
         451 => 'Wrong Exchange server',
         499 => 'Client Closed Request',
+        506 => 'Variant Also Negotiates',                      # Rack 1.5 compat
         598 => 'Network read timeout error',
         599 => 'Network connect timeout error'
       }).freeze
