@@ -4,12 +4,6 @@ module Lotus
     #
     # @since 0.1.0
     module Rack
-      # The default session key for Rack
-      #
-      # @since 0.1.0
-      # @api private
-      SESSION_KEY           = 'rack.session'.freeze
-
       # The default HTTP response code
       #
       # @since 0.1.0
