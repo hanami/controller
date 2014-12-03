@@ -1,3 +1,5 @@
+require 'securerandom'
+
 module Lotus
   module Action
     # Rack integration API
@@ -122,6 +124,17 @@ module Lotus
       # @see Lotus::Action::Rack#body=
       def response
         [ @_status || DEFAULT_RESPONSE_CODE, headers, @_body || DEFAULT_RESPONSE_BODY.dup ]
+      end
+
+      # Calculates an unique ID for the current request
+      #
+      # @return [String] The unique ID
+      #
+      # @since x.x.x
+      # @api private
+      def request_id
+        # FIXME make this number configurable and document the probabilities of clashes
+        @request_id ||= SecureRandom.hex(8)
       end
 
       private

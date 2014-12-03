@@ -93,11 +93,22 @@ module Lotus
       #
       # @see Lotus::Action::Exposable::ClassMethods.expose
       def exposures
-        {}.tap do |result|
-          self.class.exposures.each do |exposure|
-            result[exposure] = send(exposure)
+        @exposures ||= {}.tap do |result|
+          self.class.exposures.each do |name|
+            result[name] = send(name)
           end
         end
+      end
+
+      # Finalize the response
+      #
+      # @since x.x.x
+      # @api private
+      #
+      # @see Lotus::Action#finish
+      def finish
+        super
+        exposures
       end
     end
   end
