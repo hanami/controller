@@ -18,6 +18,14 @@ module Lotus
       # @api private
       DEFAULT_RESPONSE_BODY = []
 
+      # The default HTTP Request ID length
+      #
+      # @since x.x.x
+      # @api private
+      #
+      # @see Lotus::Action::Rack#request_id
+      DEFAULT_REQUEST_ID_LENGTH = 16
+
       # Override Ruby's hook for modules.
       # It includes basic Lotus::Action modules to the given class.
       #
@@ -134,7 +142,7 @@ module Lotus
       # @api private
       def request_id
         # FIXME make this number configurable and document the probabilities of clashes
-        @request_id ||= SecureRandom.hex(8)
+        @request_id ||= SecureRandom.hex(DEFAULT_REQUEST_ID_LENGTH)
       end
 
       private
