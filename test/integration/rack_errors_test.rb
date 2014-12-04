@@ -15,21 +15,25 @@ CustomAuthException = Class.new(StandardError) do
 end
 
 module Errors
-  include Lotus::Controller
+  class WithoutMessage
+    include Lotus::Action
 
-  action 'WithoutMessage' do
     def call(params)
       raise AuthException
     end
   end
 
-  action 'WithMessage' do
+  class WithMessage
+    include Lotus::Action
+
     def call(params)
       raise AuthException.new %q{you're not authorized to see this page!}
     end
   end
 
-  action 'WithCustomMessage' do
+  class WithCustomMessage
+    include Lotus::Action
+
     def call(params)
       raise CustomAuthException, 'plz go away!!'
     end

@@ -68,9 +68,9 @@ module Lotus
       #     Controller = Lotus::Controller.duplicate(self)
       #
       #     module Controllers::Dashboard
-      #       include MyApp::Controller
+      #       class Index
+      #         include MyApp::Action
       #
-      #       action 'Index' do
       #         def call(params)
       #           # ...
       #         end
@@ -235,11 +235,11 @@ module Lotus
       #     action_module MyAction
       #   end
       #
-      #   class DashboardController
-      #     include Lotus::Controller
-      #
+      #   module Dashboard
       #     # It includes MyAction, instead of Lotus::Action
-      #     action 'Index' do
+      #     class Index
+      #       include MyAction
+      #
       #       def call(params)
       #         # ...
       #       end
@@ -256,7 +256,9 @@ module Lotus
       #       include MyApp::Controller
       #
       #       # It includes MyApp::Action, instead of Lotus::Action
-      #       action 'Index' do
+      #       class Index
+      #         include MyApp::Action
+      #
       #         def call(params)
       #           # ...
       #         end
@@ -311,14 +313,14 @@ module Lotus
       #     end
       #   end
       #
-      #   class DashboardController
-      #     include Lotus::Controller
+      #   module Dashboard
+      #     class Index
+      #       # It includes:
+      #       #   * Lotus::Action
+      #       #   * Lotus::Action::Cookies
+      #       #   * Lotus::Action::Session
+      #       include Lotus::Action
       #
-      #     # It includes:
-      #     #   * Lotus::Action
-      #     #   * Lotus::Action::Cookies
-      #     #   * Lotus::Action::Session
-      #     action 'Index' do
       #       def call(params)
       #         # ...
       #       end
@@ -348,16 +350,18 @@ module Lotus
       #     format custom: 'application/custom'
       #   end
       #
-      #   class ArticlesController
-      #     include Lotus::Controller
+      #   module Articles
+      #     class Index
+      #       include Lotus::Action
       #
-      #     action 'Index' do
       #       def call(params)
       #         # ...
       #       end
       #     end
       #
-      #     action 'Show' do
+      #     class Show
+      #       include Lotus::Action
+      #
       #       def call(params)
       #         # ...
       #         self.format = :custom
@@ -365,7 +369,7 @@ module Lotus
       #     end
       #   end
       #
-      #   action = ArticlesController::Index.new
+      #   action = Articles::Index.new
       #
       #   action.call({ 'HTTP_ACCEPT' => 'text/html' })
       #     # => Content-Type "text/html"
@@ -377,7 +381,7 @@ module Lotus
       #
       #
       #
-      #   action = ArticlesController::Show.new
+      #   action = Articles::Show.new
       #
       #   action.call({ 'HTTP_ACCEPT' => 'text/html' })
       #     # => Content-Type "application/custom"

@@ -73,9 +73,8 @@ HTTP_TEST_STATUSES = {
 }
 
 module Test
-  include Lotus::Controller
-
-  action 'Index' do
+  class Index
+    include Lotus::Action
     expose :xyz
 
     def call(params)
@@ -472,7 +471,7 @@ class GlobalHandledExceptionAction
   end
 end
 
-Lotus::Controller.configuration.reset!
+Lotus::Controller.unload!
 
 class UnhandledExceptionAction
   include Lotus::Action
@@ -537,12 +536,12 @@ class Root
 end
 
 module About
-  include Lotus::Controller
-
   class Team < Root
   end
 
-  action 'Contacts' do
+  class Contacts
+    include Lotus::Action
+
     def call(params)
       self.body = params.to_h.inspect
     end
@@ -550,8 +549,6 @@ module About
 end
 
 module Identity
-  include Lotus::Controller
-
   class Action
     include Lotus::Action
 
@@ -569,8 +566,6 @@ module Identity
 end
 
 module Flowers
-  include Lotus::Controller
-
   class Action
     include Lotus::Action
 
@@ -589,9 +584,8 @@ module Flowers
 end
 
 module Dashboard
-  include Lotus::Controller
-
-  action 'Index' do
+  class Index
+    include Lotus::Action
     include Lotus::Action::Session
     before :authenticate!
 
@@ -610,9 +604,8 @@ module Dashboard
 end
 
 module Sessions
-  include Lotus::Controller
-
-  action 'Create' do
+  class Create
+    include Lotus::Action
     include Lotus::Action::Session
 
     def call(params)
@@ -621,7 +614,8 @@ module Sessions
     end
   end
 
-  action 'Destroy' do
+  class Destroy
+    include Lotus::Action
     include Lotus::Action::Session
 
     def call(params)
@@ -661,11 +655,10 @@ module App2
   end
 
   module Standalone
-    include Lotus::Controller
+    class Index
+      include Lotus::Action
+      configuration.handle_exception App2::CustomError => 400
 
-    configuration.handle_exception App2::CustomError => 400
-
-    action 'Index' do
       def call(params)
         raise App2::CustomError
       end
@@ -704,31 +697,35 @@ module MusicPlayer
     end
 
     class Dashboard
-      include MusicPlayer::Controller
+      class Index
+        include MusicPlayer::Action
 
-      action 'Index' do
         def call(params)
           self.body = 'Muzic!'
         end
       end
 
-      action 'Show' do
+      class Show
+        include MusicPlayer::Action
+
         def call(params)
           raise ArgumentError
         end
       end
     end
 
-    class Artists
-      include MusicPlayer::Controller
+    module Artists
+      class Index
+        include MusicPlayer::Action
 
-      action 'Index' do
         def call(params)
           self.body = current_user
         end
       end
 
-      action 'Show' do
+      class Show
+        include MusicPlayer::Action
+
         handle_exception ArtistNotFound => 404
 
         def call(params)

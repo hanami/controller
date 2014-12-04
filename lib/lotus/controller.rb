@@ -1,7 +1,6 @@
 require 'lotus/utils/class_attribute'
 require 'lotus/action'
 require 'lotus/controller/configuration'
-require 'lotus/controller/dsl'
 require 'lotus/controller/version'
 require 'rack-patch'
 
@@ -15,14 +14,16 @@ module Lotus
   # @example
   #   require 'lotus/controller'
   #
-  #   class ArticlesController
-  #     include Lotus::Controller
+  #   module Articles
+  #     class Index
+  #       include Lotus::Action
   #
-  #     action 'Index' do
   #       # ...
   #     end
   #
-  #     action 'Show' do
+  #     class Show
+  #       include Lotus::Action
+  #
   #       # ...
   #     end
   #   end
@@ -238,30 +239,6 @@ module Lotus
         }
 
         duplicated.configure(&blk) if block_given?
-      end
-    end
-
-    # Override Ruby's hook for modules.
-    # It includes basic Lotus::Controller modules to the given Class (or Module).
-    # It sets a copy of the framework configuration
-    #
-    # @param base [Class,Module] the target controller
-    #
-    # @since 0.1.0
-    # @api private
-    #
-    # @see http://www.ruby-doc.org/core-2.1.2/Module.html#method-i-included
-    #
-    # @see Lotus::Controller::Dsl
-    def self.included(base)
-      conf = self.configuration.duplicate
-
-      base.class_eval do
-        include Dsl
-        include Utils::ClassAttribute
-
-        class_attribute :configuration
-        self.configuration = conf
       end
     end
 

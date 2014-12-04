@@ -11,15 +11,17 @@ MimeRoutes = Lotus::Router.new do
 end
 
 module Mimes
-  include Lotus::Controller
+  class Default
+    include Lotus::Action
 
-  action 'Default' do
     def call(params)
       self.body = format
     end
   end
 
-  action 'Configuration' do
+  class Configuration
+    include Lotus::Action
+
     configuration.default_format :html
     configuration.default_charset 'ISO-8859-1'
 
@@ -28,14 +30,18 @@ module Mimes
     end
   end
 
-  action 'Custom' do
+  class Custom
+    include Lotus::Action
+
     def call(params)
       self.format = :xml
       self.body   = format
     end
   end
 
-  action 'Latin' do
+  class Latin
+    include Lotus::Action
+
     def call(params)
       self.charset = 'latin1'
       self.format = :html
@@ -43,7 +49,9 @@ module Mimes
     end
   end
 
-  action 'Accept' do
+  class Accept
+    include Lotus::Action
+
     def call(params)
       self.headers.merge!({'X-AcceptDefault' => accept?('application/octet-stream').to_s })
       self.headers.merge!({'X-AcceptHtml'    => accept?('text/html').to_s })
@@ -54,7 +62,9 @@ module Mimes
     end
   end
 
-  action 'Restricted' do
+  class Restricted
+    include Lotus::Action
+
     configuration.format custom: 'application/custom'
     accept :html, :json, :custom
 
