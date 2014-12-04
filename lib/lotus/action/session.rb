@@ -1,3 +1,5 @@
+require 'lotus/action/flash'
+
 module Lotus
   module Action
     # Session API
@@ -11,6 +13,12 @@ module Lotus
       # @since 0.1.0
       # @api private
       SESSION_KEY = 'rack.session'.freeze
+
+      # The key that is used by flash to transport errors
+      #
+      # @since x.x.x
+      # @api private
+      ERRORS_KEY  = :__errors
 
       protected
 
@@ -43,6 +51,95 @@ module Lotus
       #   end
       def session
         @_env[SESSION_KEY] ||= {}
+      end
+
+      private
+
+      # Container useful to transport data with the HTTP session
+      #
+      # @return [Lotus::Action::Flash] a Flash instance
+      #
+      # @since x.x.x
+      # @api private
+      #
+      # @see Lotus::Action::Flash
+      def flash
+        @flash ||= Flash.new(session, request_id)
+      end
+
+      # In case of validations errors, preserve those informations after a
+      # redirect.
+      #
+      # @return [void]
+      #
+      # @since x.x.x
+      # @api private
+      #
+      # @see Lotus::Action::Redirect#redirect_to
+      #
+      # @example
+      #   require 'lotus/controller'
+      #
+      #   module Comments
+      #     class Index
+      #       include Lotus::Action
+      #       include Lotus::Action::Session
+      #
+      #       expose :comments
+      #
+      #       def call(params)
+      #         @comments = CommentRepository.all
+      #       end
+      #     end
+      #
+      #     class Create
+      #       include Lotus::Action
+      #       include Lotus::Action::Session
+      #
+      #       params do
+      #         param :text, type: String, presence: true
+      #       end
+      #
+      #       def call(params)
+      #         comment = Comment.new(params)
+      #         CommentRepository.create(comment) if params.valid?
+      #
+      #         redirect_to '/comments'
+      #       end
+      #     end
+      #   end
+      #
+      #   # The validation errors caused by Comments::Create are available
+      #   # **after the redirect** in the context of Comments::Index.
+      def redirect_to(*args)
+        super
+        flash[ERRORS_KEY] = errors.to_a unless params.valid?
+      end
+
+      # Read errors from flash or delegate to the superclass
+      #
+      # @return [Lotus::Validations::Errors] A collection of validation errors
+      #
+      # @since x.x.x
+      # @api private
+      #
+      # @see Lotus::Action::Validatable
+      # @see Lotus::Action::Session#flash
+      def errors
+        flash[ERRORS_KEY] || super
+      end
+
+      # Finalize the response
+      #
+      # @return [void]
+      #
+      # @since x.x.x
+      # @api private
+      #
+      # @see Lotus::Action#finish
+      def finish
+        super
+        flash.clear
       end
     end
   end

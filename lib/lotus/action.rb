@@ -69,10 +69,12 @@ module Lotus
     # @api private
     # @abstract
     #
-    # @see Lotus::Action::Mime
-    # @see Lotus::Action::Cookies
-    # @see Lotus::Action::Callable
-    # @see Lotus::Action::Cache
+    # @see Lotus::Action::Mime#finish
+    # @see Lotus::Action::Exposable#finish
+    # @see Lotus::Action::Callable#finish
+    # @see Lotus::Action::Session#finish
+    # @see Lotus::Action::Cookies#finish
+    # @see Lotus::Action::Cache#finish
     def finish
     end
   end
