@@ -314,7 +314,7 @@ class Show
   include Lotus::Action
 
   before { ... } # do some authentication stuff
-  before {|params| @article = Article.find params[:id] }
+  before { |params| @article = Article.find params[:id] }
 
   def call(params)
   end
@@ -962,8 +962,9 @@ Lotus::Controller.configure do
   # Configure the modules to be included/extended/prepended by default.
   # Argument: proc, empty by default
   #
-  modules do
+  prepare do
     include Lotus::Action::Sessions
+    using SomeMiddleWare
     prepend MyLibrary::Session::Store
   end
 end

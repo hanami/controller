@@ -676,7 +676,7 @@ module MusicPlayer
       handle_exception ArgumentError => 400
       action_module    MusicPlayer::Action
 
-      modules do
+      prepare do
         include Lotus::Action::Cookies
         include Lotus::Action::Session
         include MusicPlayer::Controllers::Authentication
@@ -778,7 +778,7 @@ module FullStack
   Controller = Lotus::Controller.duplicate(self) do
     handle_exceptions false
 
-    modules do
+    prepare do
       include Lotus::Action::Glue
       include Lotus::Action::Session
     end
