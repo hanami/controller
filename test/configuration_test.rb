@@ -114,15 +114,23 @@ describe Lotus::Controller::Configuration do
       end
     end
 
+    describe 'when prepare with no block' do
+      it 'raises error' do
+        exception = -> { @configuration.prepare }.must_raise(ArgumentError)
+        exception.message.must_equal 'Please provide a proc or a block'
+      end
+
+    end
+
     describe 'when previously configured' do
       before do
-        @configuration.modules do
+        @configuration.prepare do
           include FakeCallable
         end
       end
 
       it 'allows to configure additional modules to include' do
-        @configuration.modules do
+        @configuration.prepare do
           include FakeStatus
         end
 
@@ -137,7 +145,7 @@ describe Lotus::Controller::Configuration do
     end
 
     it 'allows to configure modules to include' do
-      @configuration.modules do
+      @configuration.prepare do
         include FakeCallable
       end
 
@@ -265,7 +273,7 @@ describe Lotus::Controller::Configuration do
   describe 'duplicate' do
     before do
       @configuration.reset!
-      @configuration.modules { include Kernel }
+      @configuration.prepare { include Kernel }
       @configuration.format custom: 'custom/format'
       @configuration.default_format :html
       @configuration.default_charset 'latin1'
@@ -286,7 +294,7 @@ describe Lotus::Controller::Configuration do
       @config.handle_exceptions = false
       @config.handle_exception ArgumentError => 400
       @config.action_module    CustomAction
-      @config.modules          { include Comparable }
+      @config.prepare          { include Comparable }
       @config.format another: 'another/format'
       @config.default_format :json
       @config.default_charset 'utf-8'

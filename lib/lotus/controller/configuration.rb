@@ -274,26 +274,19 @@ module Lotus
       end
 
       # Specify the default modules to be included when `Lotus::Action` (or the
-      # `action_module`) is included. This also works with
-      # `Lotus::Controller.action`.
+      # `action_module`) is included.
       #
       # If not set, this option will be ignored.
       #
       # This is part of a DSL, for this reason when this method is called with
-      # an argument, it will set the corresponding instance variable. When
-      # called without, it will return the already set value, or the default.
+      # an argument, it will set the corresponding instance variable.
       #
-      # @overload modules(blk)
+      # @overload prepare(blk)
       #   Adds the given block
-      #   @param value [Proc] specify the modules to be included
-      #
-      # @overload modules
-      #   Gets the value
-      #   @return [Array] the list of the specified procs
+      #   @param value [Proc] the included block
       #
       # @since 0.2.0
       #
-      # @see Lotus::Controller::Dsl#action
       # @see Lotus::Controller#duplicate
       #
       # @example Getting the value
@@ -307,9 +300,10 @@ module Lotus
       #   require 'lotus/action/session'
       #
       #   Lotus::Controller.configure do
-      #     modules do
+      #     prepare do
       #       include Lotus::Action::Cookies
       #       include Lotus::Action::Session
+      #       before { do_something }
       #     end
       #   end
       #
@@ -326,11 +320,11 @@ module Lotus
       #       end
       #     end
       #   end
-      def modules(&blk)
+      def prepare(&blk)
         if block_given?
           @modules.push(blk)
         else
-          @modules
+          raise ArgumentError.new('Please provide a proc or a block')
         end
       end
 
@@ -506,6 +500,16 @@ module Lotus
           c.default_charset    = default_charset
         end
       end
+
+      # Return included modules
+      #
+      # @return [Array<Proc>] array of included blocks
+      #
+      # @since 0.2.0
+      # @api private
+      #
+      # @see Lotus::Controller::Configuration#prepare
+      attr_reader :modules
 
       # Reset all the values to the defaults
       #
