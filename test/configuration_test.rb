@@ -117,7 +117,7 @@ describe Lotus::Controller::Configuration do
     describe 'when prepare with no block' do
       it 'raises error' do
         exception = -> { @configuration.prepare }.must_raise(ArgumentError)
-        exception.message.must_equal 'Please provide a proc or a block'
+        exception.message.must_equal 'Please provide a block'
       end
 
     end

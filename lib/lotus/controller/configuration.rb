@@ -273,46 +273,42 @@ module Lotus
         end
       end
 
-      # Specify the default modules to be included when `Lotus::Action` (or the
-      # `action_module`) is included.
+      # Configure the logic to be executed when Lotus::Action is included
+      # This is useful to DRY code by having a single place where to configure
+      # shared behaviors like authentication, sessions, cookies etc.
       #
-      # If not set, this option will be ignored.
+      # This method can be called multiple times.
       #
-      # This is part of a DSL, for this reason when this method is called with
-      # an argument, it will set the corresponding instance variable.
+      # @param blk [Proc] the code block
       #
-      # @overload prepare(blk)
-      #   Adds the given block
-      #   @param value [Proc] the included block
+      # @return [void]
       #
-      # @since 0.2.0
+      # @raise [ArgumentError] if called without passing a block
       #
-      # @see Lotus::Controller#duplicate
+      # @since 0.3.0
       #
-      # @example Getting the value
+      # @see Lotus::Controller.configure
+      # @see Lotus::Controller.duplicate
+      #
+      # @example Configure shared logic.
       #   require 'lotus/controller'
-      #
-      #   Lotus::Controller.configuration.modules # => []
-      #
-      # @example Setting the value
-      #   require 'lotus/controller'
-      #   require 'lotus/action/cookies'
-      #   require 'lotus/action/session'
       #
       #   Lotus::Controller.configure do
       #     prepare do
-      #       include Lotus::Action::Cookies
-      #       include Lotus::Action::Session
-      #       before { do_something }
+      #       include Lotus::Action::Sessions
+      #       include MyAuthentication
+      #       use SomeMiddleWare
+      #
+      #       before { authenticate! }
       #     end
       #   end
       #
       #   module Dashboard
       #     class Index
-      #       # It includes:
-      #       #   * Lotus::Action
-      #       #   * Lotus::Action::Cookies
-      #       #   * Lotus::Action::Session
+      #       # When Lotus::Action is included, it will:
+      #       #   * Include `Lotus::Action::Session` and `MyAuthentication`
+      #       #   * Configure to use `SomeMiddleWare`
+      #       #   * Configure a `before` callback that triggers `#authenticate!`
       #       include Lotus::Action
       #
       #       def call(params)
@@ -324,7 +320,7 @@ module Lotus
         if block_given?
           @modules.push(blk)
         else
-          raise ArgumentError.new('Please provide a proc or a block')
+          raise ArgumentError.new('Please provide a block')
         end
       end
 

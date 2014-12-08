@@ -959,13 +959,17 @@ Lotus::Controller.configure do
   #
   format custom: 'application/custom'
 
-  # Configure the modules to be included/extended/prepended by default.
-  # Argument: proc, empty by default
+  # Configure the logic to be executed when Lotus::Action is included
+  # This is useful to DRY code by having a single place where to configure
+  # shared behaviors like authentication, sessions, cookies etc.
+  # Argument: proc
   #
   prepare do
     include Lotus::Action::Sessions
-    using SomeMiddleWare
-    prepend MyLibrary::Session::Store
+    include MyAuthentication
+    use SomeMiddleWare
+
+    before { authenticate! }
   end
 end
 ```
