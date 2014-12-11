@@ -1,3 +1,5 @@
+require 'forwardable'
+
 module Lotus
   module Action
     # Container useful to transport data with the HTTP session
@@ -6,6 +8,11 @@ module Lotus
     # @since x.x.x
     # @api private
     class Flash
+      extend Forwardable
+
+      # Delegate iteration to the underlying data storage
+      def_delegator :data, :each, :each
+
       # Session key where the data is stored
       #
       # @since x.x.x
