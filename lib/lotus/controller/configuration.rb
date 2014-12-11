@@ -68,9 +68,9 @@ module Lotus
       #     Controller = Lotus::Controller.duplicate(self)
       #
       #     module Controllers::Dashboard
-      #       include MyApp::Controller
+      #       class Index
+      #         include MyApp::Action
       #
-      #       action 'Index' do
       #         def call(params)
       #           # ...
       #         end
@@ -235,11 +235,11 @@ module Lotus
       #     action_module MyAction
       #   end
       #
-      #   class DashboardController
-      #     include Lotus::Controller
-      #
+      #   module Dashboard
       #     # It includes MyAction, instead of Lotus::Action
-      #     action 'Index' do
+      #     class Index
+      #       include MyAction
+      #
       #       def call(params)
       #         # ...
       #       end
@@ -256,7 +256,9 @@ module Lotus
       #       include MyApp::Controller
       #
       #       # It includes MyApp::Action, instead of Lotus::Action
-      #       action 'Index' do
+      #       class Index
+      #         include MyApp::Action
+      #
       #         def call(params)
       #           # ...
       #         end
@@ -271,64 +273,54 @@ module Lotus
         end
       end
 
-      # Specify the default modules to be included when `Lotus::Action` (or the
-      # `action_module`) is included. This also works with
-      # `Lotus::Controller.action`.
+      # Configure the logic to be executed when Lotus::Action is included
+      # This is useful to DRY code by having a single place where to configure
+      # shared behaviors like authentication, sessions, cookies etc.
       #
-      # If not set, this option will be ignored.
+      # This method can be called multiple times.
       #
-      # This is part of a DSL, for this reason when this method is called with
-      # an argument, it will set the corresponding instance variable. When
-      # called without, it will return the already set value, or the default.
+      # @param blk [Proc] the code block
       #
-      # @overload modules(blk)
-      #   Adds the given block
-      #   @param value [Proc] specify the modules to be included
+      # @return [void]
       #
-      # @overload modules
-      #   Gets the value
-      #   @return [Array] the list of the specified procs
+      # @raise [ArgumentError] if called without passing a block
       #
-      # @since 0.2.0
+      # @since 0.3.0
       #
-      # @see Lotus::Controller::Dsl#action
-      # @see Lotus::Controller#duplicate
+      # @see Lotus::Controller.configure
+      # @see Lotus::Controller.duplicate
       #
-      # @example Getting the value
+      # @example Configure shared logic.
       #   require 'lotus/controller'
-      #
-      #   Lotus::Controller.configuration.modules # => []
-      #
-      # @example Setting the value
-      #   require 'lotus/controller'
-      #   require 'lotus/action/cookies'
-      #   require 'lotus/action/session'
       #
       #   Lotus::Controller.configure do
-      #     modules do
-      #       include Lotus::Action::Cookies
-      #       include Lotus::Action::Session
+      #     prepare do
+      #       include Lotus::Action::Sessions
+      #       include MyAuthentication
+      #       use SomeMiddleWare
+      #
+      #       before { authenticate! }
       #     end
       #   end
       #
-      #   class DashboardController
-      #     include Lotus::Controller
+      #   module Dashboard
+      #     class Index
+      #       # When Lotus::Action is included, it will:
+      #       #   * Include `Lotus::Action::Session` and `MyAuthentication`
+      #       #   * Configure to use `SomeMiddleWare`
+      #       #   * Configure a `before` callback that triggers `#authenticate!`
+      #       include Lotus::Action
       #
-      #     # It includes:
-      #     #   * Lotus::Action
-      #     #   * Lotus::Action::Cookies
-      #     #   * Lotus::Action::Session
-      #     action 'Index' do
       #       def call(params)
       #         # ...
       #       end
       #     end
       #   end
-      def modules(&blk)
+      def prepare(&blk)
         if block_given?
           @modules.push(blk)
         else
-          @modules
+          raise ArgumentError.new('Please provide a block')
         end
       end
 
@@ -348,16 +340,18 @@ module Lotus
       #     format custom: 'application/custom'
       #   end
       #
-      #   class ArticlesController
-      #     include Lotus::Controller
+      #   module Articles
+      #     class Index
+      #       include Lotus::Action
       #
-      #     action 'Index' do
       #       def call(params)
       #         # ...
       #       end
       #     end
       #
-      #     action 'Show' do
+      #     class Show
+      #       include Lotus::Action
+      #
       #       def call(params)
       #         # ...
       #         self.format = :custom
@@ -365,7 +359,7 @@ module Lotus
       #     end
       #   end
       #
-      #   action = ArticlesController::Index.new
+      #   action = Articles::Index.new
       #
       #   action.call({ 'HTTP_ACCEPT' => 'text/html' })
       #     # => Content-Type "text/html"
@@ -377,7 +371,7 @@ module Lotus
       #
       #
       #
-      #   action = ArticlesController::Show.new
+      #   action = Articles::Show.new
       #
       #   action.call({ 'HTTP_ACCEPT' => 'text/html' })
       #     # => Content-Type "application/custom"
@@ -502,6 +496,16 @@ module Lotus
           c.default_charset    = default_charset
         end
       end
+
+      # Return included modules
+      #
+      # @return [Array<Proc>] array of included blocks
+      #
+      # @since 0.2.0
+      # @api private
+      #
+      # @see Lotus::Controller::Configuration#prepare
+      attr_reader :modules
 
       # Reset all the values to the defaults
       #

@@ -4,20 +4,10 @@ describe 'Framework configuration' do
   it 'keeps separated copies of the configuration' do
     lotus_configuration = Lotus::Controller.configuration
     music_configuration = MusicPlayer::Controller.configuration
-
-    dashboard_config = MusicPlayer::Controllers::Dashboard.configuration
-    artists_config   = MusicPlayer::Controllers::Artists.configuration
-
     artists_show_config = MusicPlayer::Controllers::Artists::Show.configuration
 
-
-
     lotus_configuration.wont_equal(music_configuration)
-
-    music_configuration.must_equal(dashboard_config)
-    music_configuration.must_equal(artists_config)
-
-    artists_config.wont_equal(artists_show_config)
+    lotus_configuration.wont_equal(artists_show_config)
   end
 
   it 'inheriths configurations at the framework level' do
@@ -50,7 +40,6 @@ describe 'Framework configuration' do
 
   it 'allows standalone modulized controllers to inherith framework configuration' do
     Lotus::Controller.configuration.handled_exceptions.wont_include       App2::CustomError
-    App2::Standalone.configuration.handled_exceptions.must_include        App2::CustomError
     App2::Standalone::Index.configuration.handled_exceptions.must_include App2::CustomError
 
     code, _, _ = App2::Standalone::Index.new.call({})

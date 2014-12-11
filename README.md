@@ -314,7 +314,7 @@ class Show
   include Lotus::Action
 
   before { ... } # do some authentication stuff
-  before {|params| @article = Article.find params[:id] }
+  before { |params| @article = Article.find params[:id] }
 
   def call(params)
   end
@@ -404,21 +404,21 @@ end
 
 # or
 
-class ArticlesController
-  include Lotus::Controller
+module Articles
+  class Show
+    include Lotus::Action
 
-  configure do
-    handle_exceptions false
-  end
+    configure do
+      handle_exceptions false
+    end
 
-  action 'Show' do
     def call(params)
       @article = Article.find params[:id]
     end
   end
 end
 
-action = ArticlesController::Show.new
+action = Articles::Show.new
 action.call({id: 'unknown'}) # => raises RecordNotFound
 ```
 
@@ -829,10 +829,10 @@ You can set the body directly (see [response](#response)), or use [Lotus::View](
 
 ### Controllers
 
-A Controller is nothing more than a logical group for actions.
+A Controller is nothing more than a logical group of actions: just a Ruby module.
 
 ```ruby
-class ArticlesController
+module Articles
   class Index
     include Lotus::Action
 
@@ -845,24 +845,8 @@ class ArticlesController
     # ...
   end
 end
-```
 
-Which is a bit verbose. Instead, just do:
-
-```ruby
-class ArticlesController
-  include Lotus::Controller
-
-  action 'Index' do
-    # ...
-  end
-
-  action 'Show' do
-    # ...
-  end
-end
-
-ArticlesController::Index.new.call({})
+Articles::Index.new.call({})
 ```
 
 ### Lotus::Router integration
@@ -915,10 +899,9 @@ The solution is that an action can employ one or more Rack middleware, with `.us
 ```ruby
 require 'lotus/controller'
 
-class SessionsController
-  include Lotus::Controller
-
-  action 'Create' do
+module Sessions
+  class Create
+    include Lotus::Action
     use OmniAuth
 
     def call(params)
@@ -931,10 +914,10 @@ end
 ```ruby
 require 'lotus/controller'
 
-class SessionsController
-  include Lotus::Controller
+module Sessions
+  class Create
+    include Lotus::Controller
 
-  action 'Create' do
     use XMiddleware.new('x', 123)
     use YMiddleware.new
     use ZMiddleware
@@ -976,12 +959,17 @@ Lotus::Controller.configure do
   #
   format custom: 'application/custom'
 
-  # Configure the modules to be included/extended/prepended by default.
-  # Argument: proc, empty by default
+  # Configure the logic to be executed when Lotus::Action is included
+  # This is useful to DRY code by having a single place where to configure
+  # shared behaviors like authentication, sessions, cookies etc.
+  # Argument: proc
   #
-  modules do
+  prepare do
     include Lotus::Action::Sessions
-    prepend MyLibrary::Session::Store
+    include MyAuthentication
+    use SomeMiddleWare
+
+    before { authenticate! }
   end
 end
 ```
@@ -998,33 +986,33 @@ Lotus::Controller.configure do
   handle_exception ArgumentError => 400
 end
 
-class ArticlesController
-  include Lotus::Controller
+module Articles
+  class Create
+    include Lotus::Action
 
-  configure do
-    handle_exceptions false
-  end
+    configure do
+      handle_exceptions false
+    end
 
-  action 'Create' do
     def call(params)
       raise ArgumentError
     end
   end
 end
 
-class UsersController
-  include Lotus::Controller
+module Users
+  class Create
+    include Lotus::Action
 
-  action 'Create' do
     def call(params)
       raise ArgumentError
     end
   end
 end
 
-UsersController::Create.new.call({}) # => HTTP 400
+Users::Create.new.call({}) # => HTTP 400
 
-ArticlesController::Create.new.call({})
+Articles::Create.new.call({})
   # => raises ArgumentError because we set handle_exceptions to false
 ```
 
@@ -1078,6 +1066,9 @@ end
 
 run Action
 ```
+
+Lotus::Controller heavely depends on class configuration, to ensure immutability
+in deployment environments, please consider of invoke `Lotus::Controller.load!`.
 
 ## Versioning
 

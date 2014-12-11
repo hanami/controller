@@ -1,15 +1,11 @@
+require 'securerandom'
+
 module Lotus
   module Action
     # Rack integration API
     #
     # @since 0.1.0
     module Rack
-      # The default session key for Rack
-      #
-      # @since 0.1.0
-      # @api private
-      SESSION_KEY           = 'rack.session'.freeze
-
       # The default HTTP response code
       #
       # @since 0.1.0
@@ -21,6 +17,14 @@ module Lotus
       # @since 0.1.0
       # @api private
       DEFAULT_RESPONSE_BODY = []
+
+      # The default HTTP Request ID length
+      #
+      # @since x.x.x
+      # @api private
+      #
+      # @see Lotus::Action::Rack#request_id
+      DEFAULT_REQUEST_ID_LENGTH = 16
 
       # Override Ruby's hook for modules.
       # It includes basic Lotus::Action modules to the given class.
@@ -56,10 +60,9 @@ module Lotus
         # @example Class Middleware
         #   require 'lotus/controller'
         #
-        #   class SessionsController
-        #     include Lotus::Controller
-        #
-        #     action 'Create' do
+        #   module Sessions
+        #     class Create
+        #       include Lotus::Action
         #       use OmniAuth
         #
         #       def call(params)
@@ -71,10 +74,9 @@ module Lotus
         # @example Instance Middleware
         #   require 'lotus/controller'
         #
-        #   class SessionsController
-        #     include Lotus::Controller
-        #
-        #     action 'Create' do
+        #   module Sessions
+        #     class Create
+        #       include Lotus::Controller
         #       use XMiddleware.new('x', 123)
         #
         #       def call(params)
@@ -128,6 +130,17 @@ module Lotus
       # @see Lotus::Action::Rack#body=
       def response
         [ @_status || DEFAULT_RESPONSE_CODE, headers, @_body || DEFAULT_RESPONSE_BODY.dup ]
+      end
+
+      # Calculates an unique ID for the current request
+      #
+      # @return [String] The unique ID
+      #
+      # @since x.x.x
+      # @api private
+      def request_id
+        # FIXME make this number configurable and document the probabilities of clashes
+        @request_id ||= SecureRandom.hex(DEFAULT_REQUEST_ID_LENGTH)
       end
 
       private

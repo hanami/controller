@@ -1,3 +1,6 @@
+require 'lotus/router'
+require 'lotus/action/glue'
+
 HTTP_TEST_STATUSES = {
   100 => 'Continue',
   101 => 'Switching Protocols',
@@ -20,7 +23,6 @@ HTTP_TEST_STATUSES = {
   303 => 'See Other',
   304 => 'Not Modified',
   305 => 'Use Proxy',
-  306 => 'Reserved',
   307 => 'Temporary Redirect',
   308 => 'Permanent Redirect',
   400 => 'Bad Request',
@@ -36,10 +38,10 @@ HTTP_TEST_STATUSES = {
   410 => 'Gone',
   411 => 'Length Required',
   412 => 'Precondition Failed',
-  413 => 'Request Entity Too Large',
-  414 => 'Request-URI Too Long',
+  413 => 'Payload Too Large',
+  414 => 'URI Too Long',
   415 => 'Unsupported Media Type',
-  416 => 'Requested Range Not Satisfiable',
+  416 => 'Range Not Satisfiable',
   417 => 'Expectation Failed',
   418 => 'I\'m a teapot',
   420 => 'Enhance Your Calm',
@@ -61,10 +63,9 @@ HTTP_TEST_STATUSES = {
   503 => 'Service Unavailable',
   504 => 'Gateway Timeout',
   505 => 'HTTP Version Not Supported',
-  506 => 'Variant Also Negotiates (Experimental)',
+  506 => 'Variant Also Negotiates',
   507 => 'Insufficient Storage',
   508 => 'Loop Detected',
-  509 => 'Unassigned',
   510 => 'Not Extended',
   511 => 'Network Authentication Required',
   598 => 'Network read timeout error',
@@ -72,9 +73,8 @@ HTTP_TEST_STATUSES = {
 }
 
 module Test
-  include Lotus::Controller
-
-  action 'Index' do
+  class Index
+    include Lotus::Action
     expose :xyz
 
     def call(params)
@@ -471,7 +471,7 @@ class GlobalHandledExceptionAction
   end
 end
 
-Lotus::Controller.configuration.reset!
+Lotus::Controller.unload!
 
 class UnhandledExceptionAction
   include Lotus::Action
@@ -536,12 +536,12 @@ class Root
 end
 
 module About
-  include Lotus::Controller
-
   class Team < Root
   end
 
-  action 'Contacts' do
+  class Contacts
+    include Lotus::Action
+
     def call(params)
       self.body = params.to_h.inspect
     end
@@ -549,8 +549,6 @@ module About
 end
 
 module Identity
-  include Lotus::Controller
-
   class Action
     include Lotus::Action
 
@@ -568,8 +566,6 @@ module Identity
 end
 
 module Flowers
-  include Lotus::Controller
-
   class Action
     include Lotus::Action
 
@@ -588,9 +584,8 @@ module Flowers
 end
 
 module Dashboard
-  include Lotus::Controller
-
-  action 'Index' do
+  class Index
+    include Lotus::Action
     include Lotus::Action::Session
     before :authenticate!
 
@@ -609,9 +604,8 @@ module Dashboard
 end
 
 module Sessions
-  include Lotus::Controller
-
-  action 'Create' do
+  class Create
+    include Lotus::Action
     include Lotus::Action::Session
 
     def call(params)
@@ -620,7 +614,8 @@ module Sessions
     end
   end
 
-  action 'Destroy' do
+  class Destroy
+    include Lotus::Action
     include Lotus::Action::Session
 
     def call(params)
@@ -660,11 +655,10 @@ module App2
   end
 
   module Standalone
-    include Lotus::Controller
+    class Index
+      include Lotus::Action
+      configuration.handle_exception App2::CustomError => 400
 
-    configuration.handle_exception App2::CustomError => 400
-
-    action 'Index' do
       def call(params)
         raise App2::CustomError
       end
@@ -682,7 +676,7 @@ module MusicPlayer
       handle_exception ArgumentError => 400
       action_module    MusicPlayer::Action
 
-      modules do
+      prepare do
         include Lotus::Action::Cookies
         include Lotus::Action::Session
         include MusicPlayer::Controllers::Authentication
@@ -703,31 +697,35 @@ module MusicPlayer
     end
 
     class Dashboard
-      include MusicPlayer::Controller
+      class Index
+        include MusicPlayer::Action
 
-      action 'Index' do
         def call(params)
           self.body = 'Muzic!'
         end
       end
 
-      action 'Show' do
+      class Show
+        include MusicPlayer::Action
+
         def call(params)
           raise ArgumentError
         end
       end
     end
 
-    class Artists
-      include MusicPlayer::Controller
+    module Artists
+      class Index
+        include MusicPlayer::Action
 
-      action 'Index' do
         def call(params)
           self.body = current_user
         end
       end
 
-      action 'Show' do
+      class Show
+        include MusicPlayer::Action
+
         handle_exception ArtistNotFound => 404
 
         def call(params)
@@ -773,5 +771,127 @@ class VisibilityAction
     response
     cookies
     session
+  end
+end
+
+module FullStack
+  Controller = Lotus::Controller.duplicate(self) do
+    handle_exceptions false
+
+    prepare do
+      include Lotus::Action::Glue
+      include Lotus::Action::Session
+    end
+  end
+
+  module Controllers
+    module Home
+      class Index
+        include FullStack::Action
+        expose :greeting
+
+        def call(params)
+          @greeting = 'Hello'
+        end
+      end
+    end
+
+    module Books
+      class Index
+        include FullStack::Action
+
+        def call(params)
+        end
+      end
+
+      class Create
+        include FullStack::Action
+
+        params do
+          param :title, type: String, presence: true
+        end
+
+        def call(params)
+          params.valid?
+
+          redirect_to '/books'
+        end
+      end
+    end
+
+    module Poll
+      class Start
+        include FullStack::Action
+
+        def call(params)
+          redirect_to '/poll/1'
+        end
+      end
+
+      class Step1
+        include FullStack::Action
+
+        def call(params)
+          if @_env['REQUEST_METHOD'] == 'GET'
+            flash[:notice] = "Start the poll"
+          else
+            flash[:notice] = "Step 1 completed"
+            redirect_to '/poll/2'
+          end
+        end
+      end
+
+      class Step2
+        include FullStack::Action
+
+        def call(params)
+          if @_env['REQUEST_METHOD'] == 'POST'
+            flash[:notice] = "Poll completed"
+            redirect_to '/'
+          end
+        end
+      end
+    end
+  end
+
+  class Renderer
+    def render(env, response)
+      action = env.delete('lotus.action')
+
+      if response[0] == 200
+        response[2] = "#{ action.class.name } #{ action.exposures }"
+      end
+
+      response
+    end
+  end
+
+  class Application
+    def initialize
+      resolver = Lotus::Routing::EndpointResolver.new(namespace: FullStack::Controllers)
+      routes   = Lotus::Router.new(resolver: resolver) do
+        get '/', to: 'home#index'
+        resources :books, only: [:index, :create]
+
+        get '/poll', to: 'poll#start'
+
+        namespace 'poll' do
+          get  '/1', to: 'poll#step1'
+          post '/1', to: 'poll#step1'
+          get  '/2', to: 'poll#step2'
+          post '/2', to: 'poll#step2'
+        end
+      end
+
+      @renderer   = Renderer.new
+      @middleware = Rack::Builder.new do
+        use Rack::Session::Cookie, secret: SecureRandom.hex(16)
+        run routes
+      end
+    end
+
+    def call(env)
+      @renderer.render(env, @middleware.call(env))
+    end
   end
 end

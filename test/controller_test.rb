@@ -5,13 +5,13 @@ describe Lotus::Controller do
     before do
       Lotus::Controller.unload!
 
-      module ConfigurationController
-        include Lotus::Controller
+      module ConfigurationAction
+        include Lotus::Action
       end
     end
 
     after do
-      Object.send(:remove_const, :ConfigurationController)
+      Object.send(:remove_const, :ConfigurationAction)
     end
 
     it 'exposes class configuration' do
@@ -24,7 +24,7 @@ describe Lotus::Controller do
 
     it 'inheriths the configuration from the framework' do
       expected = Lotus::Controller.configuration
-      actual   = ConfigurationController.configuration
+      actual   = ConfigurationAction.configuration
 
       actual.must_equal(expected)
     end
@@ -130,80 +130,6 @@ describe Lotus::Controller do
 
       configuration.handled_exceptions.wont_include(ArgumentError)
       configuration.handled_exceptions.must_include(StandardError)
-    end
-  end
-
-  describe '.action' do
-    it 'creates an action for the given name' do
-      action = Test::Index.new
-      action.call({name: 'test'})
-      action.xyz.must_equal 'test'
-    end
-
-    it "raises an error when the given name isn't a valid Ruby identifier" do
-      -> {
-        class Controller
-          include Lotus::Controller
-
-          action 12 do
-            def call(params)
-            end
-          end
-        end
-      }.must_raise TypeError
-    end
-
-    describe 'when configured with a custom module' do
-      before do
-        module CustomActionModule
-          def self.included(base)
-            base.extend ClassMethods
-          end
-
-          module ClassMethods
-            def configuration=(configuration)
-              @configuration = configuration
-            end
-          end
-
-          def call(params)
-            [200, {}, "Custom"]
-          end
-        end
-
-        Lotus::Controller.unload!
-        Lotus::Controller.class_eval do
-          configure do
-            action_module CustomActionModule
-          end
-        end
-
-        class CustomController
-          include Lotus::Controller
-
-          action 'Index' do
-            def call(params)
-              super
-            end
-          end
-        end
-      end
-
-      after do
-        Lotus::Controller.class_eval do
-          configure do
-            action_module ::Lotus::Action
-          end
-        end
-
-        Object.send(:remove_const, :CustomActionModule)
-        Object.send(:remove_const, :CustomController)
-      end
-
-      it 'includes it' do
-        _, _, body = CustomController::Index.new.call({})
-        body.must_equal "Custom"
-      end
     end
   end
 end

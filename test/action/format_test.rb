@@ -2,16 +2,18 @@ require 'test_helper'
 
 describe Lotus::Action do
   class FormatController
-    include Lotus::Controller
+    class Lookup
+      include Lotus::Action
+      configuration.handle_exceptions = false
 
-    configuration.handle_exceptions = false
-
-    action 'Lookup' do
       def call(params)
       end
     end
 
-    action 'Custom' do
+    class Custom
+      include Lotus::Action
+      configuration.handle_exceptions = false
+
       def call(params)
         self.format = params[:format]
       end
