@@ -79,7 +79,7 @@ module Lotus
       # @see Lotus::Action::Throwable#handle_exception
       # @see Lotus::Http::Status:ALL
       def halt(code = nil)
-        status(*Http::Status.for_code(code)) if code
+        status(*Lotus::Http::Status.for_code(code)) if code
         throw :halt
       end
 

@@ -1,5 +1,6 @@
 require 'lotus/action/configurable'
 require 'lotus/action/rack'
+require 'lotus/action/http'
 require 'lotus/action/mime'
 require 'lotus/action/redirect'
 require 'lotus/action/exposable'
@@ -36,6 +37,7 @@ module Lotus
     #
     # @see Lotus::Action::Rack
     # @see Lotus::Action::Mime
+    # @see Lotus::Action::Http
     # @see Lotus::Action::Redirect
     # @see Lotus::Action::Exposable
     # @see Lotus::Action::Throwable
@@ -47,6 +49,7 @@ module Lotus
       base.class_eval do
         include Rack
         include Mime
+        include Http
         include Redirect
         include Exposable
         include Throwable

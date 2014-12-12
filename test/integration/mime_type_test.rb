@@ -7,7 +7,8 @@ MimeRoutes = Lotus::Router.new do
   get '/configuration', to: 'mimes#configuration'
   get '/accept',        to: 'mimes#accept'
   get '/restricted',    to: 'mimes#restricted'
-  get '/latin',    to: 'mimes#latin'
+  get '/latin',         to: 'mimes#latin'
+  get '/nocontent',     to: 'mimes#no_content'
 end
 
 module Mimes
@@ -71,6 +72,14 @@ module Mimes
     def call(params)
     end
   end
+
+  class NoContent
+    include Lotus::Action
+
+    def call(params)
+      self.status = 204
+    end
+  end
 end
 
 describe 'Content type' do
@@ -101,6 +110,13 @@ describe 'Content type' do
     response.headers['Content-Type'].must_equal 'text/html; charset=latin1'
     response.body.must_equal                    'html'
   end
+
+  it 'does not produce a "Content-Type" header when the request has a 204 No Content status' do
+    response = @app.get('/nocontent')
+    response.headers['Content-Type'].must_be_nil
+    response.body.must_equal                    ''
+  end
+
 
   describe 'when Accept is sent' do
     it 'sets "Content-Type" header according to "Accept"' do

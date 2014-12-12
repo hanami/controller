@@ -29,6 +29,11 @@ module Lotus
         599 => 'Network connect timeout error'
       }).freeze
 
+      # Status codes that by RFC must not include a message body
+      #
+      # @api private
+      WITHOUT_BODY = Set.new((100..199).to_a << 204 << 205 << 301 << 302 << 304).freeze
+
       # Return a status for the given code
       #
       # @param code [Fixnum] a valid HTTP code
@@ -44,6 +49,17 @@ module Lotus
       #   Lotus::Http::Status.for_code(418) # => [418, "I'm a teapot"]
       def self.for_code(code)
         ALL.assoc(code)
+      end
+
+      # Checks if the given code by RFC must not include a message body
+      #
+      # @param code [Fixnum] a valid HTTP code
+      # @return [Boolean] true if the code requires no body
+      #
+      # @since 0.1.0
+      # @api private
+      def self.requires_no_body?(code)
+        WITHOUT_BODY.include?(code)
       end
     end
   end

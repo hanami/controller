@@ -1,4 +1,5 @@
 require 'securerandom'
+require 'lotus/http/status'
 
 module Lotus
   module Action
@@ -92,6 +93,10 @@ module Lotus
       end
 
       protected
+
+      def requires_no_body?
+        Lotus::Http::Status.requires_no_body?(@_status)
+      end
 
       # Gets the headers from the response
       #
