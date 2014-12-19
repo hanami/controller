@@ -16,7 +16,7 @@ module Lotus
 
       # The key that is used by flash to transport errors
       #
-      # @since x.x.x
+      # @since 0.3.0
       # @api private
       ERRORS_KEY  = :__errors
 
@@ -59,7 +59,7 @@ module Lotus
       #
       # @return [Lotus::Action::Flash] a Flash instance
       #
-      # @since x.x.x
+      # @since 0.3.0
       # @api private
       #
       # @see Lotus::Action::Flash
@@ -72,7 +72,7 @@ module Lotus
       #
       # @return [void]
       #
-      # @since x.x.x
+      # @since 0.3.0
       # @api private
       #
       # @see Lotus::Action::Redirect#redirect_to
@@ -120,7 +120,7 @@ module Lotus
       #
       # @return [Lotus::Validations::Errors] A collection of validation errors
       #
-      # @since x.x.x
+      # @since 0.3.0
       # @api private
       #
       # @see Lotus::Action::Validatable
@@ -133,7 +133,7 @@ module Lotus
       #
       # @return [void]
       #
-      # @since x.x.x
+      # @since 0.3.0
       # @api private
       #
       # @see Lotus::Action#finish

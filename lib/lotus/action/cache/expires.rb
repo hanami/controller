@@ -6,13 +6,13 @@ module Lotus
 
       # Module with Expires logic
       #
-      # @since x.x.x
+      # @since 0.3.0
       # @api private
       module Expires
 
         # The HTTP header for Expires
         #
-        # @since x.x.x
+        # @since 0.3.0
         # @api private
         HEADER = 'Expires'.freeze
 
@@ -36,7 +36,7 @@ module Lotus
 
         # Finalize the response including default cache headers into the response
         #
-        # @since x.x.x
+        # @since 0.3.0
         # @api private
         #
         # @see Lotus::Action#finish
@@ -47,7 +47,7 @@ module Lotus
 
         # Class which stores Expires directives
         #
-        # @since x.x.x
+        # @since 0.3.0
         #
         # @api private
         #

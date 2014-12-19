@@ -242,7 +242,11 @@ module Lotus
       end
     end
 
-    # @since x.x.x
+    # Framework loading entry point
+    #
+    # @return [void]
+    #
+    # @since 0.3.0
     def self.load!
       configuration.load!
     end

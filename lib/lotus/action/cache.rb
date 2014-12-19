@@ -6,7 +6,7 @@ module Lotus
   module Action
     # Cache type API
     #
-    # @since x.x.x
+    # @since 0.3.0
     #
     # @see Lotus::Action::Cache::ClassMethods#cache_control
     # @see Lotus::Action::Cache::ClassMethods#expires
@@ -17,7 +17,7 @@ module Lotus
       #
       # @param base [Class] the target action
       #
-      # @since x.x.x
+      # @since 0.3.0
       # @api private
       #
       # @see http://www.ruby-doc.org/core-2.1.2/Module.html#method-i-included
@@ -50,7 +50,7 @@ module Lotus
       #
       # @return void
       #
-      # @since x.x.x
+      # @since 0.3.0
       # @api public
       #
       # @example
@@ -90,7 +90,7 @@ module Lotus
       #
       # @return void
       #
-      # @since x.x.x
+      # @since 0.3.0
       # @api public
       #
       # @example
@@ -131,7 +131,7 @@ module Lotus
       #
       # @return void
       #
-      # @since x.x.x
+      # @since 0.3.0
       # @api public
       #
       # @example

@@ -36,7 +36,7 @@ module Lotus
       #
       # @return void
       #
-      # @since x.x.x
+      # @since 0.3.0
       #
       # @see http://rdoc.info/gems/lotus-validations/Lotus/Validations
       #
@@ -126,7 +126,7 @@ module Lotus
       #
       # @return [Hash]
       #
-      # @since x.x.x
+      # @since 0.3.0
       def to_h
         @attributes.to_h
       end

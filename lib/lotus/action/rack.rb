@@ -20,7 +20,7 @@ module Lotus
 
       # The default HTTP Request ID length
       #
-      # @since x.x.x
+      # @since 0.3.0
       # @api private
       #
       # @see Lotus::Action::Rack#request_id
@@ -136,8 +136,7 @@ module Lotus
       #
       # @return [String] The unique ID
       #
-      # @since x.x.x
-      # @api private
+      # @since 0.3.0
       def request_id
         # FIXME make this number configurable and document the probabilities of clashes
         @request_id ||= SecureRandom.hex(DEFAULT_REQUEST_ID_LENGTH)
