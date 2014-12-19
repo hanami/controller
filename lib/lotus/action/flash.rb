@@ -60,8 +60,14 @@ module Lotus
       # @since 0.3.0
       # @api private
       def clear
-        expire_stale!
-        remove!
+        # FIXME we're just before a release and I can't find a proper way to reproduce
+        # this bug that I've found via a browser.
+        #
+        # It may happen that `#flash` is nil, and those two methods will fail
+        unless flash.nil?
+          expire_stale!
+          remove!
+        end
       end
 
       # Check if there are contents stored in the flash from the current or the
