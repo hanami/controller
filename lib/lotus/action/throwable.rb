@@ -135,7 +135,7 @@ module Lotus
         )
       end
 
-      # @since x.x.x
+      # @since 0.3.0
       # @api private
       def _exception_handler(exception)
         handler = configuration.exception_handler(exception)

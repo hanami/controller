@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = Lotus::Controller::VERSION
   spec.authors       = ['Luca Guidi']
   spec.email         = ['me@lucaguidi.com']
-  spec.description   = %q{Controller layer for Lotus}
-  spec.summary       = %q{Controller layer for Lotus, compatible with Rack}
+  spec.description   = %q{Complete, fast and testable actions for Rack}
+  spec.summary       = %q{Complete, fast and testable actions for Rack and Lotus}
   spec.homepage      = 'http://lotusrb.org'
   spec.license       = 'MIT'
 
@@ -20,8 +20,8 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = '>= 2.0.0'
 
   spec.add_dependency 'rack',              '~> 1.5'
-  spec.add_dependency 'lotus-utils',       '~> 0.3', '>= 0.3.1.dev'
-  spec.add_dependency 'lotus-validations', '~> 0.1', '>= 0.2.0.dev'
+  spec.add_dependency 'lotus-utils',       '~> 0.3', '>= 0.3.2'
+  spec.add_dependency 'lotus-validations', '~> 0.2', '>= 0.2.1'
 
   spec.add_development_dependency 'bundler',   '~> 1.6'
   spec.add_development_dependency 'minitest',  '~> 5'

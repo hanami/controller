@@ -4,7 +4,7 @@ module Lotus
       # Defines the class name for anoymous params
       #
       # @api private
-      # @since x.x.x
+      # @since 0.3.0
       PARAMS_CLASS_NAME = 'Params'.freeze
 
       def self.included(base)
@@ -46,7 +46,7 @@ module Lotus
         #
         # @return void
         #
-        # @since x.x.x
+        # @since 0.3.0
         #
         # @see Lotus::Action::Params
         #
@@ -110,7 +110,7 @@ module Lotus
         #   Lotus::Action::Params
         #
         # @api private
-        # @since x.x.x
+        # @since 0.3.0
         def params_class
           @params_class ||= params { }
         end
@@ -120,7 +120,7 @@ module Lotus
 
     # Expose validation errors
     #
-    # @since x.x.x
+    # @since 0.3.0
     def errors
       params.errors
     end

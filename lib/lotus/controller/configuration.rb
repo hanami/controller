@@ -186,7 +186,7 @@ module Lotus
       #
       # @param exception [Exception] an exception
       #
-      # @since x.x.x
+      # @since 0.3.0
       # @api private
       #
       # @see Lotus::Controller::Configuration#handle_exception
@@ -433,7 +433,7 @@ module Lotus
       #
       # By default this value is nil.
       #
-      # @since x.x.x
+      # @since 0.3.0
       #
       # @see Lotus::Action::Mime
       #
@@ -475,6 +475,9 @@ module Lotus
       # @param format [#to_sym] a format
       #
       # @return [String,nil] the corresponding mime type, if present
+      #
+      # @since 0.2.0
+      # @api private
       def mime_type_for(format)
         @formats.key(format)
       end
@@ -527,7 +530,7 @@ module Lotus
       #
       # @return void
       #
-      # @since x.x.x
+      # @since 0.3.0
       # @api private
       #
       # @see Lotus::Controller::Configurable.included
@@ -539,7 +542,7 @@ module Lotus
 
       # Load the framework
       #
-      # @since x.x.x
+      # @since 0.3.0
       # @api private
       def load!
         freeze

@@ -11,26 +11,31 @@ module Lotus
       # The key that returns accepted mime types from the Rack env
       #
       # @since 0.1.0
+      # @api private
       HTTP_ACCEPT          = 'HTTP_ACCEPT'.freeze
 
       # The header key to set the mime type of the response
       #
       # @since 0.1.0
+      # @api private
       CONTENT_TYPE         = 'Content-Type'.freeze
 
       # The default mime type for an incoming HTTP request
       #
       # @since 0.1.0
+      # @api private
       DEFAULT_ACCEPT       = '*/*'.freeze
 
       # The default mime type that is returned in the response
       #
       # @since 0.1.0
+      # @api private
       DEFAULT_CONTENT_TYPE = 'application/octet-stream'.freeze
 
       # The default charset that is returned in the response
       #
-      # @since x.x.x
+      # @since 0.3.0
+      # @api private
       DEFAULT_CHARSET = 'utf-8'.freeze
 
       # Override Ruby's hook for modules.
@@ -185,7 +190,7 @@ module Lotus
       #
       # @return [String] the charset of the request.
       #
-      # @since x.x.x
+      # @since 0.3.0
       #
       # @example
       #   require 'lotus/controller'
@@ -213,7 +218,7 @@ module Lotus
       #
       # @return [String] the charset of the request.
       #
-      # @since x.x.x
+      # @since 0.3.0
       #
       # @see Lotus::Action::Mime#charset=
       # @see Lotus::Configuration#default_charset
@@ -429,13 +434,13 @@ module Lotus
           ::Rack::Mime::MIME_TYPES.key(content_type).gsub(/\A\./, '').to_sym
       end
 
-      # @since x.x.x
+      # @since 0.3.0
       # @api private
       def default_charset
         configuration.default_charset
       end
 
-      # @since x.x.x
+      # @since 0.3.0
       # @api private
       def content_type_with_charset
         "#{content_type}; charset=#{charset}"

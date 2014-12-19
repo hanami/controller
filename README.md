@@ -939,7 +939,7 @@ require 'lotus/controller'
 
 Lotus::Controller.configure do
   # Handle exceptions with HTTP statuses (true) or don't catch them (false)
-  # Argument: boolean, defaults to true
+  # Argument: boolean, defaults to `true`
   #
   handle_exceptions true
 
@@ -949,15 +949,22 @@ Lotus::Controller.configure do
   #
   handle_exception ArgumentError => 404
 
-  # Configure which module to include when Lotus::Controller.action is used
-  # Argument: module, defaults to Lotus::Action
-  #
-  action_module MyApp::Action # module, defaults to Lotus::Action
-
   # Register a format to mime type mapping
   # Argument: hash, key: format symbol, value: mime type string, empty by default
   #
   format custom: 'application/custom'
+
+  # Define a default format to return in case of HTTP request with `Accept: */*`
+  # If not defined here, it will return Rack's default: `application/octet-stream`
+  # Argument: symbol, it should be already known. defaults to `nil`
+  #
+  default_format :html
+
+  # Define a default charset to return in the `Content-Type` response header
+  # If not defined here, it returns `utf-8`
+  # Argument: string, defaults to `nil`
+  #
+  default_charset 'koi8-r'
 
   # Configure the logic to be executed when Lotus::Action is included
   # This is useful to DRY code by having a single place where to configure

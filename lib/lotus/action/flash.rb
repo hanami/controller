@@ -3,12 +3,12 @@ module Lotus
     # Container useful to transport data with the HTTP session
     # It has a life span of one HTTP request or redirect.
     #
-    # @since x.x.x
+    # @since 0.3.0
     # @api private
     class Flash
       # Session key where the data is stored
       #
-      # @since x.x.x
+      # @since 0.3.0
       # @api private
       SESSION_KEY = :__flash
 
@@ -34,7 +34,7 @@ module Lotus
       # @param key [#to_s] the key
       # @param value [Object] the value
       #
-      # @since x.x.x
+      # @since 0.3.0
       # @api private
       def []=(key, value)
         data[key] = value
@@ -44,7 +44,7 @@ module Lotus
       #
       # @return [Object,NilClass] the value
       #
-      # @since x.x.x
+      # @since 0.3.0
       # @api private
       def [](key)
         data.fetch(key) do
@@ -57,7 +57,7 @@ module Lotus
       #
       # @return [void]
       #
-      # @since x.x.x
+      # @since 0.3.0
       # @api private
       def clear
         expire_stale!
@@ -69,7 +69,7 @@ module Lotus
       #
       # @return [TrueClass,FalseClass] the result of the check
       #
-      # @since x.x.x
+      # @since 0.3.0
       # @api private
       def empty?
         _values.all?(&:empty?)
@@ -81,7 +81,7 @@ module Lotus
       #
       # @return [Hash] the flash
       #
-      # @since x.x.x
+      # @since 0.3.0
       # @api private
       def flash
         @session[SESSION_KEY]
@@ -91,7 +91,7 @@ module Lotus
       #
       # @return [Hash] the flash for the current request
       #
-      # @since x.x.x
+      # @since 0.3.0
       # @api private
       def data
         flash[@request_id]
@@ -101,7 +101,7 @@ module Lotus
       #
       # @return [void]
       #
-      # @since x.x.x
+      # @since 0.3.0
       # @api private
       def expire_stale!
         flash.each do |request_id, _|
@@ -113,7 +113,7 @@ module Lotus
       #
       # @return [void]
       #
-      # @since x.x.x
+      # @since 0.3.0
       # @api private
       #
       # @see Lotus::Action::Flash#empty?
@@ -125,7 +125,7 @@ module Lotus
       #
       # @return [Array]
       #
-      # @since x.x.x
+      # @since 0.3.0
       # @api private
       def _values
         flash.values

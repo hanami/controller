@@ -78,7 +78,7 @@ module Lotus
         private
         # Check if the attr_reader is already defined
         #
-        # @since x.x.x
+        # @since 0.3.0
         # @api private
         def attr_reader?(name)
           (instance_methods | private_instance_methods).include?(name)
@@ -102,7 +102,7 @@ module Lotus
 
       # Finalize the response
       #
-      # @since x.x.x
+      # @since 0.3.0
       # @api private
       #
       # @see Lotus::Action#finish
