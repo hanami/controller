@@ -145,4 +145,24 @@ describe Lotus::Action::Request do
       request.ip.must_equal('123.123.123.123')
     end
   end
+
+  describe 'request methods that are implemented elsewhere' do
+    it 'should reject with a NotImplementedError' do
+      methods = %i(
+        content_type
+        session
+        cookies
+        params
+        update_param
+        delete_param
+        []
+        []=
+        values_at
+      )
+      request = Lotus::Action::Request.new({})
+      methods.each do |method|
+        proc { request.send(method) }.must_raise(NotImplementedError)
+      end
+    end
+  end
 end
