@@ -103,4 +103,25 @@ describe Lotus::Action do
       action.exposures.fetch(:time).must_equal nil
     end
   end
+
+  describe '#request' do
+    it 'gets a Rack-like request object' do
+      action_class = Class.new do
+        include Lotus::Action
+
+        expose :req
+
+        def call(params)
+          @req = request
+        end
+      end
+
+      action = action_class.new
+      env = Rack::MockRequest.env_for('http://example.com/foo')
+      action.call(env)
+
+      request = action.req
+      request.path.must_equal('/foo')
+    end
+  end
 end

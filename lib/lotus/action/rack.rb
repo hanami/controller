@@ -142,6 +142,27 @@ module Lotus
         @request_id ||= SecureRandom.hex(DEFAULT_REQUEST_ID_LENGTH)
       end
 
+      # Returns a Lotus specialized rack request
+      #
+      # @return [Lotus::Action::Request] The request
+      #
+      # @since x.x.x
+      #
+      # @example
+      #   require 'lotus/controller'
+      #
+      #   class Create
+      #     include Lotus::Action
+      #
+      #     def call(params)
+      #       ip     = request.ip
+      #       secure = request.ssl?
+      #     end
+      #   end
+      def request
+        @request ||= Request.new(@_env)
+      end
+
       private
 
       # Sets the HTTP status code for the response
