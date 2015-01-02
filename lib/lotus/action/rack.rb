@@ -1,4 +1,5 @@
 require 'securerandom'
+require 'lotus/action/request'
 
 module Lotus
   module Action
@@ -160,7 +161,7 @@ module Lotus
       #     end
       #   end
       def request
-        @request ||= Request.new(@_env)
+        @request ||= ::Lotus::Action::Request.new(@_env)
       end
 
       private
