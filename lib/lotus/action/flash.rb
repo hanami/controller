@@ -90,7 +90,7 @@ module Lotus
       # @since 0.3.0
       # @api private
       def flash
-        @session[SESSION_KEY]
+        @session[SESSION_KEY] || {}
       end
 
       # The flash registry that holds the data **only for** the current request
@@ -100,7 +100,7 @@ module Lotus
       # @since 0.3.0
       # @api private
       def data
-        flash[@request_id]
+        flash[@request_id] || {}
       end
 
       # Expire the stale data from the previous request.
