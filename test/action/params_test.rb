@@ -155,10 +155,11 @@ describe Lotus::Action::Params do
       params.errors.must_be_empty
     end
 
-    it "coerces input" do
+    it "has input available as methods" do
       params = TestParams.new(name: 'John', age: '1')
       params.name.must_equal('John')
       params.age.must_equal(1)
+      params[:age].must_equal(1)
     end
   end
 
