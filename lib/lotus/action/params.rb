@@ -1,4 +1,4 @@
-require 'lotus/utils/hash'
+require 'lotus/utils/attributes'
 require 'lotus/validations'
 require 'set'
 
@@ -87,6 +87,10 @@ module Lotus
 
       include Lotus::Validations
 
+      def self.whitelisting?
+        defined_attributes.any?
+      end
+
       # @attr_reader env [Hash] the Rack env
       #
       # @since 0.2.0
@@ -102,13 +106,8 @@ module Lotus
       # @since 0.1.0
       def initialize(env)
         @env = env
-        super(_compute_params)
-        freeze
-      end
-
-      def self.defined_attributes
-        result = super
-        return result if result.to_ary.any?
+        _compute_params
+        # freeze
       end
 
       # Returns the object associated with the given key
@@ -133,19 +132,47 @@ module Lotus
       alias_method :to_hash, :to_h
 
       private
-      def _compute_params
-        Utils::Hash.new(
-          _extract
-        ).symbolize!
+      # Compatibility with Lotus::Validations
+      #
+      # @since x.x.x
+      # @api private
+      def read_attributes
+        to_h
       end
 
-      def _extract
+      # @since x.x.x
+      # @api private
+      def _compute_params
+        @attributes = if self.class.whitelisting?
+          _whitelisted_params
+        else
+          _params
+        end
+
+        @attributes = Utils::Attributes.new(@attributes)
+      end
+
+      # @since x.x.x
+      # @api private
+      def _params
         {}.tap do |result|
           if env.has_key?(RACK_INPUT)
             result.merge! ::Rack::Request.new(env).params
             result.merge! env.fetch(ROUTER_PARAMS, {})
           else
             result.merge! env.fetch(ROUTER_PARAMS, env)
+          end
+        end
+      end
+
+      # @since x.x.x
+      # @api private
+      def _whitelisted_params
+        {}.tap do |result|
+          _params.each do |k, v|
+            next unless self.class.defined_attributes.include?(k.to_s)
+
+            result[k] = v
           end
         end
       end
