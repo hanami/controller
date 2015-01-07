@@ -1,6 +1,10 @@
 # Lotus::Controller
 Complete, fast and testable actions for Rack
 
+## v0.3.1 - 2015-01-07
+### Added
+- [Lasse Skindstad Ebert] Introduced `Action#request` which returns an instance a `Rack::Request` compliant object: `Lotus::Action::Request`.
+
 ## v0.3.0 - 2014-12-23
 ### Added
 - [Luca Guidi] Introduced `Action#request_id` as unique identifier for an incoming HTTP request

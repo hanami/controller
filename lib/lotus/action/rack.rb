@@ -147,7 +147,7 @@ module Lotus
       #
       # @return [Lotus::Action::Request] The request
       #
-      # @since x.x.x
+      # @since 0.3.1
       #
       # @example
       #   require 'lotus/controller'

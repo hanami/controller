@@ -134,13 +134,13 @@ module Lotus
       private
       # Compatibility with Lotus::Validations
       #
-      # @since x.x.x
+      # @since 0.3.1
       # @api private
       def read_attributes
         to_h
       end
 
-      # @since x.x.x
+      # @since 0.3.1
       # @api private
       def _compute_params
         @attributes = if self.class.whitelisting?
@@ -152,7 +152,7 @@ module Lotus
         @attributes = Utils::Attributes.new(@attributes)
       end
 
-      # @since x.x.x
+      # @since 0.3.1
       # @api private
       def _params
         {}.tap do |result|
@@ -165,7 +165,7 @@ module Lotus
         end
       end
 
-      # @since x.x.x
+      # @since 0.3.1
       # @api private
       def _whitelisted_params
         {}.tap do |result|
