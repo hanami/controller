@@ -106,7 +106,7 @@ module Lotus
       # @since 0.1.0
       def initialize(env)
         @env = env
-        _compute_params
+        super(_compute_params)
         # freeze
       end
 
@@ -118,7 +118,11 @@ module Lotus
       #
       # @since 0.2.0
       def [](key)
-        @attributes.get(key)
+        if self.class.whitelisting?
+          public_send(key) if self.class.defined_attributes.include?(key.to_s)
+        else
+          @attributes.get(key)
+        end
       end
 
       # Returns the Ruby's hash
@@ -127,7 +131,11 @@ module Lotus
       #
       # @since 0.3.0
       def to_h
-        @attributes.to_h
+        if self.class.whitelisting?
+          Utils::Hash.new(super).stringify!
+        else
+          @attributes.to_h
+        end
       end
       alias_method :to_hash, :to_h
 
@@ -137,7 +145,11 @@ module Lotus
       # @since 0.3.1
       # @api private
       def read_attributes
-        to_h
+        if self.class.whitelisting?
+          super
+        else
+          to_h
+        end
       end
 
       # @since 0.3.1
