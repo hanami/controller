@@ -1,4 +1,5 @@
 require 'securerandom'
+require 'lotus/action/request'
 
 module Lotus
   module Action
@@ -140,6 +141,27 @@ module Lotus
       def request_id
         # FIXME make this number configurable and document the probabilities of clashes
         @request_id ||= SecureRandom.hex(DEFAULT_REQUEST_ID_LENGTH)
+      end
+
+      # Returns a Lotus specialized rack request
+      #
+      # @return [Lotus::Action::Request] The request
+      #
+      # @since 0.3.1
+      #
+      # @example
+      #   require 'lotus/controller'
+      #
+      #   class Create
+      #     include Lotus::Action
+      #
+      #     def call(params)
+      #       ip     = request.ip
+      #       secure = request.ssl?
+      #     end
+      #   end
+      def request
+        @request ||= ::Lotus::Action::Request.new(@_env)
       end
 
       private
