@@ -106,7 +106,7 @@ module Lotus
       # @since 0.1.0
       def initialize(env)
         @env = env
-        _compute_params
+        super(_compute_params)
         # freeze
       end
 
