@@ -130,6 +130,7 @@ describe Lotus::Action::Params do
         param :email, presence:   true, format: /\A.+@.+\z/
         param :name,  presence:   true
         param :tos,   acceptance: true
+        param :age,   type: Integer
       end
     end
 
@@ -152,6 +153,12 @@ describe Lotus::Action::Params do
 
       params.valid?.must_equal true
       params.errors.must_be_empty
+    end
+
+    it "has input available as methods" do
+      params = TestParams.new(name: 'John', age: '1')
+      params[:name].must_equal('John')
+      params[:age].must_equal(1)
     end
   end
 
