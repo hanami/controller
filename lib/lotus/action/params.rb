@@ -1,5 +1,5 @@
-require 'lotus/utils/attributes'
 require 'lotus/validations'
+require 'lotus/utils/attributes'
 require 'set'
 
 module Lotus
@@ -106,7 +106,7 @@ module Lotus
       # @since 0.1.0
       def initialize(env)
         @env = env
-        _compute_params
+        super(_compute_params)
         # freeze
       end
 
@@ -132,24 +132,14 @@ module Lotus
       alias_method :to_hash, :to_h
 
       private
-      # Compatibility with Lotus::Validations
-      #
-      # @since 0.3.1
-      # @api private
-      def read_attributes
-        to_h
-      end
-
       # @since 0.3.1
       # @api private
       def _compute_params
-        @attributes = if self.class.whitelisting?
+        if self.class.whitelisting?
           _whitelisted_params
         else
-          _params
+          @attributes = Utils::Attributes.new(_params)
         end
-
-        @attributes = Utils::Attributes.new(@attributes)
       end
 
       # @since 0.3.1
