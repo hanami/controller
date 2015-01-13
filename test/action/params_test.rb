@@ -131,6 +131,9 @@ describe Lotus::Action::Params do
         param :name,  presence:   true
         param :tos,   acceptance: true
         param :age,   type: Integer
+        param :address do
+          attribute :line_one, presence: true
+        end
       end
     end
 
@@ -146,19 +149,28 @@ describe Lotus::Action::Params do
       params.errors.for(:email).must_include Lotus::Validations::Error.new(:email, :presence, true, nil)
       params.errors.for(:name).must_include  Lotus::Validations::Error.new(:name, :presence, true, nil)
       params.errors.for(:tos).must_include   Lotus::Validations::Error.new(:tos, :acceptance, true, nil)
+      params.errors.for(:address).for(:line_one).must_include   Lotus::Validations::Error.new(:line_one, :presence, true, nil)
     end
 
     it "is it valid when all the validation criteria are met" do
-      params = TestParams.new({email: 'test@lotusrb.org', name: 'Luca', tos: '1'})
+      params = TestParams.new({email: 'test@lotusrb.org', name: 'Luca', tos: '1', address: { line_one: '10 High Street' }})
 
       params.valid?.must_equal true
       params.errors.must_be_empty
     end
 
-    it "has input available as methods" do
-      params = TestParams.new(name: 'John', age: '1')
+    it "has input available through the hash accessor" do
+      params = TestParams.new(name: 'John', age: '1', address: { line_one: '10 High Street' })
       params[:name].must_equal('John')
       params[:age].must_equal(1)
+      params[:address][:line_one].must_equal('10 High Street')
+    end
+
+    it "has input available as methods" do
+      params = TestParams.new(name: 'John', age: '1', address: { line_one: '10 High Street' })
+      params.name.must_equal('John')
+      params.age.must_equal(1)
+      params.address.line_one.must_equal('10 High Street')
     end
   end
 
