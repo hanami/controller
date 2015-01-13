@@ -181,6 +181,11 @@ describe Lotus::Action::Params do
       params = TestParams.new({})
       params.address.wont_be_nil
     end
+
+    it "has the correct nested param superclass type" do
+      params = TestParams.new({address: { line_one: '123'}})
+      params[:address].class.superclass.must_equal(Lotus::Action::Params)
+    end
   end
 
   describe '#to_h' do
