@@ -132,7 +132,7 @@ describe Lotus::Action::Params do
         param :tos,   acceptance: true
         param :age,   type: Integer
         param :address do
-          attribute :line_one, presence: true
+          param :line_one, presence: true
         end
       end
     end
