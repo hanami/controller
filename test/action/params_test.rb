@@ -176,6 +176,11 @@ describe Lotus::Action::Params do
       params.age.must_equal(1)
       params.address.line_one.must_equal('10 High Street')
     end
+
+    it "has a nested object even when no input for that object was defined" do
+      params = TestParams.new({})
+      params.address.wont_be_nil
+    end
   end
 
   describe '#to_h' do
