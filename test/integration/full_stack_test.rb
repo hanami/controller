@@ -40,4 +40,23 @@ describe 'Full stack application' do
     # last_response.body.must_include 'FullStack::Controllers::Poll::Step2'
     # last_response.body.must_include %(Step 1 completed)
   end
+
+  it 'can access params with string symbols or methods' do
+    patch '/books/1', {
+      id: '1',
+      book: {
+        title: 'Lotus in Action',
+        author: {
+          name: 'Luca'
+        }
+      }
+    }
+    result = Marshal.load(last_response.body)
+    result.must_equal({
+      method_access: 'Luca',
+      symbol_access: 'Luca',
+      string_access: 'Luca',
+      valid: true
+    })
+  end
 end

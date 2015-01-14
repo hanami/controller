@@ -817,6 +817,33 @@ module FullStack
           redirect_to '/books'
         end
       end
+
+      class Update
+        include FullStack::Action
+
+        params do
+          param :id, type: Integer
+          param :book do
+            param :title, type: String, presence: true
+            param :author do
+              param :name, type: String, presence: true
+              param :favourite_colour
+            end
+          end
+        end
+
+        def call(params)
+          valid = params.valid?
+
+          self.status = 202
+          self.body = Marshal.dump({
+            method_access: params.book.author.name,
+            symbol_access: params[:book][:author][:name],
+            string_access: params['book']['author']['name'],
+            valid: valid
+          })
+        end
+      end
     end
 
     module Poll
@@ -871,7 +898,7 @@ module FullStack
       resolver = Lotus::Routing::EndpointResolver.new(namespace: FullStack::Controllers)
       routes   = Lotus::Router.new(resolver: resolver) do
         get '/', to: 'home#index'
-        resources :books, only: [:index, :create]
+        resources :books, only: [:index, :create, :update]
 
         get '/poll', to: 'poll#start'
 
