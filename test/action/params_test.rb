@@ -133,6 +133,9 @@ describe Lotus::Action::Params do
         param :age,   type: Integer
         param :address do
           param :line_one, presence: true
+          param :deep do
+            param :deep_attr, type: String
+          end
         end
       end
     end
@@ -185,6 +188,13 @@ describe Lotus::Action::Params do
     it "has the correct nested param superclass type" do
       params = TestParams.new({address: { line_one: '123'}})
       params[:address].class.superclass.must_equal(Lotus::Action::Params)
+    end
+
+    it "allows nested hash access via symbols" do
+      params = TestParams.new(name: 'John', address: { line_one: '10 High Street', deep: { deep_attr: 1 } })
+      params[:name].must_equal 'John'
+      params[:address][:line_one].must_equal '10 High Street'
+      params[:address][:deep][:deep_attr].must_equal '1'
     end
   end
 
