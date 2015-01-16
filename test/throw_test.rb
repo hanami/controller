@@ -37,6 +37,13 @@ describe Lotus::Action do
       end
     end
 
+    it "throws an HTTP status code with given message" do
+      response = ThrowCodeAction.new.call({ status: 401, message: 'Secret Sauce' })
+
+      response[0].must_equal 401
+      response[2].must_equal ['Secret Sauce']
+    end
+
     it 'throws the code as it is, when not recognized' do
       response = ThrowCodeAction.new.call({ status: 2131231 })
 
