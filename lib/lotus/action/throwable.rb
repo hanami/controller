@@ -69,8 +69,8 @@ module Lotus
       # the event.
       #
       # If a message is provided, it sets the response body with the message.
-      # Otherwise, it sets the response body with the default message associated to the code
-      # (eg 404 will set `"Not Found"`).
+      # Otherwise, it sets the response body with the default message associated
+      # to the code (eg 404 will set `"Not Found"`).
       #
       # @param code [Fixnum] a valid HTTP status code
       # @param message [String] the response body
@@ -80,11 +80,32 @@ module Lotus
       # @see Lotus::Controller#handled_exceptions
       # @see Lotus::Action::Throwable#handle_exception
       # @see Lotus::Http::Status:ALL
-      def halt(code = nil, message = nil)
-        if code
-          message ||= Http::Status.for_code(code)[1]
-          status(code, message)
-        end
+      #
+      # @example Basic usage
+      #   require 'lotus/controller'
+      #
+      #   class Show
+      #     def call(params)
+      #       halt 404
+      #     end
+      #   end
+      #
+      #   # => [404, {}, ["Not Found"]]
+      #
+      # @example Custom message
+      #   require 'lotus/controller'
+      #
+      #   class Show
+      #     def call(params)
+      #       halt 404, "This is not the droid you're looking for."
+      #     end
+      #   end
+      #
+      #   # => [404, {}, ["This is not the droid you're looking for."]]
+      def halt(code, message = nil)
+        message ||= Http::Status.message_for(code)
+        status(code, message)
+
         throw :halt
       end
 
