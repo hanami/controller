@@ -365,7 +365,7 @@ class ThrowCodeAction
   include Lotus::Action
 
   def call(params)
-    halt params[:status]
+    halt params[:status], params[:message]
   end
 end
 
