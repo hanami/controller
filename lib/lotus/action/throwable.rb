@@ -138,6 +138,8 @@ module Lotus
       # @since 0.2.0
       # @api private
       def _reference_in_rack_errors(exception)
+        return if configuration.handled_exception?(exception)
+
         if errors = @_env[RACK_ERRORS]
           errors.write(_dump_exception(exception))
           errors.flush
