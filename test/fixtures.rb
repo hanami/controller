@@ -1,6 +1,11 @@
+require 'digest/md5'
 require 'lotus/router'
+require 'lotus/action/cookies'
+require 'lotus/action/session'
+require 'lotus/action/cache'
 require 'lotus/action/glue'
 
+HTTP_TEST_STATUSES_WITHOUT_BODY = Set.new((100..199).to_a << 204 << 304).freeze
 HTTP_TEST_STATUSES = {
   100 => 'Continue',
   101 => 'Switching Protocols',
@@ -771,6 +776,41 @@ class VisibilityAction
     response
     cookies
     session
+  end
+end
+
+module HeadTest
+  module Home
+    class Index
+      include Lotus::Action
+
+      def call(params)
+        self.body = 'index'
+      end
+    end
+
+    class Code
+      include Lotus::Action
+      include Lotus::Action::Cache
+
+      def call(params)
+        content = 'code'
+
+        headers.merge!(
+          'Allow'            => 'GET, HEAD',
+          'Content-Encoding' => 'identity',
+          'Content-Language' => 'en',
+          'Content-Length'   => content.length,
+          'Content-Location' => 'relativeURI',
+          'Content-MD5'      => Digest::MD5.hexdigest(content),
+          'Expires'          => 'Thu, 01 Dec 1994 16:00:00 GMT',
+          'Last-Modified'    => 'Wed, 21 Jan 2015 11:32:10 GMT'
+        )
+
+        self.status = params[:code].to_i
+        self.body   = 'code'
+      end
+    end
   end
 end
 

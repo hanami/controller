@@ -6,6 +6,7 @@ require 'lotus/action/exposable'
 require 'lotus/action/throwable'
 require 'lotus/action/callbacks'
 require 'lotus/action/validatable'
+require 'lotus/action/head'
 require 'lotus/action/callable'
 
 module Lotus
@@ -36,6 +37,7 @@ module Lotus
     #
     # @see Lotus::Action::Rack
     # @see Lotus::Action::Mime
+    # @see Lotus::Action::Http
     # @see Lotus::Action::Redirect
     # @see Lotus::Action::Exposable
     # @see Lotus::Action::Throwable
@@ -53,6 +55,7 @@ module Lotus
         include Callbacks
         include Validatable
         include Configurable
+        include Head
         prepend Callable
       end
     end
@@ -75,6 +78,7 @@ module Lotus
     # @see Lotus::Action::Session#finish
     # @see Lotus::Action::Cookies#finish
     # @see Lotus::Action::Cache#finish
+    # @see Lotus::Action::Head#finish
     def finish
     end
   end
