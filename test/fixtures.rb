@@ -835,12 +835,13 @@ module FullStack
         def call(params)
           valid = params.valid?
 
-          self.status = 202
+          self.status = 201
           self.body = Marshal.dump({
             method_access: params.book.author.name,
             symbol_access: params[:book][:author][:name],
             string_access: params['book']['author']['name'],
-            valid: valid
+            valid: valid,
+            errors: params.errors.to_h
           })
         end
       end

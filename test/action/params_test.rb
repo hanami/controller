@@ -155,8 +155,8 @@ describe Lotus::Action::Params do
         must_include Lotus::Validations::Error.new(:name, :presence, true, nil)
       params.errors.for(:tos).
         must_include Lotus::Validations::Error.new(:tos, :acceptance, true, nil)
-      params.errors.for(:address).for(:line_one).
-        must_include Lotus::Validations::Error.new(:line_one, :presence, true, nil)
+      params.errors.for('address.line_one').
+        must_include Lotus::Validations::Error.new('address.line_one', :presence, true, nil)
     end
 
     it "is it valid when all the validation criteria are met" do

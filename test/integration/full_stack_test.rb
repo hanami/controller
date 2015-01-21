@@ -56,7 +56,22 @@ describe 'Full stack application' do
       method_access: 'Luca',
       symbol_access: 'Luca',
       string_access: 'Luca',
-      valid: true
+      valid: true,
+      errors: {}
+    })
+  end
+
+  it 'validates nested params' do
+    patch '/books/1', {
+      id: '1',
+      book: {
+        title: 'Lotus in Action',
+      }
+    }
+    result = Marshal.load(last_response.body)
+    result[:valid].must_equal false
+    result[:errors].must_equal({
+      'book.author.name' => [Lotus::Validations::Error.new('book.author.name', :presence, true, nil)]
     })
   end
 end
