@@ -5,7 +5,7 @@ require 'lotus/action/session'
 require 'lotus/action/cache'
 require 'lotus/action/glue'
 
-HTTP_TEST_STATUSES_WITHOUT_BODY = Set.new((100..199).to_a << 204 << 304).freeze
+HTTP_TEST_STATUSES_WITHOUT_BODY = Set.new((100..199).to_a << 204 << 205 << 304).freeze
 HTTP_TEST_STATUSES = {
   100 => 'Continue',
   101 => 'Switching Protocols',

@@ -12,7 +12,7 @@ module Lotus
       #
       # @since x.x.x
       # @api private
-      HTTP_STATUSES_WITHOUT_BODY = Set.new((100..199).to_a << 204 << 304).freeze
+      HTTP_STATUSES_WITHOUT_BODY = Set.new((100..199).to_a << 204 << 205 << 304).freeze
 
       # Ensures to not send body or headers for HEAD requests and/or for status
       # codes that doesn't allow them.

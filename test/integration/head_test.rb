@@ -61,7 +61,7 @@ describe 'HEAD' do
       end
 
       # FIXME Review this
-      unless [204, 304].include?(code)
+      unless [204, 205, 304].include?(code)
         it "sends Content-Length header" do
           get "/code/#{ code }"
 
