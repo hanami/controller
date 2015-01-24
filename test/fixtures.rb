@@ -170,19 +170,55 @@ class ExposeAction
   end
 end
 
-class XMiddleware
-  def self.call(env)
-    env['X-Middleware'] = 'OK'
+class YMiddleware
+  def initialize(app)
+    @app = app
+  end
+
+  def call(env)
+    code, headers, body = @app.call(env)
+    [code, headers.merge!('Y-Middleware' => 'OK'), body]
   end
 end
 
-class UseAction
-  include Lotus::Action
+class XMiddleware
+  def initialize(app)
+    @app = app
+  end
 
-  use XMiddleware
+  def call(env)
+    code, headers, body = @app.call(env)
+    [code, headers.merge!('X-Middleware' => 'OK'), body]
+  end
+end
 
-  def call(params)
-    headers['X-Middleware'] = params.env.fetch('X-Middleware')
+module UseAction
+  class Index
+    include Lotus::Action
+    use XMiddleware
+
+    def call(params)
+      self.body = 'Hello from UseAction::Index'
+    end
+  end
+
+  class Show
+    include Lotus::Action
+    use YMiddleware
+
+    def call(params)
+      self.body = 'Hello from UseAction::Show'
+    end
+  end
+end
+
+module NoUseAction
+  class Index
+    include Lotus::Action
+
+    def call(params)
+      self.body = 'Hello from NoUseAction::Index'
+    end
   end
 end
 
