@@ -194,6 +194,19 @@ module Lotus
         @handled_exceptions.fetch(exception.class) { DEFAULT_ERROR_CODE }
       end
 
+      # Check if the given exception is handled.
+      #
+      # @param exception [Exception] an exception
+      #
+      # @since x.x.x
+      # @api private
+      #
+      # @see Lotus::Controller::Configuration#handle_exception
+      def handled_exception?(exception)
+        handled_exceptions &&
+          !!@handled_exceptions.fetch(exception.class) { false }
+      end
+
       # Specify which is the default action module to be included when we use
       # the `Lotus::Controller.action` method.
       #

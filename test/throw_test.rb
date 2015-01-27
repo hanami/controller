@@ -29,12 +29,21 @@ describe Lotus::Action do
 
   describe '#throw' do
     HTTP_TEST_STATUSES.each do |code, body|
+      next if HTTP_TEST_STATUSES_WITHOUT_BODY.include?(code)
+
       it "throws an HTTP status code: #{ code }" do
         response = ThrowCodeAction.new.call({ status: code })
 
         response[0].must_equal  code
         response[2].must_equal [body]
       end
+    end
+
+    it "throws an HTTP status code with given message" do
+      response = ThrowCodeAction.new.call({ status: 401, message: 'Secret Sauce' })
+
+      response[0].must_equal 401
+      response[2].must_equal ['Secret Sauce']
     end
 
     it 'throws the code as it is, when not recognized' do

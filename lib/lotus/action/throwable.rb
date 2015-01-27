@@ -62,24 +62,50 @@ module Lotus
 
       protected
 
-      # Halt the action execution with the given HTTP status code.
+      # Halt the action execution with the given HTTP status code and message.
       #
       # When used, the execution of a callback or of an action is interrupted
       # and the control returns to the framework, that decides how to handle
       # the event.
       #
-      # It also sets the response body with the message associated to the code
-      # (eg 404 will set `"Not Found"`).
+      # If a message is provided, it sets the response body with the message.
+      # Otherwise, it sets the response body with the default message associated
+      # to the code (eg 404 will set `"Not Found"`).
       #
       # @param code [Fixnum] a valid HTTP status code
+      # @param message [String] the response body
       #
       # @since 0.2.0
       #
       # @see Lotus::Controller#handled_exceptions
       # @see Lotus::Action::Throwable#handle_exception
       # @see Lotus::Http::Status:ALL
-      def halt(code = nil)
-        status(*Http::Status.for_code(code)) if code
+      #
+      # @example Basic usage
+      #   require 'lotus/controller'
+      #
+      #   class Show
+      #     def call(params)
+      #       halt 404
+      #     end
+      #   end
+      #
+      #   # => [404, {}, ["Not Found"]]
+      #
+      # @example Custom message
+      #   require 'lotus/controller'
+      #
+      #   class Show
+      #     def call(params)
+      #       halt 404, "This is not the droid you're looking for."
+      #     end
+      #   end
+      #
+      #   # => [404, {}, ["This is not the droid you're looking for."]]
+      def halt(code, message = nil)
+        message ||= Http::Status.message_for(code)
+        status(code, message)
+
         throw :halt
       end
 
@@ -112,6 +138,8 @@ module Lotus
       # @since 0.2.0
       # @api private
       def _reference_in_rack_errors(exception)
+        return if configuration.handled_exception?(exception)
+
         if errors = @_env[RACK_ERRORS]
           errors.write(_dump_exception(exception))
           errors.flush

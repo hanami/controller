@@ -45,6 +45,18 @@ module Lotus
       def self.for_code(code)
         ALL.assoc(code)
       end
+
+      # Return a message for the given status code
+      #
+      # @param code [Fixnum] a valid HTTP code
+      #
+      # @return [String] a message for the given status code
+      #
+      # @since x.x.x
+      # @api private
+      def self.message_for(code)
+        for_code(code)[1]
+      end
     end
   end
 end

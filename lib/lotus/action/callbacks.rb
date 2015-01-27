@@ -112,7 +112,7 @@ module Lotus
         #   # 2. set the article
         #   # 3. #call
         def before(*callbacks, &blk)
-          before_callbacks.add(*callbacks, &blk)
+          before_callbacks.append(*callbacks, &blk)
         end
 
         # Define a callback for an Action.
@@ -131,7 +131,7 @@ module Lotus
         #
         # @see Lotus::Action::Callbacks::ClassMethods#before
         def after(*callbacks, &blk)
-          after_callbacks.add(*callbacks, &blk)
+          after_callbacks.append(*callbacks, &blk)
         end
       end
 

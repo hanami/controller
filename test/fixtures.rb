@@ -1,6 +1,11 @@
+require 'digest/md5'
 require 'lotus/router'
+require 'lotus/action/cookies'
+require 'lotus/action/session'
+require 'lotus/action/cache'
 require 'lotus/action/glue'
 
+HTTP_TEST_STATUSES_WITHOUT_BODY = Set.new((100..199).to_a << 204 << 205 << 304).freeze
 HTTP_TEST_STATUSES = {
   100 => 'Continue',
   101 => 'Switching Protocols',
@@ -165,19 +170,55 @@ class ExposeAction
   end
 end
 
-class XMiddleware
-  def self.call(env)
-    env['X-Middleware'] = 'OK'
+class YMiddleware
+  def initialize(app)
+    @app = app
+  end
+
+  def call(env)
+    code, headers, body = @app.call(env)
+    [code, headers.merge!('Y-Middleware' => 'OK'), body]
   end
 end
 
-class UseAction
-  include Lotus::Action
+class XMiddleware
+  def initialize(app)
+    @app = app
+  end
 
-  use XMiddleware
+  def call(env)
+    code, headers, body = @app.call(env)
+    [code, headers.merge!('X-Middleware' => 'OK'), body]
+  end
+end
 
-  def call(params)
-    headers['X-Middleware'] = params.env.fetch('X-Middleware')
+module UseAction
+  class Index
+    include Lotus::Action
+    use XMiddleware
+
+    def call(params)
+      self.body = 'Hello from UseAction::Index'
+    end
+  end
+
+  class Show
+    include Lotus::Action
+    use YMiddleware
+
+    def call(params)
+      self.body = 'Hello from UseAction::Show'
+    end
+  end
+end
+
+module NoUseAction
+  class Index
+    include Lotus::Action
+
+    def call(params)
+      self.body = 'Hello from NoUseAction::Index'
+    end
   end
 end
 
@@ -365,7 +406,7 @@ class ThrowCodeAction
   include Lotus::Action
 
   def call(params)
-    halt params[:status]
+    halt params[:status], params[:message]
   end
 end
 
@@ -771,6 +812,41 @@ class VisibilityAction
     response
     cookies
     session
+  end
+end
+
+module HeadTest
+  module Home
+    class Index
+      include Lotus::Action
+
+      def call(params)
+        self.body = 'index'
+      end
+    end
+
+    class Code
+      include Lotus::Action
+      include Lotus::Action::Cache
+
+      def call(params)
+        content = 'code'
+
+        headers.merge!(
+          'Allow'            => 'GET, HEAD',
+          'Content-Encoding' => 'identity',
+          'Content-Language' => 'en',
+          'Content-Length'   => content.length,
+          'Content-Location' => 'relativeURI',
+          'Content-MD5'      => Digest::MD5.hexdigest(content),
+          'Expires'          => 'Thu, 01 Dec 1994 16:00:00 GMT',
+          'Last-Modified'    => 'Wed, 21 Jan 2015 11:32:10 GMT'
+        )
+
+        self.status = params[:code].to_i
+        self.body   = 'code'
+      end
+    end
   end
 end
 

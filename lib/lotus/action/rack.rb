@@ -1,5 +1,6 @@
 require 'securerandom'
 require 'lotus/action/request'
+require 'lotus/action/rack/callable'
 
 module Lotus
   module Action
@@ -27,6 +28,18 @@ module Lotus
       # @see Lotus::Action::Rack#request_id
       DEFAULT_REQUEST_ID_LENGTH = 16
 
+      # The request method
+      #
+      # @since x.x.x
+      # @api private
+      REQUEST_METHOD = 'REQUEST_METHOD'.freeze
+
+      # HEAD request
+      #
+      # @since x.x.x
+      # @api private
+      HEAD = 'HEAD'.freeze
+
       # Override Ruby's hook for modules.
       # It includes basic Lotus::Action modules to the given class.
       #
@@ -41,11 +54,20 @@ module Lotus
       end
 
       module ClassMethods
-        # Use a Rack middleware as a before callback.
+        # Build rack builder
         #
-        # The middleware will be used as it is, no matter if it's a class or an
-        # instance. If it needs to be initialized, please do it before to pass
-        # it as the argument of this method.
+        # @return [Rack::Builder]
+        def rack_builder
+          @rack_builder ||= begin
+            extend Lotus::Action::Rack::Callable
+            rack_builder = ::Rack::Builder.new
+            rack_builder.run ->(env) { self.new.call(env) }
+            rack_builder
+          end
+        end
+        # Use a Rack middleware
+        #
+        # The middleware will be used as it is.
         #
         # At the runtime, the middleware be invoked with the raw Rack env.
         #
@@ -53,12 +75,13 @@ module Lotus
         # this method.
         #
         # @param middleware [#call] A Rack middleware
+        # @param args [Array] Array arguments for middleware
         #
         # @since 0.2.0
         #
         # @see Lotus::Action::Callbacks::ClassMethods#before
         #
-        # @example Class Middleware
+        # @example Middleware
         #   require 'lotus/controller'
         #
         #   module Sessions
@@ -71,29 +94,12 @@ module Lotus
         #       end
         #     end
         #   end
-        #
-        # @example Instance Middleware
-        #   require 'lotus/controller'
-        #
-        #   module Sessions
-        #     class Create
-        #       include Lotus::Controller
-        #       use XMiddleware.new('x', 123)
-        #
-        #       def call(params)
-        #         # ...
-        #       end
-        #     end
-        #   end
-        def use(middleware)
-          before do |params|
-            middleware.call(params.env)
-          end
+        def use(middleware, *args)
+          rack_builder.use middleware, *args
         end
       end
 
       protected
-
       # Gets the headers from the response
       #
       # @return [Hash] the HTTP headers from the response
@@ -209,6 +215,15 @@ module Lotus
       def body=(body)
         body   = Array(body) unless body.respond_to?(:each)
         @_body = body
+      end
+
+      # Check if the current request is a HEAD
+      #
+      # @return [TrueClass,FalseClass] the result of the check
+      #
+      # @since x.x.x
+      def head?
+        @_env[REQUEST_METHOD] == HEAD
       end
     end
   end
