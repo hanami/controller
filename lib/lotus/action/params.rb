@@ -97,6 +97,11 @@ module Lotus
       # @api private
       attr_reader :env
 
+      # @attr_reader raw [Lotus::Utils::Attributes] all request's attributes
+      #
+      # @since x.x.x
+      attr_reader :raw
+
       # Initialize the params and freeze them.
       #
       # @param env [Hash] a Rack env or an hash of params.
@@ -138,13 +143,17 @@ module Lotus
         if self.class.whitelisting?
           _whitelisted_params
         else
-          @attributes = Utils::Attributes.new(_params)
+          @attributes = _raw
         end
       end
 
       # @since 0.3.1
       # @api private
-      def _params
+      def _raw
+        @raw ||= Utils::Attributes.new(_create_raw)
+      end
+
+      def _create_raw
         {}.tap do |result|
           if env.has_key?(RACK_INPUT)
             result.merge! ::Rack::Request.new(env).params
@@ -159,7 +168,7 @@ module Lotus
       # @api private
       def _whitelisted_params
         {}.tap do |result|
-          _params.each do |k, v|
+          _raw.to_h.each do |k, v|
             next unless self.class.defined_attributes.include?(k.to_s)
 
             result[k] = v

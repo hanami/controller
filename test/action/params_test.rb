@@ -12,6 +12,36 @@ describe Lotus::Action::Params do
   #   params.must_be :frozen?
   # end
 
+  describe 'raw params' do
+    before do
+      @params = Class.new(Lotus::Action::Params)
+    end
+
+    describe "when this feature isn't enabled" do
+      before do
+        @action = ParamsAction.new
+      end
+
+      it 'raw gets all params' do
+        @action.call({id: 1, unknown: 2})
+        @action.params.raw.get(:id).must_equal 1
+        @action.params.raw.get(:unknown).must_equal 2
+      end
+    end
+
+    describe "when this feature is enabled" do
+      before do
+        @action = WhitelistedParamsAction.new
+      end
+
+      it 'raw gets all params' do
+        @action.call({id: 1, unknown: 2})
+        @action.params.raw.get(:id).must_equal 1
+        @action.params.raw.get(:unknown).must_equal 2
+      end
+    end
+  end
+
   describe 'whitelisting' do
     before do
       @params = Class.new(Lotus::Action::Params)
