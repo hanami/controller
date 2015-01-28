@@ -158,13 +158,15 @@ module Lotus
         end
       end
 
-      # @since 0.3.1
+      # @since x.x.x
       # @api private
       def _raw
-        @raw ||= Utils::Attributes.new(_create_raw)
+        @raw ||= Utils::Attributes.new(_params)
       end
 
-      def _create_raw
+      # @since 0.3.1
+      # @api private
+      def _params
         {}.tap do |result|
           if env.has_key?(RACK_INPUT)
             result.merge! ::Rack::Request.new(env).params
