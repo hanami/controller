@@ -2,6 +2,9 @@ module Lotus
   module Action
     # Glue code for full stack Lotus applications
     #
+    # This includes missing rendering logic that it makes sense to include
+    # only for web applications.
+    #
     # @api private
     # @since 0.3.0
     module Glue
@@ -11,12 +14,16 @@ module Lotus
       # @since 0.3.0
       ENV_KEY = 'lotus.action'.freeze
 
+      # @api private
+      # @since 0.3.2
+      ADDITIONAL_HTTP_STATUSES_WITHOUT_BODY = Set.new([301, 302]).freeze
+
       # Override Ruby's Module#included
       #
       # @api private
       # @since 0.3.0
       def self.included(base)
-        base.class_eval { expose :format }
+        base.class_eval { expose(:format) if respond_to?(:expose) }
       end
 
       # Check if the current HTTP request is renderable.
@@ -29,7 +36,8 @@ module Lotus
       # @api private
       # @since 0.3.2
       def renderable?
-        !_requires_no_body?
+        !_requires_no_body? &&
+          !ADDITIONAL_HTTP_STATUSES_WITHOUT_BODY.include?(@_status)
       end
 
       protected
