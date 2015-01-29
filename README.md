@@ -446,6 +446,26 @@ action = Show.new
 action.call({}) # => [401, {}, ["Unauthorized"]]
 ```
 
+Alternatively, you can specify a custom message.
+
+```ruby
+class Show
+  include Lotus::Action
+
+  def call(params)
+    DroidRepository.find(params[:id]) or not_found
+  end
+
+  private
+  def not_found
+    halt 404, "This is not the droid you're looking for"
+  end
+end
+
+action = Show.new
+action.call({}) # => [404, {}, ["This is not the droid you're looking for"]]
+```
+
 ### Cookies
 
 Lotus::Controller offers convenient access to cookies.

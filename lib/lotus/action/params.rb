@@ -80,8 +80,8 @@ module Lotus
       #
       #   params = SignupParams.new({})
       #   params.valid? # => raise ArgumentError
-      def self.param(name, options = {})
-        attribute name, options
+      def self.param(name, options = {}, &block)
+        attribute name, options, &block
         nil
       end
 
@@ -91,11 +91,27 @@ module Lotus
         defined_attributes.any?
       end
 
+      # Overrides the method in Lotus::Validation to build a class that
+      # inherits from Params rather than only Lotus::Validations.
+      #
+      # @since x.x.x
+      # @api private
+      def self.build_validation_class(&block)
+        kls = Class.new(Params)
+        kls.class_eval(&block)
+        kls
+      end
+
       # @attr_reader env [Hash] the Rack env
       #
       # @since 0.2.0
       # @api private
       attr_reader :env
+
+      # @attr_reader raw [Lotus::Utils::Attributes] all request's attributes
+      #
+      # @since x.x.x
+      attr_reader :raw
 
       # Initialize the params and freeze them.
       #
@@ -138,8 +154,14 @@ module Lotus
         if self.class.whitelisting?
           _whitelisted_params
         else
-          @attributes = Utils::Attributes.new(_params)
+          @attributes = _raw
         end
+      end
+
+      # @since x.x.x
+      # @api private
+      def _raw
+        @raw ||= Utils::Attributes.new(_params)
       end
 
       # @since 0.3.1
@@ -159,7 +181,7 @@ module Lotus
       # @api private
       def _whitelisted_params
         {}.tap do |result|
-          _params.each do |k, v|
+          _raw.to_h.each do |k, v|
             next unless self.class.defined_attributes.include?(k.to_s)
 
             result[k] = v

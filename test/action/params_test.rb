@@ -12,6 +12,36 @@ describe Lotus::Action::Params do
   #   params.must_be :frozen?
   # end
 
+  describe 'raw params' do
+    before do
+      @params = Class.new(Lotus::Action::Params)
+    end
+
+    describe "when this feature isn't enabled" do
+      before do
+        @action = ParamsAction.new
+      end
+
+      it 'raw gets all params' do
+        @action.call({id: 1, unknown: 2})
+        @action.params.raw.get(:id).must_equal 1
+        @action.params.raw.get(:unknown).must_equal 2
+      end
+    end
+
+    describe "when this feature is enabled" do
+      before do
+        @action = WhitelistedParamsAction.new
+      end
+
+      it 'raw gets all params' do
+        @action.call({id: 1, unknown: 2})
+        @action.params.raw.get(:id).must_equal 1
+        @action.params.raw.get(:unknown).must_equal 2
+      end
+    end
+  end
+
   describe 'whitelisting' do
     before do
       @params = Class.new(Lotus::Action::Params)
@@ -131,6 +161,12 @@ describe Lotus::Action::Params do
         param :name,  presence:   true
         param :tos,   acceptance: true
         param :age,   type: Integer
+        param :address do
+          param :line_one, presence: true
+          param :deep do
+            param :deep_attr, type: String
+          end
+        end
       end
     end
 
@@ -143,22 +179,52 @@ describe Lotus::Action::Params do
 
       params.valid?.must_equal false
 
-      params.errors.for(:email).must_include Lotus::Validations::Error.new(:email, :presence, true, nil)
-      params.errors.for(:name).must_include  Lotus::Validations::Error.new(:name, :presence, true, nil)
-      params.errors.for(:tos).must_include   Lotus::Validations::Error.new(:tos, :acceptance, true, nil)
+      params.errors.for(:email).
+        must_include Lotus::Validations::Error.new(:email, :presence, true, nil)
+      params.errors.for(:name).
+        must_include Lotus::Validations::Error.new(:name, :presence, true, nil)
+      params.errors.for(:tos).
+        must_include Lotus::Validations::Error.new(:tos, :acceptance, true, nil)
+      params.errors.for('address.line_one').
+        must_include Lotus::Validations::Error.new('address.line_one', :presence, true, nil)
     end
 
     it "is it valid when all the validation criteria are met" do
-      params = TestParams.new({email: 'test@lotusrb.org', name: 'Luca', tos: '1'})
+      params = TestParams.new({email: 'test@lotusrb.org', name: 'Luca', tos: '1', address: { line_one: '10 High Street' }})
 
       params.valid?.must_equal true
       params.errors.must_be_empty
     end
 
-    it "has input available as methods" do
-      params = TestParams.new(name: 'John', age: '1')
+    it "has input available through the hash accessor" do
+      params = TestParams.new(name: 'John', age: '1', address: { line_one: '10 High Street' })
       params[:name].must_equal('John')
       params[:age].must_equal(1)
+      params[:address][:line_one].must_equal('10 High Street')
+    end
+
+    it "has input available as methods" do
+      params = TestParams.new(name: 'John', age: '1', address: { line_one: '10 High Street' })
+      params.name.must_equal('John')
+      params.age.must_equal(1)
+      params.address.line_one.must_equal('10 High Street')
+    end
+
+    it "has a nested object even when no input for that object was defined" do
+      params = TestParams.new({})
+      params.address.wont_be_nil
+    end
+
+    it "has the correct nested param superclass type" do
+      params = TestParams.new({address: { line_one: '123'}})
+      params[:address].class.superclass.must_equal(Lotus::Action::Params)
+    end
+
+    it "allows nested hash access via symbols" do
+      params = TestParams.new(name: 'John', address: { line_one: '10 High Street', deep: { deep_attr: 1 } })
+      params[:name].must_equal 'John'
+      params[:address][:line_one].must_equal '10 High Street'
+      params[:address][:deep][:deep_attr].must_equal '1'
     end
   end
 
