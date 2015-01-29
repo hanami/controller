@@ -30,13 +30,13 @@ module Lotus
 
       # The request method
       #
-      # @since x.x.x
+      # @since 0.3.2
       # @api private
       REQUEST_METHOD = 'REQUEST_METHOD'.freeze
 
       # HEAD request
       #
-      # @since x.x.x
+      # @since 0.3.2
       # @api private
       HEAD = 'HEAD'.freeze
 
@@ -221,7 +221,7 @@ module Lotus
       #
       # @return [TrueClass,FalseClass] the result of the check
       #
-      # @since x.x.x
+      # @since 0.3.2
       def head?
         @_env[REQUEST_METHOD] == HEAD
       end

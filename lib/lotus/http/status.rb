@@ -52,7 +52,7 @@ module Lotus
       #
       # @return [String] a message for the given status code
       #
-      # @since x.x.x
+      # @since 0.3.2
       # @api private
       def self.message_for(code)
         for_code(code)[1]

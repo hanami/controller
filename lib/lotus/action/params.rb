@@ -94,7 +94,7 @@ module Lotus
       # Overrides the method in Lotus::Validation to build a class that
       # inherits from Params rather than only Lotus::Validations.
       #
-      # @since x.x.x
+      # @since 0.3.2
       # @api private
       def self.build_validation_class(&block)
         kls = Class.new(Params)
@@ -110,7 +110,7 @@ module Lotus
 
       # @attr_reader raw [Lotus::Utils::Attributes] all request's attributes
       #
-      # @since x.x.x
+      # @since 0.3.2
       attr_reader :raw
 
       # Initialize the params and freeze them.
@@ -158,7 +158,7 @@ module Lotus
         end
       end
 
-      # @since x.x.x
+      # @since 0.3.2
       # @api private
       def _raw
         @raw ||= Utils::Attributes.new(_params)
