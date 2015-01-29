@@ -1,6 +1,19 @@
 # Lotus::Controller
 Complete, fast and testable actions for Rack
 
+## v0.3.2 - 2015-01-30
+### Added
+- [Alfonso Uceda Pompa] Introduced `Lotus::Action::Params#raw` which returns unfiltered data as it comes from an HTTP request.
+- [Alfonso Uceda Pompa] `Lotus::Action::Rack.use` now fully supports Rack middleware, by mounting an internal `Rack::Builder` instance.
+- [Simone Carletti] `Lotus::Action::Throwable#halt` now accepts an optional message. If missing it falls back to the corresponding HTTP status message.
+- [Steve Hodgkiss] Nested params validation
+
+### Fixed
+- [Luca Guidi] Ensure HEAD requests will return empty body
+- [Stefano Verna] Ensure HTTP status codes with empty body won't send body and non-entity headers.
+- [Luca Guidi] Only dump exceptions in `rack.errors` if handling is turned off, or the raised exception is not managed.
+- [Luca Guidi] Ensure params will return coerced values
+
 ## v0.3.1 - 2015-01-08
 ### Added
 - [Lasse Skindstad Ebert] Introduced `Action#request` which returns an instance a `Rack::Request` compliant object: `Lotus::Action::Request`.
