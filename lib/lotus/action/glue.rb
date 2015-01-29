@@ -19,6 +19,19 @@ module Lotus
         base.class_eval { expose :format }
       end
 
+      # Check if the current HTTP request is renderable.
+      #
+      # It verifies if the verb isn't HEAD and if the status demands to omit
+      # the body.
+      #
+      # @return [TrueClass,FalseClass] the result of the check
+      #
+      # @api private
+      # @since 0.3.2
+      def renderable?
+        !_requires_no_body?
+      end
+
       protected
       # Put the current instance into the Rack environment
       #
