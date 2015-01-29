@@ -16,6 +16,13 @@ describe 'Full stack application' do
     last_response.body.must_include ':format=>:html'
   end
 
+  it 'omits the body if the request is HEAD' do
+    head '/head', {}, 'HTTP_ACCEPT' => 'text/html'
+
+    last_response.body.must_be_empty
+    last_response.headers['X-Renderable'].must_equal 'false'
+  end
+
   it 'in case of redirect and invalid params, it passes errors in session and then deletes them' do
     post '/books', { title: '' }
     follow_redirect!

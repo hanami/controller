@@ -870,6 +870,15 @@ module FullStack
           @greeting = 'Hello'
         end
       end
+
+      class Head
+        include FullStack::Action
+
+        def call(params)
+          headers['X-Renderable'] = renderable?.to_s
+          self.body = 'foo'
+        end
+      end
     end
 
     module Books
@@ -962,7 +971,7 @@ module FullStack
     def render(env, response)
       action = env.delete('lotus.action')
 
-      if response[0] == 200
+      if response[0] == 200 && action.renderable?
         response[2] = "#{ action.class.name } #{ action.exposures }"
       end
 
@@ -974,7 +983,8 @@ module FullStack
     def initialize
       resolver = Lotus::Routing::EndpointResolver.new(namespace: FullStack::Controllers)
       routes   = Lotus::Router.new(resolver: resolver) do
-        get '/', to: 'home#index'
+        get '/',     to: 'home#index'
+        get '/head', to: 'home#head'
         resources :books, only: [:index, :create, :update]
 
         get '/poll', to: 'poll#start'
