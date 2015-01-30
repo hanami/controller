@@ -7,6 +7,7 @@ describe Lotus::Action do
       action.call({})
 
       action.article.must_equal 'Bonjour!'.reverse
+      action.logger.join(' ').must_equal 'Mr. John Doe'
     end
 
     it 'invokes the given block before the action is run' do
@@ -56,6 +57,7 @@ describe Lotus::Action do
       action.call({})
 
       action.egg.must_equal 'gE!g'
+      action.logger.join(' ').must_equal 'Mr. John Doe'
     end
 
     it 'invokes the given block after the action is run' do

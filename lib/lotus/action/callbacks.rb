@@ -65,6 +65,8 @@ module Lotus
         #
         # @since 0.1.0
         #
+        # @see Lotus::Action::Callbacks::ClassMethods#append_after
+        #
         # @example Method names (symbols)
         #   require 'lotus/controller'
         #
@@ -111,9 +113,11 @@ module Lotus
         #   # 1. authentication
         #   # 2. set the article
         #   # 3. #call
-        def before(*callbacks, &blk)
+        def append_before(*callbacks, &blk)
           before_callbacks.append(*callbacks, &blk)
         end
+
+        alias_method :before, :append_before
 
         # Define a callback for an Action.
         # The callback will be executed **after** the action is called, in the
@@ -129,9 +133,49 @@ module Lotus
         #
         # @since 0.1.0
         #
-        # @see Lotus::Action::Callbacks::ClassMethods#before
-        def after(*callbacks, &blk)
+        # @see Lotus::Action::Callbacks::ClassMethods#append_before
+        def append_after(*callbacks, &blk)
           after_callbacks.append(*callbacks, &blk)
+        end
+
+        alias_method :after, :append_after
+
+        # Define a callback for an Action.
+        # The callback will be executed **before** the action is called.
+        # It will add the callback at the beginning of the callbacks' chain.
+        #
+        # @param callbacks [Symbol, Array<Symbol>] a single or multiple symbol(s)
+        #   each of them is representing a name of a method available in the
+        #   context of the Action.
+        #
+        # @param blk [Proc] an anonymous function to be executed
+        #
+        # @return [void]
+        #
+        # @since x.x.x
+        #
+        # @see Lotus::Action::Callbacks::ClassMethods#prepend_after
+        def prepend_before(*callbacks, &blk)
+          before_callbacks.prepend(*callbacks, &blk)
+        end
+
+        # Define a callback for an Action.
+        # The callback will be executed **after** the action is called.
+        # It will add the callback at the beginning of the callbacks' chain.
+        #
+        # @param callbacks [Symbol, Array<Symbol>] a single or multiple symbol(s)
+        #   each of them is representing a name of a method available in the
+        #   context of the Action.
+        #
+        # @param blk [Proc] an anonymous function to be executed
+        #
+        # @return [void]
+        #
+        # @since x.x.x
+        #
+        # @see Lotus::Action::Callbacks::ClassMethods#prepend_before
+        def prepend_after(*callbacks, &blk)
+          after_callbacks.prepend(*callbacks, &blk)
         end
       end
 
