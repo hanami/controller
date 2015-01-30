@@ -57,7 +57,7 @@ describe Lotus::Action do
       action.call({})
 
       action.egg.must_equal 'gE!g'
-      action.logger.join(' ').must_equal 'Mr. John Doe'
+      action.logger.join(' ').must_equal 'Mrs. Jane Dixit'
     end
 
     it 'invokes the given block after the action is run' do

@@ -326,15 +326,15 @@ class AfterMethodAction
   end
 
   def add_first_name_to_logger
-    @logger << 'John'
+    @logger << 'Jane'
   end
 
   def add_last_name_to_logger
-    @logger << 'Doe'
+    @logger << 'Dixit'
   end
 
   def add_title_to_logger
-    @logger << 'Mr.'
+    @logger << 'Mrs.'
   end
 end
 

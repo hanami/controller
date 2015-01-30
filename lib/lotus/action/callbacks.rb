@@ -17,7 +17,7 @@ module Lotus
       # @since 0.1.0
       # @api private
       #
-      # @see http://www.ruby-doc.org/core-2.1.2/Module.html#method-i-included
+      # @see http://www.ruby-doc.org/core/Module.html#method-i-included
       def self.included(base)
         base.class_eval do
           extend  ClassMethods
@@ -38,7 +38,7 @@ module Lotus
         # @since 0.1.0
         # @api private
         #
-        # @see http://www.ruby-doc.org/core-2.1.2/Module.html#method-i-extended
+        # @see http://www.ruby-doc.org/core/Module.html#method-i-extended
         def self.extended(base)
           base.class_eval do
             include Utils::ClassAttribute
@@ -63,7 +63,7 @@ module Lotus
         #
         # @return [void]
         #
-        # @since 0.1.0
+        # @since 0.3.2
         #
         # @see Lotus::Action::Callbacks::ClassMethods#append_after
         #
@@ -117,6 +117,7 @@ module Lotus
           before_callbacks.append(*callbacks, &blk)
         end
 
+        # @since 0.1.0
         alias_method :before, :append_before
 
         # Define a callback for an Action.
@@ -131,13 +132,14 @@ module Lotus
         #
         # @return [void]
         #
-        # @since 0.1.0
+        # @since 0.3.2
         #
         # @see Lotus::Action::Callbacks::ClassMethods#append_before
         def append_after(*callbacks, &blk)
           after_callbacks.append(*callbacks, &blk)
         end
 
+        # @since 0.1.0
         alias_method :after, :append_after
 
         # Define a callback for an Action.
@@ -152,7 +154,7 @@ module Lotus
         #
         # @return [void]
         #
-        # @since x.x.x
+        # @since 0.3.2
         #
         # @see Lotus::Action::Callbacks::ClassMethods#prepend_after
         def prepend_before(*callbacks, &blk)
@@ -171,7 +173,7 @@ module Lotus
         #
         # @return [void]
         #
-        # @since x.x.x
+        # @since 0.3.2
         #
         # @see Lotus::Action::Callbacks::ClassMethods#prepend_before
         def prepend_after(*callbacks, &blk)
