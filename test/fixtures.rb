@@ -225,8 +225,14 @@ end
 class BeforeMethodAction
   include Lotus::Action
 
-  expose :article
+  expose :article, :logger
   before :set_article, :reverse_article
+  append_before :add_first_name_to_logger, :add_last_name_to_logger
+  prepend_before :add_title_to_logger
+
+  def initialize
+    @logger = []
+  end
 
   def call(params)
   end
@@ -238,6 +244,18 @@ class BeforeMethodAction
 
   def reverse_article
     @article.reverse!
+  end
+
+  def add_first_name_to_logger
+    @logger << 'John'
+  end
+
+  def add_last_name_to_logger
+    @logger << 'Doe'
+  end
+
+  def add_title_to_logger
+    @logger << 'Mr.'
   end
 end
 
@@ -286,8 +304,14 @@ end
 class AfterMethodAction
   include Lotus::Action
 
-  expose :egg
+  expose :egg, :logger
   after  :set_egg, :scramble_egg
+  append_after :add_first_name_to_logger, :add_last_name_to_logger
+  prepend_after :add_title_to_logger
+
+  def initialize
+    @logger = []
+  end
 
   def call(params)
   end
@@ -299,6 +323,18 @@ class AfterMethodAction
 
   def scramble_egg
     @egg = 'gE!g'
+  end
+
+  def add_first_name_to_logger
+    @logger << 'Jane'
+  end
+
+  def add_last_name_to_logger
+    @logger << 'Dixit'
+  end
+
+  def add_title_to_logger
+    @logger << 'Mrs.'
   end
 end
 
