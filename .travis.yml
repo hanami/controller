@@ -12,13 +12,8 @@ rvm:
   - 2.1.5
   - 2.2
   - rbx-2
+  - jruby-head
 
 matrix:
-  include:
-    - rvm: jruby
-      env: JRUBY_OPTS="--2.0"
-    - rvm: jruby-head
-      env: JRUBY_OPTS="--2.1"
   allow_failures:
-    - rvm: jruby
     - rvm: jruby-head
