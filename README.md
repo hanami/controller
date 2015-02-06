@@ -22,7 +22,7 @@ A Rack compatible Controller layer for [Lotus](http://lotusrb.org).
 
 ## Rubies
 
-__Lotus::Controller__ supports Ruby (MRI) 2+
+__Lotus::Controller__ supports Ruby (MRI) 2.2+
 
 ## Installation
 

@@ -15,8 +15,7 @@ if Rack.release <= '1.5'
         [match, quality]
       end.compact
 
-      # See https://github.com/lotus/controller/issues/59
-      values = values.reverse if RUBY_VERSION >= '2.2.0' || Lotus::Utils.rubinius?
+      values = values.reverse
 
       value  = values.sort_by do |match, quality|
         (match.split('/', 2).count('*') * -10) + quality
