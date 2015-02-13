@@ -270,6 +270,26 @@ describe Lotus::Controller::Configuration do
     end
   end
 
+  describe '#default_headers' do
+    describe "when not previously set" do
+      it 'returns default value' do
+        @configuration.default_headers.must_equal({})
+      end
+    end
+
+    describe "when set" do
+      let(:headers) { {'X-Frame-Options' => 'DENY'} }
+
+      before do
+        @configuration.default_headers(headers)
+      end
+
+      it 'returns the value' do
+        @configuration.default_headers.must_equal headers
+      end
+    end
+  end
+
   describe 'duplicate' do
     before do
       @configuration.reset!
@@ -277,6 +297,7 @@ describe Lotus::Controller::Configuration do
       @configuration.format custom: 'custom/format'
       @configuration.default_format :html
       @configuration.default_charset 'latin1'
+      @configuration.default_headers({ 'X-Frame-Options' => 'DENY' })
       @config = @configuration.duplicate
     end
 
@@ -288,6 +309,7 @@ describe Lotus::Controller::Configuration do
       @config.send(:formats).must_equal     @configuration.send(:formats)
       @config.default_format.must_equal     @configuration.default_format
       @config.default_charset.must_equal    @configuration.default_charset
+      @config.default_headers.must_equal    @configuration.default_headers
     end
 
     it "doesn't affect the original configuration" do
@@ -298,6 +320,7 @@ describe Lotus::Controller::Configuration do
       @config.format another: 'another/format'
       @config.default_format :json
       @config.default_charset 'utf-8'
+      @config.default_headers({ 'X-Frame-Options' => 'ALLOW ALL' })
 
       @config.handle_exceptions.must_equal           false
       @config.handled_exceptions.must_equal          Hash[ArgumentError => 400]
@@ -306,6 +329,7 @@ describe Lotus::Controller::Configuration do
       @config.format_for('another/format').must_equal :another
       @config.default_format.must_equal               :json
       @config.default_charset.must_equal              'utf-8'
+      @config.default_headers.must_equal              ({ 'X-Frame-Options' => 'ALLOW ALL' })
 
       @configuration.handle_exceptions.must_equal  true
       @configuration.handled_exceptions.must_equal Hash[]
@@ -314,6 +338,7 @@ describe Lotus::Controller::Configuration do
       @configuration.format_for('another/format').must_be_nil
       @configuration.default_format.must_equal     :html
       @configuration.default_charset.must_equal    'latin1'
+      @configuration.default_headers.must_equal    ({ 'X-Frame-Options' => 'DENY' })
     end
   end
 
@@ -326,6 +351,7 @@ describe Lotus::Controller::Configuration do
       @configuration.format another: 'another/format'
       @configuration.default_format :another
       @configuration.default_charset 'kor-1'
+      @configuration.default_headers({ 'X-Frame-Options' => 'ALLOW DENY' })
 
       @configuration.reset!
     end
@@ -338,6 +364,7 @@ describe Lotus::Controller::Configuration do
       @configuration.send(:formats).must_equal(Lotus::Controller::Configuration::DEFAULT_FORMATS)
       @configuration.default_format.must_be_nil
       @configuration.default_charset.must_be_nil
+      @configuration.default_headers.must_equal({})
     end
   end
 end

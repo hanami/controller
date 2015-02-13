@@ -68,7 +68,7 @@ module Lotus
       def call(env)
         _rescue do
           @_env    = env
-          @headers = ::Rack::Utils::HeaderHash.new
+          @headers = ::Rack::Utils::HeaderHash.new(configuration.default_headers)
           @params  = self.class.params_class.new(@_env)
           super @params
         end
