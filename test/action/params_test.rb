@@ -210,28 +210,56 @@ describe Lotus::Action::Params do
   end
 
   describe '#get' do
-    before do
-      @params = TestParams.new(name: 'John', address: { line_one: '10 High Street', deep: { deep_attr: 1 } })
+    describe 'with data' do
+      before do
+        @params = TestParams.new(name: 'John', address: { line_one: '10 High Street', deep: { deep_attr: 1 } })
+      end
+
+      it 'returns nil for nil argument' do
+        @params.get(nil).must_be_nil
+      end
+
+      it 'returns nil for unknown param' do
+        @params.get('unknown').must_be_nil
+      end
+
+      it 'allows to read top level param' do
+        @params.get('name').must_equal 'John'
+      end
+
+      it 'allows to read nested param' do
+        @params.get('address.line_one').must_equal '10 High Street'
+      end
+
+      it 'returns nil for uknown nested param' do
+        @params.get('address.unknown').must_be_nil
+      end
     end
 
-    it 'returns nil for nil argument' do
-      @params.get(nil).must_be_nil
-    end
+    describe 'without data' do
+      before do
+        @params = TestParams.new({})
+      end
 
-    it 'returns nil for unknown param' do
-      @params.get('unknown').must_be_nil
-    end
+      it 'returns nil for nil argument' do
+        @params.get(nil).must_be_nil
+      end
 
-    it 'allows to read top level param' do
-      @params.get('name').must_equal 'John'
-    end
+      it 'returns nil for unknown param' do
+        @params.get('unknown').must_be_nil
+      end
 
-    it 'allows to read nested param' do
-      @params.get('address.line_one').must_equal '10 High Street'
-    end
+      it 'returns nil for top level param' do
+        @params.get('name').must_be_nil
+      end
 
-    it 'returns nil for uknown nested param' do
-      @params.get('address.unknown').must_be_nil
+      it 'returns nil for nested param' do
+        @params.get('address.line_one').must_be_nil
+      end
+
+      it 'returns nil for uknown nested param' do
+        @params.get('address.unknown').must_be_nil
+      end
     end
   end
 
