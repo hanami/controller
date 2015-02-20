@@ -15,10 +15,17 @@ module Lotus
       HTTP_STATUSES_WITHOUT_BODY = Set.new((100..199).to_a << 204 << 205 << 304).freeze
 
 
-      # Entity headers that by RFC are permitted
+      # Entity headers allowed in blank body responses, according to
+      # RFC 2616 - Section 10 (HTTP 1.1).
+      #
+      # "The response MAY include new or updated metainformation in the form
+      #   of entity-headers".
       #
       # @since x.x.x
       # @api private
+      #
+      # @see http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.5
+      # @see http://www.w3.org/Protocols/rfc2616/rfc2616-sec7.html
       ENTITY_HEADERS = {
         'Allow'            => true,
         'Content-Encoding' => true,
