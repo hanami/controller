@@ -57,4 +57,24 @@ describe 'Framework configuration' do
     code.must_equal 200
     body.must_equal ['Luca']
   end
+
+  describe 'default headers' do
+    it "if default headers aren't setted only content-type header is returned" do
+      code, headers, _ = FullStack::Controllers::Home::Index.new.call({})
+      code.must_equal 200
+      headers.must_equal({"Content-Type"=>"application/octet-stream; charset=utf-8"})
+    end
+
+    it "if default headers are setted, default headers are returned" do
+      code, headers, _ = MusicPlayer::Controllers::Artists::Index.new.call({})
+      code.must_equal 200
+      headers.must_equal({"Content-Type" => "application/octet-stream; charset=utf-8", "X-Frame-Options" => "DENY"})
+    end
+
+    it "default headers overrided in action" do
+      code, headers, _ = MusicPlayer::Controllers::Dashboard::Index.new.call({})
+      code.must_equal 200
+      headers.must_equal({"Content-Type" => "application/octet-stream; charset=utf-8", "X-Frame-Options" => "ALLOW FROM https://example.org"})
+    end
+  end
 end

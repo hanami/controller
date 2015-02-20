@@ -14,6 +14,25 @@ module Lotus
       # @api private
       HTTP_STATUSES_WITHOUT_BODY = Set.new((100..199).to_a << 204 << 205 << 304).freeze
 
+
+      # Entity headers that by RFC are permitted
+      #
+      # @since x.x.x
+      # @api private
+      ENTITY_HEADERS = {
+        'Allow'            => true,
+        'Content-Encoding' => true,
+        'Content-Language' => true,
+        'Content-Length'   => true,
+        'Content-Location' => true,
+        'Content-MD5'      => true,
+        'Content-Range'    => true,
+        'Content-Type'     => true,
+        'Expires'          => true,
+        'Last-Modified'    => true,
+        'extension-header' => true
+      }.freeze
+
       # Ensures to not send body or headers for HEAD requests and/or for status
       # codes that doesn't allow them.
       #
@@ -26,6 +45,7 @@ module Lotus
 
         if _requires_no_body?
           @_body = nil
+          @headers.reject! { |header,_| !ENTITY_HEADERS.include?(header) }
         end
       end
 

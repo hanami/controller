@@ -20,7 +20,7 @@ describe 'Full stack application' do
     head '/head', {}, 'HTTP_ACCEPT' => 'text/html'
 
     last_response.body.must_be_empty
-    last_response.headers['X-Renderable'].must_equal 'false'
+    last_response.headers['X-Renderable'].must_be_nil
   end
 
   it 'in case of redirect and invalid params, it passes errors in session and then deletes them' do

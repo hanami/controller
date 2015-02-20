@@ -469,6 +469,33 @@ module Lotus
         end
       end
 
+      # Set default headers for all responses
+      #
+      # By default this value is an empty hash.
+      #
+      # @since x.x.x
+      #
+      # @example Getting the value
+      #   require 'lotus/controller'
+      #
+      #   Lotus::Controller.configuration.default_headers # => {}
+      #
+      # @example Setting the value
+      #   require 'lotus/controller'
+      #
+      #   Lotus::Controller.configure do
+      #     default_headers({
+      #       'X-Frame-Options' => 'DENY'
+      #     })
+      #   end
+      def default_headers(headers = nil)
+        if headers
+          @default_headers = headers
+        else
+          @default_headers
+        end
+      end
+
       # Returns a format for the given mime type
       #
       # @param mime_type [#to_s,#to_str] A mime type
@@ -510,6 +537,7 @@ module Lotus
           c.formats            = formats.dup
           c.default_format     = default_format
           c.default_charset    = default_charset
+          c.default_headers    = default_headers
         end
       end
 
@@ -534,6 +562,7 @@ module Lotus
         @formats            = DEFAULT_FORMATS.dup
         @default_format     = nil
         @default_charset    = nil
+        @default_headers    = {}
         @action_module      = ::Lotus::Action
       end
 
@@ -569,6 +598,7 @@ module Lotus
       attr_writer :modules
       attr_writer :default_format
       attr_writer :default_charset
+      attr_writer :default_headers
     end
   end
 end

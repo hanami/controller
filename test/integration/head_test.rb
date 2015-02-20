@@ -23,20 +23,22 @@ describe 'HEAD' do
     last_response
   end
 
-  it "doesn't send body" do
+  it "doesn't send body and default headers" do
     head '/'
 
     response.status.must_equal(200)
     response.body.must_equal ""
+    response.headers.to_a.wont_include ['X-Frame-Options','DENY']
   end
 
   HTTP_TEST_STATUSES_WITHOUT_BODY.each do |code|
     describe "with: #{ code }" do
-      it "doesn't send body" do
+      it "doesn't send body and default headers" do
         get "/code/#{ code }"
 
         response.status.must_equal(code)
         response.body.must_equal ""
+        response.headers.to_a.wont_include ['X-Frame-Options','DENY']
       end
 
       it "sends Allow header" do

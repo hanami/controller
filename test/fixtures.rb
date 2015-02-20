@@ -752,6 +752,9 @@ module MusicPlayer
     configure do
       handle_exception ArgumentError => 400
       action_module    MusicPlayer::Action
+      default_headers({
+        "X-Frame-Options" => "DENY"
+      })
 
       prepare do
         include Lotus::Action::Cookies
@@ -779,6 +782,7 @@ module MusicPlayer
 
         def call(params)
           self.body = 'Muzic!'
+          headers['X-Frame-Options'] = 'ALLOW FROM https://example.org'
         end
       end
 
@@ -852,9 +856,21 @@ class VisibilityAction
 end
 
 module HeadTest
+  Controller = Lotus::Controller.duplicate(self) do
+    handle_exceptions false
+    default_headers({
+      "X-Frame-Options" => "DENY"
+    })
+
+    prepare do
+      include Lotus::Action::Glue
+      include Lotus::Action::Session
+    end
+  end
+
   module Home
     class Index
-      include Lotus::Action
+      include HeadTest::Action
 
       def call(params)
         self.body = 'index'
@@ -862,8 +878,8 @@ module HeadTest
     end
 
     class Code
-      include Lotus::Action
-      include Lotus::Action::Cache
+      include HeadTest::Action
+      include HeadTest::Action::Cache
 
       def call(params)
         content = 'code'
