@@ -603,6 +603,19 @@ class ParamsValidationAction
   end
 end
 
+class TestParams < Lotus::Action::Params
+  param :email, presence:   true, format: /\A.+@.+\z/
+  param :name,  presence:   true
+  param :tos,   acceptance: true
+  param :age,   type: Integer
+  param :address do
+    param :line_one, presence: true
+    param :deep do
+      param :deep_attr, type: String
+    end
+  end
+end
+
 class Root
   include Lotus::Action
 

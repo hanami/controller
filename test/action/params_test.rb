@@ -155,25 +155,6 @@ describe Lotus::Action::Params do
   end
 
   describe 'validations' do
-    before do
-      TestParams = Class.new(Lotus::Action::Params) do
-        param :email, presence:   true, format: /\A.+@.+\z/
-        param :name,  presence:   true
-        param :tos,   acceptance: true
-        param :age,   type: Integer
-        param :address do
-          param :line_one, presence: true
-          param :deep do
-            param :deep_attr, type: String
-          end
-        end
-      end
-    end
-
-    after do
-      Object.send(:remove_const, :TestParams)
-    end
-
     it "isn't valid with empty params" do
       params = TestParams.new({})
 
@@ -225,6 +206,60 @@ describe Lotus::Action::Params do
       params[:name].must_equal 'John'
       params[:address][:line_one].must_equal '10 High Street'
       params[:address][:deep][:deep_attr].must_equal '1'
+    end
+  end
+
+  describe '#get' do
+    describe 'with data' do
+      before do
+        @params = TestParams.new(name: 'John', address: { line_one: '10 High Street', deep: { deep_attr: 1 } })
+      end
+
+      it 'returns nil for nil argument' do
+        @params.get(nil).must_be_nil
+      end
+
+      it 'returns nil for unknown param' do
+        @params.get('unknown').must_be_nil
+      end
+
+      it 'allows to read top level param' do
+        @params.get('name').must_equal 'John'
+      end
+
+      it 'allows to read nested param' do
+        @params.get('address.line_one').must_equal '10 High Street'
+      end
+
+      it 'returns nil for uknown nested param' do
+        @params.get('address.unknown').must_be_nil
+      end
+    end
+
+    describe 'without data' do
+      before do
+        @params = TestParams.new({})
+      end
+
+      it 'returns nil for nil argument' do
+        @params.get(nil).must_be_nil
+      end
+
+      it 'returns nil for unknown param' do
+        @params.get('unknown').must_be_nil
+      end
+
+      it 'returns nil for top level param' do
+        @params.get('name').must_be_nil
+      end
+
+      it 'returns nil for nested param' do
+        @params.get('address.line_one').must_be_nil
+      end
+
+      it 'returns nil for uknown nested param' do
+        @params.get('address.unknown').must_be_nil
+      end
     end
   end
 

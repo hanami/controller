@@ -26,6 +26,14 @@ module Lotus
       # @since 0.1.0
       ROUTER_PARAMS = 'router.params'.freeze
 
+      # Separator for #get
+      #
+      # @since x.x.x
+      # @api private
+      #
+      # @see Lotus::Action::Params#get
+      GET_SEPARATOR = '.'.freeze
+
       # Whitelist and validate a parameter
       #
       # @param name [#to_sym] The name of the param to whitelist
@@ -135,6 +143,52 @@ module Lotus
       # @since 0.2.0
       def [](key)
         @attributes.get(key)
+      end
+
+      # Get an attribute value associated with the given key.
+      # Nested attributes are reached with a dot notation.
+      #
+      # @param key [String] the key
+      #
+      # @return [Object,NilClass] return the associated value, if found
+      #
+      # @since x.x.x
+      #
+      # @example
+      #   require 'lotus/controller'
+      #
+      #   module Deliveries
+      #     class Create
+      #       include Lotus::Action
+      #
+      #       params do
+      #         param :customer_name
+      #         param :address do
+      #           param :city
+      #         end
+      #       end
+      #
+      #       def call(params)
+      #         params.get('customer_name')   # => "Luca"
+      #         params.get('uknown')          # => nil
+      #
+      #         params.get('address.city')    # => "Rome"
+      #         params.get('address.unknown') # => nil
+      #
+      #         params.get(nil)               # => nil
+      #       end
+      #     end
+      #   end
+      def get(key)
+        key, *keys = key.to_s.split(GET_SEPARATOR)
+        result     = self[key]
+
+        Array(keys).each do |k|
+          break if result.nil?
+          result = result[k]
+        end
+
+        result
       end
 
       # Returns the Ruby's hash
