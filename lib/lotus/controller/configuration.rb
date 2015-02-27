@@ -490,7 +490,9 @@ module Lotus
       #   end
       def default_headers(headers = nil)
         if headers
-          @default_headers = headers
+          @default_headers.merge!(
+            headers.reject {|_,v| v.nil? }
+          )
         else
           @default_headers
         end
@@ -537,7 +539,7 @@ module Lotus
           c.formats            = formats.dup
           c.default_format     = default_format
           c.default_charset    = default_charset
-          c.default_headers    = default_headers
+          c.default_headers    = default_headers.dup
         end
       end
 

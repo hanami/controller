@@ -271,6 +271,10 @@ describe Lotus::Controller::Configuration do
   end
 
   describe '#default_headers' do
+    after do
+      @configuration.reset!
+    end
+
     describe "when not previously set" do
       it 'returns default value' do
         @configuration.default_headers.must_equal({})
@@ -286,6 +290,31 @@ describe Lotus::Controller::Configuration do
 
       it 'returns the value' do
         @configuration.default_headers.must_equal headers
+      end
+
+      describe "multiple times" do
+        before do
+          @configuration.default_headers(headers)
+          @configuration.default_headers('X-Foo' => 'BAR')
+        end
+
+        it 'returns the value' do
+          @configuration.default_headers.must_equal({
+            'X-Frame-Options' => 'DENY',
+            'X-Foo'           => 'BAR'
+          })
+        end
+      end
+
+      describe "with nil values" do
+        before do
+          @configuration.default_headers(headers)
+          @configuration.default_headers('X-NIL' => nil)
+        end
+
+        it 'rejects those' do
+          @configuration.default_headers.must_equal headers
+        end
       end
     end
   end
