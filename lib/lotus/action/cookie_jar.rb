@@ -36,9 +36,10 @@ module Lotus
       # @return [CookieJar]
       #
       # @since 0.1.0
-      def initialize(env, headers)
-        @_headers = headers
-        @cookies  = Utils::Hash.new(extract(env)).symbolize!
+      def initialize(env, headers, default_cookies_options)
+        @_headers                = headers
+        @cookies                 = Utils::Hash.new(extract(env)).symbolize!
+        @default_cookies_options = default_cookies_options
       end
 
       # Finalize itself, by setting the proper headers to add and remove
@@ -50,7 +51,7 @@ module Lotus
       #
       # @see Lotus::Action::Cookies#finish
       def finish
-        @cookies.each {|k,v| v.nil? ? delete_cookie(k) : set_cookie(k, v) }
+        @cookies.each { |k,v| v.nil? ? delete_cookie(k) : set_cookie(k, _merge_default_values(v)) }
       end
 
       # Returns the object associated with the given key
@@ -77,6 +78,21 @@ module Lotus
       end
 
       private
+
+      # Merge default cookies options with values provided by user
+      #
+      # Cookies values provided by user are respected
+      #
+      # @since x.x.x
+      # @api private
+      def _merge_default_values(value)
+        cookies_options = if value.is_a? Hash
+          value
+        else
+          { value: value }
+        end
+        @default_cookies_options.merge cookies_options
+      end
       # Extract the cookies from the raw Rack env.
       #
       # This implementation is borrowed from Rack::Request#cookies.

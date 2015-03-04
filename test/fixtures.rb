@@ -410,6 +410,26 @@ class GetCookiesAction
   end
 end
 
+class GetDefaultCookiesAction
+  include Lotus::Action
+  include Lotus::Action::Cookies
+
+  def call(params)
+    self.body = ''
+    cookies[:bar] = 'foo'
+  end
+end
+
+class GetOverwrittenCookiesAction
+  include Lotus::Action
+  include Lotus::Action::Cookies
+
+  def call(params)
+    self.body = ''
+    cookies[:bar] = { value: 'foo', domain: 'lotusrb.com', path: '/action', secure: false, httponly: false }
+  end
+end
+
 class SetCookiesAction
   include Lotus::Action
   include Lotus::Action::Cookies
