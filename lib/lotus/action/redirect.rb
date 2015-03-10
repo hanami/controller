@@ -12,12 +12,14 @@ module Lotus
 
       private
 
-      # Redirect to the given URL
+      # Redirect to the given URL and halt the request
       #
       # @param url [String] the destination URL
       # @param status [Fixnum] the http code
       #
       # @since 0.1.0
+      #
+      # @see Lotus::Action::Throwable#halt
       #
       # @example With default status code (302)
       #   require 'lotus/controller'
@@ -50,7 +52,7 @@ module Lotus
       #   action.call({}) # => [301, {'Location' => '/articles/23'}, '']
       def redirect_to(url, status: 302)
         headers[LOCATION] = url
-        self.status = status
+        halt(status)
       end
     end
   end
