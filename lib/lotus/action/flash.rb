@@ -12,6 +12,13 @@ module Lotus
       # @api private
       SESSION_KEY = :__flash
 
+      # Session key where the last request_id is stored
+      #
+      # @since x.x.x
+      # @api private
+
+      LAST_REQUEST_KEY = :__last_request_id
+
       # Initialize a new Flash instance
       #
       # @param session [Rack::Session::Abstract::SessionHash] the session
@@ -22,8 +29,9 @@ module Lotus
       # @see http://www.rubydoc.info/gems/rack/Rack/Session/Abstract/SessionHash
       # @see Lotus::Action::Rack#session_id
       def initialize(session, request_id)
-        @session    = session
-        @request_id = request_id
+        @session         = session
+        @request_id      = request_id
+        @last_request_id = session[LAST_REQUEST_KEY]
 
         session[SESSION_KEY]             ||= {}
         session[SESSION_KEY][request_id] ||= {}
@@ -47,7 +55,7 @@ module Lotus
       # @since 0.3.0
       # @api private
       def [](key)
-        data.fetch(key) do
+        last_request_flash.merge(data).fetch(key) do
           _values.find {|data| !data[key].nil? }
         end
       end
@@ -66,6 +74,7 @@ module Lotus
         # It may happen that `#flash` is nil, and those two methods will fail
         unless flash.nil?
           expire_stale!
+          set_last_request_id!
           remove!
         end
       end
@@ -111,7 +120,7 @@ module Lotus
       # @api private
       def expire_stale!
         flash.each do |request_id, _|
-          flash.delete(request_id) if @request_id != request_id
+          flash.delete(request_id) if ![@request_id, @session[LAST_REQUEST_KEY]].include? request_id
         end
       end
 
@@ -136,6 +145,29 @@ module Lotus
       def _values
         flash.values
       end
+
+
+      # Get the last request session flash
+      #
+      # @return [Hash] the flash of last request
+      # @since x.x.x
+      # @api private
+
+      def last_request_flash
+        flash[@last_request_id] || {}
+      end
+
+      # Store the last request_id to create the next flash with its values
+      # is current flash is not empty.
+
+      # @return [void]
+      # @since x.x.x
+      # @api private
+
+      def set_last_request_id!
+        @session[LAST_REQUEST_KEY] = @request_id if !empty?
+      end
+
     end
   end
 end

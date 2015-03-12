@@ -31,7 +31,7 @@ describe 'Full stack application' do
     last_response.body.must_include %(@actual="")
 
     get '/books'
-    last_response.body.wont_include %(@actual="")
+    last_response.body.must_include %(@actual="")
   end
 
   it 'uses flash to pass informations' do
@@ -41,11 +41,11 @@ describe 'Full stack application' do
     last_response.body.must_include 'FullStack::Controllers::Poll::Step1'
     last_response.body.must_include %(Start the poll)
 
-    # post '/poll/1', {}
-    # follow_redirect!
+    post '/poll/1', {}
+    follow_redirect!
 
-    # last_response.body.must_include 'FullStack::Controllers::Poll::Step2'
-    # last_response.body.must_include %(Step 1 completed)
+    last_response.body.must_include 'FullStack::Controllers::Poll::Step2'
+    last_response.body.must_include %(Step 1 completed)
   end
 
   it 'can access params with string symbols or methods' do
