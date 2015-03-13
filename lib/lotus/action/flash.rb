@@ -16,7 +16,6 @@ module Lotus
       #
       # @since x.x.x
       # @api private
-
       LAST_REQUEST_KEY = :__last_request_id
 
       # Initialize a new Flash instance
@@ -152,18 +151,16 @@ module Lotus
       # @return [Hash] the flash of last request
       # @since x.x.x
       # @api private
-
       def last_request_flash
         flash[@last_request_id] || {}
       end
 
       # Store the last request_id to create the next flash with its values
       # is current flash is not empty.
-
+      #
       # @return [void]
       # @since x.x.x
       # @api private
-
       def set_last_request_id!
         @session[LAST_REQUEST_KEY] = @request_id if !empty?
       end
