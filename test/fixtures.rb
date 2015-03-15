@@ -1050,6 +1050,29 @@ module FullStack
         end
       end
     end
+
+    module Users
+      class Show
+        include FullStack::Action
+
+        before :redirect_to_root
+        after :set_body
+
+        def call(params)
+          self.body = "call method shouldn't be called"
+        end
+
+        private
+
+        def redirect_to_root
+          redirect_to '/'
+        end
+
+        def set_body
+          self.body = "after callbacl shouldn't be called"
+        end
+      end
+    end
   end
 
   class Renderer
@@ -1079,6 +1102,10 @@ module FullStack
           post '/1', to: 'poll#step1'
           get  '/2', to: 'poll#step2'
           post '/2', to: 'poll#step2'
+        end
+
+        namespace 'users' do
+          get '/1', to: 'users#show'
         end
       end
 

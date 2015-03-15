@@ -81,4 +81,11 @@ describe 'Full stack application' do
       'book.author.name' => [Lotus::Validations::Error.new('book.author.name', :presence, true, nil)]
     })
   end
+
+  it "redirect in before action and call action method doesn't called" do
+    get 'users/1'
+
+    last_response.status.must_equal 302
+    last_response.body.must_equal 'Found' # This message is 302 status
+  end
 end

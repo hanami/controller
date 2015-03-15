@@ -112,8 +112,8 @@ module Lotus
       #   # The validation errors caused by Comments::Create are available
       #   # **after the redirect** in the context of Comments::Index.
       def redirect_to(*args)
-        super
         flash[ERRORS_KEY] = errors.to_a unless params.valid?
+        super
       end
 
       # Read errors from flash or delegate to the superclass
