@@ -15,6 +15,7 @@ describe 'Rack middleware integration' do
       router = Lotus::Router.new do
         get '/', to: 'use_action#index'
         get '/show', to: 'use_action#show'
+        get '/edit', to: 'use_action#edit'
       end
 
       UseActionApplication = Rack::Builder.new do
@@ -34,6 +35,14 @@ describe 'Rack middleware integration' do
       response.headers.fetch('Y-Middleware').must_equal 'OK'
       response.headers['X-Middleware'].must_be_nil
       response.body.must_equal 'Hello from UseAction::Show'
+
+      get '/edit'
+
+      response.status.must_equal 200
+      response.headers.fetch('Z-Middleware').must_equal 'OK'
+      response.headers['X-Middleware'].must_be_nil
+      response.headers['Y-Middleware'].must_be_nil
+      response.body.must_equal 'Hello from UseAction::Edit'
     end
   end
 
