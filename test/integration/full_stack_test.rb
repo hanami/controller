@@ -86,6 +86,6 @@ describe 'Full stack application' do
     get 'users/1'
 
     last_response.status.must_equal 302
-    last_response.body.must_equal 'Found' # This message is 302 status
+    last_response.body.must_equal ''
   end
 end
