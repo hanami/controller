@@ -119,7 +119,7 @@ module Lotus
       # @api private
       def expire_stale!
         flash.each do |request_id, _|
-          flash.delete(request_id) if ![@request_id, @session[LAST_REQUEST_KEY]].include? request_id
+          flash.delete(request_id) if delete?(request_id)
         end
       end
 
@@ -145,10 +145,22 @@ module Lotus
         flash.values
       end
 
+      # Determine if delete data from flash for the given Request ID
+      #
+      # @return [TrueClass,FalseClass] the result of the check
+      #
+      # @since x.x.x
+      # @api private
+      #
+      # @see Lotus::Action::Flash#expire_stale!
+      def delete?(request_id)
+        ![@request_id, @session[LAST_REQUEST_KEY]].include?(request_id)
+      end
 
       # Get the last request session flash
       #
       # @return [Hash] the flash of last request
+      #
       # @since x.x.x
       # @api private
       def last_request_flash
