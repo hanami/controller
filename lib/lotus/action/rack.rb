@@ -94,8 +94,8 @@ module Lotus
         #       end
         #     end
         #   end
-        def use(middleware, *args)
-          rack_builder.use middleware, *args
+        def use(middleware, *args, &block)
+          rack_builder.use middleware, *args, &block
         end
       end
 
