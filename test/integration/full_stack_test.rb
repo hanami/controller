@@ -82,7 +82,7 @@ describe 'Full stack application' do
     })
   end
 
-  it "redirect in before action and call action method doesn't called" do
+  it "redirect in before action and call action method is not called" do
     get 'users/1'
 
     last_response.status.must_equal 302

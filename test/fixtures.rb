@@ -1092,7 +1092,7 @@ module FullStack
         end
 
         def set_body
-          self.body = "after callbacl shouldn't be called"
+          self.body = "after callback shouldn't be called"
         end
       end
     end
