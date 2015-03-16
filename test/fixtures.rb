@@ -170,6 +170,18 @@ class ExposeAction
   end
 end
 
+class ZMiddleware
+  def initialize(app, &message)
+    @app = app
+    @message = message
+  end
+
+  def call(env)
+    code, headers, body = @app.call(env)
+    [code, headers.merge!('Z-Middleware' => @message.call), body]
+  end
+end
+
 class YMiddleware
   def initialize(app)
     @app = app
@@ -208,6 +220,17 @@ module UseAction
 
     def call(params)
       self.body = 'Hello from UseAction::Show'
+    end
+  end
+
+  class Edit
+    include Lotus::Action
+    use ZMiddleware do
+      'OK'
+    end
+
+    def call(params)
+      self.body = 'Hello from UseAction::Edit'
     end
   end
 end
