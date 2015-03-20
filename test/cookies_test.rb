@@ -44,7 +44,7 @@ describe Lotus::Action do
     describe 'with default cookies' do
       it 'gets default cookies' do
         action   = GetDefaultCookiesAction.new
-        action.class.configuration.default_cookies_options({
+        action.class.configuration.cookies({
           domain: 'lotusrb.org', path: '/controller', secure: true, httponly: true
         })
 
@@ -54,7 +54,7 @@ describe Lotus::Action do
 
       it "overwritten cookies' values are respected" do
         action   = GetOverwrittenCookiesAction.new
-        action.class.configuration.default_cookies_options({
+        action.class.configuration.cookies({
           domain: 'lotusrb.org', path: '/controller', secure: true, httponly: true
         })
 

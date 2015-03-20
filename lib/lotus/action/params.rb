@@ -28,7 +28,7 @@ module Lotus
 
       # Separator for #get
       #
-      # @since x.x.x
+      # @since 0.4.0
       # @api private
       #
       # @see Lotus::Action::Params#get
@@ -152,7 +152,7 @@ module Lotus
       #
       # @return [Object,NilClass] return the associated value, if found
       #
-      # @since x.x.x
+      # @since 0.4.0
       #
       # @example
       #   require 'lotus/controller'

@@ -21,7 +21,7 @@ module Lotus
       # "The response MAY include new or updated metainformation in the form
       #   of entity-headers".
       #
-      # @since x.x.x
+      # @since 0.4.0
       # @api private
       #
       # @see http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.5
