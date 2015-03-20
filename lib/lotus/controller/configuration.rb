@@ -473,7 +473,7 @@ module Lotus
       #
       # By default this value is an empty hash.
       #
-      # @since x.x.x
+      # @since 0.4.0
       #
       # @example Getting the value
       #   require 'lotus/controller'
@@ -498,36 +498,35 @@ module Lotus
         end
       end
 
-
       # Set default cookies options for all responses
       #
       # By default this value is an empty hash.
       #
-      # @since x.x.x
+      # @since 0.4.0
       #
       # @example Getting the value
       #   require 'lotus/controller'
       #
-      #   Lotus::Controller.configuration.default_cookies_options # => {}
+      #   Lotus::Controller.configuration.cookies # => {}
       #
       # @example Setting the value
       #   require 'lotus/controller'
       #
       #   Lotus::Controller.configure do
-      #     default_cookies_options({
+      #     cookies({
       #       domain: 'lotusrb.org',
       #       path: '/controller',
       #       secure: true,
       #       httponly: true
       #     })
       #   end
-      def default_cookies_options(options = nil)
+      def cookies(options = nil)
         if options
-          @default_cookies_options.merge!(
+          @cookies.merge!(
             options.reject { |_, v| v.nil? }
           )
         else
-          @default_cookies_options
+          @cookies
         end
       end
 
@@ -573,7 +572,7 @@ module Lotus
           c.default_format          = default_format
           c.default_charset         = default_charset
           c.default_headers         = default_headers.dup
-          c.default_cookies_options = default_cookies_options.dup
+          c.cookies = cookies.dup
         end
       end
 
@@ -592,15 +591,15 @@ module Lotus
       # @since 0.2.0
       # @api private
       def reset!
-        @handle_exceptions       = true
-        @handled_exceptions      = {}
-        @modules                 = []
-        @formats                 = DEFAULT_FORMATS.dup
-        @default_format          = nil
-        @default_charset         = nil
-        @default_headers         = {}
-        @default_cookies_options = {}
-        @action_module           = ::Lotus::Action
+        @handle_exceptions  = true
+        @handled_exceptions = {}
+        @modules            = []
+        @formats            = DEFAULT_FORMATS.dup
+        @default_format     = nil
+        @default_charset    = nil
+        @default_headers    = {}
+        @cookies            = {}
+        @action_module      = ::Lotus::Action
       end
 
       # Copy the configuration for the given action
@@ -636,7 +635,7 @@ module Lotus
       attr_writer :default_format
       attr_writer :default_charset
       attr_writer :default_headers
-      attr_writer :default_cookies_options
+      attr_writer :cookies
     end
   end
 end

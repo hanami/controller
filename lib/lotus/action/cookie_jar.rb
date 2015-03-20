@@ -36,10 +36,10 @@ module Lotus
       # @return [CookieJar]
       #
       # @since 0.1.0
-      def initialize(env, headers, default_cookies_options)
-        @_headers                = headers
-        @cookies                 = Utils::Hash.new(extract(env)).symbolize!
-        @default_cookies_options = default_cookies_options
+      def initialize(env, headers, default_options)
+        @_headers        = headers
+        @cookies         = Utils::Hash.new(extract(env)).symbolize!
+        @default_options = default_options
       end
 
       # Finalize itself, by setting the proper headers to add and remove
@@ -83,7 +83,7 @@ module Lotus
       #
       # Cookies values provided by user are respected
       #
-      # @since x.x.x
+      # @since 0.4.0
       # @api private
       def _merge_default_values(value)
         cookies_options = if value.is_a? Hash
@@ -91,7 +91,7 @@ module Lotus
         else
           { value: value }
         end
-        @default_cookies_options.merge cookies_options
+        @default_options.merge cookies_options
       end
       # Extract the cookies from the raw Rack env.
       #

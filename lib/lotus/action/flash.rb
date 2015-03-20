@@ -14,7 +14,7 @@ module Lotus
 
       # Session key where the last request_id is stored
       #
-      # @since x.x.x
+      # @since 0.4.0
       # @api private
       LAST_REQUEST_KEY = :__last_request_id
 
@@ -149,7 +149,7 @@ module Lotus
       #
       # @return [TrueClass,FalseClass] the result of the check
       #
-      # @since x.x.x
+      # @since 0.4.0
       # @api private
       #
       # @see Lotus::Action::Flash#expire_stale!
@@ -161,7 +161,7 @@ module Lotus
       #
       # @return [Hash] the flash of last request
       #
-      # @since x.x.x
+      # @since 0.4.0
       # @api private
       def last_request_flash
         flash[@last_request_id] || {}
@@ -171,7 +171,7 @@ module Lotus
       # is current flash is not empty.
       #
       # @return [void]
-      # @since x.x.x
+      # @since 0.4.0
       # @api private
       def set_last_request_id!
         @session[LAST_REQUEST_KEY] = @request_id if !empty?

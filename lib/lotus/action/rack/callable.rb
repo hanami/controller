@@ -9,7 +9,7 @@ module Lotus
         # @param env [Hash] the full Rack env or the params. This value may vary,
         #   see the examples below.
         #
-        # @since x.x.x
+        # @since 0.4.0
         #
         # @see Lotus::Action::Rack::ClassMethods#rack_builder
         # @see Lotus::Action::Rack::ClassMethods#use
@@ -21,7 +21,7 @@ module Lotus
         #      def initialize(app)
         #        @app = app
         #      end
-        #      
+        #
         #      def call(env)
         #        #...
         #      end
