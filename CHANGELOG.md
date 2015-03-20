@@ -1,6 +1,16 @@
 # Lotus::Controller
 Complete, fast and testable actions for Rack
 
+## v0.4.0 - 2015-03-23
+### Added
+- [Erol Fornoles] `Action.use` now accepts a block
+- [Alfonso Uceda Pompa] Introduced `Lotus::Controller::Configuration#cookies` as default cookie options.
+- [Alfonso Uceda Pompa] Introduced `Lotus::Controller::Configuration#default_headers` as default HTTP headers to return in all the responses.
+- [Luca Guidi] Introduced `Lotus::Action::Params#get` as a safe API to access nested params.
+
+### Changed
+- [Alfonso Uceda Pompa] `redirect_to` now is a flow control method: it terminates the execution of an action, including the callbacks.
+
 ## v0.3.2 - 2015-01-30
 ### Added
 - [Alfonso Uceda Pompa] Callbacks: introduced `append_before` (alias of `before`), `append_after` (alias of `after`), `prepend_before` and `prepend_after`.
