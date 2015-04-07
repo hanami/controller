@@ -1,5 +1,6 @@
 require 'digest/md5'
 require 'lotus/router'
+require 'lotus/utils/escape'
 require 'lotus/action/cookies'
 require 'lotus/action/session'
 require 'lotus/action/cache'
@@ -421,6 +422,15 @@ class StatusRedirectAction
 
   def call(params)
     redirect_to '/destination', status: 301
+  end
+end
+
+class SafeStringRedirectAction
+  include Lotus::Action
+
+  def call(params)
+    location = Lotus::Utils::Escape::SafeString.new('/destination')
+    redirect_to location
   end
 end
 
