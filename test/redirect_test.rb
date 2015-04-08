@@ -16,5 +16,12 @@ describe Lotus::Action do
 
       response[0].must_equal(301)
     end
+
+    # Bug
+    # See: https://github.com/lotus/lotus/issues/196
+    it 'corces location to a ::String' do
+      response = SafeStringRedirectAction.new.call({})
+      response[1]['Location'].class.must_equal(::String)
+    end
   end
 end
