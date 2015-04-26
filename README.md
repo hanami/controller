@@ -158,6 +158,12 @@ class Signup
     param :first_name
     param :last_name
     param :email
+    
+    param :address do
+      param :line_one
+      param :state
+      param :country
+    end
   end
 
   def call(params)
@@ -168,6 +174,10 @@ class Signup
     # Whitelist :first_name, but not :admin
     puts params[:first_name]     # => "Luca"
     puts params[:admin]          # => nil
+    
+    # Whitelist nested params [:address][:line_one], not [:address][:line_two]
+    puts params[:address][:line_one] # => '69 Tender St'
+    puts params[:address][:line_two] # => nil
   end
 end
 ```
