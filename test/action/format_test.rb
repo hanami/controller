@@ -49,6 +49,16 @@ describe Lotus::Action do
       status.must_equal                   200
     end
 
+    # Bug
+    # See https://github.com/lotus/controller/issues/104
+    it "accepts 'text/html, application/xhtml+xml, image/jxr, */*' and returns :html" do
+      status, headers, _ = @action.call({ 'HTTP_ACCEPT' => 'text/html, application/xhtml+xml, image/jxr, */*' })
+
+      @action.format.must_equal    :html
+      headers['Content-Type'].must_equal 'text/html; charset=utf-8'
+      status.must_equal                   200
+    end
+
     mime_types = ['application/octet-stream', 'text/html']
     Rack::Mime::MIME_TYPES.each do |format, mime_type|
       next if mime_types.include?(mime_type)
