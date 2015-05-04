@@ -1,8 +1,8 @@
 # see https://github.com/rack/rack/pull/659
 require 'rack'
-require 'lotus/utils'
 
 if Rack.release <= '1.5'
+  require 'lotus/utils'
   require 'rack/utils'
 
   Rack::Utils.class_eval do
@@ -17,7 +17,7 @@ if Rack.release <= '1.5'
 
       # See https://github.com/lotus/controller/issues/59
       # See https://github.com/lotus/controller/issues/104
-      values = values.reverse if RUBY_VERSION >= '2.1.0' || Lotus::Utils.rubinius?
+      values = values.reverse unless Lotus::Utils.jruby?
 
       value  = values.sort_by do |match, quality|
         (match.split('/', 2).count('*') * -10) + quality
