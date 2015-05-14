@@ -68,11 +68,22 @@ module Lotus
       # Associate the given value with the given key and store them
       #
       # @param key [Symbol] the key
-      # @param value [Object] the value
+      # @param value [#to_s,Hash] value that can be serialized as a string or
+      #   expressed as a Hash
+      # @option value [String] :domain - The domain
+      # @option value [String] :path - The path
+      # @option value [Integer] :max_age - Duration expressed in seconds
+      # @option value [Time] :expires - Expiration time
+      # @option value [TrueClass,FalseClass] :secure - Restrict cookie to secure
+      #   connections
+      # @option value [TrueClass,FalseClass] :httponly - Restrict JavaScript
+      #   access
       #
       # @return [void]
       #
       # @since 0.2.0
+      #
+      # @see http://en.wikipedia.org/wiki/HTTP_cookie
       def []=(key, value)
         @cookies[key] = value
       end
@@ -93,6 +104,7 @@ module Lotus
         end
         @default_options.merge cookies_options
       end
+
       # Extract the cookies from the raw Rack env.
       #
       # This implementation is borrowed from Rack::Request#cookies.

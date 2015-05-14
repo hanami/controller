@@ -536,8 +536,32 @@ class RemoveCookies
   end
 end
 
-action = SetCookies.new
+action = RemoveCookies.new
 action.call({}) # => [200, {'Set-Cookie' => "foo=; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 -0000"}, '...']
+```
+
+Default values can be set in configuration, but overriden case by case.
+
+```ruby
+require 'lotus/controller'
+require 'lotus/action/cookies'
+
+Lotus::Controller.configure do
+  cookies max_age: 300 # 5 minutes
+end
+
+class SetCookies
+  include Lotus::Action
+  include Lotus::Action::Cookies
+
+  def call(params)
+    # ...
+    cookies[:foo] = { value: 'bar', max_age: 100 }
+  end
+end
+
+action = SetCookies.new
+action.call({}) # => [200, {'Set-Cookie' => "foo=bar; max-age=100;"}, '...']
 ```
 
 ### Sessions
