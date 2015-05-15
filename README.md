@@ -1100,8 +1100,8 @@ end
 run Action
 ```
 
-Lotus::Controller heavely depends on class configuration, to ensure immutability
-in deployment environments, please consider of invoke `Lotus::Controller.load!`.
+Lotus::Controller heavely depends on class configuration. To ensure immutability
+in deployment environments, use `Lotus::Controller.load!`.
 
 ## Versioning
 
