@@ -242,7 +242,7 @@ action = Show.new
 action.call({}) # => [200, {}, [""]]
 ```
 
-It has private accessors to explicitly set status, headers and body:
+It has private accessors to explicitly set status, headers, and body:
 
 ```ruby
 class Show
