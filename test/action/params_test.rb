@@ -296,9 +296,9 @@ describe Lotus::Action::Params do
 
       actual.must_be_kind_of(Lotus::Utils::Hash)
       actual.must_be_kind_of(Lotus::Utils::Hash)
-      actual['tutorial'].must_be_kind_of(Lotus::Utils::Hash)
+      actual['tutorial'].must_be_kind_of(::Hash)
       actual['tutorial']['instructions'].each do |h|
-        h.must_be_kind_of(Hash)
+        h.must_be_kind_of(::Hash)
       end
     end
   end
@@ -335,9 +335,9 @@ describe Lotus::Action::Params do
       actual.must_equal(hash)
 
       actual.must_be_kind_of(Lotus::Utils::Hash)
-      actual['tutorial'].must_be_kind_of(Lotus::Utils::Hash)
+      actual['tutorial'].must_be_kind_of(::Hash)
       actual['tutorial']['instructions'].each do |h|
-        h.must_be_kind_of(Hash)
+        h.must_be_kind_of(::Hash)
       end
     end
   end
