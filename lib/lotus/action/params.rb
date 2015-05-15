@@ -191,9 +191,9 @@ module Lotus
         result
       end
 
-      # Returns the Ruby's hash
+      # Serialize params to Hash
       #
-      # @return [Hash]
+      # @return [::Hash]
       #
       # @since 0.3.0
       def to_h

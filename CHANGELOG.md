@@ -1,6 +1,10 @@
 # Lotus::Controller
 Complete, fast and testable actions for Rack
 
+## v0.4.2 - 2015-05-15
+### Fixed
+- [Luca Guidi] Ensure `Lotus::Action::Params#to_h` to return `::Hash` at the top level
+
 ## v0.4.1 - 2015-05-15
 ### Fixed
 - [Luca Guidi] Ensure proper automatic `Content-Type` working well with Internet Explorer.
