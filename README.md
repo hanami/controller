@@ -75,7 +75,7 @@ __An action is an object__. That's important because __you have the full control
 In other words, you have the freedom to instantiate, inject dependencies and test it, both at the unit and integration level.
 
 In the example below, the default repository is `Article`. During a unit test we can inject a stubbed version, and invoke `#call` with the params.
-__We're avoiding HTTP calls__, we're eventually avoiding to hit the database (it depends on the stubbed repository), __we're just dealing with message passing__.
+__We're avoiding HTTP calls__, we're also going to avoid hitting the database (it depends on the stubbed repository), __we're just dealing with message passing__.
 Imagine how **fast** the unit test could be.
 
 ```ruby
