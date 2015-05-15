@@ -906,7 +906,7 @@ Articles::Index.new.call({})
 ### Lotus::Router integration
 
 While Lotus::Router works great with this framework, Lotus::Controller doesn't depend on it.
-You, as developer, are free to choose your own routing system.
+You, the developer, are free to choose your own routing system.
 
 But, if you use them together, the **only constraint is that an action must support _arity 0_ in its constructor**.
 The following examples are valid constructors:
