@@ -75,7 +75,7 @@ __An action is an object__. That's important because __you have the full control
 In other words, you have the freedom to instantiate, inject dependencies and test it, both at the unit and integration level.
 
 In the example below, the default repository is `Article`. During a unit test we can inject a stubbed version, and invoke `#call` with the params.
-__We're avoiding HTTP calls__, we're eventually avoiding to hit the database (it depends on the stubbed repository), __we're just dealing with message passing__.
+__We're avoiding HTTP calls__, we're also going to avoid hitting the database (it depends on the stubbed repository), __we're just dealing with message passing__.
 Imagine how **fast** the unit test could be.
 
 ```ruby
@@ -99,7 +99,7 @@ action.call({ id: 23 })
 
 The request params are passed as an argument to the `#call` method.
 If routed with *Lotus::Router*, it extracts the relevant bits from the Rack `env` (eg the requested `:id`).
-Otherwise everything passed as is: the full Rack `env` in production, and the given `Hash` for unit tests.
+Otherwise everything is passed as is: the full Rack `env` in production, and the given `Hash` for unit tests.
 
 With Lotus::Router:
 
@@ -242,7 +242,7 @@ action = Show.new
 action.call({}) # => [200, {}, [""]]
 ```
 
-It has private accessors to explicitly set status, headers and body:
+It has private accessors to explicitly set status, headers, and body:
 
 ```ruby
 class Show
@@ -261,17 +261,17 @@ action.call({}) # => [201, { "X-Custom" => "OK" }, ["Hi!"]]
 
 ### Exposures
 
-We know that actions are objects and Lotus::Action respects one of the pillars of OOP: __encapsulation__.
+We know that actions are objects and `Lotus::Action` respects one of the pillars of OOP: __encapsulation__.
 Other frameworks extract instance variables (`@ivar`) and make them available to the view context.
 
-Lotus::Action's solution is the simple and powerful DSL: `expose`.
+`Lotus::Action`'s solution is the simple and powerful DSL: `expose`.
 It's a thin layer on top of `attr_reader`.
 
 Using `expose` creates a getter for the given attribute, and adds it to the _exposures_.
 Exposures (`#exposures`) are a set of attributes exposed to the view.
 That is to say the variables necessary for rendering a view.
 
-By default, all Lotus::Actions expose `#params` and `#errors`.
+By default, all `Lotus::Action` objects expose `#params` and `#errors`.
 
 ```ruby
 class Show
@@ -756,7 +756,7 @@ action.call({ article: { title: 'Hello' }}) # => [301, {'Location' => '/articles
 
 ### Mime Types
 
-Lotus::Action automatically sets the `Content-Type` header, according to the request.
+`Lotus::Action` automatically sets the `Content-Type` header, according to the request.
 
 ```ruby
 class Show
@@ -906,7 +906,7 @@ Articles::Index.new.call({})
 ### Lotus::Router integration
 
 While Lotus::Router works great with this framework, Lotus::Controller doesn't depend on it.
-You, as developer, are free to choose your own routing system.
+You, the developer, are free to choose your own routing system.
 
 But, if you use them together, the **only constraint is that an action must support _arity 0_ in its constructor**.
 The following examples are valid constructors:
@@ -942,9 +942,8 @@ While a Lotus application's architecture is more web oriented, this framework is
 
 ### Rack middleware
 
-Rack middleware can be configured globally in `config.ru`, but often they add an
-unnecessary overhead for all those endpoints that aren't direct users of a
-certain middleware.
+Rack middleware can be configured globally in `config.ru`. However, consider that they often add
+unnecessary overhead for *all* endpoints that aren't direct users of all the configured middleware.
 
 Think about a middleware to create sessions, where only `SessionsController::Create` needs that middleware, but every other action pays the performance price for that middleware.
 
@@ -1101,8 +1100,8 @@ end
 run Action
 ```
 
-Lotus::Controller heavely depends on class configuration, to ensure immutability
-in deployment environments, please consider of invoke `Lotus::Controller.load!`.
+Lotus::Controller heavely depends on class configuration. To ensure immutability
+in deployment environments, use `Lotus::Controller.load!`.
 
 ## Versioning
 
