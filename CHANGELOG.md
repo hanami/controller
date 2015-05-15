@@ -1,6 +1,16 @@
 # Lotus::Controller
 Complete, fast and testable actions for Rack
 
+## v0.4.1 - 2015-05-15
+### Fixed
+- [Luca Guidi] Ensure proper automatic `Content-Type` working well with Internet Explorer.
+- [Luca Guidi] Ensure `Lotus::Action#redirect_to` to return `::String` for Rack servers compatibility.
+
+### Changed
+- [Alfonso Uceda Pompa] Prevent `Content-Type` and `Content-Lenght` to be sent when status code requires no body (eg. `204`).
+    This is for compatibility with `Rack::Lint`, not with RFC 2016.
+- [Luca Guidi] Ensure `Lotus::Action::Params#to_h` to return `::Hash`
+
 ## v0.4.0 - 2015-03-23
 ### Added
 - [Erol Fornoles] `Action.use` now accepts a block
