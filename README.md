@@ -99,7 +99,7 @@ action.call({ id: 23 })
 
 The request params are passed as an argument to the `#call` method.
 If routed with *Lotus::Router*, it extracts the relevant bits from the Rack `env` (eg the requested `:id`).
-Otherwise everything passed as is: the full Rack `env` in production, and the given `Hash` for unit tests.
+Otherwise everything is passed as is: the full Rack `env` in production, and the given `Hash` for unit tests.
 
 With Lotus::Router:
 
