@@ -942,9 +942,8 @@ While a Lotus application's architecture is more web oriented, this framework is
 
 ### Rack middleware
 
-Rack middleware can be configured globally in `config.ru`, but often they add an
-unnecessary overhead for all those endpoints that aren't direct users of a
-certain middleware.
+Rack middleware can be configured globally in `config.ru`. However, consider that they often add
+unnecessary overhead for *all* endpoints that aren't direct users of all the configured middleware.
 
 Think about a middleware to create sessions, where only `SessionsController::Create` needs that middleware, but every other action pays the performance price for that middleware.
 
