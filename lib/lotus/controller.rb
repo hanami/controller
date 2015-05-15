@@ -2,7 +2,6 @@ require 'lotus/utils/class_attribute'
 require 'lotus/action'
 require 'lotus/controller/configuration'
 require 'lotus/controller/version'
-require 'rack-patch'
 
 module Lotus
   # A set of logically grouped actions

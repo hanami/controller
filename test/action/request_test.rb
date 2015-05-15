@@ -80,7 +80,7 @@ describe Lotus::Action::Request do
   describe 'request method boolean methods' do
     it 'answers correctly' do
       request = build_request
-      %i(delete? head? options? patch? post? put? trace?).each do |method|
+      %i(delete? head? options? patch? post? put? trace? xhr?).each do |method|
         request.send(method).must_equal(false)
       end
       request.get?.must_equal(true)

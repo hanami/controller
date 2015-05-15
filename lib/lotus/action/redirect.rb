@@ -51,7 +51,7 @@ module Lotus
       #   action = Create.new
       #   action.call({}) # => [301, {'Location' => '/articles/23'}, '']
       def redirect_to(url, status: 302)
-        headers[LOCATION] = url
+        headers[LOCATION] = ::String.new(url)
         halt(status)
       end
     end

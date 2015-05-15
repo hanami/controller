@@ -1,3 +1,5 @@
+require 'rack/utils'
+require 'lotus/utils'
 require 'lotus/utils/kernel'
 
 module Lotus
@@ -415,7 +417,7 @@ module Lotus
       # @api private
       def accepts
         unless accept == DEFAULT_ACCEPT
-          ::Rack::Utils.best_q_match(accept, ::Rack::Mime::MIME_TYPES.values)
+          best_q_match(accept, ::Rack::Mime::MIME_TYPES.values)
         end
       end
 
@@ -446,6 +448,34 @@ module Lotus
         "#{content_type}; charset=#{charset}"
       end
 
+      # Patched version of <tt>Rack::Utils.best_q_match</tt>.
+      #
+      # @since x.x.x
+      # @api private
+      #
+      # @see http://www.rubydoc.info/gems/rack/Rack/Utils#best_q_match-class_method
+      # @see https://github.com/rack/rack/pull/659
+      # @see https://github.com/lotus/controller/issues/59
+      # @see https://github.com/lotus/controller/issues/104
+      def best_q_match(q_value_header, available_mimes)
+        values = ::Rack::Utils.q_values(q_value_header)
+
+        values = values.map do |req_mime, quality|
+          match = available_mimes.find { |am| ::Rack::Mime.match?(am, req_mime) }
+          next unless match
+          [match, quality]
+        end.compact
+
+        # See https://github.com/lotus/controller/issues/59
+        # See https://github.com/lotus/controller/issues/104
+        values = values.reverse unless Lotus::Utils.jruby?
+
+        value  = values.sort_by do |match, quality|
+          (match.split('/', 2).count('*') * -10) + quality
+        end.last
+
+        value.first if value
+      end
     end
   end
 end
