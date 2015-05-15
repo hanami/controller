@@ -261,17 +261,17 @@ action.call({}) # => [201, { "X-Custom" => "OK" }, ["Hi!"]]
 
 ### Exposures
 
-We know that actions are objects and Lotus::Action respects one of the pillars of OOP: __encapsulation__.
+We know that actions are objects and `Lotus::Action` respects one of the pillars of OOP: __encapsulation__.
 Other frameworks extract instance variables (`@ivar`) and make them available to the view context.
 
-Lotus::Action's solution is the simple and powerful DSL: `expose`.
+`Lotus::Action`'s solution is the simple and powerful DSL: `expose`.
 It's a thin layer on top of `attr_reader`.
 
 Using `expose` creates a getter for the given attribute, and adds it to the _exposures_.
 Exposures (`#exposures`) are a set of attributes exposed to the view.
 That is to say the variables necessary for rendering a view.
 
-By default, all Lotus::Actions expose `#params` and `#errors`.
+By default, all `Lotus::Action` objects expose `#params` and `#errors`.
 
 ```ruby
 class Show
@@ -756,7 +756,7 @@ action.call({ article: { title: 'Hello' }}) # => [301, {'Location' => '/articles
 
 ### Mime Types
 
-Lotus::Action automatically sets the `Content-Type` header, according to the request.
+`Lotus::Action` automatically sets the `Content-Type` header, according to the request.
 
 ```ruby
 class Show
