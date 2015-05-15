@@ -62,21 +62,18 @@ describe 'HEAD' do
         response.headers['Content-Language'].must_equal 'en'
       end
 
-      # FIXME Review this
-      unless [204, 205, 304].include?(code)
-        it "sends Content-Length header" do
-          get "/code/#{ code }"
+      it "doesn't send Content-Length header" do
+        get "/code/#{ code }"
 
-          response.status.must_equal(code)
-          response.headers['Content-Length'].must_equal 4
-        end
+        response.status.must_equal(code)
+        response.headers.key?('Content-Length').must_equal false
+      end
 
-        it "sends Content-Type header" do
-          get "/code/#{ code }"
+      it "doesn't send Content-Type header" do
+        get "/code/#{ code }"
 
-          response.status.must_equal(code)
-          response.headers['Content-Type'].must_equal 'application/octet-stream; charset=utf-8'
-        end
+        response.status.must_equal(code)
+        response.headers.key?('Content-Type').must_equal false
       end
 
       it "sends Content-Location header" do
