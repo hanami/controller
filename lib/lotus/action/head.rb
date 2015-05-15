@@ -30,11 +30,9 @@ module Lotus
         'Allow'            => true,
         'Content-Encoding' => true,
         'Content-Language' => true,
-        'Content-Length'   => true,
         'Content-Location' => true,
         'Content-MD5'      => true,
         'Content-Range'    => true,
-        'Content-Type'     => true,
         'Expires'          => true,
         'Last-Modified'    => true,
         'extension-header' => true
