@@ -98,11 +98,21 @@ module Lotus
       # @api private
       def _merge_default_values(value)
         cookies_options = if value.is_a? Hash
-          value
+          value.merge(_add_expires_option(value) || {})
         else
           { value: value }
         end
         @default_options.merge cookies_options
+      end
+
+      # Add expires option to cookies if :max_age presents
+      #
+      # @since x.x.x
+      # @api private
+      def _add_expires_option(value)
+        if value.has_key?(:max_age) && !value.has_key?(:expires)
+          { expires: (Time.now + value[:max_age]) }
+        end
       end
 
       # Extract the cookies from the raw Rack env.
