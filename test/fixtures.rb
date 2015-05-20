@@ -463,6 +463,15 @@ class GetOverwrittenCookiesAction
   end
 end
 
+class GetAutomaticallyExpiresCookiesAction
+  include Lotus::Action
+  include Lotus::Action::Cookies
+
+  def call(params)
+    cookies[:bar] = { value: 'foo', max_age: 120 }
+  end
+end
+
 class SetCookiesAction
   include Lotus::Action
   include Lotus::Action::Cookies
