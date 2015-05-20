@@ -98,7 +98,7 @@ module Lotus
       # @api private
       def _merge_default_values(value)
         cookies_options = if value.is_a? Hash
-          value.merge(_add_expires_option(value) || {})
+          value.merge! _add_expires_option(value)
         else
           { value: value }
         end
@@ -112,6 +112,8 @@ module Lotus
       def _add_expires_option(value)
         if value.has_key?(:max_age) && !value.has_key?(:expires)
           { expires: (Time.now + value[:max_age]) }
+        else
+          {}
         end
       end
 
