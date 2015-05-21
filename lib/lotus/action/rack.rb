@@ -1,6 +1,7 @@
 require 'securerandom'
 require 'lotus/action/request'
 require 'lotus/action/rack/callable'
+require 'rack/file'
 
 module Lotus
   module Action
@@ -39,6 +40,12 @@ module Lotus
       # @since 0.3.2
       # @api private
       HEAD = 'HEAD'.freeze
+
+      # HTTP_RANGE header
+      #
+      # @since x.x.x
+      # @api private
+      HTTP_RANGE = 'HTTP_RANGE'.freeze
 
       # Override Ruby's hook for modules.
       # It includes basic Lotus::Action modules to the given class.
@@ -217,6 +224,36 @@ module Lotus
         @_body = body
       end
 
+      # Send a file as response
+      #
+      # @param path [String, Pathname] the body of the response
+      # @return [void]
+      #
+      # @since x.x.x
+      #
+      # @example
+      #   require 'lotus/controller'
+      #
+      #   class Show
+      #     include Lotus::Action
+      #
+      #     def call(params)
+      #       # ...
+      #       senf_file Pathname.new('path_to_file')
+      #     end
+      #   end
+      def send_file(path)
+        if !head? && !conditional_get?  && !http_range?
+          file      = ::Rack::File.new(nil)
+          file.path = path.to_s
+          result    = file.serving(@_env)
+          headers.merge!(result[1])
+          halt 200, result[2]
+        end
+        rescue Errno::ENOENT
+          halt 404
+      end
+
       # Check if the current request is a HEAD
       #
       # @return [TrueClass,FalseClass] the result of the check
@@ -224,6 +261,33 @@ module Lotus
       # @since 0.3.2
       def head?
         @_env[REQUEST_METHOD] == HEAD
+      end
+
+      # Check if the current request has 'HTTP_IF_MODIFIED_SINCE' header
+      #
+      # @return [TrueClass,FalseClass] the result of the check
+      #
+      # @since x.x.x
+      def conditional_get?
+        !!@_env[Lotus::Action::Cache::IF_MODIFIED_SINCE]
+      end
+
+      # Check if the current request has 'HTTP_RANGE' header
+      #
+      # @return [TrueClass,FalseClass] the result of the check
+      #
+      # @since x.x.x
+      def http_range?
+        !!@_env[HTTP_RANGE]
+      end
+
+      # Check if the request's body is a file
+      #
+      # @return [TrueClass,FalseClass] the result of the check
+      #
+      # @since x.x.x
+      def sending_file?
+        @_body.is_a?(::Rack::File)
       end
     end
   end

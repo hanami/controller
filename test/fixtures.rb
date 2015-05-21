@@ -930,6 +930,44 @@ class VisibilityAction
   end
 end
 
+module SendFileTest
+  Controller = Lotus::Controller.duplicate(self) do
+    handle_exceptions false
+
+    prepare do
+      include Lotus::Action::Glue
+      include Lotus::Action::Session
+    end
+  end
+
+  module Files
+    class Show
+      include SendFileTest::Action
+
+      def call(params)
+        id = params['id']
+        # This if statement is only for testing purpose
+        if id == "1"
+          send_file Pathname.new('test/assets/test.txt')
+        elsif id == "2"
+          send_file Pathname.new('test/assets/lotus.png')
+        else
+          send_file Pathname.new('test/assets/unknown.txt')
+        end
+      end
+    end
+
+    class HeadRequest
+      include SendFileTest::Action
+
+      def call(params)
+        self.status = params[:code].to_i
+        send_file Pathname.new('test/assets/test.txt')
+      end
+    end
+  end
+end
+
 module HeadTest
   Controller = Lotus::Controller.duplicate(self) do
     handle_exceptions false
