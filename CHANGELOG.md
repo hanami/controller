@@ -1,6 +1,11 @@
 # Lotus::Controller
 Complete, fast and testable actions for Rack
 
+## v0.4.3 - 2015-05-22
+### Added
+- [Alfonso Uceda Pompa & Luca Guidi] Introduced `Lotus::Action#send_file`
+- [Alfonso Uceda Pompa] Set automatically `Expires` option for cookies when it's missing but `Max-Age` is present. Compatibility with old browsers.
+
 ## v0.4.2 - 2015-05-15
 ### Fixed
 - [Luca Guidi] Ensure `Lotus::Action::Params#to_h` to return `::Hash` at the top level

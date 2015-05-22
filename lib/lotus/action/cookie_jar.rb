@@ -107,7 +107,7 @@ module Lotus
 
       # Add expires option to cookies if :max_age presents
       #
-      # @since x.x.x
+      # @since 0.4.3
       # @api private
       def _add_expires_option(value)
         if value.has_key?(:max_age) && !value.has_key?(:expires)
@@ -128,6 +128,8 @@ module Lotus
         string = env[HTTP_HEADER]
 
         return hash if string == env[COOKIE_STRING_KEY]
+        # TODO Next Rack 1.6.x version will have ::Rack::Utils.parse_cookies
+        # We can then replace the following lines.
         hash.clear
 
         # According to RFC 2109:

@@ -41,12 +41,6 @@ module Lotus
       # @api private
       HEAD = 'HEAD'.freeze
 
-      # HTTP_RANGE header
-      #
-      # @since x.x.x
-      # @api private
-      HTTP_RANGE = 'HTTP_RANGE'.freeze
-
       # Override Ruby's hook for modules.
       # It includes basic Lotus::Action modules to the given class.
       #
@@ -224,12 +218,19 @@ module Lotus
         @_body = body
       end
 
-      # Send a file as response
+      # Send a file as response.
+      #
+      # It automatically handle the following cases:
+      #
+      #   * <tt>Content-Type</tt> and <tt>Content-Length</tt>
+      #   * File Not found (returns a 404)
+      #   * Conditional GET (via <tt>If-Modified-Since</tt> header)
+      #   * Range requests (via <tt>Range</tt> header)
       #
       # @param path [String, Pathname] the body of the response
       # @return [void]
       #
-      # @since x.x.x
+      # @since 0.4.3
       #
       # @example
       #   require 'lotus/controller'
@@ -239,7 +240,7 @@ module Lotus
       #
       #     def call(params)
       #       # ...
-      #       senf_file Pathname.new('path_to_file')
+      #       send_file Pathname.new('path/to/file')
       #     end
       #   end
       def send_file(path)

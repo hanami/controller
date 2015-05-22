@@ -57,7 +57,7 @@ module Lotus
       #
       # @return [TrueClass,FalseClass] the result of the check
       #
-      # @since x.x.x
+      # @since 0.4.3
       def sending_file?
         @_body.is_a?(::Rack::File)
       end
