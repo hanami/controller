@@ -785,6 +785,17 @@ class StandaloneSession
   end
 end
 
+module Glued
+  class SendFile
+    include Lotus::Action
+    include Lotus::Action::Glue
+
+    def call(params)
+      self.body = ::Rack::File.new(nil)
+    end
+  end
+end
+
 class ArtistNotFound < StandardError
 end
 
@@ -933,11 +944,6 @@ end
 module SendFileTest
   Controller = Lotus::Controller.duplicate(self) do
     handle_exceptions false
-
-    prepare do
-      include Lotus::Action::Glue
-      include Lotus::Action::Session
-    end
   end
 
   module Files
@@ -957,12 +963,12 @@ module SendFileTest
       end
     end
 
-    class HeadRequest
+    class Flow
       include SendFileTest::Action
 
       def call(params)
-        self.status = params[:code].to_i
         send_file Pathname.new('test/assets/test.txt')
+        redirect_to '/'
       end
     end
   end

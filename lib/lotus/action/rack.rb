@@ -1,7 +1,7 @@
 require 'securerandom'
 require 'lotus/action/request'
 require 'lotus/action/rack/callable'
-require 'rack/file'
+require 'lotus/action/rack/file'
 
 module Lotus
   module Action
@@ -243,15 +243,9 @@ module Lotus
       #     end
       #   end
       def send_file(path)
-        if !head? && !conditional_get?  && !http_range?
-          file      = ::Rack::File.new(nil)
-          file.path = path.to_s
-          result    = file.serving(@_env)
-          headers.merge!(result[1])
-          halt 200, result[2]
-        end
-        rescue Errno::ENOENT
-          halt 404
+        result = File.new(path).call(@_env)
+        headers.merge!(result[1])
+        halt result[0], result[2]
       end
 
       # Check if the current request is a HEAD
@@ -261,33 +255,6 @@ module Lotus
       # @since 0.3.2
       def head?
         @_env[REQUEST_METHOD] == HEAD
-      end
-
-      # Check if the current request has 'HTTP_IF_MODIFIED_SINCE' header
-      #
-      # @return [TrueClass,FalseClass] the result of the check
-      #
-      # @since x.x.x
-      def conditional_get?
-        !!@_env[Lotus::Action::Cache::IF_MODIFIED_SINCE]
-      end
-
-      # Check if the current request has 'HTTP_RANGE' header
-      #
-      # @return [TrueClass,FalseClass] the result of the check
-      #
-      # @since x.x.x
-      def http_range?
-        !!@_env[HTTP_RANGE]
-      end
-
-      # Check if the request's body is a file
-      #
-      # @return [TrueClass,FalseClass] the result of the check
-      #
-      # @since x.x.x
-      def sending_file?
-        @_body.is_a?(::Rack::File)
       end
     end
   end

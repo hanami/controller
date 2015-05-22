@@ -2,8 +2,8 @@ require 'test_helper'
 require 'rack/test'
 
 SendFileRoutes = Lotus::Router.new(namespace: SendFileTest) do
+  get '/files/flow', to: 'files#flow'
   get '/files/:id',  to: 'files#show'
-  get '/code/:code', to: 'files#head_request'
 end
 
 SendFileApplication = Rack::Builder.new do
@@ -17,23 +17,34 @@ describe 'Full stack application' do
     SendFileApplication
   end
 
-  describe 'if file exists, app responds 200' do
-    it 'and get correct mime type for txt file' do
+  describe 'when file exists, app responds 200' do
+    it 'sets Content-Type according to file type' do
       get '/files/1', {}
       file = Pathname.new('test/assets/test.txt')
 
       last_response.status.must_equal 200
       last_response.headers['Content-Length'].to_i.must_equal file.size
       last_response.headers['Content-Type'].must_equal 'text/plain'
+      last_response.body.size.must_equal(file.size)
     end
 
-    it 'and get correct mime type for png file' do
-      get '/files/2', {}
+    it 'sets Content-Type according to file type (ignoring HTTP_ACCEPT)' do
+      get '/files/2', {}, 'HTTP_ACCEPT' => 'text/html'
       file = Pathname.new('test/assets/lotus.png')
 
       last_response.status.must_equal 200
       last_response.headers['Content-Length'].to_i.must_equal file.size
       last_response.headers['Content-Type'].must_equal 'image/png'
+      last_response.body.size.must_equal(file.size)
+    end
+
+    it "doesn't send file in case of HEAD request" do
+      head '/files/1', {}
+
+      last_response.status.must_equal 200
+      last_response.headers.key?('Content-Length').must_equal false
+      last_response.headers.key?('Content-Type').must_equal false
+      last_response.body.must_be :empty?
     end
   end
 
@@ -42,49 +53,35 @@ describe 'Full stack application' do
       get '/files/100', {}
 
       last_response.status.must_equal 404
-    end
-  end
-
-  HTTP_TEST_STATUSES_WITHOUT_BODY.each do |code|
-    describe "with: #{ code }" do
-      it "head request doesn't send file" do
-        head "/code/#{code}"
-
-        last_response.status.must_equal(code)
-      end
-    end
-  end
-
-  describe 'forced Content-Type' do
-    it 'must return correct Content-Type' do
-      get '/files/2', {}, 'HTTP_ACCEPT' => 'text/html'
-      file = Pathname.new('test/assets/lotus.png')
-
-      last_response.status.must_equal 200
-      last_response.headers['Content-Length'].to_i.must_equal file.size
-      last_response.headers['Content-Type'].must_equal 'image/png'
+      last_response.body.must_equal "Not Found"
     end
   end
 
   describe 'conditional get request' do
     it "shouldn't send file" do
-      get '/files/1', {}, 'HTTP_ACCEPT' => 'text/html', 'HTTP_IF_MODIFIED_SINCE' => Time.now.gmtime.rfc2822
-      file = Pathname.new('test/assets/test.txt')
+      if_modified_since = File.mtime('test/assets/test.txt').httpdate
+      get '/files/1', {}, 'HTTP_ACCEPT' => 'text/html', 'HTTP_IF_MODIFIED_SINCE' => if_modified_since
 
-      last_response.status.must_equal 200
-      last_response.headers['Content-Length'].must_equal nil
-      last_response.headers['Content-Type'].must_equal 'text/html; charset=utf-8'
+      last_response.status.must_equal 304
+      last_response.headers.key?('Content-Length').must_equal false
+      last_response.headers.key?('Content-Type').must_equal false
+      last_response.body.must_be :empty?
     end
   end
 
   describe 'bytes range' do
-    it "shouldn't send file" do
-      get '/files/1', {}, 'HTTP_RANGE' => 'bytes=1'
-      file = Pathname.new('test/assets/test.txt')
+    it "sends ranged contents" do
+      get '/files/1', {}, 'HTTP_RANGE' => 'bytes=5-13'
 
-      last_response.status.must_equal 200
-      last_response.headers['Content-Length'].must_equal nil
-      last_response.headers['Content-Type'].must_equal 'application/octet-stream; charset=utf-8'
+      last_response.status.must_equal 206
+      last_response.headers['Content-Length'].must_equal '9'
+      last_response.headers['Content-Range'].must_equal  'bytes 5-13/69'
+      last_response.body.must_equal "Text File"
     end
+  end
+
+  it "interrupts the control flow" do
+    get '/files/flow', {}
+    last_response.status.must_equal 200
   end
 end

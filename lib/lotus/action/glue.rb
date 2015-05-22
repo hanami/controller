@@ -52,6 +52,15 @@ module Lotus
         super
         @_env[ENV_KEY] = self
       end
+
+      # Check if the request's body is a file
+      #
+      # @return [TrueClass,FalseClass] the result of the check
+      #
+      # @since x.x.x
+      def sending_file?
+        @_body.is_a?(::Rack::File)
+      end
     end
   end
 end
