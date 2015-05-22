@@ -252,7 +252,7 @@ module Lotus
       # @see Lotus::Action#finish
       def finish
         super
-        headers[CONTENT_TYPE] = content_type_with_charset
+        headers[CONTENT_TYPE] ||= content_type_with_charset
       end
 
       # Sets the given format and corresponding content type.
