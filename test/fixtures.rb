@@ -463,6 +463,15 @@ class GetOverwrittenCookiesAction
   end
 end
 
+class GetAutomaticallyExpiresCookiesAction
+  include Lotus::Action
+  include Lotus::Action::Cookies
+
+  def call(params)
+    cookies[:bar] = { value: 'foo', max_age: 120 }
+  end
+end
+
 class SetCookiesAction
   include Lotus::Action
   include Lotus::Action::Cookies
@@ -776,6 +785,17 @@ class StandaloneSession
   end
 end
 
+module Glued
+  class SendFile
+    include Lotus::Action
+    include Lotus::Action::Glue
+
+    def call(params)
+      self.body = ::Rack::File.new(nil)
+    end
+  end
+end
+
 class ArtistNotFound < StandardError
 end
 
@@ -918,6 +938,39 @@ class VisibilityAction
     response
     cookies
     session
+  end
+end
+
+module SendFileTest
+  Controller = Lotus::Controller.duplicate(self) do
+    handle_exceptions false
+  end
+
+  module Files
+    class Show
+      include SendFileTest::Action
+
+      def call(params)
+        id = params['id']
+        # This if statement is only for testing purpose
+        if id == "1"
+          send_file Pathname.new('test/assets/test.txt')
+        elsif id == "2"
+          send_file Pathname.new('test/assets/lotus.png')
+        else
+          send_file Pathname.new('test/assets/unknown.txt')
+        end
+      end
+    end
+
+    class Flow
+      include SendFileTest::Action
+
+      def call(params)
+        send_file Pathname.new('test/assets/test.txt')
+        redirect_to '/'
+      end
+    end
   end
 end
 

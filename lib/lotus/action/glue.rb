@@ -28,8 +28,8 @@ module Lotus
 
       # Check if the current HTTP request is renderable.
       #
-      # It verifies if the verb isn't HEAD and if the status demands to omit
-      # the body.
+      # It verifies if the verb isn't HEAD, if the status demands to omit
+      # the body and if it isn't sending a file.
       #
       # @return [TrueClass,FalseClass] the result of the check
       #
@@ -37,6 +37,7 @@ module Lotus
       # @since 0.3.2
       def renderable?
         !_requires_no_body? &&
+          !sending_file?    &&
           !ADDITIONAL_HTTP_STATUSES_WITHOUT_BODY.include?(@_status)
       end
 
@@ -50,6 +51,15 @@ module Lotus
       def finish
         super
         @_env[ENV_KEY] = self
+      end
+
+      # Check if the request's body is a file
+      #
+      # @return [TrueClass,FalseClass] the result of the check
+      #
+      # @since 0.4.3
+      def sending_file?
+        @_body.is_a?(::Rack::File)
       end
     end
   end

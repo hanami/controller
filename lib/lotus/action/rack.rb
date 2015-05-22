@@ -1,6 +1,7 @@
 require 'securerandom'
 require 'lotus/action/request'
 require 'lotus/action/rack/callable'
+require 'lotus/action/rack/file'
 
 module Lotus
   module Action
@@ -215,6 +216,37 @@ module Lotus
       def body=(body)
         body   = Array(body) unless body.respond_to?(:each)
         @_body = body
+      end
+
+      # Send a file as response.
+      #
+      # It automatically handle the following cases:
+      #
+      #   * <tt>Content-Type</tt> and <tt>Content-Length</tt>
+      #   * File Not found (returns a 404)
+      #   * Conditional GET (via <tt>If-Modified-Since</tt> header)
+      #   * Range requests (via <tt>Range</tt> header)
+      #
+      # @param path [String, Pathname] the body of the response
+      # @return [void]
+      #
+      # @since 0.4.3
+      #
+      # @example
+      #   require 'lotus/controller'
+      #
+      #   class Show
+      #     include Lotus::Action
+      #
+      #     def call(params)
+      #       # ...
+      #       send_file Pathname.new('path/to/file')
+      #     end
+      #   end
+      def send_file(path)
+        result = File.new(path).call(@_env)
+        headers.merge!(result[1])
+        halt result[0], result[2]
       end
 
       # Check if the current request is a HEAD

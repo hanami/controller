@@ -62,5 +62,17 @@ describe Lotus::Action do
         headers.must_equal({'Content-Type' => 'application/octet-stream; charset=utf-8', 'Set-Cookie' => 'bar=foo; domain=lotusrb.com; path=/action'})
       end
     end
+
+    describe 'with max_age option and without expires option' do
+      it 'automatically set expires option' do
+        Time.stub :now, Time.now do
+          action = GetAutomaticallyExpiresCookiesAction.new
+          _, headers, _ = action.call({})
+          max_age = 120
+          headers["Set-Cookie"].must_include("max-age=#{max_age}")
+          headers["Set-Cookie"].must_include("expires=#{(Time.now + max_age).gmtime.rfc2822}")
+        end
+      end
+    end
   end
 end

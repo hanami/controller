@@ -98,11 +98,23 @@ module Lotus
       # @api private
       def _merge_default_values(value)
         cookies_options = if value.is_a? Hash
-          value
+          value.merge! _add_expires_option(value)
         else
           { value: value }
         end
         @default_options.merge cookies_options
+      end
+
+      # Add expires option to cookies if :max_age presents
+      #
+      # @since 0.4.3
+      # @api private
+      def _add_expires_option(value)
+        if value.has_key?(:max_age) && !value.has_key?(:expires)
+          { expires: (Time.now + value[:max_age]) }
+        else
+          {}
+        end
       end
 
       # Extract the cookies from the raw Rack env.
@@ -116,6 +128,8 @@ module Lotus
         string = env[HTTP_HEADER]
 
         return hash if string == env[COOKIE_STRING_KEY]
+        # TODO Next Rack 1.6.x version will have ::Rack::Utils.parse_cookies
+        # We can then replace the following lines.
         hash.clear
 
         # According to RFC 2109:

@@ -1,0 +1,2 @@
+Mock Text File
+This file is used to help with send file test feature.

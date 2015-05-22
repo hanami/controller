@@ -252,7 +252,7 @@ module Lotus
       # @see Lotus::Action#finish
       def finish
         super
-        headers[CONTENT_TYPE] = content_type_with_charset
+        headers[CONTENT_TYPE] ||= content_type_with_charset
       end
 
       # Sets the given format and corresponding content type.
@@ -450,7 +450,7 @@ module Lotus
 
       # Patched version of <tt>Rack::Utils.best_q_match</tt>.
       #
-      # @since x.x.x
+      # @since 0.4.1
       # @api private
       #
       # @see http://www.rubydoc.info/gems/rack/Rack/Utils#best_q_match-class_method
