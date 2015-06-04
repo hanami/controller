@@ -20,6 +20,16 @@ module Lotus
       # @api private
       ERRORS_KEY  = :__errors
 
+      # Add session to default exposures
+      #
+      # @since x.x.x
+      # @api private
+      def self.included(action)
+        action.class_eval do
+          expose :session
+        end
+      end
+
       protected
 
       # Gets the session from the request and expose it as an Hash.
