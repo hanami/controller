@@ -23,9 +23,11 @@ describe Lotus::Action::Params do
       end
 
       it 'raw gets all params' do
-        @action.call({id: 1, unknown: 2})
-        @action.params.raw.get(:id).must_equal 1
-        @action.params.raw.get(:unknown).must_equal 2
+        @action.call({id: '1', unknown: '2', _csrf_token: '3'})
+
+        @action.params.raw.get(:id).must_equal          '1'
+        @action.params.raw.get(:unknown).must_equal     '2'
+        @action.params.raw.get(:_csrf_token).must_equal '3'
       end
     end
 
@@ -35,9 +37,11 @@ describe Lotus::Action::Params do
       end
 
       it 'raw gets all params' do
-        @action.call({id: 1, unknown: 2})
-        @action.params.raw.get(:id).must_equal 1
-        @action.params.raw.get(:unknown).must_equal 2
+        @action.call({id: '1', unknown: '2', _csrf_token: '3'})
+
+        @action.params.raw.get(:id).must_equal          '1'
+        @action.params.raw.get(:unknown).must_equal     '2'
+        @action.params.raw.get(:_csrf_token).must_equal '3'
       end
     end
   end
@@ -100,12 +104,22 @@ describe Lotus::Action::Params do
             _, _, body = @action.call({id: 23, unknown: 4})
             body.must_equal [%({"id"=>23})]
           end
+
+          it "doesn't filter _csrf_token" do
+            _, _, body = @action.call(_csrf_token: 'abc')
+            body.must_equal [%({"_csrf_token"=>"abc"})]
+          end
         end
 
         describe "in a Rack context" do
           it 'returns only the listed params' do
             response = Rack::MockRequest.new(@action).request('PATCH', "?id=23", params: { x: { foo: 'bar' } })
             response.body.must_match %({"id"=>"23"})
+          end
+
+          it "doesn't filter _csrf_token" do
+            response = Rack::MockRequest.new(@action).request('PATCH', "?id=23", params: { _csrf_token: 'def', x: { foo: 'bar' } })
+            response.body.must_match %("_csrf_token"=>"def")
           end
         end
 
