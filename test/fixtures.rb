@@ -1207,3 +1207,11 @@ module FullStack
     end
   end
 end
+
+class MethodInspectionAction
+  include Lotus::Action
+
+  def call(params)
+    self.body = request_method
+  end
+end

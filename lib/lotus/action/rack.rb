@@ -255,7 +255,15 @@ module Lotus
       #
       # @since 0.3.2
       def head?
-        @_env[REQUEST_METHOD] == HEAD
+        request_method == HEAD
+      end
+
+      # NOTE: <tt>Lotus::Action::CSRFProtection</tt> (<tt>lotusrb</tt> gem) depends on this.
+      #
+      # @api private
+      # @since x.x.x
+      def request_method
+        @_env[REQUEST_METHOD]
       end
     end
   end

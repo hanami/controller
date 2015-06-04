@@ -26,6 +26,20 @@ module Lotus
       # @since 0.1.0
       ROUTER_PARAMS = 'router.params'.freeze
 
+      # CSRF params key
+      #
+      # This key is shared with <tt>lotusrb</tt> and <tt>lotus-helpers</tt>
+      #
+      # @since x.x.x
+      # @api private
+      CSRF_TOKEN = '_csrf_token'.freeze
+
+      # Set of params that are never filtered
+      #
+      # @since x.x.x
+      # @api private
+      DEFAULT_PARAMS = Hash[CSRF_TOKEN => true].freeze
+
       # Separator for #get
       #
       # @since 0.4.0
@@ -201,6 +215,18 @@ module Lotus
       end
       alias_method :to_hash, :to_h
 
+      # Assign CSRF Token.
+      # This method is here for compatibility with <tt>Lotus::Validations</tt>.
+      #
+      # NOTE: When we will not support indifferent access anymore, we can probably
+      # remove this method.
+      #
+      # @since x.x.x
+      # @api private
+      def _csrf_token=(value)
+        @attributes.set(CSRF_TOKEN, value)
+      end
+
       private
       # @since 0.3.1
       # @api private
@@ -236,11 +262,19 @@ module Lotus
       def _whitelisted_params
         {}.tap do |result|
           _raw.to_h.each do |k, v|
-            next unless self.class.defined_attributes.include?(k.to_s)
+            next unless assign_attribute?(k)
 
             result[k] = v
           end
         end
+      end
+
+      # Override <tt>Lotus::Validations</tt> method
+      #
+      # @since x.x.x
+      # @api private
+      def assign_attribute?(key)
+        DEFAULT_PARAMS[key.to_s] || super
       end
     end
   end
