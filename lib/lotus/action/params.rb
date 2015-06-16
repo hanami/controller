@@ -30,13 +30,13 @@ module Lotus
       #
       # This key is shared with <tt>lotusrb</tt> and <tt>lotus-helpers</tt>
       #
-      # @since x.x.x
+      # @since 0.4.4
       # @api private
       CSRF_TOKEN = '_csrf_token'.freeze
 
       # Set of params that are never filtered
       #
-      # @since x.x.x
+      # @since 0.4.4
       # @api private
       DEFAULT_PARAMS = Hash[CSRF_TOKEN => true].freeze
 
@@ -225,7 +225,7 @@ module Lotus
       # NOTE: When we will not support indifferent access anymore, we can probably
       # remove this method.
       #
-      # @since x.x.x
+      # @since 0.4.4
       # @api private
       def _csrf_token=(value)
         @attributes.set(CSRF_TOKEN, value)
@@ -275,7 +275,7 @@ module Lotus
 
       # Override <tt>Lotus::Validations</tt> method
       #
-      # @since x.x.x
+      # @since 0.4.4
       # @api private
       def assign_attribute?(key)
         DEFAULT_PARAMS[key.to_s] || super
