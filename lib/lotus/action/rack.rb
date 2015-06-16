@@ -261,7 +261,7 @@ module Lotus
       # NOTE: <tt>Lotus::Action::CSRFProtection</tt> (<tt>lotusrb</tt> gem) depends on this.
       #
       # @api private
-      # @since x.x.x
+      # @since 0.4.4
       def request_method
         @_env[REQUEST_METHOD]
       end

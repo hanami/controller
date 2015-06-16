@@ -1,6 +1,13 @@
 # Lotus::Controller
 Complete, fast and testable actions for Rack
 
+## v0.4.4 - 2015-06-23
+### Added
+- [Luca Guidi] Security protection against Cross Site Request Forgery (CSRF).
+
+### Fixed
+- [Matthew Bellantoni] Ensure nested params to be correctly coerced to Hash.
+
 ## v0.4.3 - 2015-05-22
 ### Added
 - [Alfonso Uceda Pompa & Luca Guidi] Introduced `Lotus::Action#send_file`

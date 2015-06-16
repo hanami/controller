@@ -22,7 +22,7 @@ module Lotus
 
       # Add session to default exposures
       #
-      # @since x.x.x
+      # @since 0.4.4
       # @api private
       def self.included(action)
         action.class_eval do

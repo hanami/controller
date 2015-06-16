@@ -314,6 +314,29 @@ describe Lotus::Action::Params do
         h.must_be_kind_of(::Hash)
       end
     end
+  
+    describe 'when whitelisting' do
+      # This is bug 113.
+      it 'handles nested params' do
+        hash = {
+          'name' => 'John',
+          'age' => 1,
+          'address' => {
+            'line_one' => '10 High Street',
+            'deep' => {
+              'deep_attr' => 'hello',
+            }
+          }
+        }
+
+        actual = TestParams.new(hash).to_h
+        actual.must_equal(hash)
+
+        actual.must_be_kind_of(::Hash)
+        actual['address'].must_be_kind_of(::Hash)
+        actual['address']['deep'].must_be_kind_of(::Hash)
+      end
+    end
   end
 
   describe '#to_hash' do
