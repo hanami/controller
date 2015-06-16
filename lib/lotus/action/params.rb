@@ -119,7 +119,11 @@ module Lotus
       # @since 0.3.2
       # @api private
       def self.build_validation_class(&block)
-        kls = Class.new(Params)
+        kls = Class.new(Params) do
+          def lotus_nested_attributes?
+            true
+          end
+        end
         kls.class_eval(&block)
         kls
       end
