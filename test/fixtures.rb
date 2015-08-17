@@ -107,6 +107,22 @@ class ErrorCallAction
   end
 end
 
+class MyCustomError < StandardError ; end
+class ErrorCallFromInheritedErrorClass
+  include Lotus::Action
+
+  handle_exception StandardError => :handler
+
+  def call(params)
+    raise MyCustomError
+  end
+
+  private
+  def handler(exception)
+    status 501, 'Please go away!'
+  end
+end
+
 class ErrorCallWithSymbolMethodNameAsHandlerAction
   include Lotus::Action
 
