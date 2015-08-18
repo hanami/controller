@@ -191,7 +191,13 @@ module Lotus
       #
       # @see Lotus::Controller::Configuration#handle_exception
       def exception_handler(exception)
-        @handled_exceptions.fetch(exception.class) { DEFAULT_ERROR_CODE }
+        handler = nil
+
+        @handled_exceptions.each do |exception_class, h|
+          handler = h if exception.kind_of?(exception_class)
+        end
+
+        handler || DEFAULT_ERROR_CODE
       end
 
       # Check if the given exception is handled.
