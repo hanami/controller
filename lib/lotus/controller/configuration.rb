@@ -194,7 +194,10 @@ module Lotus
         handler = nil
 
         @handled_exceptions.each do |exception_class, h|
-          handler = h if exception.kind_of?(exception_class)
+          if exception.kind_of?(exception_class)
+            handler = h
+            break
+          end
         end
 
         handler || DEFAULT_ERROR_CODE
