@@ -427,6 +427,7 @@ module Lotus
       #   Gets the value
       #   @return [Symbol,nil]
       #
+      # @since 0.5.0
       #
       # @see Lotus::Action::Mime
       #
@@ -441,8 +442,6 @@ module Lotus
       #   Lotus::Controller.configure do
       #     default_request_format :html
       #   end
-      #
-      # @since 0.5.0 TODO: Confirm?
       def default_request_format(format = nil)
         if format
           @default_request_format = Utils::Kernel.Symbol(format)
@@ -483,6 +482,7 @@ module Lotus
       #   Gets the value
       #   @return [Symbol,nil]
       #
+      # @since 0.5.0
       #
       # @see Lotus::Action::Mime
       #
@@ -497,8 +497,6 @@ module Lotus
       #   Lotus::Controller.configure do
       #     default_response_format :json
       #   end
-      #
-      # @since 0.5.0 TODO: Confirm?
       def default_response_format(format = nil)
         if format
           @default_response_format = Utils::Kernel.Symbol(format)

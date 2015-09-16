@@ -198,24 +198,33 @@ describe Lotus::Controller::Configuration do
       end
     end
 
+    require 'lotus/utils/io'
     describe "when not previously set" do
       it 'returns nil' do
-        @configuration.default_format.must_be_nil
+        Lotus::Utils::IO.silence_warnings do
+          @configuration.default_format.must_be_nil
+        end
       end
     end
 
     describe "when set" do
       before do
-        @configuration.default_format :html
+        Lotus::Utils::IO.silence_warnings do
+          @configuration.default_format :html
+        end
       end
 
       it 'returns the value' do
-        @configuration.default_format.must_equal :html
+        Lotus::Utils::IO.silence_warnings do
+          @configuration.default_format.must_equal :html
+        end
       end
     end
 
     it 'raises an error if the given format cannot be coerced into symbol' do
-      -> { @configuration.default_format(23) }.must_raise TypeError
+      Lotus::Utils::IO.silence_warnings do
+        -> { @configuration.default_format(23) }.must_raise TypeError
+      end
     end
   end
 

@@ -422,7 +422,7 @@ module Lotus
         end
       end
 
-      # @since 0.5.0 - TODO: Confirm?
+      # @since 0.5.0
       # @api private
       def default_response_type
         self.class.format_to_mime_type(configuration.default_response_format) if configuration.default_response_format
