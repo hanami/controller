@@ -188,6 +188,16 @@ describe Lotus::Controller::Configuration do
   end
 
   describe '#default_format' do
+
+    describe "deprecation" do
+      it "outputs deprecation warning" do
+        _, err = capture_io do
+          @configuration.default_format :html
+        end
+        err.must_include "default_format is deprecated, please use default_request_format"
+      end
+    end
+
     describe "when not previously set" do
       it 'returns nil' do
         @configuration.default_format.must_be_nil
@@ -206,6 +216,50 @@ describe Lotus::Controller::Configuration do
 
     it 'raises an error if the given format cannot be coerced into symbol' do
       -> { @configuration.default_format(23) }.must_raise TypeError
+    end
+  end
+
+  describe '#default_request_format' do
+    describe "when not previously set" do
+      it 'returns nil' do
+        @configuration.default_request_format.must_be_nil
+      end
+    end
+
+    describe "when set" do
+      before do
+        @configuration.default_request_format :html
+      end
+
+      it 'returns the value' do
+        @configuration.default_request_format.must_equal :html
+      end
+    end
+
+    it 'raises an error if the given format cannot be coerced into symbol' do
+      -> { @configuration.default_request_format(23) }.must_raise TypeError
+    end
+  end
+
+  describe '#default_response_format' do
+    describe "when not previously set" do
+      it 'returns nil' do
+        @configuration.default_response_format.must_be_nil
+      end
+    end
+
+    describe "when set" do
+      before do
+        @configuration.default_response_format :json
+      end
+
+      it 'returns the value' do
+        @configuration.default_response_format.must_equal :json
+      end
+    end
+
+    it 'raises an error if the given format cannot be coerced into symbol' do
+      -> { @configuration.default_response_format(23) }.must_raise TypeError
     end
   end
 
@@ -324,21 +378,23 @@ describe Lotus::Controller::Configuration do
       @configuration.reset!
       @configuration.prepare { include Kernel }
       @configuration.format custom: 'custom/format'
-      @configuration.default_format :html
+      @configuration.default_request_format :html
+      @configuration.default_response_format :html
       @configuration.default_charset 'latin1'
       @configuration.default_headers({ 'X-Frame-Options' => 'DENY' })
       @config = @configuration.duplicate
     end
 
     it 'returns a copy of the configuration' do
-      @config.handle_exceptions.must_equal  @configuration.handle_exceptions
-      @config.handled_exceptions.must_equal @configuration.handled_exceptions
-      @config.action_module.must_equal      @configuration.action_module
-      @config.modules.must_equal            @configuration.modules
-      @config.send(:formats).must_equal     @configuration.send(:formats)
-      @config.default_format.must_equal     @configuration.default_format
-      @config.default_charset.must_equal    @configuration.default_charset
-      @config.default_headers.must_equal    @configuration.default_headers
+      @config.handle_exceptions.must_equal       @configuration.handle_exceptions
+      @config.handled_exceptions.must_equal      @configuration.handled_exceptions
+      @config.action_module.must_equal           @configuration.action_module
+      @config.modules.must_equal                 @configuration.modules
+      @config.send(:formats).must_equal          @configuration.send(:formats)
+      @config.default_request_format.must_equal  @configuration.default_request_format
+      @config.default_response_format.must_equal @configuration.default_response_format
+      @config.default_charset.must_equal         @configuration.default_charset
+      @config.default_headers.must_equal         @configuration.default_headers
     end
 
     it "doesn't affect the original configuration" do
@@ -347,7 +403,8 @@ describe Lotus::Controller::Configuration do
       @config.action_module    CustomAction
       @config.prepare          { include Comparable }
       @config.format another: 'another/format'
-      @config.default_format :json
+      @config.default_request_format  :json
+      @config.default_response_format :json
       @config.default_charset 'utf-8'
       @config.default_headers({ 'X-Frame-Options' => 'ALLOW ALL' })
 
@@ -356,7 +413,8 @@ describe Lotus::Controller::Configuration do
       @config.action_module.must_equal               CustomAction
       @config.modules.size.must_equal                2
       @config.format_for('another/format').must_equal :another
-      @config.default_format.must_equal               :json
+      @config.default_request_format.must_equal       :json
+      @config.default_response_format.must_equal      :json
       @config.default_charset.must_equal              'utf-8'
       @config.default_headers.must_equal              ({ 'X-Frame-Options' => 'ALLOW ALL' })
 
@@ -365,7 +423,8 @@ describe Lotus::Controller::Configuration do
       @configuration.action_module.must_equal      ::Lotus::Action
       @configuration.modules.size.must_equal       1
       @configuration.format_for('another/format').must_be_nil
-      @configuration.default_format.must_equal     :html
+      @configuration.default_request_format.must_equal  :html
+      @configuration.default_response_format.must_equal :html
       @configuration.default_charset.must_equal    'latin1'
       @configuration.default_headers.must_equal    ({ 'X-Frame-Options' => 'DENY' })
     end
@@ -378,7 +437,8 @@ describe Lotus::Controller::Configuration do
       @configuration.action_module    CustomAction
       @configuration.modules          { include Kernel }
       @configuration.format another: 'another/format'
-      @configuration.default_format :another
+      @configuration.default_request_format  :another
+      @configuration.default_response_format :another
       @configuration.default_charset 'kor-1'
       @configuration.default_headers({ 'X-Frame-Options' => 'ALLOW DENY' })
 
@@ -391,7 +451,8 @@ describe Lotus::Controller::Configuration do
       @configuration.action_module.must_equal(::Lotus::Action)
       @configuration.modules.must_equal([])
       @configuration.send(:formats).must_equal(Lotus::Controller::Configuration::DEFAULT_FORMATS)
-      @configuration.default_format.must_be_nil
+      @configuration.default_request_format.must_be_nil
+      @configuration.default_response_format.must_be_nil
       @configuration.default_charset.must_be_nil
       @configuration.default_headers.must_equal({})
     end

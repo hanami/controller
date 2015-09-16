@@ -2,13 +2,15 @@ require 'test_helper'
 require 'lotus/router'
 
 MimeRoutes = Lotus::Router.new do
-  get '/',              to: 'mimes#default'
-  get '/custom',        to: 'mimes#custom'
-  get '/configuration', to: 'mimes#configuration'
-  get '/accept',        to: 'mimes#accept'
-  get '/restricted',    to: 'mimes#restricted'
-  get '/latin',         to: 'mimes#latin'
-  get '/nocontent',     to: 'mimes#no_content'
+  get '/',                   to: 'mimes#default'
+  get '/custom',             to: 'mimes#custom'
+  get '/configuration',      to: 'mimes#configuration'
+  get '/accept',             to: 'mimes#accept'
+  get '/restricted',         to: 'mimes#restricted'
+  get '/latin',              to: 'mimes#latin'
+  get '/nocontent',          to: 'mimes#no_content'
+  get '/response',           to: 'mimes#default_response'
+  get '/overwritten_format', to: 'mimes#override_default_response'
 end
 
 module Mimes
@@ -23,7 +25,7 @@ module Mimes
   class Configuration
     include Lotus::Action
 
-    configuration.default_format :html
+    configuration.default_request_format :html
     configuration.default_charset 'ISO-8859-1'
 
     def call(params)
@@ -80,6 +82,28 @@ module Mimes
       self.status = 204
     end
   end
+
+  class DefaultResponse
+    include Lotus::Action
+
+    configuration.default_request_format :html
+    configuration.default_response_format :json
+
+    def call(params)
+      self.body = configuration.default_request_format
+    end
+  end
+
+  class OverrideDefaultResponse
+    include Lotus::Action
+
+    configuration.default_response_format :json
+
+    def call(params)
+      self.format = :xml
+    end
+  end
+
 end
 
 describe 'Content type' do
@@ -109,6 +133,17 @@ describe 'Content type' do
     response = @app.get('/latin')
     response.headers['Content-Type'].must_equal 'text/html; charset=latin1'
     response.body.must_equal                    'html'
+  end
+
+  it 'uses default_response_format if set in the configuration regardless of request format' do
+    response = @app.get('/response')
+    response.headers['Content-Type'].must_equal 'application/json; charset=utf-8'
+    response.body.must_equal                    'html'
+  end
+
+  it 'allows to override default_response_format' do
+    response = @app.get('/overwritten_format')
+    response.headers['Content-Type'].must_equal 'application/xml; charset=utf-8'
   end
 
   # FIXME Review if this test must be in place

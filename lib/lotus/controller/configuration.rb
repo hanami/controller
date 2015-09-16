@@ -418,35 +418,92 @@ module Lotus
       # an argument, it will set the corresponding instance variable. When
       # called without, it will return the already set value, or the default.
       #
-      # @overload default_format(format)
+      # @overload default_request_format(format)
       #   Sets the given value
       #   @param format [#to_sym] the symbol format
       #   @raise [TypeError] if it cannot be coerced to a symbol
       #
-      # @overload default_format
+      # @overload default_request_format
       #   Gets the value
       #   @return [Symbol,nil]
       #
-      # @since 0.2.0
       #
       # @see Lotus::Action::Mime
       #
       # @example Getting the value
       #   require 'lotus/controller'
       #
-      #   Lotus::Controller.configuration.default_format # => nil
+      #   Lotus::Controller.configuration.default_request_format # => nil
       #
       # @example Setting the value
       #   require 'lotus/controller'
       #
       #   Lotus::Controller.configure do
-      #     default_format :html
+      #     default_request_format :html
       #   end
-      def default_format(format = nil)
+      #
+      # @since 0.5.0 TODO: Confirm?
+      def default_request_format(format = nil)
         if format
-          @default_format = Utils::Kernel.Symbol(format)
+          @default_request_format = Utils::Kernel.Symbol(format)
         else
-          @default_format
+          @default_request_format
+        end
+      end
+
+      # Set a format as default fallback for all the requests without a strict
+      # requirement for the mime type.
+      #
+      # @since 0.2.0
+      #
+      # @deprecated Use {#default_request_format} instead.
+      def default_format(format = nil)
+        Lotus::Utils::Deprecation.new('default_format is deprecated, please use default_request_format')
+        default_request_format(format)
+      end
+
+      # Set a format to be used for all responses regardless of the request type.
+      #
+      # The given format must be coercible to a symbol, and be a valid mime type
+      # alias. If it isn't, at the runtime the framework will raise a
+      # `Lotus::Controller::UnknownFormatError`.
+      #
+      # By default this value is nil.
+      #
+      # This is part of a DSL, for this reason when this method is called with
+      # an argument, it will set the corresponding instance variable. When
+      # called without, it will return the already set value, or the default.
+      #
+      # @overload default_response_format(format)
+      #   Sets the given value
+      #   @param format [#to_sym] the symbol format
+      #   @raise [TypeError] if it cannot be coerced to a symbol
+      #
+      # @overload default_response_format
+      #   Gets the value
+      #   @return [Symbol,nil]
+      #
+      #
+      # @see Lotus::Action::Mime
+      #
+      # @example Getting the value
+      #   require 'lotus/controller'
+      #
+      #   Lotus::Controller.configuration.default_response_format # => nil
+      #
+      # @example Setting the value
+      #   require 'lotus/controller'
+      #
+      #   Lotus::Controller.configure do
+      #     default_response_format :json
+      #   end
+      #
+      # @since 0.5.0 TODO: Confirm?
+      def default_response_format(format = nil)
+        if format
+          @default_response_format = Utils::Kernel.Symbol(format)
+        else
+          @default_response_format
         end
       end
 
@@ -578,7 +635,8 @@ module Lotus
           c.action_module           = action_module
           c.modules                 = modules.dup
           c.formats                 = formats.dup
-          c.default_format          = default_format
+          c.default_request_format  = default_request_format
+          c.default_response_format = default_response_format
           c.default_charset         = default_charset
           c.default_headers         = default_headers.dup
           c.cookies = cookies.dup
@@ -600,15 +658,16 @@ module Lotus
       # @since 0.2.0
       # @api private
       def reset!
-        @handle_exceptions  = true
-        @handled_exceptions = {}
-        @modules            = []
-        @formats            = DEFAULT_FORMATS.dup
-        @default_format     = nil
-        @default_charset    = nil
-        @default_headers    = {}
-        @cookies            = {}
-        @action_module      = ::Lotus::Action
+        @handle_exceptions       = true
+        @handled_exceptions      = {}
+        @modules                 = []
+        @formats                 = DEFAULT_FORMATS.dup
+        @default_request_format  = nil
+        @default_response_format = nil
+        @default_charset         = nil
+        @default_headers         = {}
+        @cookies                 = {}
+        @action_module           = ::Lotus::Action
       end
 
       # Copy the configuration for the given action
@@ -641,7 +700,8 @@ module Lotus
       attr_accessor :formats
       attr_writer :action_module
       attr_writer :modules
-      attr_writer :default_format
+      attr_writer :default_request_format
+      attr_writer :default_response_format
       attr_writer :default_charset
       attr_writer :default_headers
       attr_writer :cookies
