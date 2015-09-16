@@ -28,6 +28,10 @@ module Lotus
       # @api private
       COOKIE_STRING_KEY = 'rack.request.cookie_string'.freeze
 
+      # @since x.x.x
+      # @api private
+      COOKIE_SEPARATOR = ';,'.freeze
+
       # Initialize the CookieJar
       #
       # @param env [Hash] a raw Rack env
@@ -128,7 +132,7 @@ module Lotus
         string = env[HTTP_HEADER]
 
         return hash if string == env[COOKIE_STRING_KEY]
-        # TODO Next Rack 1.6.x version will have ::Rack::Utils.parse_cookies
+        # TODO Next Rack 1.7.x ?? version will have ::Rack::Utils.parse_cookies
         # We can then replace the following lines.
         hash.clear
 
@@ -137,7 +141,7 @@ module Lotus
         #   the Cookie header such that those with more specific Path attributes
         #   precede those with less specific.  Ordering with respect to other
         #   attributes (e.g., Domain) is unspecified.
-        cookies = ::Rack::Utils.parse_query(string, ';,') { |s| ::Rack::Utils.unescape(s) rescue s }
+        cookies = ::Rack::Utils.parse_query(string, COOKIE_SEPARATOR) { |s| ::Rack::Utils.unescape(s) rescue s }
         cookies.each { |k,v| hash[k] = Array === v ? v.first : v }
         env[COOKIE_STRING_KEY] = string
         hash
