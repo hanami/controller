@@ -1,6 +1,14 @@
 # Lotus::Controller
 Complete, fast and testable actions for Rack
 
+## v0.4.5 - 2015-09-23
+### Added
+- [Theo Felippe] Added configuration entries: `#default_request_format` and `default_response_format`.
+- [Wellington Santos] Error handling to take account of inherited exceptions.
+
+### Changed
+- [Theo Felippe] Deprecated `#default_format` in favor of: `#default_request_format`.
+
 ## v0.4.4 - 2015-06-23
 ### Added
 - [Luca Guidi] Security protection against Cross Site Request Forgery (CSRF).

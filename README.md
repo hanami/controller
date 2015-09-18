@@ -22,7 +22,7 @@ A Rack compatible Controller layer for [Lotus](http://lotusrb.org).
 
 ## Rubies
 
-__Lotus::Controller__ supports Ruby (MRI) 2+ and Rubinius 2.5.7+.
+__Lotus::Controller__ supports Ruby (MRI) 2+
 
 ## Installation
 
@@ -432,6 +432,51 @@ action = Articles::Show.new
 action.call({id: 'unknown'}) # => raises RecordNotFound
 ```
 
+#### Inherited Exceptions
+
+```ruby
+class MyCustomException < StandardError
+end
+
+module Articles
+  class Index
+    include Lotus::Action
+
+    handle_exception MyCustomException => :handle_my_exception
+
+    def call(params)
+      raise MyCustomException
+    end
+
+    private
+
+    def handle_my_exception
+      # ...
+    end
+  end
+
+  class Show
+    include Lotus::Action
+
+    handle_exception StandardError => :handle_standard_error
+
+    def call(params)
+      raise MyCustomException
+    end
+
+    private
+
+    def handle_standard_error
+      # ...
+    end
+  end
+end
+
+Articles::Index.new.call({}) # => `handle_my_exception` will be invoked
+Articles::Show.new.call({})  # => `handle_standard_error` will be invoked,
+                             #   because `MyCustomException` inherits from `StandardError`
+```
+
 ### Throwable HTTP statuses
 
 When `#halt` is used with a valid HTTP code, it stops the execution and sets the proper status and body for the response:
@@ -754,7 +799,7 @@ action = Create.new
 action.call({ article: { title: 'Hello' }}) # => [301, {'Location' => '/articles/23'}, '']
 ```
 
-### Mime Types
+### MIME Types
 
 `Lotus::Action` automatically sets the `Content-Type` header, according to the request.
 
@@ -796,7 +841,7 @@ action.call({ 'HTTP_ACCEPT' => 'text/html' }) # Content-Type "application/json"
 action.format                                 # :json
 ```
 
-You can restrict the accepted mime types:
+You can restrict the accepted MIME types:
 
 ```ruby
 class Show
@@ -814,7 +859,7 @@ end
 # When called with "application/xml"  => 406
 ```
 
-You can check if the requested mime type is accepted by the client.
+You can check if the requested MIME type is accepted by the client.
 
 ```ruby
 class Show
@@ -841,7 +886,7 @@ class Show
 end
 ```
 
-Lotus::Controller is shipped with an extensive list of the most common mime types.
+Lotus::Controller is shipped with an extensive list of the most common MIME types.
 Also, you can register your own:
 
 ```ruby
@@ -1002,16 +1047,23 @@ Lotus::Controller.configure do
   #
   handle_exception ArgumentError => 404
 
-  # Register a format to mime type mapping
-  # Argument: hash, key: format symbol, value: mime type string, empty by default
+  # Register a format to MIME type mapping
+  # Argument: hash, key: format symbol, value: MIME type string, empty by default
   #
   format custom: 'application/custom'
 
-  # Define a default format to return in case of HTTP request with `Accept: */*`
+  # Define a fallback format to detect in case of HTTP request with `Accept: */*`
   # If not defined here, it will return Rack's default: `application/octet-stream`
   # Argument: symbol, it should be already known. defaults to `nil`
   #
-  default_format :html
+  default_request_format :html
+
+  # Define a default format to set as `Content-Type` header for response,
+  # unless otherwise specified.
+  # If not defined here, it will return Rack's default: `application/octet-stream`
+  # Argument: symbol, it should be already known. defaults to `nil`
+  #
+  default_response_format :html
 
   # Define a default charset to return in the `Content-Type` response header
   # If not defined here, it returns `utf-8`

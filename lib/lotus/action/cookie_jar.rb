@@ -28,7 +28,7 @@ module Lotus
       # @api private
       COOKIE_STRING_KEY = 'rack.request.cookie_string'.freeze
 
-      # @since x.x.x
+      # @since 0.4.5
       # @api private
       COOKIE_SEPARATOR = ';,'.freeze
 
