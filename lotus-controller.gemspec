@@ -6,8 +6,8 @@ require 'lotus/controller/version'
 Gem::Specification.new do |spec|
   spec.name          = 'lotus-controller'
   spec.version       = Lotus::Controller::VERSION
-  spec.authors       = ['Luca Guidi', 'Trung Lê']
-  spec.email         = ['me@lucaguidi.com', 'trung.le@ruby-journal.com']
+  spec.authors       = ['Luca Guidi', 'Trung Lê', 'Alfonso Uceda']
+  spec.email         = ['me@lucaguidi.com', 'trung.le@ruby-journal.com', 'uceda73@gmail.com']
   spec.description   = %q{Complete, fast and testable actions for Rack}
   spec.summary       = %q{Complete, fast and testable actions for Rack and Lotus}
   spec.homepage      = 'http://lotusrb.org'
@@ -19,7 +19,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
   spec.required_ruby_version = '>= 2.0.0'
 
-  spec.add_dependency 'rack',              '~> 1.5'
+  spec.add_dependency 'rack',              '~> 1.6', '>= 1.6.2'
   spec.add_dependency 'lotus-utils',       '~> 0.5'
   spec.add_dependency 'lotus-validations', '~> 0.3'
 

@@ -1,6 +1,7 @@
 require 'rack/utils'
 require 'lotus/utils'
 require 'lotus/utils/kernel'
+require 'lotus/utils/deprecation'
 
 module Lotus
   module Action
@@ -169,7 +170,7 @@ module Lotus
       # @since 0.1.0
       #
       # @see Lotus::Action::Mime#format=
-      # @see Lotus::Configuration#default_format
+      # @see Lotus::Configuration#default_request_format
       # @see Lotus::Action::Mime#default_content_type
       # @see Lotus::Action::Mime#DEFAULT_CONTENT_TYPE
       #
@@ -185,7 +186,7 @@ module Lotus
       #     end
       #   end
       def content_type
-        @content_type || accepts || default_content_type || DEFAULT_CONTENT_TYPE
+        @content_type || default_response_type || accepts || default_content_type || DEFAULT_CONTENT_TYPE
       end
 
       # Action charset setter, receives new charset value
@@ -421,12 +422,18 @@ module Lotus
         end
       end
 
+      # @since 0.5.0
+      # @api private
+      def default_response_type
+        self.class.format_to_mime_type(configuration.default_response_format) if configuration.default_response_format
+      end
+
       # @since 0.2.0
       # @api private
       def default_content_type
         self.class.format_to_mime_type(
-          configuration.default_format
-        ) if configuration.default_format
+          configuration.default_request_format
+        ) if configuration.default_request_format
       end
 
       # @since 0.2.0

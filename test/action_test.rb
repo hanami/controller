@@ -46,6 +46,20 @@ describe Lotus::Action do
         response[2].must_equal ['Internal Server Error']
       end
 
+      it 'handles inherited exception with specified method' do
+        response = ErrorCallFromInheritedErrorClass.new.call({})
+
+        response[0].must_equal 501
+        response[2].must_equal ['An inherited exception occurred!']
+      end
+
+      it 'handles exception with specified method' do
+        response = ErrorCallFromInheritedErrorClassStack.new.call({})
+
+        response[0].must_equal 501
+        response[2].must_equal ['MyCustomError was thrown']
+      end
+
       it 'handles exception with specified method (symbol)' do
         response = ErrorCallWithSymbolMethodNameAsHandlerAction.new.call({})
 

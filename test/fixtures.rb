@@ -107,6 +107,42 @@ class ErrorCallAction
   end
 end
 
+class MyCustomError < StandardError ; end
+class ErrorCallFromInheritedErrorClass
+  include Lotus::Action
+
+  handle_exception StandardError => :handler
+
+  def call(params)
+    raise MyCustomError
+  end
+
+  private
+  def handler(exception)
+    status 501, 'An inherited exception occurred!'
+  end
+end
+
+class ErrorCallFromInheritedErrorClassStack
+  include Lotus::Action
+
+  handle_exception MyCustomError => :handler
+  handle_exception StandardError => :standard_handler
+
+  def call(params)
+    raise MyCustomError
+  end
+
+  private
+  def handler(exception)
+    status 501, 'MyCustomError was thrown'
+  end
+
+  def standard_handler(exception)
+    status 501, 'An unknown error was thrown'
+  end
+end
+
 class ErrorCallWithSymbolMethodNameAsHandlerAction
   include Lotus::Action
 
