@@ -1,7 +1,7 @@
 # Lotus::Controller
 Complete, fast and testable actions for Rack
 
-## v0.4.5 - 2015-09-23
+## v0.4.5 - 2015-09-30
 ### Added
 - [Theo Felippe] Added configuration entries: `#default_request_format` and `default_response_format`.
 - [Wellington Santos] Error handling to take account of inherited exceptions.
