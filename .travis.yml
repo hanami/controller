@@ -2,6 +2,9 @@ language: ruby
 sudo: false
 cache: bundler
 script: 'bundle exec rake test:coverage --trace'
+before_install:
+  - rvm get head # required by JRuby > 9.0.1.0
+  - rvm reload 
 rvm:
   - 2.0.0
   - 2.1.0
@@ -19,6 +22,7 @@ rvm:
   - rbx-2
   - jruby-head
   - jruby-9000
+  - jruby-9.0.1.0
 
 matrix:
   allow_failures:
