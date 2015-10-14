@@ -473,15 +473,17 @@ module Lotus
           [match, quality]
         end.compact
 
-        # See https://github.com/lotus/controller/issues/59
-        # See https://github.com/lotus/controller/issues/104
-        values = values.reverse unless Lotus::Utils.jruby?
+        if Lotus::Utils.jruby?
+          # See https://github.com/lotus/controller/issues/59
+          # See https://github.com/lotus/controller/issues/104
+          values.reverse!
+        else
+          # See https://github.com/jruby/jruby/issues/3004
+          values.sort!
+        end
 
-        # https://github.com/jruby/jruby/issues/3004
-        values.sort!            if Lotus::Utils.jruby?
-
-        value  = values.sort_by do |match, quality|
-          (match.split('/', 2).count('*') * -10) + quality
+        value = values.sort_by do |match, quality|
+          (match.split('/'.freeze, 2).count('*'.freeze) * -10) + quality
         end.last
 
         value.first if value
