@@ -477,6 +477,9 @@ module Lotus
         # See https://github.com/lotus/controller/issues/104
         values = values.reverse unless Lotus::Utils.jruby?
 
+        # https://github.com/jruby/jruby/issues/3004
+        values.sort!            if Lotus::Utils.jruby?
+
         value  = values.sort_by do |match, quality|
           (match.split('/', 2).count('*') * -10) + quality
         end.last
