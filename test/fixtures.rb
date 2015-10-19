@@ -971,6 +971,7 @@ class VisibilityAction
     # PROTECTED
     self.response
     self.cookies
+    self.session
 
     response
     cookies

@@ -58,7 +58,6 @@ module Lotus
       #     end
       #   end
       def session
-        @_env ||= {}
         @_env[SESSION_KEY] ||= {}
       end
 

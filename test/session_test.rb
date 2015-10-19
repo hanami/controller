@@ -20,12 +20,7 @@ describe Lotus::Action do
       action = SessionAction.new
       action.call({'rack.session' => session = { 'foo' => 'bar' }})
 
-      action.session.must_equal(session)
-    end
-
-    it 'has a default of Hash' do
-      action = SessionAction.new
-      action.session.must_equal({})
+      action.exposures[:session].must_equal(session)
     end
   end
 end
