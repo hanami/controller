@@ -962,6 +962,8 @@ class VisibilityAction
     self.headers.merge!('X-Custom' => 'OK')
     headers.merge!('Y-Custom'      => 'YO')
 
+    self.session[:foo] = 'bar'
+
     # PRIVATE
     # self.configuration
     # self.finish
@@ -969,7 +971,6 @@ class VisibilityAction
     # PROTECTED
     self.response
     self.cookies
-    self.session
 
     response
     cookies
