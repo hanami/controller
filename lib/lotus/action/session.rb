@@ -30,8 +30,6 @@ module Lotus
         end
       end
 
-      protected
-
       # Gets the session from the request and expose it as an Hash.
       #
       # @return [Hash] the HTTP session from the request
