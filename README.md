@@ -950,7 +950,7 @@ end
 
 Note: 
 * In development, Lotus' code reloading needs to be disabled for streaming to work. This is because `Shotgun` interferes with the streaming action. You can disable it like this `lotus server --code-reloading=false`
-* Streaming does not work with WEBrick as it buffers its response
+* Streaming does not work with WEBrick as it buffers its response. We recommend using `puma`, though you may find success with other servers
 
 ### No rendering, please
 
