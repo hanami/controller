@@ -921,6 +921,37 @@ action.call({ 'HTTP_ACCEPT' => '*/*' }) # => Content-Type 'application/custom'
 action.format                           # => :custom
 ```
 
+### Streamed Responses
+
+When the work to be done by the server takes time, it may be a good idea to stream your response. Here's an example of a streamed CSV.
+
+```ruby
+Lotus::Controller.configure do
+  format csv: 'text/csv'
+  middleware.use ::Rack::Chunked
+end
+
+class Csv
+  include Lotus::Action
+
+  def call(params)
+    self.format = :csv
+    self.body = Enumerator.new do |yielder|
+      yielder << csv_header
+      
+      # Expensive operation is streamed as each line becomes available
+      csv_body.each_line do |line|
+        yielder << line
+      end
+    end
+  end
+end
+```
+
+Note: 
+* In development, Lotus' code reloading needs to be disabled for streaming to work. This is because `Shotgun` interferes with the streaming action. You can disable it like this `lotus server --code-reloading=false`
+* Streaming does not work with WEBrick as it buffers its response
+
 ### No rendering, please
 
 Lotus::Controller is designed to be a pure HTTP endpoint, rendering belongs to other layers of MVC.
