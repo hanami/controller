@@ -1162,7 +1162,9 @@ Articles::Create.new.call({})
 ### Thread safety
 
 An Action is **mutable**. When used without Lotus::Router, be sure to instantiate an
-action for each request.
+action for each request. The same advice applies when using
+Lotus::Router but NOT routing to `mycontroller#myaction` but instead
+routing direct to a class.
 
 ```ruby
 # config.ru
