@@ -50,7 +50,7 @@ module Lotus
 
         if _requires_no_body?
           @_body = nil
-          @headers.reject! { |header,_| !ENTITY_HEADERS.include?(header) }
+          @headers.reject! {|header,_| !keep_response_header?(header) }
         end
       end
 
@@ -59,6 +59,63 @@ module Lotus
       # @api private
       def _requires_no_body?
         HTTP_STATUSES_WITHOUT_BODY.include?(@_status) || head?
+      end
+
+      private
+      # According to RFC 2616, when a response MUST have an empty body, it only
+      # allows Entity Headers.
+      #
+      # For instance, a <tt>204</tt> doesn't allow <tt>Content-Type</tt> or any
+      # other custom header.
+      #
+      # This restriction is enforced by <tt>Lotus::Action::Head#finish</tt>.
+      #
+      # However, there are cases that demand to bypass this rule to set meta
+      # informations via headers.
+      #
+      # An example is a <tt>DELETE</tt> request for a JSON API application.
+      # It returns a <tt>204</tt> but still wants to specify the rate limit
+      # quota via <tt>X-Rate-Limit</tt>.
+      #
+      # @since x.x.x
+      # @api public
+      #
+      # @see Lotus::Action::HEAD#finish
+      #
+      # @example
+      #   require 'lotus/controller'
+      #
+      #   module Books
+      #     class Destroy
+      #       include Lotus::Action
+      #
+      #       def call(params)
+      #         # ...
+      #         self.headers.merge!(
+      #           'Last-Modified' => 'Fri, 27 Nov 2015 13:32:36 GMT',
+      #           'X-Rate-Limit'  => '4000',
+      #           'Content-Type'  => 'application/json',
+      #           'X-No-Pass'     => 'true'
+      #         )
+      #
+      #         self.status = 204
+      #       end
+      #
+      #       private
+      #
+      #       def keep_response_header?(header)
+      #         super || header == 'X-Rate-Limit'
+      #       end
+      #     end
+      #   end
+      #
+      #   # Only the following headers will be sent:
+      #   #  * Last-Modified - because we used `super' in the method that respects the HTTP RFC
+      #   #  * X-Rate-Limit  - because we explicitely allow it
+      #
+      #   # Both Content-Type and X-No-Pass are removed because they're not allowed
+      def keep_response_header?(header)
+        ENTITY_HEADERS.include?(header)
       end
     end
   end
