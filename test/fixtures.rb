@@ -1056,6 +1056,26 @@ module HeadTest
         self.body   = 'code'
       end
     end
+
+    class Override
+      include HeadTest::Action
+
+      def call(params)
+        self.headers.merge!(
+          'Last-Modified' => 'Fri, 27 Nov 2015 13:32:36 GMT',
+          'X-Rate-Limit'  => '4000',
+          'X-No-Pass'     => 'true'
+        )
+
+        self.status = 204
+      end
+
+      private
+
+      def keep_response_header?(header)
+        super || 'X-Rate-Limit' == header
+      end
+    end
   end
 end
 
