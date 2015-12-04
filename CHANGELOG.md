@@ -1,6 +1,10 @@
 # Lotus::Controller
 Complete, fast and testable actions for Rack
 
+## v0.4.6 - 2015-12-04
+### Added
+- [Luca Guidi] Allow to force custom headers for responses that shouldn't include them (eg 204). Override `#keep_response_header?(header)` in action
+
 ## v0.4.5 - 2015-09-30
 ### Added
 - [Theo Felippe] Added configuration entries: `#default_request_format` and `default_response_format`.
