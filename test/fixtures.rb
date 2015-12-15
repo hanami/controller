@@ -332,6 +332,9 @@ class ParamsBeforeMethodAction < BeforeMethodAction
   expose :exposed_params
 
   private
+  def upcase_article
+  end
+
   def set_article(params)
     @exposed_params = params
     @article = super() + params[:bang]
@@ -1271,5 +1274,29 @@ class MethodInspectionAction
 
   def call(params)
     self.body = request_method
+  end
+end
+
+class RackExceptionAction
+  include Lotus::Action
+
+  class TestException < ::StandardError
+  end
+
+  def call(params)
+    raise TestException.new
+  end
+end
+
+class HandledRackExceptionAction
+  include Lotus::Action
+
+  class TestException < ::StandardError
+  end
+
+  handle_exception TestException => 500
+
+  def call(params)
+    raise TestException.new
   end
 end
