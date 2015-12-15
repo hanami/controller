@@ -15,6 +15,19 @@ module Lotus
       # @api private
       RACK_ERRORS = 'rack.errors'.freeze
 
+      # This isn't part of Rack SPEC
+      #
+      # Exception notifiers use <tt>rack.exception</tt> instead of
+      # <tt>rack.errors</tt>, so we need to support it.
+      #
+      # @since x.x.x
+      # @api private
+      #
+      # @see Lotus::Action::Throwable::RACK_ERRORS
+      # @see http://www.rubydoc.info/github/rack/rack/file/SPEC#The_Error_Stream
+      # @see https://github.com/lotus/controller/issues/133
+      RACK_EXCEPTION = 'rack.exception'.freeze
+
       def self.included(base)
         base.extend ClassMethods
       end
@@ -139,6 +152,8 @@ module Lotus
       # @api private
       def _reference_in_rack_errors(exception)
         return if configuration.handled_exception?(exception)
+
+        @_env[RACK_EXCEPTION] = exception
 
         if errors = @_env[RACK_ERRORS]
           errors.write(_dump_exception(exception))
