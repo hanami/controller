@@ -2,6 +2,7 @@ require 'lotus/utils/class_attribute'
 require 'lotus/action'
 require 'lotus/controller/configuration'
 require 'lotus/controller/version'
+require 'lotus/controller/error'
 
 module Lotus
   # A set of logically grouped actions
@@ -35,7 +36,7 @@ module Lotus
     # @since 0.2.0
     #
     # @see Lotus::Action::Mime#format=
-    class UnknownFormatError < ::StandardError
+    class UnknownFormatError < Lotus::Controller::Error
       def initialize(format)
         super("Cannot find a corresponding Mime type for '#{ format }'. Please configure it with Lotus::Controller::Configuration#format.")
       end
