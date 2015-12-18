@@ -4,7 +4,7 @@ require 'rack/test'
 HeadRoutes = Lotus::Router.new(namespace: HeadTest) do
   get '/',           to: 'home#index'
   get '/code/:code', to: 'home#code'
-  get '/cookies',    to: 'home#cookies'
+  get '/override',   to: 'home#override'
 end
 
 HeadApplication = Rack::Builder.new do
@@ -29,6 +29,20 @@ describe 'HEAD' do
     response.status.must_equal(200)
     response.body.must_equal ""
     response.headers.to_a.wont_include ['X-Frame-Options','DENY']
+  end
+
+  it "allows to bypass restriction on custom headers" do
+    get '/override'
+
+    response.status.must_equal(204)
+    response.body.must_equal ""
+
+    headers = response.headers.to_a
+    headers.must_include ['Last-Modified','Fri, 27 Nov 2015 13:32:36 GMT']
+    headers.must_include ['X-Rate-Limit', '4000']
+
+    headers.wont_include ['X-No-Pass',   'true']
+    headers.wont_include ['Content-Type','application/octet-stream; charset=utf-8']
   end
 
   HTTP_TEST_STATUSES_WITHOUT_BODY.each do |code|

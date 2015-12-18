@@ -332,6 +332,9 @@ class ParamsBeforeMethodAction < BeforeMethodAction
   expose :exposed_params
 
   private
+  def upcase_article
+  end
+
   def set_article(params)
     @exposed_params = params
     @article = super() + params[:bang]
@@ -1056,6 +1059,26 @@ module HeadTest
         self.body   = 'code'
       end
     end
+
+    class Override
+      include HeadTest::Action
+
+      def call(params)
+        self.headers.merge!(
+          'Last-Modified' => 'Fri, 27 Nov 2015 13:32:36 GMT',
+          'X-Rate-Limit'  => '4000',
+          'X-No-Pass'     => 'true'
+        )
+
+        self.status = 204
+      end
+
+      private
+
+      def keep_response_header?(header)
+        super || 'X-Rate-Limit' == header
+      end
+    end
   end
 end
 
@@ -1251,5 +1274,29 @@ class MethodInspectionAction
 
   def call(params)
     self.body = request_method
+  end
+end
+
+class RackExceptionAction
+  include Lotus::Action
+
+  class TestException < ::StandardError
+  end
+
+  def call(params)
+    raise TestException.new
+  end
+end
+
+class HandledRackExceptionAction
+  include Lotus::Action
+
+  class TestException < ::StandardError
+  end
+
+  handle_exception TestException => 500
+
+  def call(params)
+    raise TestException.new
   end
 end
