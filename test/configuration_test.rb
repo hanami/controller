@@ -187,47 +187,6 @@ describe Lotus::Controller::Configuration do
     end
   end
 
-  describe '#default_format' do
-
-    describe "deprecation" do
-      it "outputs deprecation warning" do
-        _, err = capture_io do
-          @configuration.default_format :html
-        end
-        err.must_include "default_format is deprecated, please use default_request_format"
-      end
-    end
-
-    require 'lotus/utils/io'
-    describe "when not previously set" do
-      it 'returns nil' do
-        Lotus::Utils::IO.silence_warnings do
-          @configuration.default_format.must_be_nil
-        end
-      end
-    end
-
-    describe "when set" do
-      before do
-        Lotus::Utils::IO.silence_warnings do
-          @configuration.default_format :html
-        end
-      end
-
-      it 'returns the value' do
-        Lotus::Utils::IO.silence_warnings do
-          @configuration.default_format.must_equal :html
-        end
-      end
-    end
-
-    it 'raises an error if the given format cannot be coerced into symbol' do
-      Lotus::Utils::IO.silence_warnings do
-        -> { @configuration.default_format(23) }.must_raise TypeError
-      end
-    end
-  end
-
   describe '#default_request_format' do
     describe "when not previously set" do
       it 'returns nil' do

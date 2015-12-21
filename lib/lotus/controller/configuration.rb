@@ -450,17 +450,6 @@ module Lotus
         end
       end
 
-      # Set a format as default fallback for all the requests without a strict
-      # requirement for the mime type.
-      #
-      # @since 0.2.0
-      #
-      # @deprecated Use {#default_request_format} instead.
-      def default_format(format = nil)
-        Lotus::Utils::Deprecation.new('default_format is deprecated, please use default_request_format')
-        default_request_format(format)
-      end
-
       # Set a format to be used for all responses regardless of the request type.
       #
       # The given format must be coercible to a symbol, and be a valid mime type
