@@ -10,6 +10,7 @@ Complete, fast and testable actions for Rack
 - [Cainã Costa] Ensure Rack environment to be always available for sessions unit tests
 
 ### Changed
+- [Luca Guidi] Removed `Lotus::Controller::Configuration#default_format`
 - [Cainã Costa] Made `Lotus::Action#session` a public method for improved unit testing
 - [Karim Tarek] Introduced `Lotus::Controller::Error` and let all the framework exceptions to inherit from it.
 
