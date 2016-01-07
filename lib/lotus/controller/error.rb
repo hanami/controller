@@ -1,6 +1,6 @@
 module Lotus
   module Controller
-    # @since x.x.x
+    # @since 0.5.0
     class Error < ::StandardError
     end
   end

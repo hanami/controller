@@ -1202,4 +1202,4 @@ __Lotus::Controller__ uses [Semantic Versioning 2.0.0](http://semver.org)
 
 ## Copyright
 
-Copyright © 2014-2015 Luca Guidi – Released under MIT License
+Copyright © 2014-2016 Luca Guidi – Released under MIT License

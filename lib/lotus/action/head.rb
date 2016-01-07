@@ -77,7 +77,7 @@ module Lotus
       # It returns a <tt>204</tt> but still wants to specify the rate limit
       # quota via <tt>X-Rate-Limit</tt>.
       #
-      # @since x.x.x
+      # @since 0.5.0
       # @api public
       #
       # @see Lotus::Action::HEAD#finish

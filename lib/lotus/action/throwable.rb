@@ -20,7 +20,7 @@ module Lotus
       # Exception notifiers use <tt>rack.exception</tt> instead of
       # <tt>rack.errors</tt>, so we need to support it.
       #
-      # @since x.x.x
+      # @since 0.5.0
       # @api private
       #
       # @see Lotus::Action::Throwable::RACK_ERRORS

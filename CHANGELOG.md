@@ -1,7 +1,7 @@
 # Lotus::Controller
 Complete, fast and testable actions for Rack
 
-## v0.5.0 - (unreleased)
+## v0.5.0 - 2016-01-12
 ### Added
 - [Luca Guidi] Allow to force HTTP header for status code that according to RFC shouldn't include them (eg. `204`)
 - [Luca Guidi] Reference a raised exception in Rack env's `rack.exception`. Compatibility with exception reporting SaaS.
