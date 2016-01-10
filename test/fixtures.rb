@@ -1300,3 +1300,110 @@ class HandledRackExceptionAction
     raise TestException.new
   end
 end
+
+module SessionWithCookies
+  Controller = Lotus::Controller.duplicate(self) do
+    handle_exceptions false
+
+    prepare do
+      include Lotus::Action::Glue
+      include Lotus::Action::Session
+      include Lotus::Action::Cookies
+    end
+  end
+
+  module Controllers
+    module Home
+      class Index
+        include SessionWithCookies::Action
+
+        def call(params)
+        end
+      end
+    end
+  end
+
+  class Renderer
+    def render(env, response)
+      action = env.delete('lotus.action')
+
+      if response[0] == 200 && action.renderable?
+        response[2] = "#{ action.class.name } #{ action.exposures }"
+      end
+
+      response
+    end
+  end
+
+  class Application
+    def initialize
+      resolver = Lotus::Routing::EndpointResolver.new(namespace: SessionWithCookies::Controllers)
+      routes   = Lotus::Router.new(resolver: resolver) do
+        get '/',     to: 'home#index'
+      end
+
+      @renderer   = Renderer.new
+      @middleware = Rack::Builder.new do
+        use Rack::Session::Cookie, secret: SecureRandom.hex(16)
+        run routes
+      end
+    end
+
+    def call(env)
+      @renderer.render(env, @middleware.call(env))
+    end
+  end
+end
+
+module SessionsWithoutCookies
+  Controller = Lotus::Controller.duplicate(self) do
+    handle_exceptions false
+
+    prepare do
+      include Lotus::Action::Glue
+      include Lotus::Action::Session
+    end
+  end
+
+  module Controllers
+    module Home
+      class Index
+        include SessionsWithoutCookies::Action
+
+        def call(params)
+        end
+      end
+    end
+  end
+
+  class Renderer
+    def render(env, response)
+      action = env.delete('lotus.action')
+
+      if response[0] == 200 && action.renderable?
+        response[2] = "#{ action.class.name } #{ action.exposures }"
+      end
+
+      response
+    end
+  end
+
+  class Application
+    def initialize
+      resolver = Lotus::Routing::EndpointResolver.new(namespace: SessionsWithoutCookies::Controllers)
+      routes   = Lotus::Router.new(resolver: resolver) do
+        get '/',     to: 'home#index'
+      end
+
+      @renderer   = Renderer.new
+      @middleware = Rack::Builder.new do
+        use Rack::Session::Cookie, secret: SecureRandom.hex(16)
+        run routes
+      end
+    end
+
+    def call(env)
+      @renderer.render(env, @middleware.call(env))
+    end
+  end
+end

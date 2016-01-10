@@ -16,6 +16,12 @@ module Lotus
       # @api private
       HTTP_HEADER       = 'HTTP_COOKIE'.freeze
 
+      # The key used by Rack to set the session cookie
+      #
+      # @since x.x.x
+      # @api private
+      RACK_SESSION_KEY   = :'rack.session'
+
       # The key used by Rack to set the cookies as an Hash in the env
       #
       # @since 0.1.0
@@ -55,6 +61,7 @@ module Lotus
       #
       # @see Lotus::Action::Cookies#finish
       def finish
+        @cookies.delete(RACK_SESSION_KEY)
         @cookies.each { |k,v| v.nil? ? delete_cookie(k) : set_cookie(k, _merge_default_values(v)) }
       end
 
