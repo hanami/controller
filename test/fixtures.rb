@@ -126,8 +126,8 @@ end
 class ErrorCallFromInheritedErrorClassStack
   include Lotus::Action
 
-  handle_exception MyCustomError => :handler
   handle_exception StandardError => :standard_handler
+  handle_exception MyCustomError => :handler
 
   def call(params)
     raise MyCustomError

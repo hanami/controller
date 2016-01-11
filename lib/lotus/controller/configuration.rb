@@ -180,6 +180,7 @@ module Lotus
       #   end
       def handle_exception(exception)
         @handled_exceptions.merge!(exception)
+        _sort_handled_exceptions!
       end
 
       # Return a callable handler for the given exception
@@ -682,6 +683,13 @@ module Lotus
       end
 
       protected
+      # @since 0.5.0
+      # @api private
+      def _sort_handled_exceptions!
+        @handled_exceptions = Hash[
+          @handled_exceptions.sort{|(ex1,_),(ex2,_)| ex1.ancestors.include?(ex2) ? -1 : 1 }
+        ]
+      end
 
       attr_accessor :handled_exceptions
       attr_accessor :formats

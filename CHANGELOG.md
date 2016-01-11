@@ -8,6 +8,7 @@ Complete, fast and testable actions for Rack
 
 ### Fixed
 - [Cainã Costa] Ensure Rack environment to be always available for sessions unit tests
+- [Luca Guidi] Ensure superclass exceptions to not shadow subclasses during exception handling (eg. `CustomError` handler will take precedence over `StandardError`)
 
 ### Changed
 - [Luca Guidi] Removed `Lotus::Controller::Configuration#default_format`
