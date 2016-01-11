@@ -3,7 +3,6 @@ Complete, fast and testable actions for Rack
 
 ## v0.5.0 - 2016-01-12
 ### Added
-- [Luca Guidi] Allow to force HTTP header for status code that according to RFC shouldn't include them (eg. `204`)
 - [Luca Guidi] Reference a raised exception in Rack env's `rack.exception`. Compatibility with exception reporting SaaS.
 
 ### Fixed
@@ -17,7 +16,7 @@ Complete, fast and testable actions for Rack
 
 ## v0.4.6 - 2015-12-04
 ### Added
-- [Luca Guidi] Allow to force custom headers for responses that shouldn't include them (eg 204). Override `#keep_response_header?(header)` in action
+- [Luca Guidi] Allow to force custom headers for responses that according to RFC shouldn't include them (eg 204). Override `#keep_response_header?(header)` in action
 
 ## v0.4.5 - 2015-09-30
 ### Added
