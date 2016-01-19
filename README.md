@@ -1,35 +1,35 @@
-# Lotus::Controller
+# Hanami::Controller
 
-A Rack compatible Controller layer for [Lotus](http://lotusrb.org).
+Complete, fast and testable actions for Rack and [Hanami](http://hanamirb.org)
 
 ## Status
 
-[![Gem Version](https://badge.fury.io/rb/lotus-controller.png)](http://badge.fury.io/rb/lotus-controller)
-[![Build Status](https://secure.travis-ci.org/lotus/controller.png?branch=master)](http://travis-ci.org/lotus/controller?branch=master)
-[![Coverage](https://coveralls.io/repos/lotus/controller/badge.png?branch=master)](https://coveralls.io/r/lotus/controller)
-[![Code Climate](https://codeclimate.com/github/lotus/controller.png)](https://codeclimate.com/github/lotus/controller)
-[![Dependencies](https://gemnasium.com/lotus/controller.png)](https://gemnasium.com/lotus/controller)
-[![Inline docs](http://inch-ci.org/github/lotus/controller.png)](http://inch-ci.org/github/lotus/controller)
+[![Gem Version](https://badge.fury.io/rb/hanami-controller.png)](http://badge.fury.io/rb/hanami-controller)
+[![Build Status](https://secure.travis-ci.org/hanami/controller.png?branch=master)](http://travis-ci.org/hanami/controller?branch=master)
+[![Coverage](https://coveralls.io/repos/hanami/controller/badge.png?branch=master)](https://coveralls.io/r/hanami/controller)
+[![Code Climate](https://codeclimate.com/github/hanami/controller.png)](https://codeclimate.com/github/hanami/controller)
+[![Dependencies](https://gemnasium.com/hanami/controller.png)](https://gemnasium.com/hanami/controller)
+[![Inline docs](http://inch-ci.org/github/hanami/controller.png)](http://inch-ci.org/github/hanami/controller)
 
 ## Contact
 
-* Home page: http://lotusrb.org
-* Mailing List: http://lotusrb.org/mailing-list
-* API Doc: http://rdoc.info/gems/lotus-controller
-* Bugs/Issues: https://github.com/lotus/controller/issues
-* Support: http://stackoverflow.com/questions/tagged/lotus-ruby
-* Chat: https://gitter.im/lotus/chat
+* Home page: http://hanamirb.org
+* Mailing List: http://hanamirb.org/mailing-list
+* API Doc: http://rdoc.info/gems/hanami-controller
+* Bugs/Issues: https://github.com/hanami/controller/issues
+* Chat: http://chat.hanamirb.org
+* Chat: https://gitter.im/hanami/chat
 
 ## Rubies
 
-__Lotus::Controller__ supports Ruby (MRI) 2+
+__Hanami::Controller__ supports Ruby (MRI) 2+
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'lotus-controller'
+gem 'hanami-controller'
 ```
 
 And then execute:
@@ -41,13 +41,13 @@ $ bundle
 Or install it yourself as:
 
 ```shell
-$ gem install lotus-controller
+$ gem install hanami-controller
 ```
 
 ## Usage
 
-Lotus::Controller is a micro library for web frameworks.
-It works beautifully with [Lotus::Router](https://github.com/lotus/router), but it can be employed everywhere.
+Hanami::Controller is a micro library for web frameworks.
+It works beautifully with [Hanami::Router](https://github.com/hanami/router), but it can be employed everywhere.
 It's designed to be fast and testable.
 
 ### Actions
@@ -57,7 +57,7 @@ They are the endpoints that respond to incoming HTTP requests.
 
 ```ruby
 class Show
-  include Lotus::Action
+  include Hanami::Action
 
   def call(params)
     @article = Article.find params[:id]
@@ -65,10 +65,10 @@ class Show
 end
 ```
 
-The usage of `Lotus::Action` follows the Lotus philosophy: include a module and implement a minimal interface.
+The usage of `Hanami::Action` follows the Hanami philosophy: include a module and implement a minimal interface.
 In this case, the interface is one method: `#call(params)`.
 
-Lotus is designed to not interfere with inheritance.
+Hanami is designed to not interfere with inheritance.
 This is important, because you can implement your own initialization strategy.
 
 __An action is an object__. That's important because __you have the full control on it__.
@@ -80,7 +80,7 @@ Imagine how **fast** the unit test could be.
 
 ```ruby
 class Show
-  include Lotus::Action
+  include Hanami::Action
 
   def initialize(repository = Article)
     @repository = repository
@@ -98,14 +98,14 @@ action.call({ id: 23 })
 ### Params
 
 The request params are passed as an argument to the `#call` method.
-If routed with *Lotus::Router*, it extracts the relevant bits from the Rack `env` (eg the requested `:id`).
+If routed with *Hanami::Router*, it extracts the relevant bits from the Rack `env` (eg the requested `:id`).
 Otherwise everything is passed as is: the full Rack `env` in production, and the given `Hash` for unit tests.
 
-With Lotus::Router:
+With Hanami::Router:
 
 ```ruby
 class Show
-  include Lotus::Action
+  include Hanami::Action
 
   def call(params)
     # ...
@@ -118,7 +118,7 @@ Standalone:
 
 ```ruby
 class Show
-  include Lotus::Action
+  include Hanami::Action
 
   def call(params)
     # ...
@@ -131,7 +131,7 @@ Unit Testing:
 
 ```ruby
 class Show
-  include Lotus::Action
+  include Hanami::Action
 
   def call(params)
     # ...
@@ -149,10 +149,10 @@ Params represent an untrusted input.
 For security reasons it's recommended to whitelist them.
 
 ```ruby
-require 'lotus/controller'
+require 'hanami/controller'
 
 class Signup
-  include Lotus::Action
+  include Hanami::Action
 
   params do
     param :first_name
@@ -169,7 +169,7 @@ class Signup
   def call(params)
     # Describe inheritance hierarchy
     puts params.class            # => Signup::Params
-    puts params.class.superclass # => Lotus::Action::Params
+    puts params.class.superclass # => Hanami::Action::Params
 
     # Whitelist :first_name, but not :admin
     puts params[:first_name]     # => "Luca"
@@ -191,11 +191,11 @@ when params are invalid.
 If you specify the `:type` option, the param will be coerced.
 
 ```ruby
-require 'lotus/controller'
+require 'hanami/controller'
 
 class Signup
   MEGABYTE = 1024 ** 2
-  include Lotus::Action
+  include Hanami::Action
 
   params do
     param :first_name,       presence: true
@@ -219,10 +219,10 @@ action.call(valid_params) # => [200, {}, ...]
 action.errors.empty?      # => true
 
 action.call(invalid_params) # => [400, {}, ...]
-action.errors               # =>  #<Lotus::Validations::Errors:0x007fabe4b433d0 @errors={...}>
+action.errors               # =>  #<Hanami::Validations::Errors:0x007fabe4b433d0 @errors={...}>
 
 action.errors.for(:email)
-  # => [#<Lotus::Validations::Error:0x007fabe4b432e0 @attribute=:email, @validation=:presence, @expected=true, @actual=nil>]
+  # => [#<Hanami::Validations::Error:0x007fabe4b432e0 @attribute=:email, @validation=:presence, @expected=true, @actual=nil>]
 ```
 
 ### Response
@@ -231,7 +231,7 @@ The output of `#call` is a serialized Rack::Response (see [#finish](http://rubyd
 
 ```ruby
 class Show
-  include Lotus::Action
+  include Hanami::Action
 
   def call(params)
     # ...
@@ -246,7 +246,7 @@ It has private accessors to explicitly set status, headers, and body:
 
 ```ruby
 class Show
-  include Lotus::Action
+  include Hanami::Action
 
   def call(params)
     self.status  = 201
@@ -261,21 +261,21 @@ action.call({}) # => [201, { "X-Custom" => "OK" }, ["Hi!"]]
 
 ### Exposures
 
-We know that actions are objects and `Lotus::Action` respects one of the pillars of OOP: __encapsulation__.
+We know that actions are objects and `Hanami::Action` respects one of the pillars of OOP: __encapsulation__.
 Other frameworks extract instance variables (`@ivar`) and make them available to the view context.
 
-`Lotus::Action`'s solution is the simple and powerful DSL: `expose`.
+`Hanami::Action`'s solution is the simple and powerful DSL: `expose`.
 It's a thin layer on top of `attr_reader`.
 
 Using `expose` creates a getter for the given attribute, and adds it to the _exposures_.
 Exposures (`#exposures`) are a set of attributes exposed to the view.
 That is to say the variables necessary for rendering a view.
 
-By default, all `Lotus::Action` objects expose `#params` and `#errors`.
+By default, all `Hanami::Action` objects expose `#params` and `#errors`.
 
 ```ruby
 class Show
-  include Lotus::Action
+  include Hanami::Action
 
   expose :article
 
@@ -298,7 +298,7 @@ It offers a powerful, inheritable callback chain which is executed before and/or
 
 ```ruby
 class Show
-  include Lotus::Action
+  include Hanami::Action
 
   before :authenticate, :set_article
 
@@ -321,7 +321,7 @@ Callbacks can also be expressed as anonymous lambdas:
 
 ```ruby
 class Show
-  include Lotus::Action
+  include Hanami::Action
 
   before { ... } # do some authentication stuff
   before { |params| @article = Article.find params[:id] }
@@ -337,7 +337,7 @@ When an exception is raised, it automatically sets the HTTP status to [500](http
 
 ```ruby
 class Show
-  include Lotus::Action
+  include Hanami::Action
 
   def call(params)
     raise
@@ -352,7 +352,7 @@ You can map a specific raised exception to a different HTTP status.
 
 ```ruby
 class Show
-  include Lotus::Action
+  include Hanami::Action
   handle_exception RecordNotFound => 404
 
   def call(params)
@@ -368,7 +368,7 @@ You can also define custom handlers for exceptions.
 
 ```ruby
 class Create
-  include Lotus::Action
+  include Hanami::Action
   handle_exception ArgumentError => :my_custom_handler
 
   def call(params)
@@ -389,12 +389,12 @@ Exception policies can be defined globally, **before** the controllers/actions
 are loaded.
 
 ```ruby
-Lotus::Controller.configure do
+Hanami::Controller.configure do
   handle_exception RecordNotFound => 404
 end
 
 class Show
-  include Lotus::Action
+  include Hanami::Action
 
   def call(params)
     @article = Article.find params[:id]
@@ -408,7 +408,7 @@ action.call({id: 'unknown'}) # => [404, {}, ["Not Found"]]
 This feature can be turned off globally, in a controller or in a single action.
 
 ```ruby
-Lotus::Controller.configure do
+Hanami::Controller.configure do
   handle_exceptions false
 end
 
@@ -416,7 +416,7 @@ end
 
 module Articles
   class Show
-    include Lotus::Action
+    include Hanami::Action
 
     configure do
       handle_exceptions false
@@ -440,7 +440,7 @@ end
 
 module Articles
   class Index
-    include Lotus::Action
+    include Hanami::Action
 
     handle_exception MyCustomException => :handle_my_exception
 
@@ -456,7 +456,7 @@ module Articles
   end
 
   class Show
-    include Lotus::Action
+    include Hanami::Action
 
     handle_exception StandardError => :handle_standard_error
 
@@ -483,7 +483,7 @@ When `#halt` is used with a valid HTTP code, it stops the execution and sets the
 
 ```ruby
 class Show
-  include Lotus::Action
+  include Hanami::Action
 
   before :authenticate!
 
@@ -505,7 +505,7 @@ Alternatively, you can specify a custom message.
 
 ```ruby
 class Show
-  include Lotus::Action
+  include Hanami::Action
 
   def call(params)
     DroidRepository.find(params[:id]) or not_found
@@ -523,17 +523,17 @@ action.call({}) # => [404, {}, ["This is not the droid you're looking for"]]
 
 ### Cookies
 
-Lotus::Controller offers convenient access to cookies.
+Hanami::Controller offers convenient access to cookies.
 
 They are read as a Hash from Rack env:
 
 ```ruby
-require 'lotus/controller'
-require 'lotus/action/cookies'
+require 'hanami/controller'
+require 'hanami/action/cookies'
 
 class ReadCookiesFromRackEnv
-  include Lotus::Action
-  include Lotus::Action::Cookies
+  include Hanami::Action
+  include Hanami::Action::Cookies
 
   def call(params)
     # ...
@@ -548,12 +548,12 @@ action.call({'HTTP_COOKIE' => 'foo=bar'})
 They are set like a Hash:
 
 ```ruby
-require 'lotus/controller'
-require 'lotus/action/cookies'
+require 'hanami/controller'
+require 'hanami/action/cookies'
 
 class SetCookies
-  include Lotus::Action
-  include Lotus::Action::Cookies
+  include Hanami::Action
+  include Hanami::Action::Cookies
 
   def call(params)
     # ...
@@ -568,12 +568,12 @@ action.call({}) # => [200, {'Set-Cookie' => 'foo=bar'}, '...']
 They are removed by setting their value to `nil`:
 
 ```ruby
-require 'lotus/controller'
-require 'lotus/action/cookies'
+require 'hanami/controller'
+require 'hanami/action/cookies'
 
 class RemoveCookies
-  include Lotus::Action
-  include Lotus::Action::Cookies
+  include Hanami::Action
+  include Hanami::Action::Cookies
 
   def call(params)
     # ...
@@ -588,16 +588,16 @@ action.call({}) # => [200, {'Set-Cookie' => "foo=; max-age=0; expires=Thu, 01 Ja
 Default values can be set in configuration, but overriden case by case.
 
 ```ruby
-require 'lotus/controller'
-require 'lotus/action/cookies'
+require 'hanami/controller'
+require 'hanami/action/cookies'
 
-Lotus::Controller.configure do
+Hanami::Controller.configure do
   cookies max_age: 300 # 5 minutes
 end
 
 class SetCookies
-  include Lotus::Action
-  include Lotus::Action::Cookies
+  include Hanami::Action
+  include Hanami::Action::Cookies
 
   def call(params)
     # ...
@@ -614,12 +614,12 @@ action.call({}) # => [200, {'Set-Cookie' => "foo=bar; max-age=100;"}, '...']
 It has builtin support for Rack sessions:
 
 ```ruby
-require 'lotus/controller'
-require 'lotus/action/session'
+require 'hanami/controller'
+require 'hanami/action/session'
 
 class ReadSessionFromRackEnv
-  include Lotus::Action
-  include Lotus::Action::Session
+  include Hanami::Action
+  include Hanami::Action::Session
 
   def call(params)
     # ...
@@ -634,12 +634,12 @@ action.call({ 'rack.session' => { 'age' => '31' }})
 Values can be set like a Hash:
 
 ```ruby
-require 'lotus/controller'
-require 'lotus/action/session'
+require 'hanami/controller'
+require 'hanami/action/session'
 
 class SetSession
-  include Lotus::Action
-  include Lotus::Action::Session
+  include Hanami::Action
+  include Hanami::Action::Session
 
   def call(params)
     # ...
@@ -654,12 +654,12 @@ action.call({}) # => [200, {"Set-Cookie"=>"rack.session=..."}, "..."]
 Values can be removed like a Hash:
 
 ```ruby
-require 'lotus/controller'
-require 'lotus/action/session'
+require 'hanami/controller'
+require 'hanami/action/session'
 
 class RemoveSession
-  include Lotus::Action
-  include Lotus::Action::Session
+  include Hanami::Action
+  include Hanami::Action::Session
 
   def call(params)
     # ...
@@ -671,7 +671,7 @@ action = RemoveSession.new
 action.call({}) # => [200, {"Set-Cookie"=>"rack.session=..."}, "..."] it removes that value from the session
 ```
 
-While Lotus::Controller supports sessions natively, it's __session store agnostic__.
+While Hanami::Controller supports sessions natively, it's __session store agnostic__.
 You have to specify the session store in your Rack middleware configuration (eg `config.ru`).
 
 ```ruby
@@ -681,17 +681,17 @@ run Show.new
 
 ### Http Cache
 
-Lotus::Controller sets your headers correctly according to RFC 2616 / 14.9 for more on standard cache control directives: http://tools.ietf.org/html/rfc2616#section-14.9.1
+Hanami::Controller sets your headers correctly according to RFC 2616 / 14.9 for more on standard cache control directives: http://tools.ietf.org/html/rfc2616#section-14.9.1
 
 You can easily set the Cache-Control header for your actions:
 
 ```ruby
-require 'lotus/controller'
-require 'lotus/action/cache'
+require 'hanami/controller'
+require 'hanami/action/cache'
 
 class HttpCacheController
-  include Lotus::Action
-  include Lotus::Action::Cache
+  include Hanami::Action
+  include Hanami::Action::Cache
 
   cache_control :public, max_age: 600 # => Cache-Control: public, max-age=600
 
@@ -704,12 +704,12 @@ end
 Expires header can be specified using `expires` method:
 
 ```ruby
-require 'lotus/controller'
-require 'lotus/action/cache'
+require 'hanami/controller'
+require 'hanami/action/cache'
 
 class HttpCacheController
-  include Lotus::Action
-  include Lotus::Action::Cache
+  include Hanami::Action
+  include Hanami::Action::Cache
 
   expires 60, :public, max_age: 600 # => Expires: Sun, 03 Aug 2014 17:47:02 GMT, Cache-Control: public, max-age=600
 
@@ -728,12 +728,12 @@ Passing the HTTP_IF_NONE_MATCH (content identifier) or HTTP_IF_MODIFIED_SINCE (t
 You can easily take advantage of Conditional Get using `#fresh` method:
 
 ```ruby
-require 'lotus/controller'
-require 'lotus/action/cache'
+require 'hanami/controller'
+require 'hanami/action/cache'
 
 class ConditionalGetController
-  include Lotus::Action
-  include Lotus::Action::Cache
+  include Hanami::Action
+  include Hanami::Action::Cache
 
   def call(params)
     # ...
@@ -743,17 +743,17 @@ class ConditionalGetController
 end
 ```
 
-If `@resource.cache_key` is equal to `IfNoneMatch` header, then lotus will `halt 304`.
+If `@resource.cache_key` is equal to `IfNoneMatch` header, then hanami will `halt 304`.
 
 The same behavior is accomplished using `last_modified`:
 
 ```ruby
-require 'lotus/controller'
-require 'lotus/action/cache'
+require 'hanami/controller'
+require 'hanami/action/cache'
 
 class ConditionalGetController
-  include Lotus::Action
-  include Lotus::Action::Cache
+  include Hanami::Action
+  include Hanami::Action::Cache
 
   def call(params)
     # ...
@@ -763,7 +763,7 @@ class ConditionalGetController
 end
 ```
 
-If `@resource.update_at` is equal to `IfModifiedSince` header, then lotus will `halt 304`.
+If `@resource.update_at` is equal to `IfModifiedSince` header, then hanami will `halt 304`.
 
 ### Redirect
 
@@ -771,7 +771,7 @@ If you need to redirect the client to another resource, use `#redirect_to`:
 
 ```ruby
 class Create
-  include Lotus::Action
+  include Hanami::Action
 
   def call(params)
     # ...
@@ -787,7 +787,7 @@ You can also redirect with a custom status code:
 
 ```ruby
 class Create
-  include Lotus::Action
+  include Hanami::Action
 
   def call(params)
     # ...
@@ -801,11 +801,11 @@ action.call({ article: { title: 'Hello' }}) # => [301, {'Location' => '/articles
 
 ### MIME Types
 
-`Lotus::Action` automatically sets the `Content-Type` header, according to the request.
+`Hanami::Action` automatically sets the `Content-Type` header, according to the request.
 
 ```ruby
 class Show
-  include Lotus::Action
+  include Hanami::Action
 
   def call(params)
   end
@@ -824,7 +824,7 @@ However, you can force this value:
 
 ```ruby
 class Show
-  include Lotus::Action
+  include Hanami::Action
 
   def call(params)
     # ...
@@ -845,7 +845,7 @@ You can restrict the accepted MIME types:
 
 ```ruby
 class Show
-  include Lotus::Action
+  include Hanami::Action
   accept :html, :json
 
   def call(params)
@@ -863,7 +863,7 @@ You can check if the requested MIME type is accepted by the client.
 
 ```ruby
 class Show
-  include Lotus::Action
+  include Hanami::Action
 
   def call(params)
     # ...
@@ -886,16 +886,16 @@ class Show
 end
 ```
 
-Lotus::Controller is shipped with an extensive list of the most common MIME types.
+Hanami::Controller is shipped with an extensive list of the most common MIME types.
 Also, you can register your own:
 
 ```ruby
-Lotus::Controller.configure do
+Hanami::Controller.configure do
   format custom: 'application/custom'
 end
 
 class Index
-  include Lotus::Action
+  include Hanami::Action
 
   def call(params)
   end
@@ -907,7 +907,7 @@ action.call({ 'HTTP_ACCEPT' => 'application/custom' }) # => Content-Type 'applic
 action.format                                          # => :custom
 
 class Show
-  include Lotus::Action
+  include Hanami::Action
 
   def call(params)
     # ...
@@ -926,13 +926,13 @@ action.format                           # => :custom
 When the work to be done by the server takes time, it may be a good idea to stream your response. Here's an example of a streamed CSV.
 
 ```ruby
-Lotus::Controller.configure do
+Hanami::Controller.configure do
   format csv: 'text/csv'
   middleware.use ::Rack::Chunked
 end
 
 class Csv
-  include Lotus::Action
+  include Hanami::Action
 
   def call(params)
     self.format = :csv
@@ -949,13 +949,13 @@ end
 ```
 
 Note: 
-* In development, Lotus' code reloading needs to be disabled for streaming to work. This is because `Shotgun` interferes with the streaming action. You can disable it like this `lotus server --code-reloading=false`
+* In development, Hanami' code reloading needs to be disabled for streaming to work. This is because `Shotgun` interferes with the streaming action. You can disable it like this `hanami server --code-reloading=false`
 * Streaming does not work with WEBrick as it buffers its response. We recommend using `puma`, though you may find success with other servers
 
 ### No rendering, please
 
-Lotus::Controller is designed to be a pure HTTP endpoint, rendering belongs to other layers of MVC.
-You can set the body directly (see [response](#response)), or use [Lotus::View](https://github.com/lotus/view).
+Hanami::Controller is designed to be a pure HTTP endpoint, rendering belongs to other layers of MVC.
+You can set the body directly (see [response](#response)), or use [Hanami::View](https://github.com/hanami/view).
 
 ### Controllers
 
@@ -964,13 +964,13 @@ A Controller is nothing more than a logical group of actions: just a Ruby module
 ```ruby
 module Articles
   class Index
-    include Lotus::Action
+    include Hanami::Action
 
     # ...
   end
 
   class Show
-    include Lotus::Action
+    include Hanami::Action
 
     # ...
   end
@@ -979,9 +979,9 @@ end
 Articles::Index.new.call({})
 ```
 
-### Lotus::Router integration
+### Hanami::Router integration
 
-While Lotus::Router works great with this framework, Lotus::Controller doesn't depend on it.
+While Hanami::Router works great with this framework, Hanami::Controller doesn't depend on it.
 You, the developer, are free to choose your own routing system.
 
 But, if you use them together, the **only constraint is that an action must support _arity 0_ in its constructor**.
@@ -1006,15 +1006,15 @@ end
 
 __Please note that this is subject to change: we're working to remove this constraint.__
 
-Lotus::Router supports lazy loading for controllers. While this policy can be a
+Hanami::Router supports lazy loading for controllers. While this policy can be a
 convenient fallback, you should know that it's the slower option. **Be sure of
 loading your controllers before you initialize the router.**
 
 
 ### Rack integration
 
-Lotus::Controller is compatible with Rack. However, it doesn't mount any middleware.
-While a Lotus application's architecture is more web oriented, this framework is designed to build pure HTTP endpoints.
+Hanami::Controller is compatible with Rack. However, it doesn't mount any middleware.
+While a Hanami application's architecture is more web oriented, this framework is designed to build pure HTTP endpoints.
 
 ### Rack middleware
 
@@ -1026,11 +1026,11 @@ Think about a middleware to create sessions, where only `SessionsController::Cre
 The solution is that an action can employ one or more Rack middleware, with `.use`.
 
 ```ruby
-require 'lotus/controller'
+require 'hanami/controller'
 
 module Sessions
   class Create
-    include Lotus::Action
+    include Hanami::Action
     use OmniAuth
 
     def call(params)
@@ -1041,11 +1041,11 @@ end
 ```
 
 ```ruby
-require 'lotus/controller'
+require 'hanami/controller'
 
 module Sessions
   class Create
-    include Lotus::Controller
+    include Hanami::Controller
 
     use XMiddleware.new('x', 123)
     use YMiddleware.new
@@ -1060,13 +1060,13 @@ end
 
 ### Configuration
 
-Lotus::Controller can be configured with a DSL.
+Hanami::Controller can be configured with a DSL.
 It supports a few options:
 
 ```ruby
-require 'lotus/controller'
+require 'hanami/controller'
 
-Lotus::Controller.configure do
+Hanami::Controller.configure do
   # Handle exceptions with HTTP statuses (true) or don't catch them (false)
   # Argument: boolean, defaults to `true`
   #
@@ -1102,13 +1102,13 @@ Lotus::Controller.configure do
   #
   default_charset 'koi8-r'
 
-  # Configure the logic to be executed when Lotus::Action is included
+  # Configure the logic to be executed when Hanami::Action is included
   # This is useful to DRY code by having a single place where to configure
   # shared behaviors like authentication, sessions, cookies etc.
   # Argument: proc
   #
   prepare do
-    include Lotus::Action::Sessions
+    include Hanami::Action::Sessions
     include MyAuthentication
     use SomeMiddleWare
 
@@ -1123,15 +1123,15 @@ Each controller and action has its own copy of the global configuration.
 This means changes are inherited from the top to the bottom, but do not bubble back up.
 
 ```ruby
-require 'lotus/controller'
+require 'hanami/controller'
 
-Lotus::Controller.configure do
+Hanami::Controller.configure do
   handle_exception ArgumentError => 400
 end
 
 module Articles
   class Create
-    include Lotus::Action
+    include Hanami::Action
 
     configure do
       handle_exceptions false
@@ -1145,7 +1145,7 @@ end
 
 module Users
   class Create
-    include Lotus::Action
+    include Hanami::Action
 
     def call(params)
       raise ArgumentError
@@ -1161,17 +1161,17 @@ Articles::Create.new.call({})
 
 ### Thread safety
 
-An Action is **mutable**. When used without Lotus::Router, be sure to instantiate an
+An Action is **mutable**. When used without Hanami::Router, be sure to instantiate an
 action for each request. The same advice applies when using
-Lotus::Router but NOT routing to `mycontroller#myaction` but instead
+Hanami::Router but NOT routing to `mycontroller#myaction` but instead
 routing direct to a class.
 
 ```ruby
 # config.ru
-require 'lotus/controller'
+require 'hanami/controller'
 
 class Action
-  include Lotus::Action
+  include Hanami::Action
 
   def self.call(env)
     new.call(env)
@@ -1185,12 +1185,12 @@ end
 run Action
 ```
 
-Lotus::Controller heavely depends on class configuration. To ensure immutability
-in deployment environments, use `Lotus::Controller.load!`.
+Hanami::Controller heavely depends on class configuration. To ensure immutability
+in deployment environments, use `Hanami::Controller.load!`.
 
 ## Versioning
 
-__Lotus::Controller__ uses [Semantic Versioning 2.0.0](http://semver.org)
+__Hanami::Controller__ uses [Semantic Versioning 2.0.0](http://semver.org)
 
 ## Contributing
 
@@ -1203,3 +1203,4 @@ __Lotus::Controller__ uses [Semantic Versioning 2.0.0](http://semver.org)
 ## Copyright
 
 Copyright © 2014-2016 Luca Guidi – Released under MIT License
+This project was formerly known as Lotus (`lotus-controller`).

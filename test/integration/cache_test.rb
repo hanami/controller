@@ -1,8 +1,8 @@
 require 'test_helper'
-require 'lotus/router'
-require 'lotus/action/cache'
+require 'hanami/router'
+require 'hanami/action/cache'
 
-CacheControlRoutes = Lotus::Router.new do
+CacheControlRoutes = Hanami::Router.new do
   get '/default',              to: 'cache_control#default'
   get '/overriding',           to: 'cache_control#overriding'
   get '/symbol',               to: 'cache_control#symbol'
@@ -11,7 +11,7 @@ CacheControlRoutes = Lotus::Router.new do
   get '/private-and-public',   to: 'cache_control#private_public'
 end
 
-ExpiresRoutes = Lotus::Router.new do
+ExpiresRoutes = Hanami::Router.new do
   get '/default',              to: 'expires#default'
   get '/overriding',           to: 'expires#overriding'
   get '/symbol',               to: 'expires#symbol'
@@ -19,7 +19,7 @@ ExpiresRoutes = Lotus::Router.new do
   get '/hash',                 to: 'expires#hash'
 end
 
-ConditionalGetRoutes = Lotus::Router.new do
+ConditionalGetRoutes = Hanami::Router.new do
   get '/etag',               to: 'conditional_get#etag'
   get '/last-modified',      to: 'conditional_get#last_modified'
   get '/etag-last-modified', to: 'conditional_get#etag_last_modified'
@@ -27,8 +27,8 @@ end
 
 module CacheControl
   class Default
-    include Lotus::Action
-    include Lotus::Action::Cache
+    include Hanami::Action
+    include Hanami::Action::Cache
 
     cache_control :public, max_age: 600
 
@@ -37,8 +37,8 @@ module CacheControl
   end
 
   class Overriding
-    include Lotus::Action
-    include Lotus::Action::Cache
+    include Hanami::Action
+    include Hanami::Action::Cache
 
     cache_control :public, max_age: 600
 
@@ -48,8 +48,8 @@ module CacheControl
   end
 
   class Symbol
-    include Lotus::Action
-    include Lotus::Action::Cache
+    include Hanami::Action
+    include Hanami::Action::Cache
 
     def call(params)
       cache_control :private
@@ -57,8 +57,8 @@ module CacheControl
   end
 
   class Symbols
-    include Lotus::Action
-    include Lotus::Action::Cache
+    include Hanami::Action
+    include Hanami::Action::Cache
 
     def call(params)
       cache_control :private, :no_cache, :no_store
@@ -66,8 +66,8 @@ module CacheControl
   end
 
   class Hash
-    include Lotus::Action
-    include Lotus::Action::Cache
+    include Hanami::Action
+    include Hanami::Action::Cache
 
     def call(params)
       cache_control :public, :no_store, max_age: 900, s_maxage: 86400, min_fresh: 500, max_stale: 700
@@ -75,8 +75,8 @@ module CacheControl
   end
 
   class PrivatePublic
-    include Lotus::Action
-    include Lotus::Action::Cache
+    include Hanami::Action
+    include Hanami::Action::Cache
 
     def call(params)
       cache_control :private, :public
@@ -86,8 +86,8 @@ end
 
 module Expires
   class Default
-    include Lotus::Action
-    include Lotus::Action::Cache
+    include Hanami::Action
+    include Hanami::Action::Cache
 
     expires 900, :public, :no_cache
 
@@ -96,8 +96,8 @@ module Expires
   end
 
   class Overriding
-    include Lotus::Action
-    include Lotus::Action::Cache
+    include Hanami::Action
+    include Hanami::Action::Cache
 
     expires 900, :public, :no_cache
 
@@ -107,8 +107,8 @@ module Expires
   end
 
   class Symbol
-    include Lotus::Action
-    include Lotus::Action::Cache
+    include Hanami::Action
+    include Hanami::Action::Cache
 
     def call(params)
       expires 900, :private
@@ -116,8 +116,8 @@ module Expires
   end
 
   class Symbols
-    include Lotus::Action
-    include Lotus::Action::Cache
+    include Hanami::Action
+    include Hanami::Action::Cache
 
     def call(params)
       expires 900, :private, :no_cache, :no_store
@@ -125,8 +125,8 @@ module Expires
   end
 
   class Hash
-    include Lotus::Action
-    include Lotus::Action::Cache
+    include Hanami::Action
+    include Hanami::Action::Cache
 
     def call(params)
       expires 900, :public, :no_store, s_maxage: 86400, min_fresh: 500, max_stale: 700
@@ -136,8 +136,8 @@ end
 
 module ConditionalGet
   class Etag
-    include Lotus::Action
-    include Lotus::Action::Cache
+    include Hanami::Action
+    include Hanami::Action::Cache
 
     def call(params)
       fresh etag: 'updated'
@@ -145,8 +145,8 @@ module ConditionalGet
   end
 
   class LastModified
-    include Lotus::Action
-    include Lotus::Action::Cache
+    include Hanami::Action
+    include Hanami::Action::Cache
 
     def call(params)
       fresh last_modified: Time.now
@@ -154,8 +154,8 @@ module ConditionalGet
   end
 
   class EtagLastModified
-    include Lotus::Action
-    include Lotus::Action::Cache
+    include Hanami::Action
+    include Hanami::Action::Cache
 
     def call(params)
       fresh etag: 'updated', last_modified: Time.now

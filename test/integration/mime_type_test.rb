@@ -1,7 +1,7 @@
 require 'test_helper'
-require 'lotus/router'
+require 'hanami/router'
 
-MimeRoutes = Lotus::Router.new do
+MimeRoutes = Hanami::Router.new do
   get '/',                   to: 'mimes#default'
   get '/custom',             to: 'mimes#custom'
   get '/configuration',      to: 'mimes#configuration'
@@ -15,7 +15,7 @@ end
 
 module Mimes
   class Default
-    include Lotus::Action
+    include Hanami::Action
 
     def call(params)
       self.body = format
@@ -23,7 +23,7 @@ module Mimes
   end
 
   class Configuration
-    include Lotus::Action
+    include Hanami::Action
 
     configuration.default_request_format :html
     configuration.default_charset 'ISO-8859-1'
@@ -34,7 +34,7 @@ module Mimes
   end
 
   class Custom
-    include Lotus::Action
+    include Hanami::Action
 
     def call(params)
       self.format = :xml
@@ -43,7 +43,7 @@ module Mimes
   end
 
   class Latin
-    include Lotus::Action
+    include Hanami::Action
 
     def call(params)
       self.charset = 'latin1'
@@ -53,7 +53,7 @@ module Mimes
   end
 
   class Accept
-    include Lotus::Action
+    include Hanami::Action
 
     def call(params)
       self.headers.merge!({'X-AcceptDefault' => accept?('application/octet-stream').to_s })
@@ -66,7 +66,7 @@ module Mimes
   end
 
   class Restricted
-    include Lotus::Action
+    include Hanami::Action
 
     configuration.format custom: 'application/custom'
     accept :html, :json, :custom
@@ -76,7 +76,7 @@ module Mimes
   end
 
   class NoContent
-    include Lotus::Action
+    include Hanami::Action
 
     def call(params)
       self.status = 204
@@ -84,7 +84,7 @@ module Mimes
   end
 
   class DefaultResponse
-    include Lotus::Action
+    include Hanami::Action
 
     configuration.default_request_format :html
     configuration.default_response_format :json
@@ -95,7 +95,7 @@ module Mimes
   end
 
   class OverrideDefaultResponse
-    include Lotus::Action
+    include Hanami::Action
 
     configuration.default_response_format :json
 

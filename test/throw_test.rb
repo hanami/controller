@@ -1,8 +1,8 @@
 require 'test_helper'
 
-describe Lotus::Action do
+describe Hanami::Action do
   before do
-    Lotus::Controller.unload!
+    Hanami::Controller.unload!
   end
 
   describe '.handle_exception' do

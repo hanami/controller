@@ -1,13 +1,13 @@
 require 'test_helper'
 
-describe Lotus::Action do
+describe Hanami::Action do
   describe '.configuration' do
     after do
       CallAction.configuration.reset!
     end
 
-    it 'has the same defaults of Lotus::Controller' do
-      expected = Lotus::Controller.configuration
+    it 'has the same defaults of Hanami::Controller' do
+      expected = Hanami::Controller.configuration
       actual   = CallAction.configuration
 
       actual.handle_exceptions.must_equal(expected.handle_exceptions)
@@ -16,7 +16,7 @@ describe Lotus::Action do
     it "doesn't interfer with other action's configurations" do
       CallAction.configuration.handle_exceptions = false
 
-      Lotus::Controller.configuration.handle_exceptions.must_equal(true)
+      Hanami::Controller.configuration.handle_exceptions.must_equal(true)
       ErrorCallAction.configuration.handle_exceptions.must_equal(true)
     end
   end
@@ -35,7 +35,7 @@ describe Lotus::Action do
       code, _, _ = action.call({})
 
       code.must_equal 400
-      action.errors.for(:email).must_include Lotus::Validations::Error.new(:email, :presence, true, nil)
+      action.errors.for(:email).must_include Hanami::Validations::Error.new(:email, :presence, true, nil)
     end
 
     describe 'when exception handling code is enabled' do
@@ -121,7 +121,7 @@ describe Lotus::Action do
   describe '#request' do
     it 'gets a Rack-like request object' do
       action_class = Class.new do
-        include Lotus::Action
+        include Hanami::Action
 
         expose :req
 

@@ -1,7 +1,7 @@
 require 'test_helper'
 require 'rack/test'
 
-HeadRoutes = Lotus::Router.new(namespace: HeadTest) do
+HeadRoutes = Hanami::Router.new(namespace: HeadTest) do
   get '/',           to: 'home#index'
   get '/code/:code', to: 'home#code'
   get '/override',   to: 'home#override'

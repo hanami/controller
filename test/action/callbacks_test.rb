@@ -1,6 +1,6 @@
 require 'test_helper'
 
-describe Lotus::Action do
+describe Hanami::Action do
   describe '#before' do
     it 'invokes the method(s) from the given symbol(s) before the action is run' do
       action = BeforeMethodAction.new

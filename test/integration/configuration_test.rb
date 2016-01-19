@@ -2,12 +2,12 @@ require 'test_helper'
 
 describe 'Framework configuration' do
   it 'keeps separated copies of the configuration' do
-    lotus_configuration = Lotus::Controller.configuration
+    hanami_configuration = Hanami::Controller.configuration
     music_configuration = MusicPlayer::Controller.configuration
     artists_show_config = MusicPlayer::Controllers::Artists::Show.configuration
 
-    lotus_configuration.wont_equal(music_configuration)
-    lotus_configuration.wont_equal(artists_show_config)
+    hanami_configuration.wont_equal(music_configuration)
+    hanami_configuration.wont_equal(artists_show_config)
   end
 
   it 'inheriths configurations at the framework level' do
@@ -31,7 +31,7 @@ describe 'Framework configuration' do
   end
 
   it 'allows standalone modulized actions to inherith framework configuration' do
-    Lotus::Controller.configuration.handled_exceptions.wont_include     App::CustomError
+    Hanami::Controller.configuration.handled_exceptions.wont_include     App::CustomError
     App::StandaloneAction.configuration.handled_exceptions.must_include App::CustomError
 
     code, _, _ = App::StandaloneAction.new.call({})
@@ -39,7 +39,7 @@ describe 'Framework configuration' do
   end
 
   it 'allows standalone modulized controllers to inherith framework configuration' do
-    Lotus::Controller.configuration.handled_exceptions.wont_include       App2::CustomError
+    Hanami::Controller.configuration.handled_exceptions.wont_include       App2::CustomError
     App2::Standalone::Index.configuration.handled_exceptions.must_include App2::CustomError
 
     code, _, _ = App2::Standalone::Index.new.call({})
@@ -48,8 +48,8 @@ describe 'Framework configuration' do
 
   it 'includes modules from configuration' do
     modules = MusicPlayer::Controllers::Artists::Show.included_modules
-    modules.must_include(Lotus::Action::Cookies)
-    modules.must_include(Lotus::Action::Session)
+    modules.must_include(Hanami::Action::Cookies)
+    modules.must_include(Hanami::Action::Session)
   end
 
   it 'correctly includes user defined modules' do
