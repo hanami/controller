@@ -1,6 +1,10 @@
 # Lotus::Controller
 Complete, fast and testable actions for Rack
 
+## v0.5.1 - 2016-01-19
+### Fixed
+- [Alfonso Uceda] Ensure `rack.session` cookie to not be sent twice when both `Lotus::Action::Cookies` and `Rack::Session::Cookie` are used together
+
 ## v0.5.0 - 2016-01-12
 ### Added
 - [Luca Guidi] Reference a raised exception in Rack env's `rack.exception`. Compatibility with exception reporting SaaS.
