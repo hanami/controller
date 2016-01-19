@@ -18,8 +18,15 @@ module Lotus
 
       # The key used by Rack to set the session cookie
       #
-      # @since x.x.x
+      # We let CookieJar to NOT take care of this cookie, but it leaves the
+      # responsibility to the Rack middleware that handle sessions.
+      #
+      # This prevents <tt>Set-Cookie</tt> to be sent twice.
+      #
+      # @since 0.5.1
       # @api private
+      #
+      # @see https://github.com/lotus/controller/issues/138
       RACK_SESSION_KEY   = :'rack.session'
 
       # The key used by Rack to set the cookies as an Hash in the env
