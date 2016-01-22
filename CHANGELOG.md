@@ -1,9 +1,13 @@
 # Hanami::Controller
 Complete, fast and testable actions for Rack
 
+## v0.6.0 - 2016-01-22
+### Changed
+- [Luca Guidi] Renamed the project
+
 ## v0.5.1 - 2016-01-19
 ### Fixed
-- [Alfonso Uceda] Ensure `rack.session` cookie to not be sent twice when both `Hanami::Action::Cookies` and `Rack::Session::Cookie` are used together
+- [Alfonso Uceda] Ensure `rack.session` cookie to not be sent twice when both `Lotus::Action::Cookies` and `Rack::Session::Cookie` are used together
 
 ## v0.5.0 - 2016-01-12
 ### Added
@@ -14,9 +18,9 @@ Complete, fast and testable actions for Rack
 - [Luca Guidi] Ensure superclass exceptions to not shadow subclasses during exception handling (eg. `CustomError` handler will take precedence over `StandardError`)
 
 ### Changed
-- [Luca Guidi] Removed `Hanami::Controller::Configuration#default_format`
-- [Cainã Costa] Made `Hanami::Action#session` a public method for improved unit testing
-- [Karim Tarek] Introduced `Hanami::Controller::Error` and let all the framework exceptions to inherit from it.
+- [Luca Guidi] Removed `Lotus::Controller::Configuration#default_format`
+- [Cainã Costa] Made `Lotus::Action#session` a public method for improved unit testing
+- [Karim Tarek] Introduced `Lotus::Controller::Error` and let all the framework exceptions to inherit from it.
 
 ## v0.4.6 - 2015-12-04
 ### Added
@@ -39,29 +43,29 @@ Complete, fast and testable actions for Rack
 
 ## v0.4.3 - 2015-05-22
 ### Added
-- [Alfonso Uceda Pompa & Luca Guidi] Introduced `Hanami::Action#send_file`
+- [Alfonso Uceda Pompa & Luca Guidi] Introduced `Lotus::Action#send_file`
 - [Alfonso Uceda Pompa] Set automatically `Expires` option for cookies when it's missing but `Max-Age` is present. Compatibility with old browsers.
 
 ## v0.4.2 - 2015-05-15
 ### Fixed
-- [Luca Guidi] Ensure `Hanami::Action::Params#to_h` to return `::Hash` at the top level
+- [Luca Guidi] Ensure `Lotus::Action::Params#to_h` to return `::Hash` at the top level
 
 ## v0.4.1 - 2015-05-15
 ### Fixed
 - [Luca Guidi] Ensure proper automatic `Content-Type` working well with Internet Explorer.
-- [Luca Guidi] Ensure `Hanami::Action#redirect_to` to return `::String` for Rack servers compatibility.
+- [Luca Guidi] Ensure `Lotus::Action#redirect_to` to return `::String` for Rack servers compatibility.
 
 ### Changed
 - [Alfonso Uceda Pompa] Prevent `Content-Type` and `Content-Lenght` to be sent when status code requires no body (eg. `204`).
     This is for compatibility with `Rack::Lint`, not with RFC 2016.
-- [Luca Guidi] Ensure `Hanami::Action::Params#to_h` to return `::Hash`
+- [Luca Guidi] Ensure `Lotus::Action::Params#to_h` to return `::Hash`
 
 ## v0.4.0 - 2015-03-23
 ### Added
 - [Erol Fornoles] `Action.use` now accepts a block
-- [Alfonso Uceda Pompa] Introduced `Hanami::Controller::Configuration#cookies` as default cookie options.
-- [Alfonso Uceda Pompa] Introduced `Hanami::Controller::Configuration#default_headers` as default HTTP headers to return in all the responses.
-- [Luca Guidi] Introduced `Hanami::Action::Params#get` as a safe API to access nested params.
+- [Alfonso Uceda Pompa] Introduced `Lotus::Controller::Configuration#cookies` as default cookie options.
+- [Alfonso Uceda Pompa] Introduced `Lotus::Controller::Configuration#default_headers` as default HTTP headers to return in all the responses.
+- [Luca Guidi] Introduced `Lotus::Action::Params#get` as a safe API to access nested params.
 
 ### Changed
 - [Alfonso Uceda Pompa] `redirect_to` now is a flow control method: it terminates the execution of an action, including the callbacks.
@@ -69,9 +73,9 @@ Complete, fast and testable actions for Rack
 ## v0.3.2 - 2015-01-30
 ### Added
 - [Alfonso Uceda Pompa] Callbacks: introduced `append_before` (alias of `before`), `append_after` (alias of `after`), `prepend_before` and `prepend_after`.
-- [Alfonso Uceda Pompa] Introduced `Hanami::Action::Params#raw` which returns unfiltered data as it comes from an HTTP request.
-- [Alfonso Uceda Pompa] `Hanami::Action::Rack.use` now fully supports Rack middleware, by mounting an internal `Rack::Builder` instance.
-- [Simone Carletti] `Hanami::Action::Throwable#halt` now accepts an optional message. If missing it falls back to the corresponding HTTP status message.
+- [Alfonso Uceda Pompa] Introduced `Lotus::Action::Params#raw` which returns unfiltered data as it comes from an HTTP request.
+- [Alfonso Uceda Pompa] `Lotus::Action::Rack.use` now fully supports Rack middleware, by mounting an internal `Rack::Builder` instance.
+- [Simone Carletti] `Lotus::Action::Throwable#halt` now accepts an optional message. If missing it falls back to the corresponding HTTP status message.
 - [Steve Hodgkiss] Nested params validation
 
 ### Fixed
@@ -82,7 +86,7 @@ Complete, fast and testable actions for Rack
 
 ## v0.3.1 - 2015-01-08
 ### Added
-- [Lasse Skindstad Ebert] Introduced `Action#request` which returns an instance a `Rack::Request` compliant object: `Hanami::Action::Request`.
+- [Lasse Skindstad Ebert] Introduced `Action#request` which returns an instance a `Rack::Request` compliant object: `Lotus::Action::Request`.
 
 ### Fixed
 - [Steve Hodgkiss] Ensure params to return coerced values
@@ -90,7 +94,7 @@ Complete, fast and testable actions for Rack
 ## v0.3.0 - 2014-12-23
 ### Added
 - [Luca Guidi] Introduced `Action#request_id` as unique identifier for an incoming HTTP request
-- [Luca Guidi] Introduced `Hanami::Controller.load!` as loading framework entry point
+- [Luca Guidi] Introduced `Lotus::Controller.load!` as loading framework entry point
 - [Kir Shatrov] Allow to define a default charset (`default_charset` configuration)
 - [Kir Shatrov] Automatic content type with charset (eg `Content-Type: text/html; charset=utf-8`)
 - [Michał Krzyżanowski] Allow to specify custom exception handlers: procs or methods (`exception_handler` configuration)
@@ -106,7 +110,7 @@ Complete, fast and testable actions for Rack
 ### Changed
 - [Trung Lê] Renamed `Configuration#modules` to `#prepare`
 - [Luca Guidi] Update HTTP status codes to IETF RFC 7231
-- [Luca Guidi] When `Hanami::Controller` is included, don't inject code
+- [Luca Guidi] When `Lotus::Controller` is included, don't inject code
 - [Luca Guidi] Removed `Controller.action` as a DSL to define actions
 - [Krzysztof Zalewski] Removed `Action#content_type` in favor of `#format=` which accepts a symbol (eg. `:json`)
 - [Fuad Saud] Reduce method visibility where possible (Ruby `private` and `protected`)
@@ -126,8 +130,8 @@ Complete, fast and testable actions for Rack
 - [Luca Guidi] Official support for Ruby 2.1
 
 ### Changed
-- [Luca Guidi] `Hanami::Action::Params` doesn't inherit from `Hanami::Utils::Hash` anymore
-- [Luca Guidi] `Hanami::Action::CookieJar` doesn't inherit from `Hanami::Utils::Hash` anymore
+- [Luca Guidi] `Lotus::Action::Params` doesn't inherit from `Lotus::Utils::Hash` anymore
+- [Luca Guidi] `Lotus::Action::CookieJar` doesn't inherit from `Lotus::Utils::Hash` anymore
 - [Luca Guidi] Make HTTP status messages compliant with IANA and Rack
 - [Damir Zekic] Moved `#throw` override logic into `#halt`, which keeps the same semantic
 
