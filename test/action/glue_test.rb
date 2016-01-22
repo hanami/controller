@@ -1,6 +1,6 @@
 require 'test_helper'
 
-describe Lotus::Action::Glue do
+describe Hanami::Action::Glue do
 
   describe "#renderable?" do
     describe "when sending file" do

@@ -1,9 +1,9 @@
 require 'test_helper'
 
-describe Lotus::Action do
+describe Hanami::Action do
   class FormatController
     class Lookup
-      include Lotus::Action
+      include Hanami::Action
       configuration.handle_exceptions = false
 
       def call(params)
@@ -11,7 +11,7 @@ describe Lotus::Action do
     end
 
     class Custom
-      include Lotus::Action
+      include Hanami::Action
       configuration.handle_exceptions = false
 
       def call(params)
@@ -50,7 +50,7 @@ describe Lotus::Action do
     end
 
     # Bug
-    # See https://github.com/lotus/controller/issues/104
+    # See https://github.com/hanami/controller/issues/104
     it "accepts 'text/html, application/xhtml+xml, image/jxr, */*' and returns :html" do
       status, headers, _ = @action.call({ 'HTTP_ACCEPT' => 'text/html, application/xhtml+xml, image/jxr, */*' })
 
@@ -105,8 +105,8 @@ describe Lotus::Action do
       begin
         @action.call({ format: :unknown })
       rescue => e
-        e.must_be_kind_of(Lotus::Controller::UnknownFormatError)
-        e.message.must_equal "Cannot find a corresponding Mime type for 'unknown'. Please configure it with Lotus::Controller::Configuration#format."
+        e.must_be_kind_of(Hanami::Controller::UnknownFormatError)
+        e.message.must_equal "Cannot find a corresponding Mime type for 'unknown'. Please configure it with Hanami::Controller::Configuration#format."
       end
     end
 

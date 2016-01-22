@@ -1,11 +1,11 @@
 require 'test_helper'
-require 'lotus/action/request'
+require 'hanami/action/request'
 
-describe Lotus::Action::Request do
+describe Hanami::Action::Request do
   def build_request(attributes = {})
     url = 'http://example.com/foo?q=bar'
     env = Rack::MockRequest.env_for(url, attributes)
-    Lotus::Action::Request.new(env)
+    Hanami::Action::Request.new(env)
   end
 
   describe '#body' do
@@ -159,7 +159,7 @@ describe Lotus::Action::Request do
         []=
         values_at
       )
-      request = Lotus::Action::Request.new({})
+      request = Hanami::Action::Request.new({})
       methods.each do |method|
         proc { request.send(method) }.must_raise(NotImplementedError)
       end

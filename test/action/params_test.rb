@@ -1,20 +1,20 @@
 require 'test_helper'
 require 'rack'
 
-describe Lotus::Action::Params do
+describe Hanami::Action::Params do
   it 'is frozen'
 
   # This is temporary suspended.
-  # We need to get the dependency Lotus::Validations, more stable before to enable this back.
+  # We need to get the dependency Hanami::Validations, more stable before to enable this back.
   #
   # it 'is frozen' do
-  #   params = Lotus::Action::Params.new({id: '23'})
+  #   params = Hanami::Action::Params.new({id: '23'})
   #   params.must_be :frozen?
   # end
 
   describe 'raw params' do
     before do
-      @params = Class.new(Lotus::Action::Params)
+      @params = Class.new(Hanami::Action::Params)
     end
 
     describe "when this feature isn't enabled" do
@@ -48,7 +48,7 @@ describe Lotus::Action::Params do
 
   describe 'whitelisting' do
     before do
-      @params = Class.new(Lotus::Action::Params)
+      @params = Class.new(Hanami::Action::Params)
     end
 
     it 'accepts both string and symbols as names' do
@@ -67,8 +67,8 @@ describe Lotus::Action::Params do
         assert defined?(ParamsAction::Params),
           "expected ParamsAction::Params to be defined"
 
-        assert ParamsAction::Params.ancestors.include?(Lotus::Action::Params),
-          "expected ParamsAction::Params to be a Lotus::Action::Params subclass"
+        assert ParamsAction::Params.ancestors.include?(Hanami::Action::Params),
+          "expected ParamsAction::Params to be a Hanami::Action::Params subclass"
       end
 
       describe "in testing mode" do
@@ -85,7 +85,7 @@ describe Lotus::Action::Params do
         end
       end
 
-      describe "with Lotus::Router" do
+      describe "with Hanami::Router" do
         it 'returns all the params as they are' do
           _, _, body = @action.call({ 'router.params' => {id: 23}})
           body.must_equal [%({"id"=>23})]
@@ -123,7 +123,7 @@ describe Lotus::Action::Params do
           end
         end
 
-        describe "with Lotus::Router" do
+        describe "with Hanami::Router" do
           it 'returns only the listed params' do
             _, _, body = @action.call({ 'router.params' => {id: 23, another: 'x'}})
             body.must_equal [%({"id"=>23})]
@@ -140,8 +140,8 @@ describe Lotus::Action::Params do
           assert defined?(WhitelistedDslAction::Params),
             "expected WhitelistedDslAction::Params to be defined"
 
-          assert WhitelistedDslAction::Params.ancestors.include?(Lotus::Action::Params),
-            "expected WhitelistedDslAction::Params to be a Lotus::Action::Params subclass"
+          assert WhitelistedDslAction::Params.ancestors.include?(Hanami::Action::Params),
+            "expected WhitelistedDslAction::Params to be a Hanami::Action::Params subclass"
         end
 
         describe "in testing mode" do
@@ -158,7 +158,7 @@ describe Lotus::Action::Params do
           end
         end
 
-        describe "with Lotus::Router" do
+        describe "with Hanami::Router" do
           it 'returns only the listed params' do
             _, _, body = @action.call({ 'router.params' => {username: 'jodosha', y: 'x'}})
             body.must_equal [%({"username"=>"jodosha"})]
@@ -175,17 +175,17 @@ describe Lotus::Action::Params do
       params.valid?.must_equal false
 
       params.errors.for(:email).
-        must_include Lotus::Validations::Error.new(:email, :presence, true, nil)
+        must_include Hanami::Validations::Error.new(:email, :presence, true, nil)
       params.errors.for(:name).
-        must_include Lotus::Validations::Error.new(:name, :presence, true, nil)
+        must_include Hanami::Validations::Error.new(:name, :presence, true, nil)
       params.errors.for(:tos).
-        must_include Lotus::Validations::Error.new(:tos, :acceptance, true, nil)
+        must_include Hanami::Validations::Error.new(:tos, :acceptance, true, nil)
       params.errors.for('address.line_one').
-        must_include Lotus::Validations::Error.new('address.line_one', :presence, true, nil)
+        must_include Hanami::Validations::Error.new('address.line_one', :presence, true, nil)
     end
 
     it "is it valid when all the validation criteria are met" do
-      params = TestParams.new({email: 'test@lotusrb.org', name: 'Luca', tos: '1', address: { line_one: '10 High Street' }})
+      params = TestParams.new({email: 'test@hanamirb.org', name: 'Luca', tos: '1', address: { line_one: '10 High Street' }})
 
       params.valid?.must_equal true
       params.errors.must_be_empty
@@ -212,7 +212,7 @@ describe Lotus::Action::Params do
 
     it "has the correct nested param superclass type" do
       params = TestParams.new({address: { line_one: '123'}})
-      params[:address].class.superclass.must_equal(Lotus::Action::Params)
+      params[:address].class.superclass.must_equal(Hanami::Action::Params)
     end
 
     it "allows nested hash access via symbols" do
@@ -278,7 +278,7 @@ describe Lotus::Action::Params do
   end
 
   describe '#to_h' do
-    let(:params) { Lotus::Action::Params.new(id: '23') }
+    let(:params) { Hanami::Action::Params.new(id: '23') }
 
     it "returns a ::Hash" do
       params.to_h.must_be_kind_of ::Hash
@@ -305,7 +305,7 @@ describe Lotus::Action::Params do
         }
       }
 
-      actual = Lotus::Action::Params.new(hash).to_h
+      actual = Hanami::Action::Params.new(hash).to_h
       actual.must_equal(hash)
 
       actual.must_be_kind_of(::Hash)
@@ -340,7 +340,7 @@ describe Lotus::Action::Params do
   end
 
   describe '#to_hash' do
-    let(:params) { Lotus::Action::Params.new(id: '23') }
+    let(:params) { Hanami::Action::Params.new(id: '23') }
 
     it "returns an Utils::Hash" do
       params.to_hash.must_be_kind_of(::Hash)
@@ -367,7 +367,7 @@ describe Lotus::Action::Params do
         }
       }
 
-      actual = Lotus::Action::Params.new(hash).to_hash
+      actual = Hanami::Action::Params.new(hash).to_hash
       actual.must_equal(hash)
 
       actual.must_be_kind_of(::Hash)

@@ -1,13 +1,13 @@
 require 'test_helper'
 
-Lotus::Action::CookieJar.class_eval do
+Hanami::Action::CookieJar.class_eval do
   def include?(hash)
     key, value = *hash
     @cookies[key] == value
   end
 end
 
-describe Lotus::Action do
+describe Hanami::Action do
   describe 'cookies' do
     it 'gets cookies' do
       action   = GetCookiesAction.new
@@ -31,7 +31,7 @@ describe Lotus::Action do
       action   = SetCookiesWithOptionsAction.new
       _, headers, body = action.call({expires: tomorrow})
 
-      headers.must_equal({'Content-Type' => 'application/octet-stream; charset=utf-8', 'Set-Cookie' => "kukki=yum%21; domain=lotusrb.org; path=/controller; expires=#{ tomorrow.gmtime.rfc2822 }; secure; HttpOnly"})
+      headers.must_equal({'Content-Type' => 'application/octet-stream; charset=utf-8', 'Set-Cookie' => "kukki=yum%21; domain=hanamirb.org; path=/controller; expires=#{ tomorrow.gmtime.rfc2822 }; secure; HttpOnly"})
     end
 
     it 'removes cookies' do
@@ -45,21 +45,21 @@ describe Lotus::Action do
       it 'gets default cookies' do
         action   = GetDefaultCookiesAction.new
         action.class.configuration.cookies({
-          domain: 'lotusrb.org', path: '/controller', secure: true, httponly: true
+          domain: 'hanamirb.org', path: '/controller', secure: true, httponly: true
         })
 
         _, headers, _ = action.call({})
-        headers.must_equal({'Content-Type' => 'application/octet-stream; charset=utf-8', 'Set-Cookie' => 'bar=foo; domain=lotusrb.org; path=/controller; secure; HttpOnly'})
+        headers.must_equal({'Content-Type' => 'application/octet-stream; charset=utf-8', 'Set-Cookie' => 'bar=foo; domain=hanamirb.org; path=/controller; secure; HttpOnly'})
       end
 
       it "overwritten cookies' values are respected" do
         action   = GetOverwrittenCookiesAction.new
         action.class.configuration.cookies({
-          domain: 'lotusrb.org', path: '/controller', secure: true, httponly: true
+          domain: 'hanamirb.org', path: '/controller', secure: true, httponly: true
         })
 
         _, headers, _ = action.call({})
-        headers.must_equal({'Content-Type' => 'application/octet-stream; charset=utf-8', 'Set-Cookie' => 'bar=foo; domain=lotusrb.com; path=/action'})
+        headers.must_equal({'Content-Type' => 'application/octet-stream; charset=utf-8', 'Set-Cookie' => 'bar=foo; domain=hanamirb.com; path=/action'})
       end
     end
 

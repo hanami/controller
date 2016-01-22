@@ -1,6 +1,6 @@
 require 'test_helper'
 
-describe Lotus::Action do
+describe Hanami::Action do
   describe 'session' do
     it 'captures session from Rack env' do
       action = SessionAction.new

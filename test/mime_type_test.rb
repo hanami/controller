@@ -1,6 +1,6 @@
 require 'test_helper'
 
-describe Lotus::Action::Mime do
+describe Hanami::Action::Mime do
   it 'exposes content_type' do
     action = CallAction.new
     action.call({})

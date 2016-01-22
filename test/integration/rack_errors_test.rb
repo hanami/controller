@@ -1,7 +1,7 @@
 require 'test_helper'
-require 'lotus/router'
+require 'hanami/router'
 
-ErrorsRoutes = Lotus::Router.new do
+ErrorsRoutes = Hanami::Router.new do
   get '/without_message',     to: 'errors#without_message'
   get '/with_message',        to: 'errors#with_message'
   get '/with_custom_message', to: 'errors#with_custom_message'
@@ -18,13 +18,13 @@ CustomAuthException       = Class.new(StandardError) do
   end
 end
 
-Lotus::Controller.configure do
+Hanami::Controller.configure do
   handle_exception FrameworkHandledException => 500
 end
 
 module Errors
   class WithoutMessage
-    include Lotus::Action
+    include Hanami::Action
 
     def call(params)
       raise AuthException
@@ -32,7 +32,7 @@ module Errors
   end
 
   class WithMessage
-    include Lotus::Action
+    include Hanami::Action
 
     def call(params)
       raise AuthException.new %q{you're not authorized to see this page!}
@@ -40,7 +40,7 @@ module Errors
   end
 
   class WithCustomMessage
-    include Lotus::Action
+    include Hanami::Action
 
     def call(params)
       raise CustomAuthException, 'plz go away!!'
@@ -48,7 +48,7 @@ module Errors
   end
 
   class ActionManaged
-    include Lotus::Action
+    include Hanami::Action
     handle_exception HandledException => 400
 
     def call(params)
@@ -57,7 +57,7 @@ module Errors
   end
 
   class FrameworkManaged
-    include Lotus::Action
+    include Hanami::Action
 
     def call(params)
       raise FrameworkHandledException.new
@@ -65,21 +65,21 @@ module Errors
   end
 end
 
-Lotus::Controller.unload!
+Hanami::Controller.unload!
 
-DisabledErrorsRoutes = Lotus::Router.new do
+DisabledErrorsRoutes = Hanami::Router.new do
   get '/action_managed',    to: 'disabled_errors#action_managed'
   get '/framework_managed', to: 'disabled_errors#framework_managed'
 end
 
-Lotus::Controller.configure do
+Hanami::Controller.configure do
   handle_exceptions false
   handle_exception FrameworkHandledException => 500
 end
 
 module DisabledErrors
   class ActionManaged
-    include Lotus::Action
+    include Hanami::Action
     handle_exception HandledException => 400
 
     def call(params)
@@ -88,7 +88,7 @@ module DisabledErrors
   end
 
   class FrameworkManaged
-    include Lotus::Action
+    include Hanami::Action
 
     def call(params)
       raise FrameworkHandledException.new
@@ -96,7 +96,7 @@ module DisabledErrors
   end
 end
 
-Lotus::Controller.unload!
+Hanami::Controller.unload!
 
 describe 'Reference exception in rack.errors' do
   before do

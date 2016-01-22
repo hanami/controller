@@ -1,6 +1,6 @@
 require 'test_helper'
 
-describe Lotus::Action::Rack do
+describe Hanami::Action::Rack do
   before do
     @action = MethodInspectionAction.new
   end

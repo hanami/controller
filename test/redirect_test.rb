@@ -1,6 +1,6 @@
 require 'test_helper'
 
-describe Lotus::Action do
+describe Hanami::Action do
   describe 'redirect' do
     it 'redirects to the given path' do
       action   = RedirectAction.new
@@ -18,7 +18,7 @@ describe Lotus::Action do
     end
 
     # Bug
-    # See: https://github.com/lotus/lotus/issues/196
+    # See: https://github.com/hanami/hanami/issues/196
     it 'corces location to a ::String' do
       response = SafeStringRedirectAction.new.call({})
       response[1]['Location'].class.must_equal(::String)

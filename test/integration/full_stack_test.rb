@@ -52,7 +52,7 @@ describe 'Full stack application' do
     patch '/books/1', {
       id: '1',
       book: {
-        title: 'Lotus in Action',
+        title: 'Hanami in Action',
         author: {
           name: 'Luca'
         }
@@ -72,13 +72,13 @@ describe 'Full stack application' do
     patch '/books/1', {
       id: '1',
       book: {
-        title: 'Lotus in Action',
+        title: 'Hanami in Action',
       }
     }
     result = Marshal.load(last_response.body)
     result[:valid].must_equal false
     result[:errors].must_equal({
-      'book.author.name' => [Lotus::Validations::Error.new('book.author.name', :presence, true, nil)]
+      'book.author.name' => [Hanami::Validations::Error.new('book.author.name', :presence, true, nil)]
     })
   end
 

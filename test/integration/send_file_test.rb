@@ -1,7 +1,7 @@
 require 'test_helper'
 require 'rack/test'
 
-SendFileRoutes = Lotus::Router.new(namespace: SendFileTest) do
+SendFileRoutes = Hanami::Router.new(namespace: SendFileTest) do
   get '/files/flow', to: 'files#flow'
   get '/files/:id',  to: 'files#show'
 end
@@ -30,7 +30,7 @@ describe 'Full stack application' do
 
     it 'sets Content-Type according to file type (ignoring HTTP_ACCEPT)' do
       get '/files/2', {}, 'HTTP_ACCEPT' => 'text/html'
-      file = Pathname.new('test/assets/lotus.png')
+      file = Pathname.new('test/assets/hanami.png')
 
       last_response.status.must_equal 200
       last_response.headers['Content-Length'].to_i.must_equal file.size

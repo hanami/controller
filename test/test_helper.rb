@@ -18,11 +18,11 @@ end
 
 require 'minitest/autorun'
 $:.unshift 'lib'
-require 'lotus/controller'
-require 'lotus/action/cookies'
-require 'lotus/action/session'
+require 'hanami/controller'
+require 'hanami/action/cookies'
+require 'hanami/action/session'
 
-Lotus::Controller.class_eval do
+Hanami::Controller.class_eval do
   def self.unload!
     self.configuration = configuration.duplicate
     configuration.reset!
@@ -31,7 +31,7 @@ end
 
 require 'fixtures'
 
-Lotus::Controller::Configuration.class_eval do
+Hanami::Controller::Configuration.class_eval do
   def ==(other)
     other.kind_of?(self.class) &&
       other.handle_exceptions  == handle_exceptions &&

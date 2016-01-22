@@ -1,8 +1,8 @@
 require 'test_helper'
 require 'rack/test'
-require 'lotus/router'
+require 'hanami/router'
 
-SessionRoutes = Lotus::Router.new do
+SessionRoutes = Hanami::Router.new do
   get    '/',       to: 'dashboard#index'
   post   '/login',  to: 'sessions#create'
   delete '/logout', to: 'sessions#destroy'

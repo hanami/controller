@@ -12,7 +12,7 @@ describe 'Rack middleware integration' do
     let(:app) { UseActionApplication }
 
     it 'uses the specified Rack middleware' do
-      router = Lotus::Router.new do
+      router = Hanami::Router.new do
         get '/', to: 'use_action#index'
         get '/show', to: 'use_action#show'
         get '/edit', to: 'use_action#edit'
@@ -50,7 +50,7 @@ describe 'Rack middleware integration' do
     let(:app) { NoUseActionApplication }
 
     it "action doens't use a middleware" do
-      router = Lotus::Router.new do
+      router = Hanami::Router.new do
         get '/', to: 'no_use_action#index'
       end
 

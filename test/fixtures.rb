@@ -1,10 +1,10 @@
 require 'digest/md5'
-require 'lotus/router'
-require 'lotus/utils/escape'
-require 'lotus/action/cookies'
-require 'lotus/action/session'
-require 'lotus/action/cache'
-require 'lotus/action/glue'
+require 'hanami/router'
+require 'hanami/utils/escape'
+require 'hanami/action/cookies'
+require 'hanami/action/session'
+require 'hanami/action/cache'
+require 'hanami/action/glue'
 
 HTTP_TEST_STATUSES_WITHOUT_BODY = Set.new((100..199).to_a << 204 << 205 << 304).freeze
 HTTP_TEST_STATUSES = {
@@ -80,7 +80,7 @@ HTTP_TEST_STATUSES = {
 
 module Test
   class Index
-    include Lotus::Action
+    include Hanami::Action
     expose :xyz
 
     def call(params)
@@ -90,7 +90,7 @@ module Test
 end
 
 class CallAction
-  include Lotus::Action
+  include Hanami::Action
 
   def call(params)
     self.status  = 201
@@ -100,7 +100,7 @@ class CallAction
 end
 
 class ErrorCallAction
-  include Lotus::Action
+  include Hanami::Action
 
   def call(params)
     raise
@@ -109,7 +109,7 @@ end
 
 class MyCustomError < StandardError ; end
 class ErrorCallFromInheritedErrorClass
-  include Lotus::Action
+  include Hanami::Action
 
   handle_exception StandardError => :handler
 
@@ -124,7 +124,7 @@ class ErrorCallFromInheritedErrorClass
 end
 
 class ErrorCallFromInheritedErrorClassStack
-  include Lotus::Action
+  include Hanami::Action
 
   handle_exception StandardError => :standard_handler
   handle_exception MyCustomError => :handler
@@ -144,7 +144,7 @@ class ErrorCallFromInheritedErrorClassStack
 end
 
 class ErrorCallWithSymbolMethodNameAsHandlerAction
-  include Lotus::Action
+  include Hanami::Action
 
   handle_exception StandardError => :handler
 
@@ -159,7 +159,7 @@ class ErrorCallWithSymbolMethodNameAsHandlerAction
 end
 
 class ErrorCallWithStringMethodNameAsHandlerAction
-  include Lotus::Action
+  include Hanami::Action
 
   handle_exception StandardError => 'standard_error_handler'
 
@@ -174,7 +174,7 @@ class ErrorCallWithStringMethodNameAsHandlerAction
 end
 
 class ErrorCallWithUnsetStatusResponse
-  include Lotus::Action
+  include Hanami::Action
 
   handle_exception ArgumentError => 'arg_error_handler'
 
@@ -188,7 +188,7 @@ class ErrorCallWithUnsetStatusResponse
 end
 
 class ErrorCallWithSpecifiedStatusCodeAction
-  include Lotus::Action
+  include Hanami::Action
 
   handle_exception StandardError => 422
 
@@ -198,7 +198,7 @@ class ErrorCallWithSpecifiedStatusCodeAction
 end
 
 class ExposeAction
-  include Lotus::Action
+  include Hanami::Action
 
   expose :film, :time
 
@@ -243,7 +243,7 @@ end
 
 module UseAction
   class Index
-    include Lotus::Action
+    include Hanami::Action
     use XMiddleware
 
     def call(params)
@@ -252,7 +252,7 @@ module UseAction
   end
 
   class Show
-    include Lotus::Action
+    include Hanami::Action
     use YMiddleware
 
     def call(params)
@@ -261,7 +261,7 @@ module UseAction
   end
 
   class Edit
-    include Lotus::Action
+    include Hanami::Action
     use ZMiddleware do
       'OK'
     end
@@ -274,7 +274,7 @@ end
 
 module NoUseAction
   class Index
-    include Lotus::Action
+    include Hanami::Action
 
     def call(params)
       self.body = 'Hello from NoUseAction::Index'
@@ -283,7 +283,7 @@ module NoUseAction
 end
 
 class BeforeMethodAction
-  include Lotus::Action
+  include Hanami::Action
 
   expose :article, :logger
   before :set_article, :reverse_article
@@ -349,7 +349,7 @@ class ErrorBeforeMethodAction < BeforeMethodAction
 end
 
 class BeforeBlockAction
-  include Lotus::Action
+  include Hanami::Action
 
   expose :article
   before { @article = 'Good morning!' }
@@ -365,7 +365,7 @@ class YieldBeforeBlockAction < BeforeBlockAction
 end
 
 class AfterMethodAction
-  include Lotus::Action
+  include Hanami::Action
 
   expose :egg, :logger
   after  :set_egg, :scramble_egg
@@ -425,7 +425,7 @@ class ErrorAfterMethodAction < AfterMethodAction
 end
 
 class AfterBlockAction
-  include Lotus::Action
+  include Hanami::Action
 
   expose :egg
   after { @egg = 'Coque' }
@@ -441,15 +441,15 @@ class YieldAfterBlockAction < AfterBlockAction
 end
 
 class SessionAction
-  include Lotus::Action
-  include Lotus::Action::Session
+  include Hanami::Action
+  include Hanami::Action::Session
 
   def call(params)
   end
 end
 
 class RedirectAction
-  include Lotus::Action
+  include Hanami::Action
 
   def call(params)
     redirect_to '/destination'
@@ -457,7 +457,7 @@ class RedirectAction
 end
 
 class StatusRedirectAction
-  include Lotus::Action
+  include Hanami::Action
 
   def call(params)
     redirect_to '/destination', status: 301
@@ -465,17 +465,17 @@ class StatusRedirectAction
 end
 
 class SafeStringRedirectAction
-  include Lotus::Action
+  include Hanami::Action
 
   def call(params)
-    location = Lotus::Utils::Escape::SafeString.new('/destination')
+    location = Hanami::Utils::Escape::SafeString.new('/destination')
     redirect_to location
   end
 end
 
 class GetCookiesAction
-  include Lotus::Action
-  include Lotus::Action::Cookies
+  include Hanami::Action
+  include Hanami::Action::Cookies
 
   def call(params)
     self.body = cookies[:foo]
@@ -483,8 +483,8 @@ class GetCookiesAction
 end
 
 class GetDefaultCookiesAction
-  include Lotus::Action
-  include Lotus::Action::Cookies
+  include Hanami::Action
+  include Hanami::Action::Cookies
 
   def call(params)
     self.body = ''
@@ -493,18 +493,18 @@ class GetDefaultCookiesAction
 end
 
 class GetOverwrittenCookiesAction
-  include Lotus::Action
-  include Lotus::Action::Cookies
+  include Hanami::Action
+  include Hanami::Action::Cookies
 
   def call(params)
     self.body = ''
-    cookies[:bar] = { value: 'foo', domain: 'lotusrb.com', path: '/action', secure: false, httponly: false }
+    cookies[:bar] = { value: 'foo', domain: 'hanamirb.com', path: '/action', secure: false, httponly: false }
   end
 end
 
 class GetAutomaticallyExpiresCookiesAction
-  include Lotus::Action
-  include Lotus::Action::Cookies
+  include Hanami::Action
+  include Hanami::Action::Cookies
 
   def call(params)
     cookies[:bar] = { value: 'foo', max_age: 120 }
@@ -512,8 +512,8 @@ class GetAutomaticallyExpiresCookiesAction
 end
 
 class SetCookiesAction
-  include Lotus::Action
-  include Lotus::Action::Cookies
+  include Hanami::Action
+  include Hanami::Action::Cookies
 
   def call(params)
     self.body = 'yo'
@@ -522,17 +522,17 @@ class SetCookiesAction
 end
 
 class SetCookiesWithOptionsAction
-  include Lotus::Action
-  include Lotus::Action::Cookies
+  include Hanami::Action
+  include Hanami::Action::Cookies
 
   def call(params)
-    cookies[:kukki] = { value: 'yum!', domain: 'lotusrb.org', path: '/controller', expires: params[:expires], secure: true, httponly: true }
+    cookies[:kukki] = { value: 'yum!', domain: 'hanamirb.org', path: '/controller', expires: params[:expires], secure: true, httponly: true }
   end
 end
 
 class RemoveCookiesAction
-  include Lotus::Action
-  include Lotus::Action::Cookies
+  include Hanami::Action
+  include Hanami::Action::Cookies
 
   def call(params)
     cookies[:rm] = nil
@@ -540,7 +540,7 @@ class RemoveCookiesAction
 end
 
 class ThrowCodeAction
-  include Lotus::Action
+  include Hanami::Action
 
   def call(params)
     halt params[:status], params[:message]
@@ -548,7 +548,7 @@ class ThrowCodeAction
 end
 
 class CatchAndThrowSymbolAction
-  include Lotus::Action
+  include Hanami::Action
 
   def call(params)
     return_value = catch :done do
@@ -559,7 +559,7 @@ class CatchAndThrowSymbolAction
 end
 
 class ThrowBeforeMethodAction
-  include Lotus::Action
+  include Hanami::Action
 
   before :authorize!
   before :set_body
@@ -579,7 +579,7 @@ class ThrowBeforeMethodAction
 end
 
 class ThrowBeforeBlockAction
-  include Lotus::Action
+  include Hanami::Action
 
   before { halt 401 }
   before { self.body = 'Hi!' }
@@ -590,7 +590,7 @@ class ThrowBeforeBlockAction
 end
 
 class ThrowAfterMethodAction
-  include Lotus::Action
+  include Hanami::Action
 
   after :raise_timeout!
   after :set_body
@@ -610,7 +610,7 @@ class ThrowAfterMethodAction
 end
 
 class ThrowAfterBlockAction
-  include Lotus::Action
+  include Hanami::Action
 
   after { halt 408 }
   after { self.body = 'Later!' }
@@ -624,7 +624,7 @@ class RecordNotFound < StandardError
 end
 
 class HandledExceptionAction
-  include Lotus::Action
+  include Hanami::Action
   handle_exception RecordNotFound => 404
 
   def call(params)
@@ -635,24 +635,24 @@ end
 class DomainLogicException < StandardError
 end
 
-Lotus::Controller.class_eval do
+Hanami::Controller.class_eval do
   configure do
     handle_exception DomainLogicException => 400
   end
 end
 
 class GlobalHandledExceptionAction
-  include Lotus::Action
+  include Hanami::Action
 
   def call(params)
     raise DomainLogicException.new
   end
 end
 
-Lotus::Controller.unload!
+Hanami::Controller.unload!
 
 class UnhandledExceptionAction
-  include Lotus::Action
+  include Hanami::Action
 
   def call(params)
     raise RecordNotFound.new
@@ -660,7 +660,7 @@ class UnhandledExceptionAction
 end
 
 class ParamsAction
-  include Lotus::Action
+  include Hanami::Action
 
   def call(params)
     self.body = params.to_h.inspect
@@ -668,11 +668,11 @@ class ParamsAction
 end
 
 class WhitelistedParamsAction
-  class Params < Lotus::Action::Params
+  class Params < Hanami::Action::Params
     param :id
   end
 
-  include Lotus::Action
+  include Hanami::Action
   params Params
 
   def call(params)
@@ -681,7 +681,7 @@ class WhitelistedParamsAction
 end
 
 class WhitelistedDslAction
-  include Lotus::Action
+  include Hanami::Action
 
   params do
     param :username
@@ -693,7 +693,7 @@ class WhitelistedDslAction
 end
 
 class ParamsValidationAction
-  include Lotus::Action
+  include Hanami::Action
 
   params do
     param :email, type: String, presence: true
@@ -704,7 +704,7 @@ class ParamsValidationAction
   end
 end
 
-class TestParams < Lotus::Action::Params
+class TestParams < Hanami::Action::Params
   param :email, presence:   true, format: /\A.+@.+\z/
   param :name,  presence:   true
   param :tos,   acceptance: true
@@ -718,7 +718,7 @@ class TestParams < Lotus::Action::Params
 end
 
 class Root
-  include Lotus::Action
+  include Hanami::Action
 
   def call(params)
     self.body = params.to_h.inspect
@@ -731,7 +731,7 @@ module About
   end
 
   class Contacts
-    include Lotus::Action
+    include Hanami::Action
 
     def call(params)
       self.body = params.to_h.inspect
@@ -741,7 +741,7 @@ end
 
 module Identity
   class Action
-    include Lotus::Action
+    include Hanami::Action
 
     def call(params)
       self.body = params.to_h.inspect
@@ -758,7 +758,7 @@ end
 
 module Flowers
   class Action
-    include Lotus::Action
+    include Hanami::Action
 
     def call(params)
       self.body = params.to_h.inspect
@@ -776,8 +776,8 @@ end
 
 module Dashboard
   class Index
-    include Lotus::Action
-    include Lotus::Action::Session
+    include Hanami::Action
+    include Hanami::Action::Session
     before :authenticate!
 
     def call(params)
@@ -796,8 +796,8 @@ end
 
 module Sessions
   class Create
-    include Lotus::Action
-    include Lotus::Action::Session
+    include Hanami::Action
+    include Hanami::Action::Session
 
     def call(params)
       session[:user_id] = 23
@@ -806,8 +806,8 @@ module Sessions
   end
 
   class Destroy
-    include Lotus::Action
-    include Lotus::Action::Session
+    include Hanami::Action
+    include Hanami::Action::Session
 
     def call(params)
       session[:user_id] = nil
@@ -816,8 +816,8 @@ module Sessions
 end
 
 class StandaloneSession
-  include Lotus::Action
-  include Lotus::Action::Session
+  include Hanami::Action
+  include Hanami::Action::Session
 
   def call(params)
     session[:age] = Time.now.year - 1982
@@ -826,8 +826,8 @@ end
 
 module Glued
   class SendFile
-    include Lotus::Action
-    include Lotus::Action::Glue
+    include Hanami::Action
+    include Hanami::Action::Glue
 
     def call(params)
       self.body = ::Rack::File.new(nil)
@@ -843,7 +843,7 @@ module App
   end
 
   class StandaloneAction
-    include Lotus::Action
+    include Hanami::Action
     handle_exception App::CustomError => 400
 
     def call(params)
@@ -858,7 +858,7 @@ module App2
 
   module Standalone
     class Index
-      include Lotus::Action
+      include Hanami::Action
       configuration.handle_exception App2::CustomError => 400
 
       def call(params)
@@ -869,8 +869,8 @@ module App2
 end
 
 module MusicPlayer
-  Controller = Lotus::Controller.dupe
-  Action     = Lotus::Action.dup
+  Controller = Hanami::Controller.dupe
+  Action     = Hanami::Action.dup
 
   Controller.module_eval do
     configuration.reset!
@@ -882,8 +882,8 @@ module MusicPlayer
       })
 
       prepare do
-        include Lotus::Action::Cookies
-        include Lotus::Action::Session
+        include Hanami::Action::Cookies
+        include Hanami::Action::Session
         include MusicPlayer::Controllers::Authentication
       end
     end
@@ -951,9 +951,9 @@ module MusicPlayer
 end
 
 class VisibilityAction
-  include Lotus::Action
-  include Lotus::Action::Cookies
-  include Lotus::Action::Session
+  include Hanami::Action
+  include Hanami::Action::Cookies
+  include Hanami::Action::Session
 
   self.configuration.handle_exceptions false
 
@@ -983,7 +983,7 @@ class VisibilityAction
 end
 
 module SendFileTest
-  Controller = Lotus::Controller.duplicate(self) do
+  Controller = Hanami::Controller.duplicate(self) do
     handle_exceptions false
   end
 
@@ -997,7 +997,7 @@ module SendFileTest
         if id == "1"
           send_file Pathname.new('test/assets/test.txt')
         elsif id == "2"
-          send_file Pathname.new('test/assets/lotus.png')
+          send_file Pathname.new('test/assets/hanami.png')
         else
           send_file Pathname.new('test/assets/unknown.txt')
         end
@@ -1016,15 +1016,15 @@ module SendFileTest
 end
 
 module HeadTest
-  Controller = Lotus::Controller.duplicate(self) do
+  Controller = Hanami::Controller.duplicate(self) do
     handle_exceptions false
     default_headers({
       "X-Frame-Options" => "DENY"
     })
 
     prepare do
-      include Lotus::Action::Glue
-      include Lotus::Action::Session
+      include Hanami::Action::Glue
+      include Hanami::Action::Session
     end
   end
 
@@ -1083,12 +1083,12 @@ module HeadTest
 end
 
 module FullStack
-  Controller = Lotus::Controller.duplicate(self) do
+  Controller = Hanami::Controller.duplicate(self) do
     handle_exceptions false
 
     prepare do
-      include Lotus::Action::Glue
-      include Lotus::Action::Session
+      include Hanami::Action::Glue
+      include Hanami::Action::Session
     end
   end
 
@@ -1224,7 +1224,7 @@ module FullStack
 
   class Renderer
     def render(env, response)
-      action = env.delete('lotus.action')
+      action = env.delete('hanami.action')
 
       if response[0] == 200 && action.renderable?
         response[2] = "#{ action.class.name } #{ action.exposures }"
@@ -1236,8 +1236,8 @@ module FullStack
 
   class Application
     def initialize
-      resolver = Lotus::Routing::EndpointResolver.new(namespace: FullStack::Controllers)
-      routes   = Lotus::Router.new(resolver: resolver) do
+      resolver = Hanami::Routing::EndpointResolver.new(namespace: FullStack::Controllers)
+      routes   = Hanami::Router.new(resolver: resolver) do
         get '/',     to: 'home#index'
         get '/head', to: 'home#head'
         resources :books, only: [:index, :create, :update]
@@ -1270,7 +1270,7 @@ module FullStack
 end
 
 class MethodInspectionAction
-  include Lotus::Action
+  include Hanami::Action
 
   def call(params)
     self.body = request_method
@@ -1278,7 +1278,7 @@ class MethodInspectionAction
 end
 
 class RackExceptionAction
-  include Lotus::Action
+  include Hanami::Action
 
   class TestException < ::StandardError
   end
@@ -1289,7 +1289,7 @@ class RackExceptionAction
 end
 
 class HandledRackExceptionAction
-  include Lotus::Action
+  include Hanami::Action
 
   class TestException < ::StandardError
   end
@@ -1302,13 +1302,13 @@ class HandledRackExceptionAction
 end
 
 module SessionWithCookies
-  Controller = Lotus::Controller.duplicate(self) do
+  Controller = Hanami::Controller.duplicate(self) do
     handle_exceptions false
 
     prepare do
-      include Lotus::Action::Glue
-      include Lotus::Action::Session
-      include Lotus::Action::Cookies
+      include Hanami::Action::Glue
+      include Hanami::Action::Session
+      include Hanami::Action::Cookies
     end
   end
 
@@ -1325,7 +1325,7 @@ module SessionWithCookies
 
   class Renderer
     def render(env, response)
-      action = env.delete('lotus.action')
+      action = env.delete('hanami.action')
 
       if response[0] == 200 && action.renderable?
         response[2] = "#{ action.class.name } #{ action.exposures }"
@@ -1337,8 +1337,8 @@ module SessionWithCookies
 
   class Application
     def initialize
-      resolver = Lotus::Routing::EndpointResolver.new(namespace: SessionWithCookies::Controllers)
-      routes   = Lotus::Router.new(resolver: resolver) do
+      resolver = Hanami::Routing::EndpointResolver.new(namespace: SessionWithCookies::Controllers)
+      routes   = Hanami::Router.new(resolver: resolver) do
         get '/',     to: 'home#index'
       end
 
@@ -1356,12 +1356,12 @@ module SessionWithCookies
 end
 
 module SessionsWithoutCookies
-  Controller = Lotus::Controller.duplicate(self) do
+  Controller = Hanami::Controller.duplicate(self) do
     handle_exceptions false
 
     prepare do
-      include Lotus::Action::Glue
-      include Lotus::Action::Session
+      include Hanami::Action::Glue
+      include Hanami::Action::Session
     end
   end
 
@@ -1378,7 +1378,7 @@ module SessionsWithoutCookies
 
   class Renderer
     def render(env, response)
-      action = env.delete('lotus.action')
+      action = env.delete('hanami.action')
 
       if response[0] == 200 && action.renderable?
         response[2] = "#{ action.class.name } #{ action.exposures }"
@@ -1390,8 +1390,8 @@ module SessionsWithoutCookies
 
   class Application
     def initialize
-      resolver = Lotus::Routing::EndpointResolver.new(namespace: SessionsWithoutCookies::Controllers)
-      routes   = Lotus::Router.new(resolver: resolver) do
+      resolver = Hanami::Routing::EndpointResolver.new(namespace: SessionsWithoutCookies::Controllers)
+      routes   = Hanami::Router.new(resolver: resolver) do
         get '/',     to: 'home#index'
       end
 

@@ -1,13 +1,13 @@
 require 'test_helper'
 
 describe 'Framework freeze' do
-  describe 'Lotus::Controller' do
+  describe 'Hanami::Controller' do
     before do
-      Lotus::Controller.load!
+      Hanami::Controller.load!
     end
 
     it 'freezes framework configuration' do
-      Lotus::Controller.configuration.must_be :frozen?
+      Hanami::Controller.configuration.must_be :frozen?
     end
 
 #     it 'freezes action configuration' do

@@ -1,11 +1,11 @@
 require 'test_helper'
 
-describe Lotus::Controller::Configuration do
+describe Hanami::Controller::Configuration do
   before do
     module CustomAction
     end
 
-    @configuration = Lotus::Controller::Configuration.new
+    @configuration = Hanami::Controller::Configuration.new
   end
 
   after do
@@ -65,7 +65,7 @@ describe Lotus::Controller::Configuration do
   describe 'action_module' do
     describe 'when not previously configured' do
       it 'returns the default value' do
-        @configuration.action_module.must_equal(::Lotus::Action)
+        @configuration.action_module.must_equal(::Hanami::Action)
       end
     end
 
@@ -388,7 +388,7 @@ describe Lotus::Controller::Configuration do
 
       @configuration.handle_exceptions.must_equal  true
       @configuration.handled_exceptions.must_equal Hash[]
-      @configuration.action_module.must_equal      ::Lotus::Action
+      @configuration.action_module.must_equal      ::Hanami::Action
       @configuration.modules.size.must_equal       1
       @configuration.format_for('another/format').must_be_nil
       @configuration.default_request_format.must_equal  :html
@@ -416,9 +416,9 @@ describe Lotus::Controller::Configuration do
     it 'resets to the defaults' do
       @configuration.handle_exceptions.must_equal(true)
       @configuration.handled_exceptions.must_equal({})
-      @configuration.action_module.must_equal(::Lotus::Action)
+      @configuration.action_module.must_equal(::Hanami::Action)
       @configuration.modules.must_equal([])
-      @configuration.send(:formats).must_equal(Lotus::Controller::Configuration::DEFAULT_FORMATS)
+      @configuration.send(:formats).must_equal(Hanami::Controller::Configuration::DEFAULT_FORMATS)
       @configuration.default_request_format.must_be_nil
       @configuration.default_response_format.must_be_nil
       @configuration.default_charset.must_be_nil

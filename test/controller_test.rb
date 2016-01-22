@@ -1,12 +1,12 @@
 require 'test_helper'
 
-describe Lotus::Controller do
+describe Hanami::Controller do
   describe '.configuration' do
     before do
-      Lotus::Controller.unload!
+      Hanami::Controller.unload!
 
       module ConfigurationAction
-        include Lotus::Action
+        include Hanami::Action
       end
     end
 
@@ -15,15 +15,15 @@ describe Lotus::Controller do
     end
 
     it 'exposes class configuration' do
-      Lotus::Controller.configuration.must_be_kind_of(Lotus::Controller::Configuration)
+      Hanami::Controller.configuration.must_be_kind_of(Hanami::Controller::Configuration)
     end
 
     it 'handles exceptions by default' do
-      Lotus::Controller.configuration.handle_exceptions.must_equal(true)
+      Hanami::Controller.configuration.handle_exceptions.must_equal(true)
     end
 
     it 'inheriths the configuration from the framework' do
-      expected = Lotus::Controller.configuration
+      expected = Hanami::Controller.configuration
       actual   = ConfigurationAction.configuration
 
       actual.must_equal(expected)
@@ -32,25 +32,25 @@ describe Lotus::Controller do
 
   describe '.configure' do
     before do
-      Lotus::Controller.unload!
+      Hanami::Controller.unload!
     end
 
     after do
-      Lotus::Controller.unload!
+      Hanami::Controller.unload!
     end
 
     it 'allows to configure the framework' do
-      Lotus::Controller.class_eval do
+      Hanami::Controller.class_eval do
         configure do
           handle_exceptions false
         end
       end
 
-      Lotus::Controller.configuration.handle_exceptions.must_equal(false)
+      Hanami::Controller.configuration.handle_exceptions.must_equal(false)
     end
 
     it 'allows to override one value' do
-      Lotus::Controller.class_eval do
+      Hanami::Controller.class_eval do
         configure do
           handle_exception ArgumentError => 400
         end
@@ -60,28 +60,28 @@ describe Lotus::Controller do
         end
       end
 
-      Lotus::Controller.configuration.handled_exceptions.must_include(ArgumentError)
+      Hanami::Controller.configuration.handled_exceptions.must_include(ArgumentError)
     end
   end
 
   describe '.duplicate' do
     before do
-      Lotus::Controller.configure { handle_exception ArgumentError => 400 }
+      Hanami::Controller.configure { handle_exception ArgumentError => 400 }
 
       module Duplicated
-        Controller = Lotus::Controller.duplicate(self)
+        Controller = Hanami::Controller.duplicate(self)
       end
 
       module DuplicatedCustom
-        Controller = Lotus::Controller.duplicate(self, 'Controllerz')
+        Controller = Hanami::Controller.duplicate(self, 'Controllerz')
       end
 
       module DuplicatedWithoutNamespace
-        Controller = Lotus::Controller.duplicate(self, nil)
+        Controller = Hanami::Controller.duplicate(self, nil)
       end
 
       module DuplicatedConfigure
-        Controller = Lotus::Controller.duplicate(self) do
+        Controller = Hanami::Controller.duplicate(self) do
           reset!
           handle_exception StandardError => 400
         end
@@ -89,7 +89,7 @@ describe Lotus::Controller do
     end
 
     after do
-      Lotus::Controller.unload!
+      Hanami::Controller.unload!
 
       Object.send(:remove_const, :Duplicated)
       Object.send(:remove_const, :DuplicatedCustom)
@@ -99,7 +99,7 @@ describe Lotus::Controller do
 
     it 'duplicates the configuration of the framework' do
       actual   = Duplicated::Controller.configuration
-      expected = Lotus::Controller.configuration
+      expected = Hanami::Controller.configuration
 
       actual.handled_exceptions.must_equal expected.handled_exceptions
     end

@@ -6,9 +6,9 @@ if !ENV['TRAVIS']
   gem 'yard',   require: false
 end
 
-gem 'lotus-utils',       '~> 0.6', require: false, github: 'lotus/utils',       branch: '0.6.x'
-gem 'lotus-router',      '~> 0.5', require: false, github: 'lotus/router',      branch: '0.5.x'
-gem 'lotus-validations', '~> 0.4', require: false, github: 'lotus/validations', branch: '0.4.x'
+gem 'hanami-utils',       '~> 0.7', require: false, github: 'hanami/utils',       branch: '0.7.x'
+gem 'hanami-router',      '~> 0.6', require: false, github: 'hanami/router',      branch: '0.6.x'
+gem 'hanami-validations', '~> 0.5', require: false, github: 'hanami/validations', branch: '0.5.x'
 
 gem 'simplecov', require: false
 gem 'coveralls', require: false

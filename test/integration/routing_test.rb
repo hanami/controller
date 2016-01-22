@@ -1,7 +1,7 @@
 require 'test_helper'
-require 'lotus/router'
+require 'hanami/router'
 
-Routes = Lotus::Router.new do
+Routes = Hanami::Router.new do
   get '/',         to: 'root'
   get '/team',     to: 'about#team'
   get '/contacts', to: 'about#contacts'
@@ -10,7 +10,7 @@ Routes = Lotus::Router.new do
   resources :flowers
 end
 
-describe 'Lotus::Router integration' do
+describe 'Hanami::Router integration' do
   before do
     @app = Rack::MockRequest.new(Routes)
   end
@@ -111,10 +111,10 @@ describe 'Lotus::Router integration' do
     end
 
     it 'calls POST create' do
-      response = @app.post('/flowers', params: { flower: { name: 'Lotus' } })
+      response = @app.post('/flowers', params: { flower: { name: 'Hanami' } })
 
       response.status.must_equal 200
-      response.body.must_equal %({"flower"=>{"name"=>"Lotus"}})
+      response.body.must_equal %({"flower"=>{"name"=>"Hanami"}})
     end
 
     it 'calls GET edit' do
@@ -125,10 +125,10 @@ describe 'Lotus::Router integration' do
     end
 
     it 'calls PATCH update' do
-      response = @app.request('PATCH', '/flowers/23', params: { flower: { name: 'Lotus!' } })
+      response = @app.request('PATCH', '/flowers/23', params: { flower: { name: 'Hanami!' } })
 
       response.status.must_equal 200
-      response.body.must_equal %({"flower"=>{"name"=>"Lotus!"}, "id"=>"23"})
+      response.body.must_equal %({"flower"=>{"name"=>"Hanami!"}, "id"=>"23"})
     end
 
     it 'calls DELETE destroy' do
