@@ -6,6 +6,10 @@ describe 'Framework freeze' do
       Hanami::Controller.load!
     end
 
+    after do
+      Hanami::Controller.unload!
+    end
+
     it 'freezes framework configuration' do
       Hanami::Controller.configuration.must_be :frozen?
     end
