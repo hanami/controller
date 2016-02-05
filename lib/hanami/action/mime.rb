@@ -41,6 +41,12 @@ module Hanami
       # @api private
       DEFAULT_CHARSET = 'utf-8'.freeze
 
+      # The default mime types list
+      #
+      # @since 0.6.1
+      # @api private
+      MIME_TYPES = ::Rack::Mime::MIME_TYPES.values.freeze
+
       # Override Ruby's hook for modules.
       # It includes Mime types logic
       #
@@ -418,7 +424,7 @@ module Hanami
       # @api private
       def accepts
         unless accept == DEFAULT_ACCEPT
-          best_q_match(accept, ::Rack::Mime::MIME_TYPES.values)
+          best_q_match(accept, MIME_TYPES)
         end
       end
 

@@ -1,6 +1,10 @@
 # Hanami::Controller
 Complete, fast and testable actions for Rack
 
+## v0.6.1 - 2016-02-05
+### Changed
+- [Anatolii Didukh] Optimise memory usage by freezing MIME types constant
+
 ## v0.6.0 - 2016-01-22
 ### Changed
 - [Luca Guidi] Renamed the project
