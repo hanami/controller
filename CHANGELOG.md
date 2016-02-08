@@ -1,6 +1,10 @@
 # Hanami::Controller
 Complete, fast and testable actions for Rack
 
+## v0.7.0 - (unreleased)
+### Changed
+– [Luca Guidi] Drop support for Ruby 2.0 and 2.1
+
 ## v0.6.1 - 2016-02-05
 ### Changed
 - [Anatolii Didukh] Optimise memory usage by freezing MIME types constant
