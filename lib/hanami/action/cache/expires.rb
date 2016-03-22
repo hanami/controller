@@ -17,7 +17,10 @@ module Hanami
         HEADER = 'Expires'.freeze
 
         def self.included(base)
-          base.extend ClassMethods
+          base.class_eval do
+            extend ClassMethods
+            @expires_directives = nil
+          end
         end
 
         module ClassMethods

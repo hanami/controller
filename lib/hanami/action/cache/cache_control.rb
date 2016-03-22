@@ -17,7 +17,10 @@ module Hanami
         HEADER = 'Cache-Control'.freeze
 
         def self.included(base)
-          base.extend ClassMethods
+          base.class_eval do
+            extend ClassMethods
+            @cache_control_directives = nil
+          end
         end
 
         module ClassMethods
