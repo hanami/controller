@@ -29,14 +29,14 @@ describe Hanami::Action do
     it 'sets cookies with options' do
       tomorrow = Time.now + 60 * 60 * 24
       action   = SetCookiesWithOptionsAction.new
-      _, headers, body = action.call({expires: tomorrow})
+      _, headers, _ = action.call({expires: tomorrow})
 
       headers.must_equal({'Content-Type' => 'application/octet-stream; charset=utf-8', 'Set-Cookie' => "kukki=yum%21; domain=hanamirb.org; path=/controller; expires=#{ tomorrow.gmtime.rfc2822 }; secure; HttpOnly"})
     end
 
     it 'removes cookies' do
       action   = RemoveCookiesAction.new
-      _, headers, body = action.call({'HTTP_COOKIE' => 'foo=bar;rm=me'})
+      _, headers, _ = action.call({'HTTP_COOKIE' => 'foo=bar;rm=me'})
 
       headers.must_equal({'Content-Type' => 'application/octet-stream; charset=utf-8', 'Set-Cookie' => "foo=bar\nrm=; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 -0000"})
     end

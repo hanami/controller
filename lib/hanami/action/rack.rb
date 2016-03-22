@@ -51,7 +51,10 @@ module Hanami
       #
       # @see http://www.ruby-doc.org/core-2.1.2/Module.html#method-i-included
       def self.included(base)
-        base.extend ClassMethods
+        base.class_eval do
+          extend ClassMethods
+          prepend InstanceMethods
+        end
       end
 
       module ClassMethods
@@ -66,6 +69,7 @@ module Hanami
             rack_builder
           end
         end
+
         # Use a Rack middleware
         #
         # The middleware will be used as it is.
@@ -97,6 +101,18 @@ module Hanami
         #   end
         def use(middleware, *args, &block)
           rack_builder.use middleware, *args, &block
+        end
+      end
+
+      # @since x.x.x
+      # @api private
+      module InstanceMethods
+        # @since x.x.x
+        # @api private
+        def initialize(*)
+          super
+          @_status = nil
+          @_body   = nil
         end
       end
 
