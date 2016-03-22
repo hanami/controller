@@ -57,7 +57,10 @@ module Hanami
       #
       # @see http://www.ruby-doc.org/core-2.1.2/Module.html#method-i-included
       def self.included(base)
-        base.extend ClassMethods
+        base.class_eval do
+          extend ClassMethods
+          prepend InstanceMethods
+        end
       end
 
       module ClassMethods
@@ -108,6 +111,18 @@ module Hanami
               halt 406
             end
           end
+        end
+      end
+
+      # @since x.x.x
+      # @api private
+      module InstanceMethods
+        # @since x.x.x
+        # @api private
+        def initialize(*)
+          super
+          @content_type = nil
+          @charset      = nil
         end
       end
 

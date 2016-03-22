@@ -551,7 +551,7 @@ class CatchAndThrowSymbolAction
   include Hanami::Action
 
   def call(params)
-    return_value = catch :done do
+    catch :done do
       throw :done, 1
       raise "This code shouldn't be reachable"
     end
