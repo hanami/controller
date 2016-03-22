@@ -10,5 +10,4 @@ gem 'hanami-utils',       '~> 0.8', require: false, github: 'hanami/utils',     
 gem 'hanami-router',      '~> 0.7', require: false, github: 'hanami/router',      branch: '0.7.x'
 gem 'hanami-validations', '~> 0.6', require: false, github: 'hanami/validations', branch: '0.6.x'
 
-gem 'simplecov', require: false
 gem 'coveralls', require: false
