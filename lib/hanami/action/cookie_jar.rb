@@ -69,11 +69,10 @@ module Hanami
       # @see Hanami::Action::Cookies#finish
       def finish
         @cookies.delete(RACK_SESSION_KEY)
-        if changed_keys.any?
-          @cookies
-            .select { |k| changed_keys.include? k }
-            .each   { |k,v| v.nil? ? delete_cookie(k) : set_cookie(k, _merge_default_values(v)) }
-        end
+        @cookies.each do |k,v|
+          next unless changed?(k)
+          v.nil? ? delete_cookie(k) : set_cookie(k, _merge_default_values(v))
+        end if changed?
       end
 
       # Returns the object associated with the given key
@@ -107,18 +106,31 @@ module Hanami
       #
       # @see http://en.wikipedia.org/wiki/HTTP_cookie
       def []=(key, value)
-        changed_keys << key
+        changes << key
         @cookies[key] = value
       end
 
       private
 
-      # Changed cookie keys
+      # Keep track of changed keys
       #
-      # @since 0.7.0
+      # @since x.x.x
       # @api private
-      def changed_keys
-        @changed_keys ||= Set.new
+      def changes
+        @changes ||= Set.new
+      end
+
+      # Check if the entire set of cookies has changed within the current request.
+      # If <tt>key</tt> is given, it checks the associated cookie has changed.
+      #
+      # @since x.x.x
+      # @api private
+      def changed?(key = nil)
+        if key.nil?
+          changes.any?
+        else
+          changes.include?(key)
+        end
       end
 
       # Merge default cookies options with values provided by user
