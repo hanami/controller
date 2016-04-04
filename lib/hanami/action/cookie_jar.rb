@@ -69,7 +69,11 @@ module Hanami
       # @see Hanami::Action::Cookies#finish
       def finish
         @cookies.delete(RACK_SESSION_KEY)
-        @cookies.each { |k,v| v.nil? ? delete_cookie(k) : set_cookie(k, _merge_default_values(v)) }
+        if changed_keys.any?
+          @cookies
+            .select { |k| changed_keys.include? k }
+            .each   { |k,v| v.nil? ? delete_cookie(k) : set_cookie(k, _merge_default_values(v)) }
+        end
       end
 
       # Returns the object associated with the given key
@@ -103,10 +107,19 @@ module Hanami
       #
       # @see http://en.wikipedia.org/wiki/HTTP_cookie
       def []=(key, value)
+        changed_keys << key
         @cookies[key] = value
       end
 
       private
+
+      # Changed cookie keys
+      #
+      # @since 0.7.0
+      # @api private
+      def changed_keys
+        @changed_keys ||= Set.new
+      end
 
       # Merge default cookies options with values provided by user
       #

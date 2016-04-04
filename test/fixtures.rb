@@ -482,6 +482,16 @@ class GetCookiesAction
   end
 end
 
+class ChangeCookiesAction
+  include Hanami::Action
+  include Hanami::Action::Cookies
+
+  def call(params)
+    self.body = cookies[:foo]
+    cookies[:foo] = 'baz'
+  end
+end
+
 class GetDefaultCookiesAction
   include Hanami::Action
   include Hanami::Action::Cookies

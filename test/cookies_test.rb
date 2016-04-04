@@ -14,7 +14,16 @@ describe Hanami::Action do
       _, headers, body = action.call({'HTTP_COOKIE' => 'foo=bar'})
 
       action.send(:cookies).must_include({foo: 'bar'})
-      headers.must_equal({'Content-Type' => 'application/octet-stream; charset=utf-8', 'Set-Cookie' => 'foo=bar'})
+      headers.must_equal({'Content-Type' => 'application/octet-stream; charset=utf-8'})
+      body.must_equal ['bar']
+    end
+
+    it 'change cookies' do
+      action   = ChangeCookiesAction.new
+      _, headers, body = action.call({'HTTP_COOKIE' => 'foo=bar'})
+
+      action.send(:cookies).must_include({foo: 'bar'})
+      headers.must_equal({'Content-Type' => 'application/octet-stream; charset=utf-8', 'Set-Cookie' => 'foo=baz'})
       body.must_equal ['bar']
     end
 
@@ -38,7 +47,7 @@ describe Hanami::Action do
       action   = RemoveCookiesAction.new
       _, headers, _ = action.call({'HTTP_COOKIE' => 'foo=bar;rm=me'})
 
-      headers.must_equal({'Content-Type' => 'application/octet-stream; charset=utf-8', 'Set-Cookie' => "foo=bar\nrm=; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 -0000"})
+      headers.must_equal({'Content-Type' => 'application/octet-stream; charset=utf-8', 'Set-Cookie' => "rm=; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 -0000"})
     end
 
     describe 'with default cookies' do
