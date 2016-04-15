@@ -15,4 +15,8 @@ describe 'Method visibility' do
 
     body.must_equal                      ['x']
   end
+
+  it 'has a public errors method' do
+    @action.public_methods.include?(:errors).must_equal true
+  end
 end
