@@ -6,8 +6,8 @@ before_install:
   - rvm get head # required by JRuby > 9.0.1.0
   - rvm reload
 rvm:
-  - 2.2.4
-  - 2.3.0
+  - 2.2.5
+  - 2.3.1
   - ruby-head
   - jruby-9.0.5.0
   - jruby-head
