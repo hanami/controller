@@ -35,7 +35,7 @@ describe Hanami::Action do
       code, _, _ = action.call({})
 
       code.must_equal 400
-      action.errors.for(:email).must_include Hanami::Validations::Error.new(:email, :presence, true, nil)
+      action.errors.fetch(:email).must_equal ['is missing']
     end
 
     describe 'when exception handling code is enabled' do

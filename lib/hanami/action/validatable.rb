@@ -93,9 +93,9 @@ module Hanami
         #     end
         #   end
         def params(klass = nil, &blk)
-          if block_given?
+          if klass.nil?
             @params_class = const_set(PARAMS_CLASS_NAME,
-                                      Class.new(Params, &blk))
+                                      Class.new(Params) { params(&blk) })
           else
             @params_class = klass
           end
@@ -112,9 +112,8 @@ module Hanami
         # @api private
         # @since 0.3.0
         def params_class
-          @params_class ||= params { }
+          @params_class ||= params
         end
-
       end
     end
 

@@ -1,6 +1,6 @@
-require 'hanami/validations'
-require 'hanami/utils/attributes'
-require 'set'
+require 'hanami/validations/form'
+require 'hanami/utils/hash'
+require 'hanami/utils/class_attribute'
 
 module Hanami
   module Action
@@ -48,84 +48,24 @@ module Hanami
       # @see Hanami::Action::Params#get
       GET_SEPARATOR = '.'.freeze
 
-      # Whitelist and validate a parameter
-      #
-      # @param name [#to_sym] The name of the param to whitelist
-      #
-      # @raise [ArgumentError] if one the validations is unknown, or if
-      #   the size validator is used with an object that can't be coerced to
-      #   integer.
-      #
-      # @return void
-      #
-      # @since 0.3.0
-      #
-      # @see http://rdoc.info/gems/hanami-validations/Hanami/Validations
-      #
-      # @example Whitelisting
-      #   require 'hanami/controller'
-      #
-      #   class SignupParams < Hanami::Action::Params
-      #     param :email
-      #   end
-      #
-      #   params = SignupParams.new({id: 23, email: 'mjb@example.com'})
-      #
-      #   params[:email] # => 'mjb@example.com'
-      #   params[:id]    # => nil
-      #
-      # @example Validation
-      #   require 'hanami/controller'
-      #
-      #   class SignupParams < Hanami::Action::Params
-      #     param :email, presence: true
-      #   end
-      #
-      #   params = SignupParams.new({})
-      #
-      #   params[:email] # => nil
-      #   params.valid?  # => false
-      #
-      # @example Unknown validation
-      #   require 'hanami/controller'
-      #
-      #   class SignupParams < Hanami::Action::Params
-      #     param :email, unknown: true # => raise ArgumentError
-      #   end
-      #
-      # @example Wrong size validation
-      #   require 'hanami/controller'
-      #
-      #   class SignupParams < Hanami::Action::Params
-      #     param :email, size: 'twentythree'
-      #   end
-      #
-      #   params = SignupParams.new({})
-      #   params.valid? # => raise ArgumentError
-      def self.param(name, options = {}, &block)
-        attribute name, options, &block
-        nil
-      end
+      include Hanami::Validations::Form
 
-      include Hanami::Validations
+      def self.inherited(klass)
+        klass.class_eval do
+          include Hanami::Utils::ClassAttribute
 
-      def self.whitelisting?
-        defined_attributes.any?
-      end
-
-      # Overrides the method in Hanami::Validation to build a class that
-      # inherits from Params rather than only Hanami::Validations.
-      #
-      # @since 0.3.2
-      # @api private
-      def self.build_validation_class(&block)
-        kls = Class.new(Params) do
-          def hanami_nested_attributes?
-            true
-          end
+          class_attribute :_validations
+          self._validations = false
         end
-        kls.class_eval(&block)
-        kls
+      end
+
+      def self.params(&blk)
+        if blk.nil?
+          validations {}
+        else
+          validations(&blk)
+          self._validations = true
+        end
       end
 
       # @attr_reader env [Hash] the Rack env
@@ -133,11 +73,6 @@ module Hanami
       # @since 0.2.0
       # @api private
       attr_reader :env
-
-      # @attr_reader raw [Hanami::Utils::Attributes] all request's attributes
-      #
-      # @since 0.3.2
-      attr_reader :raw
 
       # Initialize the params and freeze them.
       #
@@ -148,8 +83,27 @@ module Hanami
       # @since 0.1.0
       def initialize(env)
         @env = env
-        super(_compute_params)
-        # freeze
+        super(_extract_params)
+        @result = validate
+        @params = _params
+        freeze
+      end
+
+      # Returns raw params from Rack env
+      #
+      # @return [Hash]
+      #
+      # @since 0.3.2
+      def raw
+        @input
+      end
+
+      def errors
+        @result.messages
+      end
+
+      def valid?
+        @result.success?
       end
 
       # Returns the object associated with the given key
@@ -160,7 +114,7 @@ module Hanami
       #
       # @since 0.2.0
       def [](key)
-        @attributes.get(key)
+        @params[key]
       end
 
       # Get an attribute value associated with the given key.
@@ -199,11 +153,11 @@ module Hanami
       #   end
       def get(key)
         key, *keys = key.to_s.split(GET_SEPARATOR)
-        result     = self[key]
+        result     = self[key.to_sym]
 
         Array(keys).each do |k|
           break if result.nil?
-          result = result[k]
+          result = result[k.to_sym]
         end
 
         result
@@ -215,7 +169,7 @@ module Hanami
       #
       # @since 0.3.0
       def to_h
-        @attributes.to_h
+        @params
       end
       alias_method :to_hash, :to_h
 
@@ -228,57 +182,49 @@ module Hanami
       # @since 0.4.4
       # @api private
       def _csrf_token=(value)
-        @attributes.set(CSRF_TOKEN, value)
+        @params.set(CSRF_TOKEN, value)
       end
 
       private
-      # @since 0.3.1
+
+      # @since x.x.x
       # @api private
-      def _compute_params
-        if self.class.whitelisting?
-          _whitelisted_params
+      def _extract_params
+        result = {}
+
+        if env.key?(RACK_INPUT)
+          result.merge! ::Rack::Request.new(env).params
+          result.merge! env.fetch(ROUTER_PARAMS, {})
         else
-          @attributes = _raw
+          result.merge! env.fetch(ROUTER_PARAMS, env)
+          # FIXME: this is required for dry-v whitelisting
+          stringify!(result)
         end
+
+        Utils::Hash.new(result).stringify!.to_h
       end
 
-      # @since 0.3.2
-      # @api private
-      def _raw
-        @raw ||= Utils::Attributes.new(_params)
-      end
-
-      # @since 0.3.1
-      # @api private
       def _params
-        {}.tap do |result|
-          if env.has_key?(RACK_INPUT)
-            result.merge! ::Rack::Request.new(env).params
-            result.merge! env.fetch(ROUTER_PARAMS, {})
+        if self.class._validations
+          result = @result.output
+
+          if _csrf_token = raw['_csrf_token']
+            result.merge(:_csrf_token => _csrf_token)
           else
-            result.merge! env.fetch(ROUTER_PARAMS, env)
+            result
           end
+        else
+          Utils::Hash.new(raw).symbolize!.to_h
         end
       end
 
-      # @since 0.3.1
-      # @api private
-      def _whitelisted_params
-        {}.tap do |result|
-          _raw.to_h.each do |k, v|
-            next unless assign_attribute?(k)
-
-            result[k] = v
-          end
+      def stringify!(result)
+        result.keys.each do |key|
+          value = result.delete(key)
+          result[key.to_s] = value.to_s
         end
-      end
 
-      # Override <tt>Hanami::Validations</tt> method
-      #
-      # @since 0.4.4
-      # @api private
-      def assign_attribute?(key)
-        DEFAULT_PARAMS[key.to_s] || super
+        result
       end
     end
   end

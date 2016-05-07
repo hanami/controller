@@ -63,7 +63,7 @@ describe 'Hanami::Router integration' do
       response = @app.post('/identity', params: { identity: { avatar: { image: 'jodosha.png' } }})
 
       response.status.must_equal 200
-      response.body.must_equal %({"identity"=>{"avatar"=>{"image"=>\"jodosha.png\"}}})
+      response.body.must_equal %({:identity=>{:avatar=>{:image=>\"jodosha.png\"}}})
     end
 
     it 'calls GET edit' do
@@ -77,7 +77,7 @@ describe 'Hanami::Router integration' do
       response = @app.request('PATCH', '/identity', params: { identity: { avatar: { image: 'jodosha-2x.png' } }})
 
       response.status.must_equal 200
-      response.body.must_equal %({"identity"=>{"avatar"=>{"image"=>\"jodosha-2x.png\"}}})
+      response.body.must_equal %({:identity=>{:avatar=>{:image=>\"jodosha-2x.png\"}}})
     end
 
     it 'calls DELETE destroy' do
@@ -100,7 +100,7 @@ describe 'Hanami::Router integration' do
       response = @app.get('/flowers/23')
 
       response.status.must_equal 200
-      response.body.must_equal %({"id"=>"23"})
+      response.body.must_equal %({:id=>"23"})
     end
 
     it 'calls GET new' do
@@ -114,28 +114,28 @@ describe 'Hanami::Router integration' do
       response = @app.post('/flowers', params: { flower: { name: 'Hanami' } })
 
       response.status.must_equal 200
-      response.body.must_equal %({"flower"=>{"name"=>"Hanami"}})
+      response.body.must_equal %({:flower=>{:name=>"Hanami"}})
     end
 
     it 'calls GET edit' do
       response = @app.get('/flowers/23/edit')
 
       response.status.must_equal 200
-      response.body.must_equal %({"id"=>"23"})
+      response.body.must_equal %({:id=>"23"})
     end
 
     it 'calls PATCH update' do
       response = @app.request('PATCH', '/flowers/23', params: { flower: { name: 'Hanami!' } })
 
       response.status.must_equal 200
-      response.body.must_equal %({"flower"=>{"name"=>"Hanami!"}, "id"=>"23"})
+      response.body.must_equal %({:flower=>{:name=>"Hanami!"}, :id=>"23"})
     end
 
     it 'calls DELETE destroy' do
       response = @app.delete('/flowers/23')
 
       response.status.must_equal 200
-      response.body.must_equal %({"id"=>"23"})
+      response.body.must_equal %({:id=>"23"})
     end
   end
 end
