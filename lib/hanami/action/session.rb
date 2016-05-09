@@ -120,7 +120,10 @@ module Hanami
       #   # The validation errors caused by Comments::Create are available
       #   # **after the redirect** in the context of Comments::Index.
       def redirect_to(*args)
-        flash[ERRORS_KEY] = errors.to_a unless params.valid?
+        if params.respond_to?(:valid?)
+          flash[ERRORS_KEY] = errors.to_a unless params.valid?
+        end
+
         super
       end
 
@@ -134,7 +137,7 @@ module Hanami
       # @see Hanami::Action::Validatable
       # @see Hanami::Action::Session#flash
       def errors
-        flash[ERRORS_KEY] || super
+        flash[ERRORS_KEY] || params.respond_to?(:errors) && params.errors
       end
 
       # Finalize the response

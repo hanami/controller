@@ -1,6 +1,7 @@
 require 'digest/md5'
 require 'hanami/router'
 require 'hanami/utils/escape'
+require 'hanami/action/params'
 require 'hanami/action/cookies'
 require 'hanami/action/session'
 require 'hanami/action/cache'

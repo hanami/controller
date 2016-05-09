@@ -1,4 +1,4 @@
-require 'hanami/action/params'
+require 'hanami/action/base_params'
 
 module Hanami
   module Action

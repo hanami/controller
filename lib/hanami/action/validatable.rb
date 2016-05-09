@@ -10,7 +10,7 @@ module Hanami
       def self.included(base)
         base.class_eval do
           extend ClassMethods
-          expose :params, :errors
+          expose :params
         end
       end
 
@@ -94,11 +94,11 @@ module Hanami
         #   end
         def params(klass = nil, &blk)
           if klass.nil?
-            @params_class = const_set(PARAMS_CLASS_NAME,
-                                      Class.new(Params) { params(&blk) })
-          else
-            @params_class = klass
+            klass = const_set(PARAMS_CLASS_NAME, Class.new(Params))
+            klass.class_eval { params(&blk) }
           end
+
+          @params_class = klass
         end
 
         # Returns the class which defines the params
@@ -112,16 +112,9 @@ module Hanami
         # @api private
         # @since 0.3.0
         def params_class
-          @params_class ||= params
+          @params_class ||= BaseParams
         end
       end
-    end
-
-    # Expose validation errors
-    #
-    # @since 0.3.0
-    def errors
-      params.errors
     end
   end
 end

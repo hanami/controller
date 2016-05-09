@@ -30,14 +30,6 @@ describe Hanami::Action do
       response[2].must_equal ['Hi from TestAction!']
     end
 
-    it 'exposes validation errors' do
-      action     = ParamsValidationAction.new
-      code, _, _ = action.call({})
-
-      code.must_equal 400
-      action.errors.fetch(:email).must_equal ['is missing']
-    end
-
     describe 'when exception handling code is enabled' do
       it 'returns an HTTP 500 status code when an exception is raised' do
         response = ErrorCallAction.new.call({})
