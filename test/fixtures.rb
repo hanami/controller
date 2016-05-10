@@ -793,6 +793,23 @@ module Flowers
   Destroy = Class.new(Action)
 end
 
+module Painters
+  class Update
+    include Hanami::Action
+
+    params do
+      required(:painter).schema do
+        required(:first_name).filled(:str?)
+        required(:last_name).filled(:str?)
+      end
+    end
+
+    def call(params)
+      self.body = params.to_h.inspect
+    end
+  end
+end
+
 module Dashboard
   class Index
     include Hanami::Action

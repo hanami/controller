@@ -77,28 +77,23 @@ module Hanami
       # @since x.x.x
       # @api private
       def _extract_params
-        result = {}
-
-        if env.key?(RACK_INPUT)
-          result.merge! ::Rack::Request.new(env).params
-          result.merge! env.fetch(ROUTER_PARAMS, {})
-        else
-          result.merge! env.fetch(ROUTER_PARAMS, env)
-          # FIXME: this is required for dry-v whitelisting
-          stringify!(result)
-        end
-
-        Utils::Hash.new(result).stringify!.to_h
+        # FIXME: this is required for dry-v whitelisting
+        stringify!(super)
       end
 
       def _params
-        @result.output
+        @result.output.merge(_router_params)
       end
 
       def stringify!(result)
         result.keys.each do |key|
           value = result.delete(key)
-          result[key.to_s] = value.to_s
+          result[key.to_s] = case value
+                             when ::Hash
+                               stringify!(value)
+                             else
+                               value.to_s
+                             end
         end
 
         result

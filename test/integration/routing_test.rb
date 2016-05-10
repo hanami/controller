@@ -8,6 +8,7 @@ Routes = Hanami::Router.new do
 
   resource  :identity
   resources :flowers
+  resources :painters, only: [:update]
 end
 
 describe 'Hanami::Router integration' do
@@ -136,6 +137,15 @@ describe 'Hanami::Router integration' do
 
       response.status.must_equal 200
       response.body.must_equal %({:id=>"23"})
+    end
+
+    describe 'with validations' do
+      it 'automatically whitelists params from router' do
+        response = @app.request('PATCH', '/painters/23', params: { painter: { first_name: 'Gustav', last_name: 'Klimt' } })
+
+        response.status.must_equal 200
+        response.body.must_equal %({:painter=>{:first_name=>"Gustav", :last_name=>"Klimt"}, :id=>"23"})
+      end
     end
   end
 end

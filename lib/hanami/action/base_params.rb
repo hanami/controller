@@ -118,12 +118,18 @@ module Hanami
 
         if env.key?(RACK_INPUT)
           result.merge! ::Rack::Request.new(env).params
-          result.merge! env.fetch(ROUTER_PARAMS, {})
+          result.merge! _router_params
         else
-          result.merge! env.fetch(ROUTER_PARAMS, env)
+          result.merge! _router_params(env)
         end
 
         result
+      end
+
+      # @since x.x.x
+      # @api private
+      def _router_params(fallback = {})
+        env.fetch(ROUTER_PARAMS, fallback)
       end
     end
   end
