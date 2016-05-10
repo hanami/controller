@@ -69,7 +69,7 @@ module Hanami
       #
       # @return [Object,nil] return the associated object, if found
       #
-      # @since 0.2.0
+      # @since x.x.x
       def [](key)
         @params[key]
       end

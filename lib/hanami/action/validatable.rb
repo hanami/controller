@@ -1,3 +1,5 @@
+require 'hanami/action/params'
+
 module Hanami
   module Action
     module Validatable
@@ -8,10 +10,7 @@ module Hanami
       PARAMS_CLASS_NAME = 'Params'.freeze
 
       def self.included(base)
-        base.class_eval do
-          extend ClassMethods
-          expose :params
-        end
+        base.extend ClassMethods
       end
 
       # Validatable API class methods
@@ -99,20 +98,6 @@ module Hanami
           end
 
           @params_class = klass
-        end
-
-        # Returns the class which defines the params
-        #
-        # Returns the class which has been provided to define the
-        # params. By default this will be Hanami::Action::Params.
-        #
-        # @return [Class] A params class (when whitelisted) or
-        #   Hanami::Action::Params
-        #
-        # @api private
-        # @since 0.3.0
-        def params_class
-          @params_class ||= BaseParams
         end
       end
     end

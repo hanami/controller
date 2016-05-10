@@ -1,5 +1,6 @@
 require 'securerandom'
 require 'hanami/action/request'
+require 'hanami/action/base_params'
 require 'hanami/action/rack/callable'
 require 'hanami/action/rack/file'
 
@@ -101,6 +102,20 @@ module Hanami
         #   end
         def use(middleware, *args, &block)
           rack_builder.use middleware, *args, &block
+        end
+
+        # Returns the class which defines the params
+        #
+        # Returns the class which has been provided to define the
+        # params. By default this will be Hanami::Action::Params.
+        #
+        # @return [Class] A params class (when whitelisted) or
+        #   Hanami::Action::Params
+        #
+        # @api private
+        # @since x.x.x
+        def params_class
+          @params_class ||= BaseParams
         end
       end
 
