@@ -15,20 +15,6 @@ module Hanami
       # @since x.x.x
       ROUTER_PARAMS = 'router.params'.freeze
 
-      # CSRF params key
-      #
-      # This key is shared with <tt>hanamirb</tt> and <tt>hanami-helpers</tt>
-      #
-      # @since x.x.x
-      # @api private
-      CSRF_TOKEN = '_csrf_token'.freeze
-
-      # Set of params that are never filtered
-      #
-      # @since x.x.x
-      # @api private
-      DEFAULT_PARAMS = Hash[CSRF_TOKEN => true].freeze
-
       # Separator for #get
       #
       # @since x.x.x

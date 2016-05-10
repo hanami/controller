@@ -16,6 +16,16 @@ module Hanami
     class Params < BaseParams
       include Hanami::Validations::Form
 
+      # This is a Hanami::Validations extension point
+      #
+      # @since x.x.x
+      # @api private
+      def self._base_rules
+        lambda do
+          optional(:_csrf_token).filled(:str?)
+        end
+      end
+
       def self.params(&blk)
         validations(&blk || ->() {})
       end
@@ -82,13 +92,7 @@ module Hanami
       end
 
       def _params
-        result = @result.output
-
-        if _csrf_token = raw['_csrf_token']
-          result.merge(:_csrf_token => _csrf_token)
-        else
-          result
-        end
+        @result.output
       end
 
       def stringify!(result)
