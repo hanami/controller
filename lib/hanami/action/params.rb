@@ -91,6 +91,8 @@ module Hanami
           result[key.to_s] = case value
                              when ::Hash
                                stringify!(value)
+                             when ::Array
+                               value.map(&:to_s)
                              else
                                value.to_s
                              end

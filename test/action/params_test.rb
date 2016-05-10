@@ -109,8 +109,8 @@ describe Hanami::Action::Params do
         # params with symbolized keys.
         describe 'in testing mode' do
           it 'returns only the listed params' do
-            _, _, body = @action.call(id: 23, unknown: 4)
-            body.must_equal [%({:id=>"23"})]
+            _, _, body = @action.call(id: 23, unknown: 4, article: { foo: 'bar', tags: [:cool] })
+            body.must_equal [%({:id=>"23", :article=>{:tags=>["cool"]}})]
           end
 
           it "doesn't filter _csrf_token" do
@@ -119,60 +119,60 @@ describe Hanami::Action::Params do
           end
         end
 
-        # describe "in a Rack context" do
-        #   it 'returns only the listed params' do
-        #     response = Rack::MockRequest.new(@action).request('PATCH', "?id=23", params: { x: { foo: 'bar' } })
-        #     response.body.must_match %({"id"=>"23"})
-        #   end
+        describe "in a Rack context" do
+          it 'returns only the listed params' do
+            response = Rack::MockRequest.new(@action).request('PATCH', "?id=23", params: { x: { foo: 'bar' } })
+            response.body.must_match %({:id=>"23"})
+          end
 
-        #   it "doesn't filter _csrf_token" do
-        #     response = Rack::MockRequest.new(@action).request('PATCH', "?id=23", params: { _csrf_token: 'def', x: { foo: 'bar' } })
-        #     response.body.must_match %("_csrf_token"=>"def")
-        #   end
-        # end
+          it "doesn't filter _csrf_token" do
+            response = Rack::MockRequest.new(@action).request('PATCH', "?id=1", params: { _csrf_token: 'def', x: { foo: 'bar' } })
+            response.body.must_match %(:_csrf_token=>"def", :id=>"1")
+          end
+        end
 
-        # describe "with Hanami::Router" do
-        #   it 'returns only the listed params' do
-        #     _, _, body = @action.call({ 'router.params' => {id: 23, another: 'x'}})
-        #     body.must_equal [%({"id"=>23})]
-        #   end
-        # end
+        describe "with Hanami::Router" do
+          it 'returns all the params coming from the router, even if NOT whitelisted' do
+            _, _, body = @action.call({ 'router.params' => {id: 23, another: 'x'}})
+            body.must_equal [%({:id=>23, :another=>"x"})]
+          end
+        end
       end
 
-      # describe "with an anoymous class" do
-      #   before do
-      #     @action = WhitelistedDslAction.new
-      #   end
+      describe "with an anoymous class" do
+        before do
+          @action = WhitelistedDslAction.new
+        end
 
-      #   it 'creates a Params innerclass' do
-      #     assert defined?(WhitelistedDslAction::Params),
-      #       "expected WhitelistedDslAction::Params to be defined"
+        it 'creates a Params innerclass' do
+          assert defined?(WhitelistedDslAction::Params),
+            "expected WhitelistedDslAction::Params to be defined"
 
-      #     assert WhitelistedDslAction::Params.ancestors.include?(Hanami::Action::Params),
-      #       "expected WhitelistedDslAction::Params to be a Hanami::Action::Params subclass"
-      #   end
+          assert WhitelistedDslAction::Params.ancestors.include?(Hanami::Action::Params),
+            "expected WhitelistedDslAction::Params to be a Hanami::Action::Params subclass"
+        end
 
-      #   describe "in testing mode" do
-      #     it 'returns only the listed params' do
-      #       _, _, body = @action.call({username: 'jodosha', unknown: 'field'})
-      #       body.must_equal [%({"username"=>"jodosha"})]
-      #     end
-      #   end
+        describe "in testing mode" do
+          it 'returns only the listed params' do
+            _, _, body = @action.call({username: 'jodosha', unknown: 'field'})
+            body.must_equal [%({:username=>"jodosha"})]
+          end
+        end
 
-      #   describe "in a Rack context" do
-      #     it 'returns only the listed params' do
-      #       response = Rack::MockRequest.new(@action).request('PATCH', "?username=jodosha", params: { x: { foo: 'bar' } })
-      #       response.body.must_match %({"username"=>"jodosha"})
-      #     end
-      #   end
+        describe "in a Rack context" do
+          it 'returns only the listed params' do
+            response = Rack::MockRequest.new(@action).request('PATCH', "?username=jodosha", params: { x: { foo: 'bar' } })
+            response.body.must_match %({:username=>"jodosha"})
+          end
+        end
 
-      #   describe "with Hanami::Router" do
-      #     it 'returns only the listed params' do
-      #       _, _, body = @action.call({ 'router.params' => {username: 'jodosha', y: 'x'}})
-      #       body.must_equal [%({"username"=>"jodosha"})]
-      #     end
-      #   end
-      # end
+        describe "with Hanami::Router" do
+          it 'returns all the router params, even if NOT whitelisted' do
+            _, _, body = @action.call({ 'router.params' => {username: 'jodosha', y: 'x'}})
+            body.must_equal [%({:username=>"jodosha", :y=>"x"})]
+          end
+        end
+      end
     end
   end
 

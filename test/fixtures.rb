@@ -686,6 +686,9 @@ class WhitelistedParamsAction
   class Params < Hanami::Action::Params
     params do
       required(:id).maybe
+      required(:article).schema do
+        required(:tags).each(:str?)
+      end
     end
   end
 
@@ -701,7 +704,7 @@ class WhitelistedDslAction
   include Hanami::Action
 
   params do
-    required(:username)
+    required(:username).filled
   end
 
   def call(params)
