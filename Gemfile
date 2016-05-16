@@ -6,11 +6,12 @@ unless ENV['TRAVIS']
   gem 'yard',   require: false
 end
 
-gem 'hanami-utils',       '~> 0.8', require: false, github: 'hanami/utils',       branch: '0.8.x'
-gem 'hanami-router',      '~> 0.7', require: false, github: 'hanami/router',      branch: '0.7.x'
+gem 'minitest',      '~> 5.8'
+gem 'hanami-utils',  '~> 0.8', require: false, github: 'hanami/utils',  branch: '0.8.x'
+gem 'hanami-router', '~> 0.7', require: false, github: 'hanami/router', branch: '0.7.x'
 
 group :validations do
-  gem 'hanami-validations', '~> 0.6', require: false, github: 'hanami/validations', branch: 'predicates-with-new-backend'
+  gem 'hanami-validations', '~> 0.6', require: false, github: 'hanami/validations'
 
   # This is required until dry-validation 0.8 will be out
   gem 'dry-types',                    require: false, github: 'dry-rb/dry-types'
@@ -18,5 +19,4 @@ group :validations do
   gem 'dry-validation',               require: false, github: 'dry-rb/dry-validation'
 end
 
-gem 'minitest-line'
 gem 'coveralls', require: false

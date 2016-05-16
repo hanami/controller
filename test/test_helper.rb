@@ -7,7 +7,6 @@ if ENV['COVERALL']
 end
 
 require 'minitest/autorun'
-require 'minitest/line/describe_track'
 $:.unshift 'lib'
 require 'hanami/controller'
 require 'hanami/action/cookies'
