@@ -37,8 +37,8 @@ describe Hanami::Action do
 
     it 'sets cookies with options' do
       tomorrow = Time.now + 60 * 60 * 24
-      action   = SetCookiesWithOptionsAction.new
-      _, headers, _ = action.call({expires: tomorrow})
+      action   = SetCookiesWithOptionsAction.new(expires: tomorrow)
+      _, headers, _ = action.call({})
 
       headers.must_equal({'Content-Type' => 'application/octet-stream; charset=utf-8', 'Set-Cookie' => "kukki=yum%21; domain=hanamirb.org; path=/controller; expires=#{ tomorrow.gmtime.rfc2822 }; secure; HttpOnly"})
     end

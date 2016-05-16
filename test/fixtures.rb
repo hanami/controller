@@ -1,6 +1,7 @@
 require 'digest/md5'
 require 'hanami/router'
 require 'hanami/utils/escape'
+require 'hanami/action/params'
 require 'hanami/action/cookies'
 require 'hanami/action/session'
 require 'hanami/action/cache'
@@ -535,8 +536,12 @@ class SetCookiesWithOptionsAction
   include Hanami::Action
   include Hanami::Action::Cookies
 
+  def initialize(expires: Time.now.utc)
+    @expires = expires
+  end
+
   def call(params)
-    cookies[:kukki] = { value: 'yum!', domain: 'hanamirb.org', path: '/controller', expires: params[:expires], secure: true, httponly: true }
+    cookies[:kukki] = { value: 'yum!', domain: 'hanamirb.org', path: '/controller', expires: @expires, secure: true, httponly: true }
   end
 end
 
@@ -553,7 +558,7 @@ class ThrowCodeAction
   include Hanami::Action
 
   def call(params)
-    halt params[:status], params[:message]
+    halt params[:status].to_i, params[:message]
   end
 end
 
@@ -679,7 +684,12 @@ end
 
 class WhitelistedParamsAction
   class Params < Hanami::Action::Params
-    param :id
+    params do
+      required(:id).maybe
+      required(:article).schema do
+        required(:tags).each(:str?)
+      end
+    end
   end
 
   include Hanami::Action
@@ -694,7 +704,7 @@ class WhitelistedDslAction
   include Hanami::Action
 
   params do
-    param :username
+    required(:username).filled
   end
 
   def call(params)
@@ -706,7 +716,7 @@ class ParamsValidationAction
   include Hanami::Action
 
   params do
-    param :email, type: String, presence: true
+    required(:email).filled(:str?)
   end
 
   def call(params)
@@ -715,14 +725,16 @@ class ParamsValidationAction
 end
 
 class TestParams < Hanami::Action::Params
-  param :email, presence:   true, format: /\A.+@.+\z/
-  param :name,  presence:   true
-  param :tos,   acceptance: true
-  param :age,   type: Integer
-  param :address do
-    param :line_one, presence: true
-    param :deep do
-      param :deep_attr, type: String
+  params do
+    required(:email).filled(format?: /\A.+@.+\z/)
+    required(:name).filled
+    required(:tos).filled(:bool?)
+    required(:age).filled(:int?)
+    required(:address).schema do
+      required(:line_one).filled
+      required(:deep).schema do
+        required(:deep_attr).filled(:str?)
+      end
     end
   end
 end
@@ -782,6 +794,23 @@ module Flowers
   Edit    = Class.new(Action)
   Update  = Class.new(Action)
   Destroy = Class.new(Action)
+end
+
+module Painters
+  class Update
+    include Hanami::Action
+
+    params do
+      required(:painter).schema do
+        required(:first_name).filled(:str?)
+        required(:last_name).filled(:str?)
+      end
+    end
+
+    def call(params)
+      self.body = params.to_h.inspect
+    end
+  end
 end
 
 module Dashboard
@@ -1002,7 +1031,7 @@ module SendFileTest
       include SendFileTest::Action
 
       def call(params)
-        id = params['id']
+        id = params[:id]
         # This if statement is only for testing purpose
         if id == "1"
           send_file Pathname.new('test/assets/test.txt')
@@ -1135,7 +1164,7 @@ module FullStack
         include FullStack::Action
 
         params do
-          param :title, type: String, presence: true
+          required(:title).filled(:str?)
         end
 
         def call(params)
@@ -1149,12 +1178,12 @@ module FullStack
         include FullStack::Action
 
         params do
-          param :id, type: Integer
-          param :book do
-            param :title, type: String, presence: true
-            param :author do
-              param :name, type: String, presence: true
-              param :favourite_colour
+          required(:id).value(:int?)
+          required(:book).schema do
+            required(:title).filled(:str?)
+            required(:author).schema do
+              required(:name).filled(:str?)
+              required(:favourite_colour)
             end
           end
         end
@@ -1164,9 +1193,7 @@ module FullStack
 
           self.status = 201
           self.body = Marshal.dump({
-            method_access: params.book.author.name,
-            symbol_access: params[:book][:author][:name],
-            string_access: params['book']['author']['name'],
+            symbol_access: params[:book][:author] && params[:book][:author][:name],
             valid: valid,
             errors: params.errors.to_h
           })
@@ -1237,7 +1264,7 @@ module FullStack
       action = env.delete('hanami.action')
 
       if response[0] == 200 && action.renderable?
-        response[2] = "#{ action.class.name } #{ action.exposures }"
+        response[2] = "#{ action.class.name } #{ action.exposures } params: #{ action.params.to_h }"
       end
 
       response

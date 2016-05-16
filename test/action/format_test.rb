@@ -97,10 +97,6 @@ describe Hanami::Action do
       -> { @action.call({ format: '' }) }.must_raise TypeError
     end
 
-    it "sets a value that can't be coerced to Symbol and raises an error" do
-      -> { @action.call({ format: 23 }) }.must_raise TypeError
-    end
-
     it "sets an unknown format and raises an error" do
       begin
         @action.call({ format: :unknown })

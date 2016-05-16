@@ -28,10 +28,10 @@ describe 'Full stack application' do
     follow_redirect!
 
     last_response.body.must_include 'FullStack::Controllers::Books::Index'
-    last_response.body.must_include %(@actual="")
+    last_response.body.must_include %(params: {})
 
     get '/books'
-    last_response.body.must_include %(@actual="")
+    last_response.body.must_include %(params: {})
   end
 
   it 'uses flash to pass informations' do
@@ -50,7 +50,6 @@ describe 'Full stack application' do
 
   it 'can access params with string symbols or methods' do
     patch '/books/1', {
-      id: '1',
       book: {
         title: 'Hanami in Action',
         author: {
@@ -60,9 +59,7 @@ describe 'Full stack application' do
     }
     result = Marshal.load(last_response.body)
     result.must_equal({
-      method_access: 'Luca',
       symbol_access: 'Luca',
-      string_access: 'Luca',
       valid: true,
       errors: {}
     })
@@ -70,16 +67,13 @@ describe 'Full stack application' do
 
   it 'validates nested params' do
     patch '/books/1', {
-      id: '1',
       book: {
         title: 'Hanami in Action',
       }
     }
     result = Marshal.load(last_response.body)
     result[:valid].must_equal false
-    result[:errors].must_equal({
-      'book.author.name' => [Hanami::Validations::Error.new('book.author.name', :presence, true, nil)]
-    })
+    result[:errors].must_equal(book: { author: ['is missing'] })
   end
 
   it "redirect in before action and call action method is not called" do

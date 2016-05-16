@@ -1,3 +1,5 @@
+require 'hanami/action/params'
+
 module Hanami
   module Action
     module Validatable
@@ -8,10 +10,7 @@ module Hanami
       PARAMS_CLASS_NAME = 'Params'.freeze
 
       def self.included(base)
-        base.class_eval do
-          extend ClassMethods
-          expose :params, :errors
-        end
+        base.extend ClassMethods
       end
 
       # Validatable API class methods
@@ -93,36 +92,14 @@ module Hanami
         #     end
         #   end
         def params(klass = nil, &blk)
-          if block_given?
-            @params_class = const_set(PARAMS_CLASS_NAME,
-                                      Class.new(Params, &blk))
-          else
-            @params_class = klass
+          if klass.nil?
+            klass = const_set(PARAMS_CLASS_NAME, Class.new(Params))
+            klass.class_eval { params(&blk) }
           end
-        end
 
-        # Returns the class which defines the params
-        #
-        # Returns the class which has been provided to define the
-        # params. By default this will be Hanami::Action::Params.
-        #
-        # @return [Class] A params class (when whitelisted) or
-        #   Hanami::Action::Params
-        #
-        # @api private
-        # @since 0.3.0
-        def params_class
-          @params_class ||= params { }
+          @params_class = klass
         end
-
       end
-    end
-
-    # Expose validation errors
-    #
-    # @since 0.3.0
-    def errors
-      params.errors
     end
   end
 end
