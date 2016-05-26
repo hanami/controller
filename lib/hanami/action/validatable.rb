@@ -3,7 +3,7 @@ require 'hanami/action/params'
 module Hanami
   module Action
     module Validatable
-      # Defines the class name for anoymous params
+      # Defines the class name for anonymous params
       #
       # @api private
       # @since 0.3.0
