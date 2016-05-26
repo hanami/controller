@@ -290,7 +290,7 @@ module Hanami
       # If a client asks for an `HTTP_ACCEPT` `*/*`, but we want to force the
       # response to be a `text/html` we can use this method.
       #
-      # When the format is set, the framework searchs for a corresponding mime
+      # When the format is set, the framework searches for a corresponding mime
       # type to be set as the `Content-Type` header of the response.
       # This lookup is performed first in the configuration, and then in
       # `Rack::Mime::MIME_TYPES`. If the lookup fails, it raises an error.
