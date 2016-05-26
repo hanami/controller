@@ -119,7 +119,7 @@ describe Hanami::Action::Request do
     end
   end
 
-  describe '#fuilpath' do
+  describe '#fullpath' do
     it 'gets the path and query' do
       build_request.fullpath.must_equal('/foo?q=bar')
     end
