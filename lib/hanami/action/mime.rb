@@ -131,7 +131,7 @@ module Hanami
       # The framework automatically detects the request mime type, and returns
       # the corresponding format.
       #
-      # However, if this value was explicitely set by `#format=`, it will return
+      # However, if this value was explicitly set by `#format=`, it will return
       # that value
       #
       # @return [Symbol] a symbol that corresponds to the content type
