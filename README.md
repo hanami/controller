@@ -60,7 +60,7 @@ class Show
   include Hanami::Action
 
   def call(params)
-    @article = Article.find params[:id]
+    @article = ArticleRepository.find params[:id]
   end
 end
 ```
@@ -74,7 +74,7 @@ This is important, because you can implement your own initialization strategy.
 __An action is an object__. That's important because __you have the full control on it__.
 In other words, you have the freedom to instantiate, inject dependencies and test it, both at the unit and integration level.
 
-In the example below, the default repository is `Article`. During a unit test we can inject a stubbed version, and invoke `#call` with the params.
+In the example below, the default repository is `ArticleRepository`. During a unit test we can inject a stubbed version, and invoke `#call` with the params.
 __We're avoiding HTTP calls__, we're also going to avoid hitting the database (it depends on the stubbed repository), __we're just dealing with message passing__.
 Imagine how **fast** the unit test could be.
 
@@ -82,7 +82,7 @@ Imagine how **fast** the unit test could be.
 class Show
   include Hanami::Action
 
-  def initialize(repository = Article)
+  def initialize(repository = ArticleRepository)
     @repository = repository
   end
 
@@ -280,7 +280,7 @@ class Show
   expose :article
 
   def call(params)
-    @article = Article.find params[:id]
+    @article = ArticleRepository.find params[:id]
   end
 end
 
@@ -312,7 +312,7 @@ class Show
 
   # `params` in the method signature is optional
   def set_article(params)
-    @article = Article.find params[:id]
+    @article = ArticleRepository.find params[:id]
   end
 end
 ```
@@ -324,7 +324,7 @@ class Show
   include Hanami::Action
 
   before { ... } # do some authentication stuff
-  before { |params| @article = Article.find params[:id] }
+  before { |params| @article = ArticleRepository.find params[:id] }
 
   def call(params)
   end
@@ -356,7 +356,7 @@ class Show
   handle_exception RecordNotFound => 404
 
   def call(params)
-    @article = Article.find params[:id]
+    @article = ArticleRepository.find params[:id]
   end
 end
 
@@ -397,7 +397,7 @@ class Show
   include Hanami::Action
 
   def call(params)
-    @article = Article.find params[:id]
+    @article = ArticleRepository.find params[:id]
   end
 end
 
@@ -423,7 +423,7 @@ module Articles
     end
 
     def call(params)
-      @article = Article.find params[:id]
+      @article = ArticleRepository.find params[:id]
     end
   end
 end
@@ -991,10 +991,10 @@ The following examples are valid constructors:
 def initialize
 end
 
-def initialize(repository = Article)
+def initialize(repository = ArticleRepository)
 end
 
-def initialize(repository: Article)
+def initialize(repository: ArticleRepository)
 end
 
 def initialize(options = {})
