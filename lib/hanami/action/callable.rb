@@ -1,5 +1,3 @@
-require 'hanami/action/params'
-
 module Hanami
   module Action
     module Callable

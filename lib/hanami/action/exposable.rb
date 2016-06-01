@@ -16,7 +16,10 @@ module Hanami
       #
       # @see http://www.ruby-doc.org/core-2.1.2/Module.html#method-i-included
       def self.included(base)
-        base.extend ClassMethods
+        base.class_eval do
+          extend ClassMethods
+          expose :params
+        end
       end
 
       # Exposures API class methods

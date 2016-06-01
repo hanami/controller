@@ -29,7 +29,7 @@ describe Hanami::Action do
       action.call(params = {'bang' => '!'})
 
       action.article.must_equal 'Bonjour!!'.reverse
-      action.exposed_params.to_h.must_equal(params)
+      action.exposed_params.to_h.must_equal({bang: '!'})
     end
 
     it 'yields params when the callback is a block' do
@@ -37,7 +37,7 @@ describe Hanami::Action do
       response = action.call(params = { 'twentythree' => '23' })
 
       response[0].must_equal 200
-      action.yielded_params.to_h.must_equal params
+      action.yielded_params.to_h.must_equal({twentythree: '23'})
     end
 
     describe 'on error' do
@@ -85,7 +85,7 @@ describe Hanami::Action do
       action = YieldAfterBlockAction.new
       action.call(params = { 'fortytwo' => '42' })
 
-      action.meaning_of_life_params.to_h.must_equal params
+      action.meaning_of_life_params.to_h.must_equal(fortytwo: '42')
     end
 
     describe 'on error' do

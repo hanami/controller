@@ -61,6 +61,18 @@ module Hanami
         @_env[SESSION_KEY] ||= {}
       end
 
+      # Read errors from flash or delegate to the superclass
+      #
+      # @return [Hanami::Validations::Errors] A collection of validation errors
+      #
+      # @since 0.3.0
+      #
+      # @see Hanami::Action::Validatable
+      # @see Hanami::Action::Session#flash
+      def errors
+        flash[ERRORS_KEY] || params.respond_to?(:errors) && params.errors
+      end
+
       private
 
       # Container useful to transport data with the HTTP session
@@ -120,21 +132,11 @@ module Hanami
       #   # The validation errors caused by Comments::Create are available
       #   # **after the redirect** in the context of Comments::Index.
       def redirect_to(*args)
-        flash[ERRORS_KEY] = errors.to_a unless params.valid?
-        super
-      end
+        if params.respond_to?(:valid?)
+          flash[ERRORS_KEY] = errors.to_a unless params.valid?
+        end
 
-      # Read errors from flash or delegate to the superclass
-      #
-      # @return [Hanami::Validations::Errors] A collection of validation errors
-      #
-      # @since 0.3.0
-      # @api private
-      #
-      # @see Hanami::Action::Validatable
-      # @see Hanami::Action::Session#flash
-      def errors
-        flash[ERRORS_KEY] || super
+        super
       end
 
       # Finalize the response

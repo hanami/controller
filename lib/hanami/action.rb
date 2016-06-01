@@ -5,7 +5,11 @@ require 'hanami/action/redirect'
 require 'hanami/action/exposable'
 require 'hanami/action/throwable'
 require 'hanami/action/callbacks'
-require 'hanami/action/validatable'
+begin
+  require 'hanami/validations'
+  require 'hanami/action/validatable'
+rescue LoadError
+end
 require 'hanami/action/head'
 require 'hanami/action/callable'
 
@@ -53,7 +57,7 @@ module Hanami
         include Exposable
         include Throwable
         include Callbacks
-        include Validatable
+        include Validatable if defined?(Validatable)
         include Configurable
         include Head
         prepend Callable
@@ -65,7 +69,7 @@ module Hanami
     # Finalize the response
     #
     # This method is abstract and COULD be implemented by included modules in
-    # order to prepare their data before the reponse will be returned to the
+    # order to prepare their data before the response will be returned to the
     # webserver.
     #
     # @since 0.1.0
