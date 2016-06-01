@@ -11,7 +11,7 @@ gem 'hanami-utils',  '~> 0.8', require: false, github: 'hanami/utils',  branch: 
 gem 'hanami-router', '~> 0.7', require: false, github: 'hanami/router', branch: '0.7.x'
 
 group :validations do
-  gem 'hanami-validations', '~> 0.6', require: false, github: 'hanami/validations'
+  gem 'hanami-validations', '~> 0.6', require: false, github: 'hanami/validations', branch: '0.6.x'
 
   # This is required until dry-validation 0.8 will be out
   gem 'dry-types',                    require: false, github: 'dry-rb/dry-types'
