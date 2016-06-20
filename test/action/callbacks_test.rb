@@ -49,6 +49,16 @@ describe Hanami::Action do
         action.article.must_be_nil
       end
     end
+
+    describe 'on handled error' do
+      it 'stops the callbacks execution and passes the control on exception handling' do
+        action   = HandledErrorBeforeMethodAction.new
+        response = action.call({})
+
+        response[0].must_equal 404
+        action.article.must_be_nil
+      end
+    end
   end
 
   describe '#after' do
@@ -94,6 +104,16 @@ describe Hanami::Action do
         response = action.call({})
 
         response[0].must_equal 500
+        action.egg.must_be_nil
+      end
+    end
+
+    describe 'on handled error' do
+      it 'stops the callbacks execution and passes the control on exception handling' do
+        action   = HandledErrorAfterMethodAction.new
+        response = action.call({})
+
+        response[0].must_equal 404
         action.egg.must_be_nil
       end
     end
