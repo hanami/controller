@@ -79,6 +79,9 @@ HTTP_TEST_STATUSES = {
   599 => 'Network connect timeout error'
 }
 
+class RecordNotFound < StandardError
+end
+
 module Test
   class Index
     include Hanami::Action
@@ -349,6 +352,16 @@ class ErrorBeforeMethodAction < BeforeMethodAction
   end
 end
 
+class HandledErrorBeforeMethodAction < BeforeMethodAction
+  configuration.handle_exceptions true
+  handle_exception RecordNotFound => 404
+
+  private
+  def set_article
+    raise RecordNotFound.new
+  end
+end
+
 class BeforeBlockAction
   include Hanami::Action
 
@@ -422,6 +435,16 @@ class ErrorAfterMethodAction < AfterMethodAction
   private
   def set_egg
     raise
+  end
+end
+
+class HandledErrorAfterMethodAction < AfterMethodAction
+  configuration.handle_exceptions true
+  handle_exception RecordNotFound => 404
+
+  private
+  def set_egg
+    raise RecordNotFound.new
   end
 end
 
@@ -633,9 +656,6 @@ class ThrowAfterBlockAction
   def call(params)
     self.body = 'Hello!'
   end
-end
-
-class RecordNotFound < StandardError
 end
 
 class HandledExceptionAction
