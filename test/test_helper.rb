@@ -12,13 +12,6 @@ require 'hanami/controller'
 require 'hanami/action/cookies'
 require 'hanami/action/session'
 
-Hanami::Controller.class_eval do
-  def self.unload!
-    self.configuration = configuration.duplicate
-    configuration.reset!
-  end
-end
-
 require 'fixtures'
 
 Hanami::Controller::Configuration.class_eval do

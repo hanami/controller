@@ -4,7 +4,10 @@ describe Hanami::Action do
   class FormatController
     class Lookup
       include Hanami::Action
-      configuration.handle_exceptions = false
+
+      configure do |config|
+        config.handle_exceptions = false
+      end
 
       def call(params)
       end
@@ -12,7 +15,10 @@ describe Hanami::Action do
 
     class Custom
       include Hanami::Action
-      configuration.handle_exceptions = false
+
+      configure do |config|
+        config.handle_exceptions = false
+      end
 
       def call(params)
         self.format = params[:format]

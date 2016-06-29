@@ -83,6 +83,8 @@ class RecordNotFound < StandardError
 end
 
 module Test
+  include Hanami::Controller
+
   class Index
     include Hanami::Action
     expose :xyz
@@ -91,15 +93,39 @@ module Test
       @xyz = params[:name]
     end
   end
+
+  class CallAction
+    include Hanami::Action
+
+    def call(params)
+      self.status  = 201
+      self.body    = 'Hi from TestAction!'
+      self.headers.merge!({ 'X-Custom' => 'OK' })
+    end
+  end
+
+  class HandleExceptions
+    include Hanami::Action
+
+    configure do |config|
+      config.handle_exceptions = false
+      config.handle_exception StandardError => 500
+    end
+
+    def call(params)
+    end
+  end
 end
 
-class CallAction
-  include Hanami::Action
+module ConfigurationTest
+  include Hanami::Controller
 
-  def call(params)
-    self.status  = 201
-    self.body    = 'Hi from TestAction!'
-    self.headers.merge!({ 'X-Custom' => 'OK' })
+  configure do |config|
+    config.default_charset = 'utf-8'
+  end
+
+  module ConfigurationAction
+    include Hanami::Action
   end
 end
 
@@ -122,6 +148,7 @@ class ErrorCallFromInheritedErrorClass
   end
 
   private
+
   def handler(exception)
     status 501, 'An inherited exception occurred!'
   end
@@ -294,7 +321,8 @@ class BeforeMethodAction
   append_before :add_first_name_to_logger, :add_last_name_to_logger
   prepend_before :add_title_to_logger
 
-  def initialize
+  def initialize(*)
+    super
     @logger = []
   end
 
@@ -347,16 +375,20 @@ end
 
 class ErrorBeforeMethodAction < BeforeMethodAction
   private
+
   def set_article
     raise
   end
 end
 
 class HandledErrorBeforeMethodAction < BeforeMethodAction
-  configuration.handle_exceptions true
-  handle_exception RecordNotFound => 404
+  configure do |config|
+    config.handle_exceptions = true
+    config.handle_exception RecordNotFound => 404
+  end
 
   private
+
   def set_article
     raise RecordNotFound.new
   end
@@ -386,7 +418,8 @@ class AfterMethodAction
   append_after :add_first_name_to_logger, :add_last_name_to_logger
   prepend_after :add_title_to_logger
 
-  def initialize
+  def initialize(*)
+    super
     @logger = []
   end
 
@@ -439,10 +472,13 @@ class ErrorAfterMethodAction < AfterMethodAction
 end
 
 class HandledErrorAfterMethodAction < AfterMethodAction
-  configuration.handle_exceptions true
-  handle_exception RecordNotFound => 404
+  configure do |config|
+    config.handle_exceptions = true
+    config.handle_exception RecordNotFound => 404
+  end
 
   private
+
   def set_egg
     raise RecordNotFound.new
   end
@@ -670,21 +706,21 @@ end
 class DomainLogicException < StandardError
 end
 
-Hanami::Controller.class_eval do
-  configure do
-    handle_exception DomainLogicException => 400
+module Exceptions
+  include Hanami::Controller
+
+  configure do |config|
+    config.handle_exception DomainLogicException => 400
+  end
+
+  class GlobalHandledExceptionAction
+    include Hanami::Action
+
+    def call(params)
+      raise DomainLogicException.new
+    end
   end
 end
-
-class GlobalHandledExceptionAction
-  include Hanami::Action
-
-  def call(params)
-    raise DomainLogicException.new
-  end
-end
-
-Hanami::Controller.unload!
 
 class UnhandledExceptionAction
   include Hanami::Action
@@ -918,7 +954,7 @@ module App2
   module Standalone
     class Index
       include Hanami::Action
-      configuration.handle_exception App2::CustomError => 400
+      handle_exception App2::CustomError => 400
 
       def call(params)
         raise App2::CustomError
@@ -928,27 +964,23 @@ module App2
 end
 
 module MusicPlayer
-  Controller = Hanami::Controller.dupe
-  Action     = Hanami::Action.dup
+  module Controllers
+    include Hanami::Controller
 
-  Controller.module_eval do
-    configuration.reset!
-    configure do
-      handle_exception ArgumentError => 400
-      action_module    MusicPlayer::Action
-      default_headers({
-        "X-Frame-Options" => "DENY"
-      })
+    configure do |config|
+      config.handle_exception ArgumentError => 400
+      # config.action_module    MusicPlayer::Action
+      config.default_headers(
+        'X-Frame-Options' => 'DENY'
+      )
 
-      prepare do
+      config.prepare do
         include Hanami::Action::Cookies
         include Hanami::Action::Session
         include MusicPlayer::Controllers::Authentication
       end
     end
-  end
 
-  module Controllers
     module Authentication
       def self.included(action)
         action.class_eval { expose :current_user }
@@ -962,7 +994,7 @@ module MusicPlayer
 
     class Dashboard
       class Index
-        include MusicPlayer::Action
+        include Hanami::Action
 
         def call(params)
           self.body = 'Muzic!'
@@ -971,7 +1003,7 @@ module MusicPlayer
       end
 
       class Show
-        include MusicPlayer::Action
+        include Hanami::Action
 
         def call(params)
           raise ArgumentError
@@ -981,7 +1013,7 @@ module MusicPlayer
 
     module Artists
       class Index
-        include MusicPlayer::Action
+        include Hanami::Action
 
         def call(params)
           self.body = current_user
@@ -989,7 +1021,7 @@ module MusicPlayer
       end
 
       class Show
-        include MusicPlayer::Action
+        include Hanami::Action
 
         handle_exception ArtistNotFound => 404
 
@@ -999,14 +1031,6 @@ module MusicPlayer
       end
     end
   end
-
-  class StandaloneAction
-    include MusicPlayer::Action
-
-    def call(params)
-      raise ArgumentError
-    end
-  end
 end
 
 class VisibilityAction
@@ -1014,7 +1038,9 @@ class VisibilityAction
   include Hanami::Action::Cookies
   include Hanami::Action::Session
 
-  self.configuration.handle_exceptions false
+  configure do |config|
+    config.handle_exceptions = false
+  end
 
   def call(params)
     self.body   = 'x'
@@ -1042,13 +1068,14 @@ class VisibilityAction
 end
 
 module SendFileTest
-  Controller = Hanami::Controller.duplicate(self) do
-    handle_exceptions false
+  include Hanami::Controller
+  configure do |config|
+    config.handle_exceptions = false
   end
 
   module Files
     class Show
-      include SendFileTest::Action
+      include Hanami::Action
 
       def call(params)
         id = params[:id]
@@ -1064,7 +1091,7 @@ module SendFileTest
     end
 
     class Flow
-      include SendFileTest::Action
+      include Hanami::Action
 
       def call(params)
         send_file Pathname.new('test/assets/test.txt')
@@ -1075,13 +1102,15 @@ module SendFileTest
 end
 
 module HeadTest
-  Controller = Hanami::Controller.duplicate(self) do
-    handle_exceptions false
-    default_headers({
-      "X-Frame-Options" => "DENY"
-    })
+  include Hanami::Controller
 
-    prepare do
+  configure do |config|
+    config.handle_exceptions = false
+    config.default_headers(
+      'X-Frame-Options' => 'DENY'
+    )
+
+    config.prepare do
       include Hanami::Action::Glue
       include Hanami::Action::Session
     end
@@ -1089,7 +1118,7 @@ module HeadTest
 
   module Home
     class Index
-      include HeadTest::Action
+      include Hanami::Action
 
       def call(params)
         self.body = 'index'
@@ -1097,8 +1126,8 @@ module HeadTest
     end
 
     class Code
-      include HeadTest::Action
-      include HeadTest::Action::Cache
+      include Hanami::Action
+      include Hanami::Action::Cache
 
       def call(params)
         content = 'code'
@@ -1120,7 +1149,7 @@ module HeadTest
     end
 
     class Override
-      include HeadTest::Action
+      include Hanami::Action
 
       def call(params)
         self.headers.merge!(
@@ -1142,10 +1171,11 @@ module HeadTest
 end
 
 module FullStack
-  Controller = Hanami::Controller.duplicate(self) do
-    handle_exceptions false
+  include Hanami::Controller
+  configure do |config|
+    config.handle_exceptions = false
 
-    prepare do
+    config.prepare do
       include Hanami::Action::Glue
       include Hanami::Action::Session
     end
@@ -1154,7 +1184,7 @@ module FullStack
   module Controllers
     module Home
       class Index
-        include FullStack::Action
+        include Hanami::Action
         expose :greeting
 
         def call(params)
@@ -1163,7 +1193,7 @@ module FullStack
       end
 
       class Head
-        include FullStack::Action
+        include Hanami::Action
 
         def call(params)
           headers['X-Renderable'] = renderable?.to_s
@@ -1174,14 +1204,14 @@ module FullStack
 
     module Books
       class Index
-        include FullStack::Action
+        include Hanami::Action
 
         def call(params)
         end
       end
 
       class Create
-        include FullStack::Action
+        include Hanami::Action
 
         params do
           required(:title).filled(:str?)
@@ -1195,7 +1225,7 @@ module FullStack
       end
 
       class Update
-        include FullStack::Action
+        include Hanami::Action
 
         params do
           required(:id).value(:int?)
@@ -1223,7 +1253,7 @@ module FullStack
 
     module Poll
       class Start
-        include FullStack::Action
+        include Hanami::Action
 
         def call(params)
           redirect_to '/poll/1'
@@ -1231,7 +1261,7 @@ module FullStack
       end
 
       class Step1
-        include FullStack::Action
+        include Hanami::Action
 
         def call(params)
           if @_env['REQUEST_METHOD'] == 'GET'
@@ -1244,7 +1274,7 @@ module FullStack
       end
 
       class Step2
-        include FullStack::Action
+        include Hanami::Action
 
         def call(params)
           if @_env['REQUEST_METHOD'] == 'POST'
@@ -1257,7 +1287,7 @@ module FullStack
 
     module Users
       class Show
-        include FullStack::Action
+        include Hanami::Action
 
         before :redirect_to_root
         after :set_body
@@ -1359,10 +1389,11 @@ class HandledRackExceptionAction
 end
 
 module SessionWithCookies
-  Controller = Hanami::Controller.duplicate(self) do
-    handle_exceptions false
+  include Hanami::Controller
+  configure do |config|
+    config.handle_exceptions = false
 
-    prepare do
+    config.prepare do
       include Hanami::Action::Glue
       include Hanami::Action::Session
       include Hanami::Action::Cookies
@@ -1372,7 +1403,7 @@ module SessionWithCookies
   module Controllers
     module Home
       class Index
-        include SessionWithCookies::Action
+        include Hanami::Action
 
         def call(params)
         end
@@ -1413,10 +1444,12 @@ module SessionWithCookies
 end
 
 module SessionsWithoutCookies
-  Controller = Hanami::Controller.duplicate(self) do
-    handle_exceptions false
+  include Hanami::Controller
 
-    prepare do
+  configure do |config|
+    config.handle_exceptions = false
+
+    config.prepare do
       include Hanami::Action::Glue
       include Hanami::Action::Session
     end
@@ -1425,7 +1458,7 @@ module SessionsWithoutCookies
   module Controllers
     module Home
       class Index
-        include SessionsWithoutCookies::Action
+        include Hanami::Action
 
         def call(params)
         end
