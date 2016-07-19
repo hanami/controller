@@ -149,20 +149,21 @@ Params represent an untrusted input.
 For security reasons it's recommended to whitelist them.
 
 ```ruby
+require 'hanami/validations'
 require 'hanami/controller'
 
 class Signup
   include Hanami::Action
 
   params do
-    param :first_name
-    param :last_name
-    param :email
-    
-    param :address do
-      param :line_one
-      param :state
-      param :country
+    required(:first_name).filled(:str?)
+    required(:last_name).filled(:str?)
+    required(:email).filled(:str?)
+
+    required(:address).schema do
+      required(:line_one).filled(:str?)
+      required(:state).filled(:str?)
+      required(:country).filled(:str?)
     end
   end
 
@@ -174,7 +175,7 @@ class Signup
     # Whitelist :first_name, but not :admin
     puts params[:first_name]     # => "Luca"
     puts params[:admin]          # => nil
-    
+
     # Whitelist nested params [:address][:line_one], not [:address][:line_two]
     puts params[:address][:line_one] # => '69 Tender St'
     puts params[:address][:line_two] # => nil
@@ -191,6 +192,7 @@ when params are invalid.
 If you specify the `:type` option, the param will be coerced.
 
 ```ruby
+require 'hanami/validations'
 require 'hanami/controller'
 
 class Signup
@@ -198,13 +200,13 @@ class Signup
   include Hanami::Action
 
   params do
-    param :first_name,       presence: true
-    param :last_name,        presence: true
-    param :email,            presence: true, format: /@/,   confirmation: true
-    param :password,         presence: true,                confirmation: true
-    param :terms_of_service, acceptance: true
-    param :avatar,           size: 0..(MEGABYTE * 3)
-    param :age,              type: Integer, size: 18..99
+    required(:first_name).filled(:str?)
+    required(:last_name).filled(:str?)
+    required(:email).confirmation.filled?(:str?, format?: /@/)
+    required(:password).confirmation.filled(:str?)
+    required(:terms_of_service).filled(:bool?)
+    required(:age).filled(:int?, included_in?: 18..99)
+    optional(:avatar).filled(size?: 1..(MEGABYTE * 3))
   end
 
   def call(params)
@@ -219,10 +221,10 @@ action.call(valid_params) # => [200, {}, ...]
 action.errors.empty?      # => true
 
 action.call(invalid_params) # => [400, {}, ...]
-action.errors               # =>  #<Hanami::Validations::Errors:0x007fabe4b433d0 @errors={...}>
+action.errors.empty?        # =>  false
 
-action.errors.for(:email)
-  # => [#<Hanami::Validations::Error:0x007fabe4b432e0 @attribute=:email, @validation=:presence, @expected=true, @actual=nil>]
+action.errors.fetch(:email)
+  # => ['is missing', 'is in invalid format']
 ```
 
 ### Response
