@@ -67,6 +67,8 @@ module Hanami
       #
       # @return [Object,NilClass] return the associated value, if found
       #
+      # @raise [NoMethodError] if key is nil
+      #
       # @since x.x.x
       #
       # @example
@@ -89,7 +91,9 @@ module Hanami
       #   end
       def get(key)
         key, *keys = key.to_s.split(GET_SEPARATOR)
-        result     = self[key.to_sym]
+        return if key.nil?
+
+        result = self[key.to_sym]
 
         Array(keys).each do |k|
           break if result.nil?
