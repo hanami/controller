@@ -54,8 +54,33 @@ module Hanami
         @input
       end
 
+      # Returns structured error messages
+      #
+      # @return [Hash]
+      #
+      # @since x.x.x
+      #
+      # @example
+      #   params.errors
+      #     # => {:email=>["is missing", "is in invalid format"], :name=>["is missing"], :tos=>["is missing"], :age=>["is missing"], :address=>["is missing"]}
       def errors
         @result.messages
+      end
+
+      # Returns flat collection of full error messages
+      #
+      # @return [Array]
+      #
+      # @since x.x.x
+      #
+      # @example
+      #   params.error_messages
+      #     # => ["Email is missing", "Email is in invalid format", "Name is missing", "Tos is missing", "Age is missing", "Address is missing"]
+      def error_messages
+        errors.each_with_object([]) do |(key, messages), result|
+          k = Utils::String.new(key).titleize
+          result.concat messages.map { |message| "#{k} #{message}" }
+        end
       end
 
       def valid?
