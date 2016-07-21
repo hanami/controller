@@ -185,6 +185,8 @@ describe Hanami::Action::Params do
       params.errors.fetch(:name).must_equal    ['is missing']
       params.errors.fetch(:tos).must_equal     ['is missing']
       params.errors.fetch(:address).must_equal ['is missing']
+
+      params.error_messages.must_equal ['Email is missing', 'Email is in invalid format', 'Name is missing', 'Tos is missing', 'Age is missing', 'Address is missing']
     end
 
     it "is it valid when all the validation criteria are met" do
@@ -192,6 +194,7 @@ describe Hanami::Action::Params do
 
       params.valid?.must_equal true
       params.errors.must_be_empty
+      params.error_messages.must_be_empty
     end
 
     it "has input available through the hash accessor" do

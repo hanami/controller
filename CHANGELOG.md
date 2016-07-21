@@ -2,12 +2,15 @@
 Complete, fast and testable actions for Rack
 
 ## v0.7.0 - (unreleased)
+### Added
+- [Luca Guidi] Introduced `Hanami::Action::Params#error_messages` which returns a flat collection of full error messages
+
 ### Fixed
 - [Luca Guidi] Params are deeply symbolized
 - [Artem Nistratov] Send only changed cookies in HTTP response
 
 ### Changed
-– [Luca Guidi] Drop support for Ruby 2.0 and 2.1. Official support for JRuby 9.0.5.0+.
+- [Luca Guidi] Drop support for Ruby 2.0 and 2.1. Official support for JRuby 9.0.5.0+.
 - [Luca Guidi] Param validations now require you to add `hanami-validations` in `Gemfile`.
 - [Luca Guidi] Removed "_indifferent access_" for params. Since now on, only symbols are allowed.
 - [Luca Guidi] Params are immutable
