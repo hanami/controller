@@ -103,6 +103,17 @@ module Hanami
         result
       end
 
+      # Provide a common interface with Params
+      #
+      # @return [TrueClass] always returns true
+      #
+      # @since x.x.x
+      #
+      # @see Hanami::Action::Params#valid?
+      def valid?
+        true
+      end
+
       # Serialize params to Hash
       #
       # @return [::Hash]

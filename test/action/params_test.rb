@@ -189,6 +189,15 @@ describe Hanami::Action::Params do
       params.error_messages.must_equal ['Email is missing', 'Email is in invalid format', 'Name is missing', 'Tos is missing', 'Age is missing', 'Address is missing']
     end
 
+    it "isn't valid with empty nested params" do
+      params = NestedParams.new(signup: {})
+
+      params.valid?.must_equal false
+
+      params.errors.fetch(:signup).fetch(:name).must_equal ['is missing']
+      params.error_messages.must_equal ['Name is missing', 'Age is missing', 'Age must be greater than or equal to 18']
+    end
+
     it "is it valid when all the validation criteria are met" do
       params = TestParams.new(email: 'test@hanamirb.org', name: 'Luca', tos: '1', age: '34', address: { line_one: '10 High Street', deep: { deep_attr: 'blue' } })
 
