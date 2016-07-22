@@ -113,16 +113,16 @@ module Hanami
         #   Hanami::Action::Params
         #
         # @api private
-        # @since x.x.x
+        # @since 0.7.0
         def params_class
           @params_class ||= BaseParams
         end
       end
 
-      # @since x.x.x
+      # @since 0.7.0
       # @api private
       module InstanceMethods
-        # @since x.x.x
+        # @since 0.7.0
         # @api private
         def initialize(*)
           super
