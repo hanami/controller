@@ -759,6 +759,15 @@ class TestParams < Hanami::Action::Params
   end
 end
 
+class NestedParams < Hanami::Action::Params
+  params do
+    required(:signup).schema do
+      required(:name).filled(:str?)
+      required(:age).filled(:int?, gteq?: 18)
+    end
+  end
+end
+
 class Root
   include Hanami::Action
 

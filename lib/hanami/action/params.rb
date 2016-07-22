@@ -76,10 +76,17 @@ module Hanami
       # @example
       #   params.error_messages
       #     # => ["Email is missing", "Email is in invalid format", "Name is missing", "Tos is missing", "Age is missing", "Address is missing"]
-      def error_messages
-        errors.each_with_object([]) do |(key, messages), result|
+      def error_messages(error_set = errors)
+        error_set.each_with_object([]) do |(key, messages), result|
           k = Utils::String.new(key).titleize
-          result.concat messages.map { |message| "#{k} #{message}" }
+
+          _messages = if messages.is_a?(Hash)
+            error_messages(messages)
+          else
+            messages.map { |message| "#{k} #{message}" }
+          end
+
+          result.concat(_messages)
         end
       end
 
