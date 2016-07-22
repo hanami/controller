@@ -6,18 +6,18 @@ module Hanami
     class BaseParams
       # The key that returns raw input from the Rack env
       #
-      # @since x.x.x
+      # @since 0.7.0
       RACK_INPUT    = 'rack.input'.freeze
 
       # The key that returns router params from the Rack env
       # This is a builtin integration for Hanami::Router
       #
-      # @since x.x.x
+      # @since 0.7.0
       ROUTER_PARAMS = 'router.params'.freeze
 
       # Separator for #get
       #
-      # @since x.x.x
+      # @since 0.7.0
       # @api private
       #
       # @see Hanami::Action::Params#get
@@ -25,13 +25,13 @@ module Hanami
 
       # @attr_reader env [Hash] the Rack env
       #
-      # @since x.x.x
+      # @since 0.7.0
       # @api private
       attr_reader :env
 
       # @attr_reader raw [Hash] the raw params from the request
       #
-      # @since x.x.x
+      # @since 0.7.0
       # @api private
       attr_reader :raw
 
@@ -41,7 +41,7 @@ module Hanami
       #
       # @return [Params]
       #
-      # @since x.x.x
+      # @since 0.7.0
       def initialize(env)
         @env    = env
         @raw    = _extract_params
@@ -55,7 +55,7 @@ module Hanami
       #
       # @return [Object,nil] return the associated object, if found
       #
-      # @since x.x.x
+      # @since 0.7.0
       def [](key)
         @params[key]
       end
@@ -69,7 +69,7 @@ module Hanami
       #
       # @raise [NoMethodError] if key is nil
       #
-      # @since x.x.x
+      # @since 0.7.0
       #
       # @example
       #   require 'hanami/controller'
@@ -107,7 +107,7 @@ module Hanami
       #
       # @return [TrueClass] always returns true
       #
-      # @since x.x.x
+      # @since 0.7.0
       #
       # @see Hanami::Action::Params#valid?
       def valid?
@@ -118,7 +118,7 @@ module Hanami
       #
       # @return [::Hash]
       #
-      # @since x.x.x
+      # @since 0.7.0
       def to_h
         @params
       end
@@ -126,7 +126,7 @@ module Hanami
 
       private
 
-      # @since x.x.x
+      # @since 0.7.0
       # @api private
       def _extract_params
         result = {}
@@ -141,7 +141,7 @@ module Hanami
         result
       end
 
-      # @since x.x.x
+      # @since 0.7.0
       # @api private
       def _router_params(fallback = {})
         env.fetch(ROUTER_PARAMS, fallback)

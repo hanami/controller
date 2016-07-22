@@ -18,7 +18,7 @@ module Hanami
 
       # This is a Hanami::Validations extension point
       #
-      # @since x.x.x
+      # @since 0.7.0
       # @api private
       def self._base_rules
         lambda do
@@ -58,7 +58,7 @@ module Hanami
       #
       # @return [Hash]
       #
-      # @since x.x.x
+      # @since 0.7.0
       #
       # @example
       #   params.errors
@@ -71,7 +71,7 @@ module Hanami
       #
       # @return [Array]
       #
-      # @since x.x.x
+      # @since 0.7.0
       #
       # @example
       #   params.error_messages
@@ -106,7 +106,7 @@ module Hanami
 
       private
 
-      # @since x.x.x
+      # @since 0.7.0
       # @api private
       def _extract_params
         # FIXME: this is required for dry-v whitelisting

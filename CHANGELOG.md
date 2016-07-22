@@ -1,7 +1,7 @@
 # Hanami::Controller
 Complete, fast and testable actions for Rack
 
-## v0.7.0 - (unreleased)
+## v0.7.0 - 2016-07-22
 ### Added
 - [Luca Guidi] Introduced `Hanami::Action::Params#error_messages` which returns a flat collection of full error messages
 

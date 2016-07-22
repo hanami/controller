@@ -114,7 +114,7 @@ module Hanami
 
       # Keep track of changed keys
       #
-      # @since x.x.x
+      # @since 0.7.0
       # @api private
       def changes
         @changes ||= Set.new
@@ -123,7 +123,7 @@ module Hanami
       # Check if the entire set of cookies has changed within the current request.
       # If <tt>key</tt> is given, it checks the associated cookie has changed.
       #
-      # @since x.x.x
+      # @since 0.7.0
       # @api private
       def changed?(key = nil)
         if key.nil?
