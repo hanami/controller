@@ -23,7 +23,7 @@ module Hanami
       # @api private
       # @since 0.3.0
       def self.included(base)
-        base.class_eval { expose(:format) if respond_to?(:expose) }
+        base.class_eval { _expose(:format) if respond_to?(:_expose) }
       end
 
       # Check if the current HTTP request is renderable.
