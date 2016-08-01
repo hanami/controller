@@ -125,6 +125,8 @@ module Hanami
                                stringify!(value)
                              when ::Array
                                value.map(&:to_s)
+                             when ::File
+                               value
                              else
                                value.to_s
                              end

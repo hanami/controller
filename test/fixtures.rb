@@ -732,6 +732,19 @@ class WhitelistedDslAction
   end
 end
 
+class WhitelistedUploadDslAction
+  include Hanami::Action
+
+  params do
+    required(:id).maybe
+    required(:upload).filled
+  end
+
+  def call(params)
+    self.body = params.to_h.inspect
+  end
+end
+
 class ParamsValidationAction
   include Hanami::Action
 

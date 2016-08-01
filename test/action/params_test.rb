@@ -23,33 +23,41 @@ describe Hanami::Action::Params do
       end
 
       it 'raw gets all params' do
-        @action.call('id' => '1', 'unknown' => '2', '_csrf_token' => '3')
+        File.open('test/assets/multipart-upload.png', 'rb') do |upload|
+          @action.call('id' => '1', 'unknown' => '2', 'upload' => upload, '_csrf_token' => '3')
 
-        @action.params[:id].must_equal          '1'
-        @action.params[:unknown].must_equal     '2'
-        @action.params[:_csrf_token].must_equal '3'
+          @action.params[:id].must_equal          '1'
+          @action.params[:unknown].must_equal     '2'
+          @action.params[:upload].must_equal      upload
+          @action.params[:_csrf_token].must_equal '3'
 
-        @action.params.raw.fetch(:id).must_equal          '1'
-        @action.params.raw.fetch(:unknown).must_equal     '2'
-        @action.params.raw.fetch(:_csrf_token).must_equal '3'
+          @action.params.raw.fetch(:id).must_equal          '1'
+          @action.params.raw.fetch(:unknown).must_equal     '2'
+          @action.params.raw.fetch(:upload).must_equal      upload
+          @action.params.raw.fetch(:_csrf_token).must_equal '3'
+        end
       end
     end
 
     describe 'when this feature is enabled' do
       before do
-        @action = WhitelistedParamsAction.new
+        @action = WhitelistedUploadDslAction.new
       end
 
       it 'raw gets all params' do
-        @action.call('id' => '1', 'unknown' => '2', '_csrf_token' => '3')
+        Tempfile.create('multipart-upload') do |upload|
+          @action.call('id' => '1', 'unknown' => '2', 'upload' => upload, '_csrf_token' => '3')
 
-        @action.params[:id].must_equal          '1'
-        @action.params[:unknown].must_equal     nil
-        @action.params[:_csrf_token].must_equal '3'
+          @action.params[:id].must_equal          '1'
+          @action.params[:unknown].must_equal     nil
+          @action.params[:upload].must_equal      upload
+          @action.params[:_csrf_token].must_equal '3'
 
-        @action.params.raw.fetch('id').must_equal          '1'
-        @action.params.raw.fetch('unknown').must_equal     '2'
-        @action.params.raw.fetch('_csrf_token').must_equal '3'
+          @action.params.raw.fetch('id').must_equal          '1'
+          @action.params.raw.fetch('unknown').must_equal     '2'
+          @action.params.raw.fetch('upload').must_equal       upload
+          @action.params.raw.fetch('_csrf_token').must_equal '3'
+        end
       end
     end
   end
