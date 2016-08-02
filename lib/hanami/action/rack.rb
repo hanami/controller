@@ -42,6 +42,9 @@ module Hanami
       # @api private
       HEAD = 'HEAD'.freeze
 
+      # The key that returns router parsed body from the Rack env
+      ROUTER_PARSED_BODY = 'router.parsed_body'.freeze
+
       # Override Ruby's hook for modules.
       # It includes basic Hanami::Action modules to the given class.
       #
@@ -200,6 +203,10 @@ module Hanami
       #   end
       def request
         @request ||= ::Hanami::Action::Request.new(@_env)
+      end
+
+      def parsed_request_body
+        @_env.fetch(ROUTER_PARSED_BODY, nil)
       end
 
       private
