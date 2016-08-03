@@ -130,4 +130,25 @@ describe Hanami::Action do
       request.path.must_equal('/foo')
     end
   end
+
+  describe '#parsed_request_body' do
+    it 'exposes the body of the request parsed by router body parsers' do
+      action_class = Class.new do
+        include Hanami::Action
+
+        expose :request_body
+
+        def call(params)
+          @request_body = parsed_request_body
+        end
+      end
+
+      action = action_class.new
+      env = Rack::MockRequest.env_for('http://example.com/foo',
+                                      'router.parsed_body' => { 'a' => 'foo' })
+      action.call(env)
+      parsed_request_body = action.request_body
+      parsed_request_body.must_equal({ 'a' => 'foo' })
+    end
+  end
 end
