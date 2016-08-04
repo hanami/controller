@@ -65,8 +65,8 @@ module Hanami
           def detect_reserved_words!(names)
             names.each do |name|
               if reserved_word?(name)
-                error_text = "#{name} is a reserved word. It cannot be exposured"
-                raise IllegalExposeError, error_text
+                raise IllegalExposeError,
+                      "#{name} is a reserved word. It cannot be exposed"
               end
             end
           end
