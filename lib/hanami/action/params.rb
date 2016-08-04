@@ -90,6 +90,15 @@ module Hanami
         end
       end
 
+      # Returns true if no validation errors are found,
+      # false otherwise.
+      #
+      # @return [TrueClass, FalseClass]
+      #
+      # @since 0.7.0
+      #
+      # @example
+      #   params.valid? # => true
       def valid?
         @result.success?
       end
