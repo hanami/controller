@@ -109,7 +109,7 @@ describe Hanami::Action::Params do
         describe 'in testing mode' do
           it 'returns only the listed params' do
             _, _, body = @action.call(id: 23, unknown: 4, article: { foo: 'bar', tags: [:cool] })
-            body.must_equal [%({:id=>"23", :article=>{:tags=>["cool"]}})]
+            body.must_equal [%({:id=>23, :article=>{:tags=>[:cool]}})]
           end
 
           it "doesn't filter _csrf_token" do
@@ -217,7 +217,7 @@ describe Hanami::Action::Params do
       params = TestParams.new(name: 'John', address: { line_one: '10 High Street', deep: { deep_attr: 1 } })
       params[:name].must_equal 'John'
       params[:address][:line_one].must_equal '10 High Street'
-      params[:address][:deep][:deep_attr].must_equal '1'
+      params[:address][:deep][:deep_attr].must_equal 1
     end
   end
 
@@ -429,6 +429,12 @@ describe Hanami::Action::Params do
         actual.must_be_kind_of(::Hash)
         actual[:address].must_be_kind_of(::Hash)
         actual[:address][:deep].must_be_kind_of(::Hash)
+      end
+    
+      it 'does not stringify values' do
+        input = { 'name' => 123 }
+        params = TestParams.new(input)
+        params[:name].must_equal(123)
       end
     end
   end
