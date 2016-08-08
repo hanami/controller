@@ -489,10 +489,10 @@ module Hanami
         values = ::Rack::Utils.q_values(q_value_header)
         values = values.map do |req_mime, quality|
           if req_mime == DEFAULT_ACCEPT
-             # See https://github.com/hanami/controller/issues/167
-             match = default_content_type
+            # See https://github.com/hanami/controller/issues/167
+            match = default_content_type
           else
-             match = available_mimes.find { |am| ::Rack::Mime.match?(am, req_mime) }
+            match = available_mimes.find { |am| ::Rack::Mime.match?(am, req_mime) }
           end
           next unless match
           [match, quality]
