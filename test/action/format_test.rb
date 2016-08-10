@@ -18,6 +18,16 @@ describe Hanami::Action do
         self.format = params[:format]
       end
     end
+    
+    class Configuration
+      include Hanami::Action
+
+      configuration.default_request_format :jpeg
+
+      def call(params)
+        self.body = format
+      end
+    end
   end
 
   describe '#format' do
@@ -58,6 +68,18 @@ describe Hanami::Action do
       headers['Content-Type'].must_equal 'text/html; charset=utf-8'
       status.must_equal                   200
     end
+    
+    # Bug
+    # See https://github.com/hanami/controller/issues/167
+    it "accepts '*/*' and returns configured default format" do
+      action = FormatController::Configuration.new
+      status, headers, _ = action.call({ 'HTTP_ACCEPT' => '*/*' })
+
+      action.format.must_equal    :jpeg
+      headers['Content-Type'].must_equal 'image/jpeg; charset=utf-8'
+      status.must_equal                   200
+    end
+    
 
     mime_types = ['application/octet-stream', 'text/html']
     Rack::Mime::MIME_TYPES.each do |format, mime_type|
