@@ -211,6 +211,19 @@ class ExposeAction
   end
 end
 
+class ExposeReservedWordAction
+  include Hanami::Action
+  include Hanami::Action::Session
+
+  def self.expose_reserved_word(using_internal_method: false)
+    if using_internal_method
+      _expose :flash
+    else
+      expose :flash
+    end
+  end
+end
+
 class ZMiddleware
   def initialize(app, &message)
     @app = app

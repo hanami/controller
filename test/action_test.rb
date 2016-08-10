@@ -98,18 +98,6 @@ describe Hanami::Action do
     end
   end
 
-  describe '#expose' do
-    it 'creates a getter for the given ivar' do
-      action = ExposeAction.new
-
-      response = action.call({})
-      response[0].must_equal 200
-
-      action.exposures.fetch(:film).must_equal '400 ASA'
-      action.exposures.fetch(:time).must_equal nil
-    end
-  end
-
   describe '#request' do
     it 'gets a Rack-like request object' do
       action_class = Class.new do

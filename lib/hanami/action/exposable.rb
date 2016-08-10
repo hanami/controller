@@ -1,3 +1,5 @@
+require 'hanami/action/exposable/guard'
+
 module Hanami
   module Action
     # Exposures API
@@ -18,7 +20,9 @@ module Hanami
       def self.included(base)
         base.class_eval do
           extend ClassMethods
-          expose :params
+          include Guard
+
+          _expose :params
         end
       end
 
@@ -67,6 +71,10 @@ module Hanami
             exposures.push(*names)
           end
         end
+
+        # Alias of #expose to be used in internal modules.
+        # #_expose is not watched by the Guard
+        alias _expose expose
 
         # Set of exposures attribute names
         #
