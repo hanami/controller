@@ -232,7 +232,11 @@ describe Hanami::Action::Params do
   describe '#get' do
     describe 'with data' do
       before do
-        @params = TestParams.new(name: 'John', address: { line_one: '10 High Street', deep: { deep_attr: 1 } })
+        @params = TestParams.new(
+          name: 'John',
+          address: { line_one: '10 High Street', deep: { deep_attr: 1 } },
+          array: [{ name: 'Lenon' }, { name: 'Wayne' }]
+        )
       end
 
       it 'returns nil for nil argument' do
@@ -253,6 +257,11 @@ describe Hanami::Action::Params do
 
       it 'returns nil for uknown nested param' do
         @params.get('address.unknown').must_be_nil
+      end
+
+      it 'allows to read datas under arrays' do
+        @params.get('array.0.name').must_equal 'Lenon'
+        @params.get('array.1.name').must_equal 'Wayne'
       end
     end
 
@@ -438,7 +447,7 @@ describe Hanami::Action::Params do
         actual[:address].must_be_kind_of(::Hash)
         actual[:address][:deep].must_be_kind_of(::Hash)
       end
-    
+
       it 'does not stringify values' do
         input = { 'name' => 123 }
         params = TestParams.new(input)
