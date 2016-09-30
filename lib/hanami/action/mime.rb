@@ -435,6 +435,16 @@ module Hanami
         @accept ||= @_env[HTTP_ACCEPT] || DEFAULT_ACCEPT
       end
 
+      # Checks if there is an Accept header for the current request.
+      #
+      # @return [Boolean] true if there's an Accept header to look at
+      #
+      # @since 0.7.0
+      # @api private
+      def accept_header?
+        accept != DEFAULT_ACCEPT
+      end
+
       # Look at the Accept header for the current request and see if it
       # matches any of the common MIME Types (see Hanami::Action::Mime#MIME_TYPES).
       #
