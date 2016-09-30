@@ -181,8 +181,10 @@ module Hanami
       #
       # It prefers, in order:
       #   * Explicit set value (see #format=)
-      #   * Weighted value from Accept
-      #   * Default content type
+      #   * Weighted value from Accept header based on common MIME Types
+      #   * Value from Accept header based on custom registered MIME Types (see Hanami::Controller::Configuration#format)
+      #   * Configured default content type (see Hanami::Controller::Configuration#default_response_format)
+      #   * Hard-coded default content type (see Hanami::Action::Mime::DEFAULT_CONTENT_TYPE)
       #
       # To override the value, use <tt>#format=</tt>
       #
@@ -194,6 +196,8 @@ module Hanami
       # @see Hanami::Configuration#default_request_format
       # @see Hanami::Action::Mime#default_content_type
       # @see Hanami::Action::Mime#DEFAULT_CONTENT_TYPE
+      # @see Hanami::Controller::Configuration#format
+      # @see Hanami::Controller::Configuration#default_response_format
       #
       # @example
       #   require 'hanami/controller'
@@ -207,7 +211,14 @@ module Hanami
       #     end
       #   end
       def content_type
-        @content_type || default_response_type || accepts || default_content_type || DEFAULT_CONTENT_TYPE
+        return @content_type if @content_type
+
+        if accept_header?
+          type = get_common_mime_type_from_accept_header || get_custom_mime_type_from_accept_header
+          return type if type
+        end
+
+        default_response_type || default_content_type || DEFAULT_CONTENT_TYPE
       end
 
       # Action charset setter, receives new charset value
@@ -458,8 +469,8 @@ module Hanami
       #
       # @api private
       def get_common_mime_type_from_accept_header
-          best_q_match(accept, MIME_TYPES)
-        end
+        best_q_match(accept, MIME_TYPES)
+      end
 
       # Look at the Accept header for the current request and see if it
       # matches any of the custom registered MIME Types

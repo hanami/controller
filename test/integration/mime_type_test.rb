@@ -11,6 +11,7 @@ MimeRoutes = Hanami::Router.new do
   get '/nocontent',          to: 'mimes#no_content'
   get '/response',           to: 'mimes#default_response'
   get '/overwritten_format', to: 'mimes#override_default_response'
+  get '/custom_from_accept', to: 'mimes#custom_from_accept'
 end
 
 module Mimes
@@ -47,8 +48,8 @@ module Mimes
 
     def call(params)
       self.charset = 'latin1'
-      self.format = :html
-      self.body   = format
+      self.format  = :html
+      self.body    = format
     end
   end
 
@@ -61,6 +62,17 @@ module Mimes
       self.headers.merge!({'X-AcceptXml'     => accept?('application/xml').to_s })
       self.headers.merge!({'X-AcceptJson'    => accept?('text/json').to_s })
 
+      self.body = format
+    end
+  end
+
+  class CustomFromAccept
+    include Hanami::Action
+
+    configuration.format custom: 'application/custom'
+    accept :json, :custom
+
+    def call(params)
       self.body = format
     end
   end
@@ -159,6 +171,12 @@ describe 'Content type' do
       response = @app.get('/', 'HTTP_ACCEPT' => '*/*')
       response.headers['Content-Type'].must_equal 'application/octet-stream; charset=utf-8'
       response.body.must_equal                    'all'
+    end
+
+    it 'sets "Content-Type" header according to "Accept"' do
+      response = @app.get('/custom_from_accept', 'HTTP_ACCEPT' => 'application/custom')
+      response.headers['Content-Type'].must_equal 'application/custom; charset=utf-8'
+      response.body.must_equal                    'custom'
     end
 
     it 'sets "Content-Type" header according to "Accept"' do
