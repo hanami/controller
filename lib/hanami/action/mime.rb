@@ -435,10 +435,19 @@ module Hanami
         @accept ||= @_env[HTTP_ACCEPT] || DEFAULT_ACCEPT
       end
 
-      # @since 0.1.0
+      # Look at the Accept header for the current request and see if it
+      # matches any of the common MIME Types (see Hanami::Action::Mime#MIME_TYPES).
+      #
+      # @return [Nil] when the Accept header does not match any known (common)
+      # MIME Types.
+      # @return [String] the charset of the request.
+      #
+      # @since 0.7.0
+      #
+      # @see Hanami::Action::Mime#MIME_TYPES
+      #
       # @api private
-      def accepts
-        unless accept == DEFAULT_ACCEPT
+      def get_common_mime_type_from_accept_header
           best_q_match(accept, MIME_TYPES)
         end
       end
