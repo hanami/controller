@@ -180,6 +180,18 @@ describe 'Content type' do
     end
 
     it 'sets "Content-Type" header according to "Accept"' do
+      response = @app.get('/custom_from_accept', 'HTTP_ACCEPT' => 'application/custom;q=0.9, application/json;q=0.5')
+      response.headers['Content-Type'].must_equal 'application/custom; charset=utf-8'
+      response.body.must_equal                    'custom'
+    end
+
+    it 'sets "Content-Type" header according to "Accept"' do
+      response = @app.get('/custom_from_accept', 'HTTP_ACCEPT' => 'application/custom;q=0.1, application/json;q=0.5')
+      response.headers['Content-Type'].must_equal 'application/json; charset=utf-8'
+      response.body.must_equal                    'json'
+    end
+
+    it 'sets "Content-Type" header according to "Accept"' do
       response = @app.get('/', 'HTTP_ACCEPT' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8')
       response.headers['Content-Type'].must_equal 'text/html; charset=utf-8'
       response.body.must_equal                    'html'
