@@ -2,31 +2,31 @@ require 'test_helper'
 
 describe Hanami::Action do
   describe '.configuration' do
-    after do
-      CallAction.configuration.reset!
-    end
+    it 'copies configuration from module' do
+      expected = Test.configuration
+      actual   = Test::CallAction.configuration
 
-    it 'has the same defaults of Hanami::Controller' do
-      expected = Hanami::Controller.configuration
-      actual   = CallAction.configuration
-
-      actual.handle_exceptions.must_equal(expected.handle_exceptions)
+      actual.must_equal(expected)
     end
 
     it "doesn't interfer with other action's configurations" do
-      CallAction.configuration.handle_exceptions = false
+      Test.configuration.handle_exceptions.must_equal(true)
+      Test.configuration.handled_exceptions.must_equal({})
 
-      Hanami::Controller.configuration.handle_exceptions.must_equal(true)
-      ErrorCallAction.configuration.handle_exceptions.must_equal(true)
+      Test::CallAction.configuration.handle_exceptions.must_equal(true)
+      Test::CallAction.configuration.handled_exceptions.must_equal({})
+
+      Test::HandleExceptions.configuration.handle_exceptions.must_equal(false)
+      Test::HandleExceptions.configuration.handled_exceptions.must_equal(StandardError => 500)
     end
   end
 
   describe '#call' do
     it 'calls an action' do
-      response = CallAction.new.call({})
+      response = Test::CallAction.new.call({})
 
       response[0].must_equal 201
-      response[1].must_equal({'Content-Type' => 'application/octet-stream; charset=utf-8', 'X-Custom' => 'OK'})
+      response[1].must_equal('Content-Type' => 'application/octet-stream; charset=utf-8', 'X-Custom' => 'OK')
       response[2].must_equal ['Hi from TestAction!']
     end
 
@@ -83,34 +83,35 @@ describe Hanami::Action do
 
     describe 'when exception handling code is disabled' do
       before do
-        ErrorCallAction.configuration.handle_exceptions = false
-      end
-
-      after do
-        ErrorCallAction.configuration.reset!
+        @action = ErrorCallAction.new(configuration: { handle_exceptions: false })
       end
 
       it 'should raise an actual exception' do
-        proc {
-          ErrorCallAction.new.call({})
-        }.must_raise RuntimeError
+        lambda do
+          @action.call({})
+        end.must_raise RuntimeError
       end
     end
   end
 
   describe '#request' do
     it 'gets a Rack-like request object' do
-      action_class = Class.new do
-        include Hanami::Action
+      klass = nil
 
-        expose :req
+      Module.new {
+        include Hanami::Controller
 
-        def call(params)
-          @req = request
+        klass = Class.new do
+          include Hanami::Action
+          expose :req
+
+          def call(_params)
+            @req = request
+          end
         end
-      end
+      }
 
-      action = action_class.new
+      action = klass.new
       env = Rack::MockRequest.env_for('http://example.com/foo')
       action.call(env)
 

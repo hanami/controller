@@ -1,10 +1,6 @@
 require 'test_helper'
 
 describe Hanami::Action do
-  before do
-    Hanami::Controller.unload!
-  end
-
   describe '.handle_exception' do
     it 'handle an exception with the given status' do
       response = HandledExceptionAction.new.call({})
@@ -20,7 +16,7 @@ describe Hanami::Action do
 
     describe 'with global handled exceptions' do
       it 'handles raised exception' do
-        response = GlobalHandledExceptionAction.new.call({})
+        response = Exceptions::GlobalHandledExceptionAction.new.call({})
 
         response[0].must_equal 400
       end

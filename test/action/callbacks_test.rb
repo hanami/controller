@@ -26,7 +26,7 @@ describe Hanami::Action do
 
     it 'can optionally have params in method signature' do
       action = ParamsBeforeMethodAction.new
-      action.call(params = {'bang' => '!'})
+      action.call('bang' => '!')
 
       action.article.must_equal 'Bonjour!!'.reverse
       action.exposed_params.to_h.must_equal({bang: '!'})
@@ -34,7 +34,7 @@ describe Hanami::Action do
 
     it 'yields params when the callback is a block' do
       action   = YieldBeforeBlockAction.new
-      response = action.call(params = { 'twentythree' => '23' })
+      response = action.call('twentythree' => '23')
 
       response[0].must_equal 200
       action.yielded_params.to_h.must_equal({twentythree: '23'})
@@ -93,7 +93,7 @@ describe Hanami::Action do
 
     it 'yields params when the callback is a block' do
       action = YieldAfterBlockAction.new
-      action.call(params = { 'fortytwo' => '42' })
+      action.call('fortytwo' => '42')
 
       action.meaning_of_life_params.to_h.must_equal(fortytwo: '42')
     end

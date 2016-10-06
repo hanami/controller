@@ -58,10 +58,14 @@ module Hanami
         include Throwable
         include Callbacks
         include Validatable if defined?(Validatable)
-        include Configurable
+        prepend Configurable
         include Head
         prepend Callable
       end
+    end
+
+    def initialize(**)
+      super()
     end
 
     private

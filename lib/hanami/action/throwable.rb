@@ -69,7 +69,9 @@ module Hanami
         #
         #   Show.new.call({id: 1}) # => [404, {}, ['Not Found']]
         def handle_exception(exception)
-          configuration.handle_exception(exception)
+          self.configuration = configuration.configure do |c|
+            c.handle_exception(exception)
+          end
         end
       end
 

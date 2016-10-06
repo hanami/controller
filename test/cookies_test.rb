@@ -52,9 +52,10 @@ describe Hanami::Action do
 
     describe 'with default cookies' do
       it 'gets default cookies' do
-        action   = GetDefaultCookiesAction.new
-        action.class.configuration.cookies({
-          domain: 'hanamirb.org', path: '/controller', secure: true, httponly: true
+        action   = GetDefaultCookiesAction.new(configuration: {
+          cookies: {
+            domain: 'hanamirb.org', path: '/controller', secure: true, httponly: true
+          }
         })
 
         _, headers, _ = action.call({})
@@ -62,9 +63,10 @@ describe Hanami::Action do
       end
 
       it "overwritten cookies' values are respected" do
-        action   = GetOverwrittenCookiesAction.new
-        action.class.configuration.cookies({
-          domain: 'hanamirb.org', path: '/controller', secure: true, httponly: true
+        action   = GetOverwrittenCookiesAction.new(configuration: {
+          cookies: {
+            domain: 'hanamirb.org', path: '/controller', secure: true, httponly: true
+          }
         })
 
         _, headers, _ = action.call({})

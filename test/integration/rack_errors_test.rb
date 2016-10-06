@@ -18,11 +18,12 @@ CustomAuthException       = Class.new(StandardError) do
   end
 end
 
-Hanami::Controller.configure do
-  handle_exception FrameworkHandledException => 500
-end
-
 module Errors
+  include Hanami::Controller
+  configure do |config|
+    config.handle_exception FrameworkHandledException => 500
+  end
+
   class WithoutMessage
     include Hanami::Action
 
@@ -65,19 +66,19 @@ module Errors
   end
 end
 
-Hanami::Controller.unload!
-
 DisabledErrorsRoutes = Hanami::Router.new do
   get '/action_managed',    to: 'disabled_errors#action_managed'
   get '/framework_managed', to: 'disabled_errors#framework_managed'
 end
 
-Hanami::Controller.configure do
-  handle_exceptions false
-  handle_exception FrameworkHandledException => 500
-end
-
 module DisabledErrors
+  include Hanami::Controller
+
+  configure do |config|
+    config.handle_exceptions = false
+    config.handle_exception FrameworkHandledException => 500
+  end
+
   class ActionManaged
     include Hanami::Action
     handle_exception HandledException => 400
@@ -95,8 +96,6 @@ module DisabledErrors
     end
   end
 end
-
-Hanami::Controller.unload!
 
 describe 'Reference exception in rack.errors' do
   before do

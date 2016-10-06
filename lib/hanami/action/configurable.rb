@@ -26,10 +26,11 @@ module Hanami
       #   end
       #
       #   Show.configuration
-      def self.included(base)
+      def self.prepended(base)
         config = Hanami::Controller::Configuration.for(base)
 
         base.class_eval do
+          extend ClassMethods
           include Utils::ClassAttribute
 
           class_attribute :configuration
@@ -39,11 +40,23 @@ module Hanami
         config.copy!(base)
       end
 
+      module ClassMethods
+        private
+
+        def configure(&blk)
+          self.configuration = configuration.configure(&blk)
+          nil
+        end
+      end
+
+      def initialize(configuration: self.class.configuration, **args)
+        super(**args)
+        @configuration = Hanami::Controller::Configuration.fabricate(configuration)
+      end
+
       private
 
-      def configuration
-        self.class.configuration
-      end
+      attr_reader :configuration
     end
   end
 end
