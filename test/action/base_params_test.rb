@@ -11,4 +11,16 @@ describe Hanami::Action::BaseParams do
       @action.params.must_be :valid?
     end
   end
+
+  describe '#each' do
+    it 'iterates through params' do
+      params = Hanami::Action::BaseParams.new(expected = { song: 'Break The Habit' })
+      actual = Hash[]
+      params.each do |key, value|
+        actual[key] = value
+      end
+
+      actual.must_equal(expected)
+    end
+  end
 end
