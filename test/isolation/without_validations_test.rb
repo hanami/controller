@@ -38,12 +38,12 @@ describe 'Without validations' do
       include Hanami::Action
 
       def call(params)
-        self.body = params.respond_to?(:valid?)
+        self.body = [params.respond_to?(:valid?), params.valid?]
       end
     end
 
     _, _, body = action.new.call({})
-    body.must_equal [false]
+    body.must_equal [true, true]
   end
 
   it "has params that don't respond to .errors" do

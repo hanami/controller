@@ -94,18 +94,6 @@ describe Hanami::Action do
     end
   end
 
-  describe '#expose' do
-    it 'creates a getter for the given ivar' do
-      action = ExposeAction.new
-
-      response = action.call({})
-      response[0].must_equal 200
-
-      action.exposures.fetch(:film).must_equal '400 ASA'
-      action.exposures.fetch(:time).must_equal nil
-    end
-  end
-
   describe '#request' do
     it 'gets a Rack-like request object' do
       klass = nil
@@ -129,6 +117,27 @@ describe Hanami::Action do
 
       request = action.req
       request.path.must_equal('/foo')
+    end
+  end
+
+  describe '#parsed_request_body' do
+    it 'exposes the body of the request parsed by router body parsers' do
+      action_class = Class.new do
+        include Hanami::Action
+
+        expose :request_body
+
+        def call(params)
+          @request_body = parsed_request_body
+        end
+      end
+
+      action = action_class.new
+      env = Rack::MockRequest.env_for('http://example.com/foo',
+                                      'router.parsed_body' => { 'a' => 'foo' })
+      action.call(env)
+      parsed_request_body = action.request_body
+      parsed_request_body.must_equal({ 'a' => 'foo' })
     end
   end
 end

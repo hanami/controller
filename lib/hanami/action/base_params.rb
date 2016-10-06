@@ -6,18 +6,18 @@ module Hanami
     class BaseParams
       # The key that returns raw input from the Rack env
       #
-      # @since x.x.x
+      # @since 0.7.0
       RACK_INPUT    = 'rack.input'.freeze
 
       # The key that returns router params from the Rack env
       # This is a builtin integration for Hanami::Router
       #
-      # @since x.x.x
+      # @since 0.7.0
       ROUTER_PARAMS = 'router.params'.freeze
 
       # Separator for #get
       #
-      # @since x.x.x
+      # @since 0.7.0
       # @api private
       #
       # @see Hanami::Action::Params#get
@@ -25,13 +25,13 @@ module Hanami
 
       # @attr_reader env [Hash] the Rack env
       #
-      # @since x.x.x
+      # @since 0.7.0
       # @api private
       attr_reader :env
 
       # @attr_reader raw [Hash] the raw params from the request
       #
-      # @since x.x.x
+      # @since 0.7.0
       # @api private
       attr_reader :raw
 
@@ -41,7 +41,7 @@ module Hanami
       #
       # @return [Params]
       #
-      # @since x.x.x
+      # @since 0.7.0
       def initialize(env)
         @env    = env
         @raw    = _extract_params
@@ -55,7 +55,7 @@ module Hanami
       #
       # @return [Object,nil] return the associated object, if found
       #
-      # @since x.x.x
+      # @since 0.7.0
       def [](key)
         @params[key]
       end
@@ -67,7 +67,9 @@ module Hanami
       #
       # @return [Object,NilClass] return the associated value, if found
       #
-      # @since x.x.x
+      # @raise [NoMethodError] if key is nil
+      #
+      # @since 0.7.0
       #
       # @example
       #   require 'hanami/controller'
@@ -89,7 +91,9 @@ module Hanami
       #   end
       def get(key)
         key, *keys = key.to_s.split(GET_SEPARATOR)
-        result     = self[key.to_sym]
+        return if key.nil?
+
+        result = self[key.to_sym]
 
         Array(keys).each do |k|
           break if result.nil?
@@ -99,19 +103,39 @@ module Hanami
         result
       end
 
+      # Provide a common interface with Params
+      #
+      # @return [TrueClass] always returns true
+      #
+      # @since 0.7.0
+      #
+      # @see Hanami::Action::Params#valid?
+      def valid?
+        true
+      end
+
       # Serialize params to Hash
       #
       # @return [::Hash]
       #
-      # @since x.x.x
+      # @since 0.7.0
       def to_h
         @params
       end
       alias_method :to_hash, :to_h
 
+      # Iterates through params
+      #
+      # @param blk [Proc]
+      #
+      # @since 0.7.1
+      def each(&blk)
+        to_h.each(&blk)
+      end
+
       private
 
-      # @since x.x.x
+      # @since 0.7.0
       # @api private
       def _extract_params
         result = {}
@@ -126,7 +150,7 @@ module Hanami
         result
       end
 
-      # @since x.x.x
+      # @since 0.7.0
       # @api private
       def _router_params(fallback = {})
         env.fetch(ROUTER_PARAMS, fallback)

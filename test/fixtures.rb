@@ -238,6 +238,19 @@ class ExposeAction
   end
 end
 
+class ExposeReservedWordAction
+  include Hanami::Action
+  include Hanami::Action::Session
+
+  def self.expose_reserved_word(using_internal_method: false)
+    if using_internal_method
+      _expose :flash
+    else
+      expose :flash
+    end
+  end
+end
+
 class ZMiddleware
   def initialize(app, &message)
     @app = app
@@ -768,6 +781,19 @@ class WhitelistedDslAction
   end
 end
 
+class WhitelistedUploadDslAction
+  include Hanami::Action
+
+  params do
+    required(:id).maybe
+    required(:upload).filled
+  end
+
+  def call(params)
+    self.body = params.to_h.inspect
+  end
+end
+
 class ParamsValidationAction
   include Hanami::Action
 
@@ -791,6 +817,15 @@ class TestParams < Hanami::Action::Params
       required(:deep).schema do
         required(:deep_attr).filled(:str?)
       end
+    end
+  end
+end
+
+class NestedParams < Hanami::Action::Params
+  params do
+    required(:signup).schema do
+      required(:name).filled(:str?)
+      required(:age).filled(:int?, gteq?: 18)
     end
   end
 end

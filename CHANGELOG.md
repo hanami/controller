@@ -1,9 +1,35 @@
 # Hanami::Controller
 Complete, fast and testable actions for Rack
 
-## v0.7.0 - (unreleased)
+## v0.7.1 - 2016-10-06
+### Added
+- [Kyle Chong] Introduced `parsed_request_body` for action
+- [Luca Guidi] Introduced `Hanami::Action::BaseParams#each`
+
+### Fixed
+- [Ayleen McCann] Use default content type when `HTTP_ACCEPT` is `*/*`
+- [Kyle Chong] Don't stringify uploaded files
+- [Kyle Chong] Don't stringify params values when not necessary
+
 ### Changed
-– [Luca Guidi] Drop support for Ruby 2.0 and 2.1
+- [akhramov & Luca Guidi] Raise `Hanami::Controller::IllegalExposureError` when try to expose reserved words: `params`, and `flash`.
+
+## v0.7.0 - 2016-07-22
+### Added
+- [Luca Guidi] Introduced `Hanami::Action::Params#error_messages` which returns a flat collection of full error messages
+
+### Fixed
+- [Luca Guidi] Params are deeply symbolized
+- [Artem Nistratov] Send only changed cookies in HTTP response
+
+### Changed
+- [Luca Guidi] Drop support for Ruby 2.0 and 2.1. Official support for JRuby 9.0.5.0+.
+- [Luca Guidi] Param validations now require you to add `hanami-validations` in `Gemfile`.
+- [Luca Guidi] Removed "_indifferent access_" for params. Since now on, only symbols are allowed.
+- [Luca Guidi] Params are immutable
+- [Luca Guidi] Params validations syntax has changed
+- [Luca Guidi] `Hanami::Action::Params#errors` now returns a Hash. Keys are symbols representing invalid params, while values are arrays of strings with a message of the failure.
+- [Vasilis Spilka] Made `Hanami::Action::Session#errors` public
 
 ## v0.6.1 - 2016-02-05
 ### Changed

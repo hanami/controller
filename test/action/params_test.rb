@@ -23,34 +23,41 @@ describe Hanami::Action::Params do
       end
 
       it 'raw gets all params' do
-        @action.call('id' => '1', 'unknown' => '2', '_csrf_token' => '3')
+        File.open('test/assets/multipart-upload.png', 'rb') do |upload|
+          @action.call('id' => '1', 'unknown' => '2', 'upload' => upload, '_csrf_token' => '3')
 
-        @action.params[:id].must_equal          '1'
-        @action.params[:unknown].must_equal     '2'
-        @action.params[:_csrf_token].must_equal '3'
+          @action.params[:id].must_equal          '1'
+          @action.params[:unknown].must_equal     '2'
+          @action.params[:upload].must_equal      upload
+          @action.params[:_csrf_token].must_equal '3'
 
-        @action.params.raw.fetch(:id).must_equal          '1'
-        @action.params.raw.fetch(:unknown).must_equal     '2'
-        @action.params.raw.fetch(:_csrf_token).must_equal '3'
+          @action.params.raw.fetch(:id).must_equal          '1'
+          @action.params.raw.fetch(:unknown).must_equal     '2'
+          @action.params.raw.fetch(:upload).must_equal      upload
+          @action.params.raw.fetch(:_csrf_token).must_equal '3'
+        end
       end
     end
 
     describe 'when this feature is enabled' do
       before do
-        @action = WhitelistedParamsAction.new
+        @action = WhitelistedUploadDslAction.new
       end
 
       it 'raw gets all params' do
-        @action.call('id' => '1', 'unknown' => '2', '_csrf_token' => '3')
+        Tempfile.create('multipart-upload') do |upload|
+          @action.call('id' => '1', 'unknown' => '2', 'upload' => upload, '_csrf_token' => '3')
 
-        @action.params[:id].must_equal          '1'
-        @action.params[:unknown].must_equal     nil
-        # See: https://github.com/dry-rb/dry-validation/issues/141
-        # @action.params[:_csrf_token].must_equal '3'
+          @action.params[:id].must_equal          '1'
+          @action.params[:unknown].must_equal     nil
+          @action.params[:upload].must_equal      upload
+          @action.params[:_csrf_token].must_equal '3'
 
-        @action.params.raw.fetch('id').must_equal          '1'
-        @action.params.raw.fetch('unknown').must_equal     '2'
-        @action.params.raw.fetch('_csrf_token').must_equal '3'
+          @action.params.raw.fetch('id').must_equal          '1'
+          @action.params.raw.fetch('unknown').must_equal     '2'
+          @action.params.raw.fetch('upload').must_equal       upload
+          @action.params.raw.fetch('_csrf_token').must_equal '3'
+        end
       end
     end
   end
@@ -110,7 +117,7 @@ describe Hanami::Action::Params do
         describe 'in testing mode' do
           it 'returns only the listed params' do
             _, _, body = @action.call(id: 23, unknown: 4, article: { foo: 'bar', tags: [:cool] })
-            body.must_equal [%({:id=>"23", :article=>{:tags=>["cool"]}})]
+            body.must_equal [%({:id=>23, :article=>{:tags=>[:cool]}})]
           end
 
           it "doesn't filter _csrf_token" do
@@ -176,126 +183,118 @@ describe Hanami::Action::Params do
     end
   end
 
-  # describe 'validations' do
-    # it "isn't valid with empty params" do
-    #   params = TestParams.new({})
+  describe 'validations' do
+    it "isn't valid with empty params" do
+      params = TestParams.new({})
 
-    #   params.valid?.must_equal false
+      params.valid?.must_equal false
 
-    #   params.errors.for(:email).
-    #     must_include Hanami::Validations::Error.new(:email, :presence, true, nil)
-    #   params.errors.for(:name).
-    #     must_include Hanami::Validations::Error.new(:name, :presence, true, nil)
-    #   params.errors.for(:tos).
-    #     must_include Hanami::Validations::Error.new(:tos, :acceptance, true, nil)
-    #   params.errors.for('address.line_one').
-    #     must_include Hanami::Validations::Error.new('address.line_one', :presence, true, nil)
-    # end
+      params.errors.fetch(:email).must_equal   ['is missing', 'is in invalid format']
+      params.errors.fetch(:name).must_equal    ['is missing']
+      params.errors.fetch(:tos).must_equal     ['is missing']
+      params.errors.fetch(:address).must_equal ['is missing']
 
-    # it "is it valid when all the validation criteria are met" do
-    #   params = TestParams.new({email: 'test@hanamirb.org', name: 'Luca', tos: '1', address: { line_one: '10 High Street' }})
+      params.error_messages.must_equal ['Email is missing', 'Email is in invalid format', 'Name is missing', 'Tos is missing', 'Age is missing', 'Address is missing']
+    end
 
-    #   params.valid?.must_equal true
-    #   params.errors.must_be_empty
-    # end
+    it "isn't valid with empty nested params" do
+      params = NestedParams.new(signup: {})
 
-    # it "has input available through the hash accessor" do
-    #   params = TestParams.new(name: 'John', age: '1', address: { line_one: '10 High Street' })
-    #   params[:name].must_equal('John')
-    #   params[:age].must_equal(1)
-    #   params[:address][:line_one].must_equal('10 High Street')
-    # end
+      params.valid?.must_equal false
 
-    # it "has input available as methods" do
-    #   params = TestParams.new(name: 'John', age: '1', address: { line_one: '10 High Street' })
-    #   params.name.must_equal('John')
-    #   params.age.must_equal(1)
-    #   params.address.line_one.must_equal('10 High Street')
-    # end
+      params.errors.fetch(:signup).fetch(:name).must_equal ['is missing']
+      params.error_messages.must_equal ['Name is missing', 'Age is missing', 'Age must be greater than or equal to 18']
+    end
 
-    # it "has a nested object even when no input for that object was defined" do
-    #   params = TestParams.new({})
-    #   params.address.wont_be_nil
-    # end
+    it "is it valid when all the validation criteria are met" do
+      params = TestParams.new(email: 'test@hanamirb.org', name: 'Luca', tos: '1', age: '34', address: { line_one: '10 High Street', deep: { deep_attr: 'blue' } })
 
-    # it "has the correct nested param superclass type" do
-    #   params = TestParams.new({address: { line_one: '123'}})
-    #   params[:address].class.superclass.must_equal(Hanami::Action::Params)
-    # end
+      params.valid?.must_equal true
+      params.errors.must_be_empty
+      params.error_messages.must_be_empty
+    end
 
-    # it "allows nested hash access via symbols" do
-    #   params = TestParams.new(name: 'John', address: { line_one: '10 High Street', deep: { deep_attr: 1 } })
-    #   params[:name].must_equal 'John'
-    #   params[:address][:line_one].must_equal '10 High Street'
-    #   params[:address][:deep][:deep_attr].must_equal '1'
-    # end
-  # end
+    it "has input available through the hash accessor" do
+      params = TestParams.new(name: 'John', age: '1', address: { line_one: '10 High Street' })
+      params[:name].must_equal('John')
+      params[:age].must_equal(1)
+      params[:address][:line_one].must_equal('10 High Street')
+    end
 
-  # describe '#get' do
-    # describe 'with data' do
-    #   before do
-    #     @params = TestParams.new(name: 'John', address: { line_one: '10 High Street', deep: { deep_attr: 1 } })
-    #   end
+    it "allows nested hash access via symbols" do
+      params = TestParams.new(name: 'John', address: { line_one: '10 High Street', deep: { deep_attr: 1 } })
+      params[:name].must_equal 'John'
+      params[:address][:line_one].must_equal '10 High Street'
+      params[:address][:deep][:deep_attr].must_equal 1
+    end
+  end
 
-    #   it 'returns nil for nil argument' do
-    #     @params.get(nil).must_be_nil
-    #   end
+  describe '#get' do
+    describe 'with data' do
+      before do
+        @params = TestParams.new(name: 'John', address: { line_one: '10 High Street', deep: { deep_attr: 1 } })
+      end
 
-    #   it 'returns nil for unknown param' do
-    #     @params.get('unknown').must_be_nil
-    #   end
+      it 'returns nil for nil argument' do
+        @params.get(nil).must_be_nil
+      end
 
-    #   it 'allows to read top level param' do
-    #     @params.get('name').must_equal 'John'
-    #   end
+      it 'returns nil for unknown param' do
+        @params.get('unknown').must_be_nil
+      end
 
-    #   it 'allows to read nested param' do
-    #     @params.get('address.line_one').must_equal '10 High Street'
-    #   end
+      it 'allows to read top level param' do
+        @params.get('name').must_equal 'John'
+      end
 
-    #   it 'returns nil for uknown nested param' do
-    #     @params.get('address.unknown').must_be_nil
-    #   end
-    # end
+      it 'allows to read nested param' do
+        @params.get('address.line_one').must_equal '10 High Street'
+      end
 
-    # describe 'without data' do
-    #   before do
-    #     @params = TestParams.new({})
-    #   end
+      it 'returns nil for uknown nested param' do
+        @params.get('address.unknown').must_be_nil
+      end
+    end
 
-    #   it 'returns nil for nil argument' do
-    #     @params.get(nil).must_be_nil
-    #   end
+    describe 'without data' do
+      before do
+        @params = TestParams.new({})
+      end
 
-    #   it 'returns nil for unknown param' do
-    #     @params.get('unknown').must_be_nil
-    #   end
+      it 'returns nil for nil argument' do
+        @params.get(nil).must_be_nil
+      end
 
-    #   it 'returns nil for top level param' do
-    #     @params.get('name').must_be_nil
-    #   end
+      it 'returns nil for unknown param' do
+        @params.get('unknown').must_be_nil
+      end
 
-    #   it 'returns nil for nested param' do
-    #     @params.get('address.line_one').must_be_nil
-    #   end
+      it 'returns nil for top level param' do
+        @params.get('name').must_be_nil
+      end
 
-    #   it 'returns nil for uknown nested param' do
-    #     @params.get('address.unknown').must_be_nil
-    #   end
-    # end
-  # end
+      it 'returns nil for nested param' do
+        @params.get('address.line_one').must_be_nil
+      end
 
-  # describe '#to_h' do
-    # let(:params) { Hanami::Action::Params.new(id: '23') }
+      it 'returns nil for uknown nested param' do
+        @params.get('address.unknown').must_be_nil
+      end
+    end
+  end
 
-    # it "returns a ::Hash" do
-    #   params.to_h.must_be_kind_of ::Hash
-    # end
+  describe '#to_h' do
+    let(:params) { TestParams.new(name: 'Jane') }
 
-    # it "returns unfrozen Hash" do
-    #   params.to_h.wont_be :frozen?
-    # end
+    it "returns a ::Hash" do
+      params.to_h.must_be_kind_of ::Hash
+    end
 
+    it "returns unfrozen Hash" do
+      params.to_h.wont_be :frozen?
+    end
+
+    it "prevents informations escape"
     # it "prevents informations escape" do
     #   hash = params.to_h
     #   hash.merge!({name: 'L'})
@@ -303,61 +302,78 @@ describe Hanami::Action::Params do
     #   params.to_h.must_equal(Hash['id' => '23'])
     # end
 
-    # it 'handles nested params' do
-    #   hash = {
-    #     'tutorial' => {
-    #       'instructions' => [
-    #         {'title' => 'foo',  'body' => 'bar'},
-    #         {'title' => 'hoge', 'body' => 'fuga'}
-    #       ]
-    #     }
-    #   }
+    it 'handles nested params' do
+      input = {
+        'address' => {
+          'deep' => {
+            'deep_attr' => 'foo'
+          }
+        }
+      }
 
-    #   actual = Hanami::Action::Params.new(hash).to_h
-    #   actual.must_equal(hash)
+      expected = {
+        address: {
+          deep: {
+            deep_attr: 'foo'
+          }
+        }
+      }
 
-    #   actual.must_be_kind_of(::Hash)
-    #   actual['tutorial'].must_be_kind_of(::Hash)
-    #   actual['tutorial']['instructions'].each do |h|
-    #     h.must_be_kind_of(::Hash)
-    #   end
-    # end
-  
-    # describe 'when whitelisting' do
-    #   # This is bug 113.
-    #   it 'handles nested params' do
-    #     hash = {
-    #       'name' => 'John',
-    #       'age' => 1,
-    #       'address' => {
-    #         'line_one' => '10 High Street',
-    #         'deep' => {
-    #           'deep_attr' => 'hello',
-    #         }
-    #       }
-    #     }
+      actual = TestParams.new(input).to_h
+      actual.must_equal(expected)
 
-    #     actual = TestParams.new(hash).to_h
-    #     actual.must_equal(hash)
+      actual.must_be_kind_of(::Hash)
+      actual[:address].must_be_kind_of(::Hash)
+      actual[:address][:deep].must_be_kind_of(::Hash)
+    end
 
-    #     actual.must_be_kind_of(::Hash)
-    #     actual['address'].must_be_kind_of(::Hash)
-    #     actual['address']['deep'].must_be_kind_of(::Hash)
-    #   end
-    # end
-  # end
+    describe 'when whitelisting' do
+      # This is bug 113.
+      it 'handles nested params' do
+        input = {
+          'name' => 'John',
+          'age' => 1,
+          'address' => {
+            'line_one' => '10 High Street',
+            'deep' => {
+              'deep_attr' => 'hello'
+            }
+          }
+        }
 
-  # describe '#to_hash' do
-    # let(:params) { Hanami::Action::Params.new(id: '23') }
+        expected = {
+          name: 'John',
+          age: 1,
+          address: {
+            line_one: '10 High Street',
+            deep: {
+              deep_attr: 'hello'
+            }
+          }
+        }
 
-    # it "returns an Utils::Hash" do
-    #   params.to_hash.must_be_kind_of(::Hash)
-    # end
+        actual = TestParams.new(input).to_h
+        actual.must_equal(expected)
 
-    # it "returns unfrozen Hash" do
-    #   params.to_hash.wont_be :frozen?
-    # end
+        actual.must_be_kind_of(::Hash)
+        actual[:address].must_be_kind_of(::Hash)
+        actual[:address][:deep].must_be_kind_of(::Hash)
+      end
+    end
+  end
 
+  describe '#to_hash' do
+    let(:params) { TestParams.new(name: 'Jane') }
+
+    it "returns a ::Hash" do
+      params.to_hash.must_be_kind_of ::Hash
+    end
+
+    it "returns unfrozen Hash" do
+      params.to_hash.wont_be :frozen?
+    end
+
+    it "prevents informations escape"
     # it "prevents informations escape" do
     #   hash = params.to_hash
     #   hash.merge!({name: 'L'})
@@ -365,24 +381,69 @@ describe Hanami::Action::Params do
     #   params.to_hash.must_equal(Hash['id' => '23'])
     # end
 
-    # it 'handles nested params' do
-    #   hash = {
-    #     'tutorial' => {
-    #       'instructions' => [
-    #         {'title' => 'foo',  'body' => 'bar'},
-    #         {'title' => 'hoge', 'body' => 'fuga'}
-    #       ]
-    #     }
-    #   }
+    it 'handles nested params' do
+      input = {
+        'address' => {
+          'deep' => {
+            'deep_attr' => 'foo'
+          }
+        }
+      }
 
-    #   actual = Hanami::Action::Params.new(hash).to_hash
-    #   actual.must_equal(hash)
+      expected = {
+        address: {
+          deep: {
+            deep_attr: 'foo'
+          }
+        }
+      }
 
-    #   actual.must_be_kind_of(::Hash)
-    #   actual['tutorial'].must_be_kind_of(::Hash)
-    #   actual['tutorial']['instructions'].each do |h|
-    #     h.must_be_kind_of(::Hash)
-    #   end
-    # end
-  # end
+      actual = TestParams.new(input).to_hash
+      actual.must_equal(expected)
+
+      actual.must_be_kind_of(::Hash)
+      actual[:address].must_be_kind_of(::Hash)
+      actual[:address][:deep].must_be_kind_of(::Hash)
+    end
+
+    describe 'when whitelisting' do
+      # This is bug 113.
+      it 'handles nested params' do
+        input = {
+          'name' => 'John',
+          'age' => 1,
+          'address' => {
+            'line_one' => '10 High Street',
+            'deep' => {
+              'deep_attr' => 'hello'
+            }
+          }
+        }
+
+        expected = {
+          name: 'John',
+          age: 1,
+          address: {
+            line_one: '10 High Street',
+            deep: {
+              deep_attr: 'hello'
+            }
+          }
+        }
+
+        actual = TestParams.new(input).to_hash
+        actual.must_equal(expected)
+
+        actual.must_be_kind_of(::Hash)
+        actual[:address].must_be_kind_of(::Hash)
+        actual[:address][:deep].must_be_kind_of(::Hash)
+      end
+    
+      it 'does not stringify values' do
+        input = { 'name' => 123 }
+        params = TestParams.new(input)
+        params[:name].must_equal(123)
+      end
+    end
+  end
 end
