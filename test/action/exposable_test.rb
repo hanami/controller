@@ -16,7 +16,7 @@ describe Hanami::Action::Exposable do
       subject { ExposeReservedWordAction.expose_reserved_word }
 
       it 'should raise an exception' do
-        ->() { subject }.must_raise Hanami::Action::Exposable::Guard::IllegalExposeError
+        ->() { subject }.must_raise Hanami::Controller::IllegalExposureError
       end
     end
 

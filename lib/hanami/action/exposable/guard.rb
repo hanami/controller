@@ -1,4 +1,14 @@
+require 'hanami/controller/error'
+
 module Hanami
+  module Controller
+    # Exposure of reserved words
+    #
+    # @since x.x.x
+    class IllegalExposureError < Error
+    end
+  end
+
   module Action
     module Exposable
       # Guard for Exposures API.
@@ -22,12 +32,6 @@ module Hanami
           class << base
             prepend ClassMethods
           end
-        end
-
-        # Exposure of reserved words
-        #
-        # @since x.x.x
-        class IllegalExposeError < ::StandardError
         end
 
         # Exposures API Guard class methods
@@ -65,8 +69,7 @@ module Hanami
           def detect_reserved_words!(names)
             names.each do |name|
               if reserved_word?(name)
-                raise IllegalExposeError,
-                      "#{name} is a reserved word. It cannot be exposed"
+                raise Hanami::Controller::IllegalExposureError.new("#{name} is a reserved word. It cannot be exposed")
               end
             end
           end
