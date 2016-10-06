@@ -128,7 +128,7 @@ module Hanami
       #
       # @param blk [Proc]
       #
-      # @since x.x.x
+      # @since 0.7.1
       def each(&blk)
         to_h.each(&blk)
       end

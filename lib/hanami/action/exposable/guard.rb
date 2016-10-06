@@ -4,7 +4,7 @@ module Hanami
   module Controller
     # Exposure of reserved words
     #
-    # @since x.x.x
+    # @since 0.7.1
     class IllegalExposureError < Error
     end
   end
@@ -14,7 +14,7 @@ module Hanami
       # Guard for Exposures API.
       # Prevents exposure of reserved words
       #
-      # @since x.x.x
+      # @since 0.7.1
       #
       # @see Hanami::Action::Exposable::Guard::ClassMethods#expose
       # @see Hanami::Action::Exposable::Guard::ClassMethods#reserved_word?
@@ -24,7 +24,7 @@ module Hanami
         #
         # @param base [Class] the target action
         #
-        # @since x.x.x
+        # @since 0.7.1
         # @api private
         #
         # @see http://www.ruby-doc.org/core-2.1.2/Module.html#method-i-included
@@ -36,7 +36,7 @@ module Hanami
 
         # Exposures API Guard class methods
         #
-        # @since x.x.x
+        # @since 0.7.1
         # @api private
         module ClassMethods
           # Prevents exposure if names contain a reserved word.
@@ -46,7 +46,7 @@ module Hanami
           #
           # @return [void]
           #
-          # @since x.x.x
+          # @since 0.7.1
           def expose(*names)
             detect_reserved_words!(names)
 
@@ -64,7 +64,7 @@ module Hanami
           # @raise [IllegalExposeError] if names contain one or more of reserved
           #   words
           #
-          # @since x.x.x
+          # @since 0.7.1
           # @api private
           def detect_reserved_words!(names)
             names.each do |name|
@@ -84,7 +84,7 @@ module Hanami
           #
           # @return [true, false]
           #
-          # @since x.x.x
+          # @since 0.7.1
           # @api private
           def reserved_word?(name, namespace = 'Hanami')
             if method_defined?(name) || private_method_defined?(name)
