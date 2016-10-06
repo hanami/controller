@@ -90,6 +90,15 @@ module Hanami
         end
       end
 
+      # Returns true if no validation errors are found,
+      # false otherwise.
+      #
+      # @return [TrueClass, FalseClass]
+      #
+      # @since 0.7.0
+      #
+      # @example
+      #   params.valid? # => true
       def valid?
         @result.success?
       end
@@ -106,31 +115,8 @@ module Hanami
 
       private
 
-      # @since 0.7.0
-      # @api private
-      def _extract_params
-        # FIXME: this is required for dry-v whitelisting
-        stringify!(super)
-      end
-
       def _params
         @result.output.merge(_router_params)
-      end
-
-      def stringify!(result)
-        result.keys.each do |key|
-          value = result.delete(key)
-          result[key.to_s] = case value
-                             when ::Hash
-                               stringify!(value)
-                             when ::Array
-                               value.map(&:to_s)
-                             else
-                               value.to_s
-                             end
-        end
-
-        result
       end
     end
   end

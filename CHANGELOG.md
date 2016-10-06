@@ -1,6 +1,19 @@
 # Hanami::Controller
 Complete, fast and testable actions for Rack
 
+## v0.7.1 - 2016-10-06
+### Added
+- [Kyle Chong] Introduced `parsed_request_body` for action
+- [Luca Guidi] Introduced `Hanami::Action::BaseParams#each`
+
+### Fixed
+- [Ayleen McCann] Use default content type when `HTTP_ACCEPT` is `*/*`
+- [Kyle Chong] Don't stringify uploaded files
+- [Kyle Chong] Don't stringify params values when not necessary
+
+### Changed
+- [akhramov & Luca Guidi] Raise `Hanami::Controller::IllegalExposureError` when try to expose reserved words: `params`, and `flash`.
+
 ## v0.7.0 - 2016-07-22
 ### Added
 - [Luca Guidi] Introduced `Hanami::Action::Params#error_messages` which returns a flat collection of full error messages

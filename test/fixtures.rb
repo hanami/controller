@@ -211,6 +211,19 @@ class ExposeAction
   end
 end
 
+class ExposeReservedWordAction
+  include Hanami::Action
+  include Hanami::Action::Session
+
+  def self.expose_reserved_word(using_internal_method: false)
+    if using_internal_method
+      _expose :flash
+    else
+      expose :flash
+    end
+  end
+end
+
 class ZMiddleware
   def initialize(app, &message)
     @app = app
@@ -725,6 +738,19 @@ class WhitelistedDslAction
 
   params do
     required(:username).filled
+  end
+
+  def call(params)
+    self.body = params.to_h.inspect
+  end
+end
+
+class WhitelistedUploadDslAction
+  include Hanami::Action
+
+  params do
+    required(:id).maybe
+    required(:upload).filled
   end
 
   def call(params)

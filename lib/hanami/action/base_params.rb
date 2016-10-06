@@ -124,6 +124,15 @@ module Hanami
       end
       alias_method :to_hash, :to_h
 
+      # Iterates through params
+      #
+      # @param blk [Proc]
+      #
+      # @since 0.7.1
+      def each(&blk)
+        to_h.each(&blk)
+      end
+
       private
 
       # @since 0.7.0

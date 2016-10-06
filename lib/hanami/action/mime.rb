@@ -487,9 +487,13 @@ module Hanami
       # @see https://github.com/hanami/controller/issues/104
       def best_q_match(q_value_header, available_mimes)
         values = ::Rack::Utils.q_values(q_value_header)
-
         values = values.map do |req_mime, quality|
-          match = available_mimes.find { |am| ::Rack::Mime.match?(am, req_mime) }
+          if req_mime == DEFAULT_ACCEPT
+            # See https://github.com/hanami/controller/issues/167
+            match = default_content_type
+          else
+            match = available_mimes.find { |am| ::Rack::Mime.match?(am, req_mime) }
+          end
           next unless match
           [match, quality]
         end.compact
