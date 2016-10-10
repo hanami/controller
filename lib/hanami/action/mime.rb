@@ -449,7 +449,8 @@ module Hanami
 
       # Checks if there is an Accept header for the current request.
       #
-      # @return [Boolean] true if there's an Accept header to look at
+      # @return [Boolean] True if there is an Accept header in the current
+      #   request.
       #
       # @since 0.7.0
       # @api private
@@ -458,12 +459,12 @@ module Hanami
       end
 
       # Look at the Accept header for the current request and see if it
-      # matches any of the common MIME Types (see Hanami::Action::Mime#MIME_TYPES)
+      # matches any of the common MIME types (see Hanami::Action::Mime#MIME_TYPES)
       # or the custom registered ones (see Hanami::Controller::Configuration#format).
       #
-      # @return [Nil] when the Accept header does not match any known MIME
-      # Types.
-      # @return [String] the matched MIME type for the given Accept header.
+      # @return [Nil] When the Accept header does not match any known MIME
+      #   type.
+      # @return [String] The matched MIME type for the given Accept header.
       #
       # @since 0.7.0
       #
