@@ -215,7 +215,7 @@ module Hanami
         return @content_type if @content_type
 
         if accept_header?
-          type = get_mime_type_from_accept_header
+          type = mime_type_from_accept_header
           return type if type
         end
 
@@ -471,7 +471,7 @@ module Hanami
       # @see Hanami::Controller::Configuration#format
       #
       # @api private
-      def get_mime_type_from_accept_header
+      def mime_type_from_accept_header
         all_types = (MIME_TYPES + configuration.format_mime_types).uniq
         best_q_match(accept, all_types)
       end
