@@ -169,37 +169,50 @@ describe 'Content type' do
   describe 'when Accept is sent' do
     it 'sets "Content-Type" header according to "Accept"' do
       response = @app.get('/', 'HTTP_ACCEPT' => '*/*')
-      response.headers['Content-Type'].must_equal 'application/octet-stream; charset=utf-8'
+      content_type = 'application/octet-stream; charset=utf-8'
+      response.headers['Content-Type'].must_equal content_type
       response.body.must_equal                    'all'
     end
 
     it 'sets "Content-Type" header according to "Accept"' do
-      response = @app.get('/custom_from_accept', 'HTTP_ACCEPT' => 'application/custom')
-      response.headers['Content-Type'].must_equal 'application/custom; charset=utf-8'
+      headers = {'HTTP_ACCEPT' => 'application/custom'}
+      response = @app.get('/custom_from_accept', headers)
+      content_type = 'application/custom; charset=utf-8'
+      response.headers['Content-Type'].must_equal content_type
       response.body.must_equal                    'custom'
     end
 
     it 'sets "Content-Type" header according to "Accept"' do
-      response = @app.get('/custom_from_accept', 'HTTP_ACCEPT' => 'application/custom;q=0.9, application/json;q=0.5')
-      response.headers['Content-Type'].must_equal 'application/custom; charset=utf-8'
+      accept = 'application/custom;q=0.9,application/json;q=0.5'
+      header = {'HTTP_ACCEPT' => accept}
+      response = @app.get('/custom_from_accept', headers)
+      content_type = 'application/custom; charset=utf-8'
+      response.headers['Content-Type'].must_equal content_type
       response.body.must_equal                    'custom'
     end
 
     it 'sets "Content-Type" header according to "Accept"' do
-      response = @app.get('/custom_from_accept', 'HTTP_ACCEPT' => 'application/custom;q=0.1, application/json;q=0.5')
-      response.headers['Content-Type'].must_equal 'application/json; charset=utf-8'
+      accept = 'application/custom;q=0.1, application/json;q=0.5'
+      headers = {'HTTP_ACCEPT' => accept}
+      response = @app.get('/custom_from_accept', headers)
+      content_type = 'application/json; charset=utf-8'
+      response.headers['Content-Type'].must_equal content_type
       response.body.must_equal                    'json'
     end
 
     it 'sets "Content-Type" header according to "Accept"' do
-      response = @app.get('/', 'HTTP_ACCEPT' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8')
+      accept = 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+      response = @app.get('/', 'HTTP_ACCEPT' => accept)
       response.headers['Content-Type'].must_equal 'text/html; charset=utf-8'
       response.body.must_equal                    'html'
     end
 
     it 'sets "Content-Type" header according to "Accept" quality scale' do
-      response = @app.get('/', 'HTTP_ACCEPT' => 'application/json;q=0.6,application/xml;q=0.9,*/*;q=0.8')
-      response.headers['Content-Type'].must_equal 'application/xml; charset=utf-8'
+      accept = 'application/json;q=0.6,application/xml;q=0.9,*/*;q=0.8'
+      headers = {'HTTP_ACCEPT' => accept}
+      response = @app.get('/', headers)
+      content_type = 'application/xml; charset=utf-8'
+      response.headers['Content-Type'].must_equal content_type
       response.body.must_equal                    'xml'
     end
   end
