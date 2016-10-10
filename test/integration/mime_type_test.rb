@@ -184,7 +184,7 @@ describe 'Content type' do
 
     it 'sets "Content-Type" header according to "Accept"' do
       accept = 'application/custom;q=0.9,application/json;q=0.5'
-      header = {'HTTP_ACCEPT' => accept}
+      headers = {'HTTP_ACCEPT' => accept}
       response = @app.get('/custom_from_accept', headers)
       content_type = 'application/custom; charset=utf-8'
       response.headers['Content-Type'].must_equal content_type
