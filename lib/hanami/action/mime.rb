@@ -472,7 +472,7 @@ module Hanami
       #
       # @api private
       def mime_type_from_accept_header
-        all_types = (MIME_TYPES + configuration.format_mime_types).uniq
+        all_types = (MIME_TYPES + configuration.format_mime_types)
         best_q_match(accept, all_types)
       end
 
