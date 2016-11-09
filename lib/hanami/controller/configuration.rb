@@ -406,6 +406,17 @@ module Hanami
           Utils::Kernel.Symbol(symbol)
       end
 
+      # Return the configured format's MIME types
+      #
+      # @since 0.7.0
+      #
+      # @see Hanami::Controller::Configuration#format
+      # @see Hanami::Action::Mime::MIME_TYPES
+      #
+      def format_mime_types
+        @formats.keys
+      end
+
       # Set a format as default fallback for all the requests without a strict
       # requirement for the mime type.
       #

@@ -180,9 +180,12 @@ module Hanami
       # The content type that will be automatically set in the response.
       #
       # It prefers, in order:
-      #   * Explicit set value (see #format=)
-      #   * Weighted value from Accept
-      #   * Default content type
+      #   * Explicit set value (see Hanami::Action::Mime#format=)
+      #   * Weighted value from Accept header based on all known MIME Types:
+      #     - Custom registered MIME Types (see Hanami::Controller::Configuration#format)
+      #     - Common MIME Types (see Hanami::Action::Mime#MIME_TYPES)
+      #   * Configured default content type (see Hanami::Controller::Configuration#default_response_format)
+      #   * Hard-coded default content type (see Hanami::Action::Mime::DEFAULT_CONTENT_TYPE)
       #
       # To override the value, use <tt>#format=</tt>
       #
@@ -194,6 +197,8 @@ module Hanami
       # @see Hanami::Configuration#default_request_format
       # @see Hanami::Action::Mime#default_content_type
       # @see Hanami::Action::Mime#DEFAULT_CONTENT_TYPE
+      # @see Hanami::Controller::Configuration#format
+      # @see Hanami::Controller::Configuration#default_response_format
       #
       # @example
       #   require 'hanami/controller'
@@ -207,7 +212,14 @@ module Hanami
       #     end
       #   end
       def content_type
-        @content_type || default_response_type || accepts || default_content_type || DEFAULT_CONTENT_TYPE
+        return @content_type if @content_type
+
+        if accept_header?
+          type = mime_type_from_accept_header
+          return type if type
+        end
+
+        default_response_type || default_content_type || DEFAULT_CONTENT_TYPE
       end
 
       # Action charset setter, receives new charset value
@@ -435,12 +447,34 @@ module Hanami
         @accept ||= @_env[HTTP_ACCEPT] || DEFAULT_ACCEPT
       end
 
-      # @since 0.1.0
+      # Checks if there is an Accept header for the current request.
+      #
+      # @return [Boolean] True if there is an Accept header in the current
+      #   request.
+      #
+      # @since 0.7.0
       # @api private
-      def accepts
-        unless accept == DEFAULT_ACCEPT
-          best_q_match(accept, MIME_TYPES)
-        end
+      def accept_header?
+        accept != DEFAULT_ACCEPT
+      end
+
+      # Look at the Accept header for the current request and see if it
+      # matches any of the common MIME types (see Hanami::Action::Mime#MIME_TYPES)
+      # or the custom registered ones (see Hanami::Controller::Configuration#format).
+      #
+      # @return [Nil] When the Accept header does not match any known MIME
+      #   type.
+      # @return [String] The matched MIME type for the given Accept header.
+      #
+      # @since 0.7.0
+      #
+      # @see Hanami::Action::Mime#MIME_TYPES
+      # @see Hanami::Controller::Configuration#format
+      #
+      # @api private
+      def mime_type_from_accept_header
+        all_types = (MIME_TYPES + configuration.format_mime_types)
+        best_q_match(accept, all_types)
       end
 
       # @since 0.5.0

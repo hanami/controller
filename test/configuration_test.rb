@@ -187,6 +187,17 @@ describe Hanami::Controller::Configuration do
     end
   end
 
+  describe '#format_mime_types' do
+    before do
+      @configuration.format custom: 'custom/format'
+    end
+
+    it 'returns all configured format MIME types' do
+      all = ["application/octet-stream", "*/*", "text/html", "custom/format"]
+      @configuration.format_mime_types.must_equal all
+    end
+  end
+
   describe '#default_request_format' do
     describe "when not previously set" do
       it 'returns nil' do

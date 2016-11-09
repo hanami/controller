@@ -11,6 +11,7 @@ MimeRoutes = Hanami::Router.new do
   get '/nocontent',          to: 'mimes#no_content'
   get '/response',           to: 'mimes#default_response'
   get '/overwritten_format', to: 'mimes#override_default_response'
+  get '/custom_from_accept', to: 'mimes#custom_from_accept'
 end
 
 module Mimes
@@ -47,8 +48,8 @@ module Mimes
 
     def call(params)
       self.charset = 'latin1'
-      self.format = :html
-      self.body   = format
+      self.format  = :html
+      self.body    = format
     end
   end
 
@@ -61,6 +62,17 @@ module Mimes
       self.headers.merge!({'X-AcceptXml'     => accept?('application/xml').to_s })
       self.headers.merge!({'X-AcceptJson'    => accept?('text/json').to_s })
 
+      self.body = format
+    end
+  end
+
+  class CustomFromAccept
+    include Hanami::Action
+
+    configuration.format custom: 'application/custom'
+    accept :json, :custom
+
+    def call(params)
       self.body = format
     end
   end
@@ -157,19 +169,50 @@ describe 'Content type' do
   describe 'when Accept is sent' do
     it 'sets "Content-Type" header according to "Accept"' do
       response = @app.get('/', 'HTTP_ACCEPT' => '*/*')
-      response.headers['Content-Type'].must_equal 'application/octet-stream; charset=utf-8'
+      content_type = 'application/octet-stream; charset=utf-8'
+      response.headers['Content-Type'].must_equal content_type
       response.body.must_equal                    'all'
     end
 
     it 'sets "Content-Type" header according to "Accept"' do
-      response = @app.get('/', 'HTTP_ACCEPT' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8')
+      headers = {'HTTP_ACCEPT' => 'application/custom'}
+      response = @app.get('/custom_from_accept', headers)
+      content_type = 'application/custom; charset=utf-8'
+      response.headers['Content-Type'].must_equal content_type
+      response.body.must_equal                    'custom'
+    end
+
+    it 'sets "Content-Type" header according to "Accept"' do
+      accept = 'application/custom;q=0.9,application/json;q=0.5'
+      headers = {'HTTP_ACCEPT' => accept}
+      response = @app.get('/custom_from_accept', headers)
+      content_type = 'application/custom; charset=utf-8'
+      response.headers['Content-Type'].must_equal content_type
+      response.body.must_equal                    'custom'
+    end
+
+    it 'sets "Content-Type" header according to "Accept"' do
+      accept = 'application/custom;q=0.1, application/json;q=0.5'
+      headers = {'HTTP_ACCEPT' => accept}
+      response = @app.get('/custom_from_accept', headers)
+      content_type = 'application/json; charset=utf-8'
+      response.headers['Content-Type'].must_equal content_type
+      response.body.must_equal                    'json'
+    end
+
+    it 'sets "Content-Type" header according to "Accept"' do
+      accept = 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+      response = @app.get('/', 'HTTP_ACCEPT' => accept)
       response.headers['Content-Type'].must_equal 'text/html; charset=utf-8'
       response.body.must_equal                    'html'
     end
 
     it 'sets "Content-Type" header according to "Accept" quality scale' do
-      response = @app.get('/', 'HTTP_ACCEPT' => 'application/json;q=0.6,application/xml;q=0.9,*/*;q=0.8')
-      response.headers['Content-Type'].must_equal 'application/xml; charset=utf-8'
+      accept = 'application/json;q=0.6,application/xml;q=0.9,*/*;q=0.8'
+      headers = {'HTTP_ACCEPT' => accept}
+      response = @app.get('/', headers)
+      content_type = 'application/xml; charset=utf-8'
+      response.headers['Content-Type'].must_equal content_type
       response.body.must_equal                    'xml'
     end
   end
