@@ -782,6 +782,14 @@ class TestParams < Hanami::Action::Params
         required(:deep_attr).filled(:str?)
       end
     end
+
+    optional(:array).maybe do
+      each do
+        schema do
+          required(:name).filled(:str?)
+        end
+      end
+    end
   end
 end
 

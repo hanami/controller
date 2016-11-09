@@ -93,11 +93,11 @@ module Hanami
         key, *keys = key.to_s.split(GET_SEPARATOR)
         return if key.nil?
 
-        result = self[key.to_sym]
+        result = self[_key_for_get(key)]
 
         Array(keys).each do |k|
           break if result.nil?
-          result = result[k.to_sym]
+          result = result[_key_for_get(k)]
         end
 
         result
@@ -154,6 +154,10 @@ module Hanami
       # @api private
       def _router_params(fallback = {})
         env.fetch(ROUTER_PARAMS, fallback)
+      end
+
+      def _key_for_get(key)
+        key =~ /\A\d+\z/ ? key.to_i : key.to_sym
       end
     end
   end
