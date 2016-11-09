@@ -235,7 +235,7 @@ describe Hanami::Action::Params do
         @params = TestParams.new(
           name: 'John',
           address: { line_one: '10 High Street', deep: { deep_attr: 1 } },
-          array: [{ name: 'Lenon' }, { name: 'Wayne' }]
+          array: [{ name: 'Lennon' }, { name: 'Wayne' }]
         )
       end
 
@@ -244,24 +244,24 @@ describe Hanami::Action::Params do
       end
 
       it 'returns nil for unknown param' do
-        @params.get('unknown').must_be_nil
+        @params.get(:unknown).must_be_nil
       end
 
       it 'allows to read top level param' do
-        @params.get('name').must_equal 'John'
+        @params.get(:name).must_equal 'John'
       end
 
       it 'allows to read nested param' do
-        @params.get('address.line_one').must_equal '10 High Street'
+        @params.get(:address, :line_one).must_equal '10 High Street'
       end
 
       it 'returns nil for uknown nested param' do
-        @params.get('address.unknown').must_be_nil
+        @params.get(:address, :unknown).must_be_nil
       end
 
       it 'allows to read datas under arrays' do
-        @params.get('array.0.name').must_equal 'Lenon'
-        @params.get('array.1.name').must_equal 'Wayne'
+        @params.get(:array, 0, :name).must_equal 'Lennon'
+        @params.get(:array, 1, :name).must_equal 'Wayne'
       end
     end
 
@@ -275,19 +275,19 @@ describe Hanami::Action::Params do
       end
 
       it 'returns nil for unknown param' do
-        @params.get('unknown').must_be_nil
+        @params.get(:unknown).must_be_nil
       end
 
       it 'returns nil for top level param' do
-        @params.get('name').must_be_nil
+        @params.get(:name).must_be_nil
       end
 
       it 'returns nil for nested param' do
-        @params.get('address.line_one').must_be_nil
+        @params.get(:address, :line_one).must_be_nil
       end
 
       it 'returns nil for uknown nested param' do
-        @params.get('address.unknown').must_be_nil
+        @params.get(:address, :unknown).must_be_nil
       end
     end
   end
