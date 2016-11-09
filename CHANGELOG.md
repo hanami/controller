@@ -1,6 +1,17 @@
 # Hanami::Controller
 Complete, fast and testable actions for Rack
 
+## v0.8.0 - (unreleased)
+### Added
+- [Marion Duprey] Allow `BaseParams#get` to read (nested) arrays
+
+### Fixed
+- [Russell Cloak] Respect custom formats when referenced by HTTP `Accept`
+- [Kyle Chong] Don't symbolize raw params
+
+### Changed
+- [Luca Guidi] Let `BaseParams#get` to accept a list of keys (symbols) instead of string with dot notation (`params.get(:customer, :address, :city)` instead of `params.get('customer.address.city')`)
+
 ## v0.7.1 - 2016-10-06
 ### Added
 - [Kyle Chong] Introduced `parsed_request_body` for action

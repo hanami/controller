@@ -442,7 +442,7 @@ module Hanami
       #
       # @return [TrueClass,FalseClass] the result of the check
       #
-      # @since x.x.x
+      # @since 0.8.0
       # @api private
       def accept_header?
         accept != DEFAULT_ACCEPT
@@ -454,7 +454,7 @@ module Hanami
       #
       # @return [String,Nil] The matched MIME type for the given Accept header.
       #
-      # @since x.x.x
+      # @since 0.8.0
       # @api private
       #
       # @see Hanami::Action::Mime#MIME_TYPES

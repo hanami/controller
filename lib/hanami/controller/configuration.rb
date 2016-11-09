@@ -408,7 +408,7 @@ module Hanami
 
       # Return the configured format's MIME types
       #
-      # @since x.x.x
+      # @since 0.8.0
       # @api private
       #
       # @see Hanami::Controller::Configuration#format

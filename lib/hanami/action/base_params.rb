@@ -63,7 +63,7 @@ module Hanami
       # Get an attribute value associated with the given key.
       # Nested attributes are reached by listing all the keys to get to the value.
       #
-      # @param key [Array<Symbol,Integer>] the key
+      # @param keys [Array<Symbol,Integer>] the key
       #
       # @return [Object,NilClass] return the associated value, if found
       #
