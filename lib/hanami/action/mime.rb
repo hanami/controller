@@ -41,12 +41,6 @@ module Hanami
       # @api private
       DEFAULT_CHARSET = 'utf-8'.freeze
 
-      # The default mime types list
-      #
-      # @since 0.6.1
-      # @api private
-      MIME_TYPES = ::Rack::Mime::MIME_TYPES.values.freeze
-
       # Override Ruby's hook for modules.
       # It includes Mime types logic
       #
@@ -183,7 +177,6 @@ module Hanami
       #   * Explicit set value (see Hanami::Action::Mime#format=)
       #   * Weighted value from Accept header based on all known MIME Types:
       #     - Custom registered MIME Types (see Hanami::Controller::Configuration#format)
-      #     - Common MIME Types (see Hanami::Action::Mime#MIME_TYPES)
       #   * Configured default content type (see Hanami::Controller::Configuration#default_response_format)
       #   * Hard-coded default content type (see Hanami::Action::Mime::DEFAULT_CONTENT_TYPE)
       #
@@ -212,10 +205,10 @@ module Hanami
       #     end
       #   end
       def content_type
-        return @content_type if @content_type
+        return @content_type unless @content_type.nil?
 
         if accept_header?
-          type = mime_type_from_accept_header
+          type = content_type_from_accept_header
           return type if type
         end
 
@@ -439,8 +432,6 @@ module Hanami
         end
       end
 
-      private
-
       # @since 0.1.0
       # @api private
       def accept
@@ -449,10 +440,9 @@ module Hanami
 
       # Checks if there is an Accept header for the current request.
       #
-      # @return [Boolean] True if there is an Accept header in the current
-      #   request.
+      # @return [TrueClass,FalseClass] the result of the check
       #
-      # @since 0.7.0
+      # @since x.x.x
       # @api private
       def accept_header?
         accept != DEFAULT_ACCEPT
@@ -462,19 +452,17 @@ module Hanami
       # matches any of the common MIME types (see Hanami::Action::Mime#MIME_TYPES)
       # or the custom registered ones (see Hanami::Controller::Configuration#format).
       #
-      # @return [Nil] When the Accept header does not match any known MIME
-      #   type.
-      # @return [String] The matched MIME type for the given Accept header.
+      # @return [String,Nil] The matched MIME type for the given Accept header.
       #
-      # @since 0.7.0
+      # @since x.x.x
+      # @api private
       #
       # @see Hanami::Action::Mime#MIME_TYPES
       # @see Hanami::Controller::Configuration#format
       #
       # @api private
-      def mime_type_from_accept_header
-        all_types = (MIME_TYPES + configuration.format_mime_types)
-        best_q_match(accept, all_types)
+      def content_type_from_accept_header
+        best_q_match(accept, configuration.mime_types)
       end
 
       # @since 0.5.0

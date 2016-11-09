@@ -187,14 +187,22 @@ describe Hanami::Controller::Configuration do
     end
   end
 
-  describe '#format_mime_types' do
+  describe '#mime_types' do
     before do
       @configuration.format custom: 'custom/format'
     end
 
-    it 'returns all configured format MIME types' do
-      all = ["application/octet-stream", "*/*", "text/html", "custom/format"]
-      @configuration.format_mime_types.must_equal all
+    it 'returns all known MIME types' do
+      all = ["custom/format"]
+      @configuration.mime_types.must_equal(all + ::Rack::Mime::MIME_TYPES.values)
+    end
+
+    it 'returns correct values even after the value is cached' do
+      @configuration.mime_types
+      @configuration.format electroneering: 'custom/electroneering'
+
+      all = ["custom/format", "custom/electroneering"]
+      @configuration.mime_types.must_equal(all + ::Rack::Mime::MIME_TYPES.values)
     end
   end
 
@@ -370,6 +378,7 @@ describe Hanami::Controller::Configuration do
       @config.action_module.must_equal           @configuration.action_module
       @config.modules.must_equal                 @configuration.modules
       @config.send(:formats).must_equal          @configuration.send(:formats)
+      @config.mime_types.must_equal              @configuration.mime_types
       @config.default_request_format.must_equal  @configuration.default_request_format
       @config.default_response_format.must_equal @configuration.default_response_format
       @config.default_charset.must_equal         @configuration.default_charset
@@ -392,6 +401,7 @@ describe Hanami::Controller::Configuration do
       @config.action_module.must_equal               CustomAction
       @config.modules.size.must_equal                2
       @config.format_for('another/format').must_equal :another
+      @config.mime_types.must_include                 'another/format'
       @config.default_request_format.must_equal       :json
       @config.default_response_format.must_equal      :json
       @config.default_charset.must_equal              'utf-8'
@@ -402,6 +412,7 @@ describe Hanami::Controller::Configuration do
       @configuration.action_module.must_equal      ::Hanami::Action
       @configuration.modules.size.must_equal       1
       @configuration.format_for('another/format').must_be_nil
+      @configuration.mime_types.wont_include            'another/format'
       @configuration.default_request_format.must_equal  :html
       @configuration.default_response_format.must_equal :html
       @configuration.default_charset.must_equal    'latin1'
@@ -430,6 +441,7 @@ describe Hanami::Controller::Configuration do
       @configuration.action_module.must_equal(::Hanami::Action)
       @configuration.modules.must_equal([])
       @configuration.send(:formats).must_equal(Hanami::Controller::Configuration::DEFAULT_FORMATS)
+      @configuration.mime_types.must_equal(Rack::Mime::MIME_TYPES.values)
       @configuration.default_request_format.must_be_nil
       @configuration.default_response_format.must_be_nil
       @configuration.default_charset.must_be_nil

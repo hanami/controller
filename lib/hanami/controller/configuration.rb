@@ -402,19 +402,22 @@ module Hanami
       def format(hash)
         symbol, mime_type = *Utils::Kernel.Array(hash)
 
-        @formats.merge! Utils::Kernel.String(mime_type) =>
-          Utils::Kernel.Symbol(symbol)
+        @formats[Utils::Kernel.String(mime_type)] = Utils::Kernel.Symbol(symbol)
+        @mime_types = nil
       end
 
       # Return the configured format's MIME types
       #
-      # @since 0.7.0
+      # @since x.x.x
+      # @api private
       #
       # @see Hanami::Controller::Configuration#format
       # @see Hanami::Action::Mime::MIME_TYPES
-      #
-      def format_mime_types
-        @formats.keys
+      def mime_types
+        @mime_types ||= begin
+                          ((@formats.keys - DEFAULT_FORMATS.keys) +
+                          ::Rack::Mime::MIME_TYPES.values).freeze
+                        end
       end
 
       # Set a format as default fallback for all the requests without a strict
@@ -661,6 +664,7 @@ module Hanami
         @handled_exceptions      = {}
         @modules                 = []
         @formats                 = DEFAULT_FORMATS.dup
+        @mime_types              = nil
         @default_request_format  = nil
         @default_response_format = nil
         @default_charset         = nil
