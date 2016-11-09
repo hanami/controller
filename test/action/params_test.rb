@@ -26,15 +26,15 @@ describe Hanami::Action::Params do
         File.open('test/assets/multipart-upload.png', 'rb') do |upload|
           @action.call('id' => '1', 'unknown' => '2', 'upload' => upload, '_csrf_token' => '3')
 
-          @action.params[:id].must_equal          '1'
-          @action.params[:unknown].must_equal     '2'
-          @action.params[:upload].must_equal      upload
-          @action.params[:_csrf_token].must_equal '3'
+          @action.params[:id].must_equal                            '1'
+          @action.params[:unknown].must_equal                       '2'
+          FileUtils.cmp(@action.params[:upload], upload).must_equal true
+          @action.params[:_csrf_token].must_equal                   '3'
 
-          @action.params.raw.fetch(:id).must_equal          '1'
-          @action.params.raw.fetch(:unknown).must_equal     '2'
-          @action.params.raw.fetch(:upload).must_equal      upload
-          @action.params.raw.fetch(:_csrf_token).must_equal '3'
+          @action.params.raw.fetch('id').must_equal          '1'
+          @action.params.raw.fetch('unknown').must_equal     '2'
+          @action.params.raw.fetch('upload').must_equal      upload
+          @action.params.raw.fetch('_csrf_token').must_equal '3'
         end
       end
     end
@@ -438,7 +438,7 @@ describe Hanami::Action::Params do
         actual[:address].must_be_kind_of(::Hash)
         actual[:address][:deep].must_be_kind_of(::Hash)
       end
-    
+
       it 'does not stringify values' do
         input = { 'name' => 123 }
         params = TestParams.new(input)
