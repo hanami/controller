@@ -61,13 +61,11 @@ module Hanami
       end
 
       # Get an attribute value associated with the given key.
-      # Nested attributes are reached with a dot notation.
+      # Nested attributes are reached by listing all the keys to get to the value.
       #
-      # @param key [String] the key
+      # @param key [Array<Symbol,Integer>] the key
       #
       # @return [Object,NilClass] return the associated value, if found
-      #
-      # @raise [NoMethodError] if key is nil
       #
       # @since 0.7.0
       #
@@ -79,28 +77,22 @@ module Hanami
       #       include Hanami::Action
       #
       #       def call(params)
-      #         params.get('customer_name')   # => "Luca"
-      #         params.get('uknown')          # => nil
+      #         params.get(:customer_name)     # => "Luca"
+      #         params.get(:uknown)            # => nil
       #
-      #         params.get('address.city')    # => "Rome"
-      #         params.get('address.unknown') # => nil
+      #         params.get(:address, :city)    # => "Rome"
+      #         params.get(:address, :unknown) # => nil
       #
-      #         params.get(nil)               # => nil
+      #         params.get(:tags, 0)           # => "foo"
+      #         params.get(:tags, 1)           # => "bar"
+      #         params.get(:tags, 999)         # => nil
+      #
+      #         params.get(nil)                # => nil
       #       end
       #     end
       #   end
-      def get(key)
-        key, *keys = key.to_s.split(GET_SEPARATOR)
-        return if key.nil?
-
-        result = self[_key_for_get(key)]
-
-        Array(keys).each do |k|
-          break if result.nil?
-          result = result[_key_for_get(k)]
-        end
-
-        result
+      def get(*keys)
+        @params.dig(*keys)
       end
 
       # Provide a common interface with Params
@@ -154,10 +146,6 @@ module Hanami
       # @api private
       def _router_params(fallback = {})
         env.fetch(ROUTER_PARAMS, fallback)
-      end
-
-      def _key_for_get(key)
-        key =~ /\A\d+\z/ ? key.to_i : key.to_sym
       end
     end
   end
