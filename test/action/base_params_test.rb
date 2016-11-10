@@ -31,4 +31,20 @@ describe Hanami::Action::BaseParams do
       actual.must_equal(expected)
     end
   end
+
+  describe '#get' do
+    let(:params) { Hanami::Action::BaseParams.new(delivery: { address: { city: 'Rome' } }) }
+
+    it 'returns value if present' do
+      params.get(:delivery, :address, :city).must_equal 'Rome'
+    end
+
+    it 'returns nil if not present' do
+      params.get(:delivery, :address, :foo).must_equal nil
+    end
+
+    it 'is aliased as dig' do
+      params.dig(:delivery, :address, :city).must_equal 'Rome'
+    end
+  end
 end

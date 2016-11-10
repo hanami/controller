@@ -15,14 +15,6 @@ module Hanami
       # @since 0.7.0
       ROUTER_PARAMS = 'router.params'.freeze
 
-      # Separator for #get
-      #
-      # @since 0.7.0
-      # @api private
-      #
-      # @see Hanami::Action::Params#get
-      GET_SEPARATOR = '.'.freeze
-
       # @attr_reader env [Hash] the Rack env
       #
       # @since 0.7.0
@@ -94,6 +86,12 @@ module Hanami
       def get(*keys)
         @params.dig(*keys)
       end
+
+      # This is for compatibility with Hanami::Helpers::FormHelper::Values
+      #
+      # @api private
+      # @since 0.8.0
+      alias dig get
 
       # Provide a common interface with Params
       #
