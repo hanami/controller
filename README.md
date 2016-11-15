@@ -22,7 +22,7 @@ Complete, fast and testable actions for Rack and [Hanami](http://hanamirb.org)
 
 ## Rubies
 
-__Hanami::Controller__ supports Ruby (MRI) 2.2+
+__Hanami::Controller__ supports Ruby (MRI) 2.3+ and JRuby 9.1.5.0+
 
 ## Installation
 
