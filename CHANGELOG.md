@@ -1,7 +1,7 @@
 # Hanami::Controller
 Complete, fast and testable actions for Rack
 
-## v0.8.0 - (unreleased)
+## v0.8.0 - 2016-11-15
 ### Added
 - [Marion Duprey] Allow `BaseParams#get` to read (nested) arrays
 
