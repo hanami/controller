@@ -883,6 +883,7 @@ module Dashboard
     before :authenticate!
 
     def call(params)
+      self.body = "User ID from session: #{session[:user_id]}"
     end
 
     private

@@ -34,6 +34,7 @@ describe 'Sessions' do
     post '/login'
     follow_redirect!
     last_response.status.must_equal 200
+    last_response.body.must_equal   "User ID from session: 23"
   end
 
   it 'logs out' do
