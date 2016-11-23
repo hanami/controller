@@ -60,7 +60,7 @@ class Show
   include Hanami::Action
 
   def call(params)
-    @article = ArticleRepository.find params[:id]
+    @article = ArticleRepository.new.find(params[:id])
   end
 end
 ```
@@ -82,16 +82,16 @@ Imagine how **fast** the unit test could be.
 class Show
   include Hanami::Action
 
-  def initialize(repository = ArticleRepository)
+  def initialize(repository = ArticleRepository.new)
     @repository = repository
   end
 
   def call(params)
-    @article = @repository.find params[:id]
+    @article = @repository.find(params[:id])
   end
 end
 
-action = Show.new(MemoryArticleRepository)
+action = Show.new(MemoryArticleRepository.new)
 action.call({ id: 23 })
 ```
 
@@ -314,7 +314,7 @@ class Show
 
   # `params` in the method signature is optional
   def set_article(params)
-    @article = ArticleRepository.find params[:id]
+    @article = ArticleRepository.new.find(params[:id])
   end
 end
 ```
@@ -326,7 +326,7 @@ class Show
   include Hanami::Action
 
   before { ... } # do some authentication stuff
-  before { |params| @article = ArticleRepository.find params[:id] }
+  before { |params| @article = ArticleRepository.new.find(params[:id]) }
 
   def call(params)
   end
@@ -358,7 +358,7 @@ class Show
   handle_exception RecordNotFound => 404
 
   def call(params)
-    @article = ArticleRepository.find params[:id]
+    @article = ArticleRepository.new.find(params[:id])
   end
 end
 
@@ -399,7 +399,7 @@ class Show
   include Hanami::Action
 
   def call(params)
-    @article = ArticleRepository.find params[:id]
+    @article = ArticleRepository.new.find(params[:id])
   end
 end
 
@@ -425,7 +425,7 @@ module Articles
     end
 
     def call(params)
-      @article = ArticleRepository.find params[:id]
+      @article = ArticleRepository.new.find(params[:id])
     end
   end
 end
@@ -510,7 +510,7 @@ class Show
   include Hanami::Action
 
   def call(params)
-    DroidRepository.find(params[:id]) or not_found
+    DroidRepository.new.find(params[:id]) or not_found
   end
 
   private
@@ -993,10 +993,10 @@ The following examples are valid constructors:
 def initialize
 end
 
-def initialize(repository = ArticleRepository)
+def initialize(repository = ArticleRepository.new)
 end
 
-def initialize(repository: ArticleRepository)
+def initialize(repository: ArticleRepository.new)
 end
 
 def initialize(options = {})
