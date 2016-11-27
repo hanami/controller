@@ -55,7 +55,7 @@ module Hanami
       # @since 0.1.0
       def initialize(env, headers, default_options)
         @_headers        = headers
-        @cookies         = Utils::Hash.new(extract(env)).symbolize!
+        @cookies         = Utils::Hash.new(extract(env)).deep_symbolize!
         @default_options = default_options
       end
 
