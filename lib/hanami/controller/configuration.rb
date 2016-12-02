@@ -416,7 +416,7 @@ module Hanami
       def mime_types
         @mime_types ||= begin
                           ((@formats.keys - DEFAULT_FORMATS.keys) +
-                          ::Rack::Mime::MIME_TYPES.values).freeze
+                          Hanami::Action::Mime::MIME_TYPES.values).freeze
                         end
       end
 
