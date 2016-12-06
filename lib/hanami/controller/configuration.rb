@@ -318,7 +318,7 @@ module Hanami
       #
       #   Hanami::Controller.configure do
       #     prepare do
-      #       include Hanami::Action::Sessions
+      #       include Hanami::Action::Session
       #       include MyAuthentication
       #       use SomeMiddleWare
       #
