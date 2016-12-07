@@ -189,12 +189,12 @@ describe Hanami::Action::Params do
 
       params.valid?.must_equal false
 
-      params.errors.fetch(:email).must_equal   ['is missing', 'is in invalid format']
+      params.errors.fetch(:email).must_equal   ['is missing']
       params.errors.fetch(:name).must_equal    ['is missing']
       params.errors.fetch(:tos).must_equal     ['is missing']
       params.errors.fetch(:address).must_equal ['is missing']
 
-      params.error_messages.must_equal ['Email is missing', 'Email is in invalid format', 'Name is missing', 'Tos is missing', 'Age is missing', 'Address is missing']
+      params.error_messages.must_equal ['Email is missing', 'Name is missing', 'Tos is missing', 'Age is missing', 'Address is missing']
     end
 
     it "isn't valid with empty nested params" do
