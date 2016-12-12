@@ -192,7 +192,7 @@ module Hanami
       #
       # @see Hanami::Controller::Configuration#handle_exception
       def exception_handler(exception)
-        find_exception_handler(exception) || DEFAULT_ERROR_CODE
+        exception_handler_for(exception) || DEFAULT_ERROR_CODE
       end
 
       # Check if the given exception is handled.
@@ -204,7 +204,8 @@ module Hanami
       #
       # @see Hanami::Controller::Configuration#handle_exception
       def handled_exception?(exception)
-        handled_exceptions && !find_exception_handler(exception).nil?
+        handled_exceptions &&
+          !exception_handler_for(exception).nil?
       end
 
       # Finds configured handler for given exception, or nil if not found.
@@ -215,7 +216,7 @@ module Hanami
       # @api private
       #
       # @see Hanami::Controller::Configuration#handle_exception
-      def find_exception_handler(exception)
+      def exception_handler_for(exception)
         @handled_exceptions.each do |exception_class, handler|
           return handler if exception.kind_of?(exception_class)
         end
