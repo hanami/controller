@@ -1402,6 +1402,22 @@ class HandledRackExceptionAction
   end
 end
 
+class HandledRackExceptionSubclassAction
+  include Hanami::Action
+
+  class TestException < ::StandardError
+  end
+
+  class TestSubclassException < TestException
+  end
+
+  handle_exception TestException => 500
+
+  def call(params)
+    raise TestSubclassException.new
+  end
+end
+
 module SessionWithCookies
   Controller = Hanami::Controller.duplicate(self) do
     handle_exceptions false
