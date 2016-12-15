@@ -485,6 +485,15 @@ class SessionAction
   end
 end
 
+class FlashAction
+  include Hanami::Action
+  include Hanami::Action::Session
+
+  def call(params)
+    flash[:error] = "ouch"
+  end
+end
+
 class RedirectAction
   include Hanami::Action
 

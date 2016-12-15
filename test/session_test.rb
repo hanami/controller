@@ -23,4 +23,16 @@ describe Hanami::Action do
       action.exposures[:session].must_equal(session)
     end
   end
+
+  describe 'flash' do
+    it 'exposes session' do
+      action = FlashAction.new
+      action.call({})
+
+      flash = action.exposures[:flash]
+
+      flash.must_be_kind_of(Hanami::Action::Flash)
+      flash[:error].must_equal "ouch"
+    end
+  end
 end
