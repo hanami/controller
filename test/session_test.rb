@@ -25,7 +25,7 @@ describe Hanami::Action do
   end
 
   describe 'flash' do
-    it 'exposes session' do
+    it 'exposes flash' do
       action = FlashAction.new
       action.call({})
 
