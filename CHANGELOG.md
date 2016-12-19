@@ -1,7 +1,7 @@
 # Hanami::Controller
 Complete, fast and testable actions for Rack
 
-## v0.8.1 - 2016-12-20
+## v0.8.1 - 2016-12-19
 ### Fixed
 - [Thorbjørn Hermansen] Don't pollute Rack env's `rack.exception` key if an exception is handled
 - [Luca Guidi] Add `flash` to the default exposures
