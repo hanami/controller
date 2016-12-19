@@ -26,7 +26,7 @@ module Hanami
       # @api private
       def self.included(action)
         action.class_eval do
-          _expose :session
+          _expose :session, :flash
         end
       end
 
