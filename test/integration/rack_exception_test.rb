@@ -16,4 +16,11 @@ describe "Exception notifiers integration" do
 
     env['rack.exception'].must_be_nil
   end
+
+  it "doesn't reference  of an error in rack.exception if it's handled" do
+    action = HandledRackExceptionSubclassAction.new
+    action.call(env)
+
+    env['rack.exception'].must_be_nil
+  end
 end

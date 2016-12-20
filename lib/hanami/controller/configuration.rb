@@ -192,16 +192,7 @@ module Hanami
       #
       # @see Hanami::Controller::Configuration#handle_exception
       def exception_handler(exception)
-        handler = nil
-
-        @handled_exceptions.each do |exception_class, h|
-          if exception.kind_of?(exception_class)
-            handler = h
-            break
-          end
-        end
-
-        handler || DEFAULT_ERROR_CODE
+        exception_handler_for(exception) || DEFAULT_ERROR_CODE
       end
 
       # Check if the given exception is handled.
@@ -214,7 +205,23 @@ module Hanami
       # @see Hanami::Controller::Configuration#handle_exception
       def handled_exception?(exception)
         handled_exceptions &&
-          !!@handled_exceptions.fetch(exception.class) { false }
+          !exception_handler_for(exception).nil?
+      end
+
+      # Finds configured handler for given exception, or nil if not found.
+      #
+      # @param exception [Exception] an exception
+      #
+      # @since x.x.x
+      # @api private
+      #
+      # @see Hanami::Controller::Configuration#handle_exception
+      def exception_handler_for(exception)
+        @handled_exceptions.each do |exception_class, handler|
+          return handler if exception.kind_of?(exception_class)
+        end
+
+        nil
       end
 
       # Specify which is the default action module to be included when we use
@@ -318,7 +325,7 @@ module Hanami
       #
       #   Hanami::Controller.configure do
       #     prepare do
-      #       include Hanami::Action::Sessions
+      #       include Hanami::Action::Session
       #       include MyAuthentication
       #       use SomeMiddleWare
       #

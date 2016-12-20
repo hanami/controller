@@ -2,11 +2,12 @@ require 'test_helper'
 require 'hanami/router'
 
 ErrorsRoutes = Hanami::Router.new do
-  get '/without_message',     to: 'errors#without_message'
-  get '/with_message',        to: 'errors#with_message'
-  get '/with_custom_message', to: 'errors#with_custom_message'
-  get '/action_managed',      to: 'errors#action_managed'
-  get '/framework_managed',   to: 'errors#framework_managed'
+  get '/without_message',         to: 'errors#without_message'
+  get '/with_message',            to: 'errors#with_message'
+  get '/with_custom_message',     to: 'errors#with_custom_message'
+  get '/action_managed',          to: 'errors#action_managed'
+  get '/action_managed_subclass', to: 'errors#action_managed_subclass'
+  get '/framework_managed',       to: 'errors#framework_managed'
 end
 
 HandledException          = Class.new(StandardError)
@@ -17,6 +18,8 @@ CustomAuthException       = Class.new(StandardError) do
     "#{super} :("
   end
 end
+
+class HandledExceptionSubclass < HandledException; end
 
 Hanami::Controller.configure do
   handle_exception FrameworkHandledException => 500
@@ -53,6 +56,15 @@ module Errors
 
     def call(params)
       raise HandledException.new
+    end
+  end
+
+  class ActionManagedSubclass
+    include Hanami::Action
+    handle_exception HandledException => 400
+
+    def call(params)
+      raise HandledExceptionSubclass.new
     end
   end
 
@@ -120,6 +132,11 @@ describe 'Reference exception in rack.errors' do
 
   it "doesn't dump exception in rack.errors if it's managed by an action" do
     response = @app.get('/action_managed')
+    response.errors.must_be_empty
+  end
+
+  it "doesn't dump exception in rack.errors if it's managed by an action" do
+    response = @app.get('/action_managed_subclass')
     response.errors.must_be_empty
   end
 

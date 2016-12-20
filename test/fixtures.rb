@@ -485,6 +485,15 @@ class SessionAction
   end
 end
 
+class FlashAction
+  include Hanami::Action
+  include Hanami::Action::Session
+
+  def call(params)
+    flash[:error] = "ouch"
+  end
+end
+
 class RedirectAction
   include Hanami::Action
 
@@ -1399,6 +1408,22 @@ class HandledRackExceptionAction
 
   def call(params)
     raise TestException.new
+  end
+end
+
+class HandledRackExceptionSubclassAction
+  include Hanami::Action
+
+  class TestException < ::StandardError
+  end
+
+  class TestSubclassException < TestException
+  end
+
+  handle_exception TestException => 500
+
+  def call(params)
+    raise TestSubclassException.new
   end
 end
 
