@@ -7,7 +7,7 @@ unless ENV['TRAVIS']
 end
 
 gem 'minitest',      '~> 5.8'
-gem 'hanami-utils',  '~> 0.9', require: false, github: 'hanami/utils',  branch: '0.9.x'
+gem 'hanami-utils', '~> 0.9', require: false, github: 'alexd16/utils', branch: 'non-deep-symbolize'
 gem 'hanami-router', '~> 0.8', require: false, github: 'hanami/router', branch: '0.8.x'
 
 group :validations do
