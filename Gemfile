@@ -7,11 +7,11 @@ unless ENV['TRAVIS']
 end
 
 gem 'minitest',      '~> 5.8'
-gem 'hanami-utils', '~> 0.9', require: false, github: 'alexd16/utils', branch: 'non-deep-symbolize'
-gem 'hanami-router', '~> 0.8', require: false, github: 'hanami/router', branch: '0.8.x'
+gem 'hanami-utils',  '~> 1.0.0.beta1', require: false, github: 'hanami/utils',  branch: '1.0.x'
+gem 'hanami-router', '~> 1.0.0.beta1', require: false, github: 'hanami/router', branch: '1.0.x'
 
 group :validations do
-  gem 'hanami-validations', '~> 0.7', require: false, github: 'hanami/validations', branch: '0.7.x'
+  gem 'hanami-validations', '~> 1.0.0.beta1', require: false, github: 'hanami/validations', branch: '1.0.x'
 end
 
 gem 'coveralls', require: false
