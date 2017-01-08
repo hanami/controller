@@ -55,7 +55,7 @@ module Hanami
       # @api private
       def [](key)
         last_request_flash.merge(data).fetch(key) do
-          _values.find {|data| !data[key].nil? }
+          _available_values.find { |data| !data[key].nil? }
         end
       end
 
@@ -143,6 +143,16 @@ module Hanami
       # @api private
       def _values
         flash.values
+      end
+
+      # Values from all the non-stale stored requests
+      #
+      # @return [Array]
+      #
+      # @since x.x.x
+      # @api private
+      def _available_values
+        flash.select { |session_id, _| !delete?(session_id) }.values
       end
 
       # Determine if delete data from flash for the given Request ID
