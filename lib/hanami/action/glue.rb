@@ -59,7 +59,7 @@ module Hanami
       #
       # @since 0.4.3
       def sending_file?
-        @_body.is_a?(::Rack::File)
+        @_body&.first.is_a?(::Rack::File)
       end
     end
   end
