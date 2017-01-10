@@ -18,11 +18,11 @@ describe Hanami::Action do
         self.format = params[:format]
       end
     end
-    
+
     class Configuration
       include Hanami::Action
 
-      configuration.default_request_format :jpeg
+      configuration.default_request_format :jpg
 
       def call(params)
         self.body = format
@@ -75,18 +75,12 @@ describe Hanami::Action do
       action = FormatController::Configuration.new
       status, headers, _ = action.call({ 'HTTP_ACCEPT' => '*/*' })
 
-      action.format.must_equal    :jpeg
+      action.format.must_equal    :jpg
       headers['Content-Type'].must_equal 'image/jpeg; charset=utf-8'
       status.must_equal                   200
     end
 
-    mime_types = ['application/octet-stream', 'text/html']
-    Rack::Mime::MIME_TYPES.each do |format, mime_type|
-      next if mime_types.include?(mime_type)
-      mime_types.push mime_type
-
-      format = format.gsub(/\A\./, '').to_sym
-
+    Hanami::Action::Mime::MIME_TYPES.each do |format, mime_type|
       it "accepts '#{ mime_type }' and returns :#{ format }" do
         status, headers, _ = @action.call({ 'HTTP_ACCEPT' => mime_type })
 
@@ -127,13 +121,11 @@ describe Hanami::Action do
       end
     end
 
-    Rack::Mime::MIME_TYPES.each do |format, mime_type|
-      format = format.gsub(/\A\./, '')
-
-      it "sets :#{ format } and returns '#{ mime_type }'" do
+    Hanami::Action::Mime::MIME_TYPES.each do |format, mime_type|
+      it "sets #{ format } and returns '#{ mime_type }'" do
         _, headers, _ = @action.call({ format: format })
 
-        @action.format.must_equal   format.to_sym
+        @action.format.must_equal   format
         headers['Content-Type'].must_equal "#{mime_type}; charset=utf-8"
       end
     end

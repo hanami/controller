@@ -41,6 +41,64 @@ module Hanami
       # @api private
       DEFAULT_CHARSET = 'utf-8'.freeze
 
+      # Most commom mime types used for responses
+      #
+      # @since 0.9.0
+      # @api private
+      MIME_TYPES = {
+        txt: 'text/plain',
+        html: 'text/html',
+        json: 'application/json',
+        manifest: 'text/cache-manifest',
+        atom: 'application/atom+xml',
+        avi: 'video/x-msvideo',
+        bmp: 'image/bmp',
+        bz: 'application/x-bzip',
+        bz2: 'application/x-bzip2',
+        chm: 'application/vnd.ms-htmlhelp',
+        css: 'text/css',
+        csv: 'text/csv',
+        flv: 'video/x-flv',
+        gif: 'image/gif',
+        gz: 'application/x-gzip',
+        h264: 'video/h264',
+        ico: 'image/vnd.microsoft.icon',
+        ics: 'text/calendar',
+        jpg: 'image/jpeg',
+        js: 'application/javascript',
+        mp4: 'video/mp4',
+        mov: 'video/quicktime',
+        mp3: 'audio/mpeg',
+        mp4a: 'audio/mp4',
+        mpg: 'video/mpeg',
+        oga: 'audio/ogg',
+        ogg: 'application/ogg',
+        ogv: 'video/ogg',
+        pdf: 'application/pdf',
+        pgp: 'application/pgp-encrypted',
+        png: 'image/png',
+        psd: 'image/vnd.adobe.photoshop',
+        rtf: 'application/rtf',
+        sh: 'application/x-sh',
+        svg: 'image/svg+xml',
+        swf: 'application/x-shockwave-flash',
+        tar: 'application/x-tar',
+        torrent: 'application/x-bittorrent',
+        tsv: 'text/tab-separated-values',
+        uri: 'text/uri-list',
+        vcs: 'text/x-vcalendar',
+        wav: 'audio/x-wav',
+        webm: 'video/webm',
+        wmv: 'video/x-ms-wmv',
+        woff: 'application/font-woff',
+        woff2: 'application/font-woff2',
+        wsdl: 'application/wsdl+xml',
+        xhtml: 'application/xhtml+xml',
+        xml: 'application/xml',
+        xslt: 'application/xslt+xml',
+        yml: 'text/yaml',
+        zip: 'application/zip' }.freeze
+
       # Override Ruby's hook for modules.
       # It includes Mime types logic
       #
@@ -62,7 +120,7 @@ module Hanami
         # @api private
         def format_to_mime_type(format)
           configuration.mime_type_for(format) ||
-            ::Rack::Mime.mime_type(".#{ format }", nil) or
+            MIME_TYPES[format] or
             raise Hanami::Controller::UnknownFormatError.new(format)
         end
 
@@ -298,12 +356,12 @@ module Hanami
       # When the format is set, the framework searches for a corresponding mime
       # type to be set as the `Content-Type` header of the response.
       # This lookup is performed first in the configuration, and then in
-      # `Rack::Mime::MIME_TYPES`. If the lookup fails, it raises an error.
+      # `Hanami::Action::Mime::MIME_TYPES`. If the lookup fails, it raises an error.
       #
       # PERFORMANCE: Because `Hanami::Controller::Configuration#formats` is
-      # smaller and looked up first than `Rack::Mime::MIME_TYPES`, we suggest to
-      # configure the most common mime types used by your application, **even
-      # if they are already present in that Rack constant**.
+      # smaller and looked up first than `Hanami::Action::Mime::MIME_TYPES`,
+      # we suggest to configure the most common mime types used by your
+      # application, **even if they are already present in that Rack constant**.
       #
       # @param format [#to_sym] the format
       #
@@ -482,8 +540,7 @@ module Hanami
       # @since 0.2.0
       # @api private
       def detect_format
-        configuration.format_for(content_type) ||
-          ::Rack::Mime::MIME_TYPES.key(content_type).gsub(/\A\./, '').to_sym
+        configuration.format_for(content_type) || MIME_TYPES.key(content_type)
       end
 
       # @since 0.3.0

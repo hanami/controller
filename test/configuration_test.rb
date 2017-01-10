@@ -194,7 +194,7 @@ describe Hanami::Controller::Configuration do
 
     it 'returns all known MIME types' do
       all = ["custom/format"]
-      @configuration.mime_types.must_equal(all + ::Rack::Mime::MIME_TYPES.values)
+      @configuration.mime_types.must_equal(all + Hanami::Action::Mime::MIME_TYPES.values)
     end
 
     it 'returns correct values even after the value is cached' do
@@ -202,7 +202,7 @@ describe Hanami::Controller::Configuration do
       @configuration.format electroneering: 'custom/electroneering'
 
       all = ["custom/format", "custom/electroneering"]
-      @configuration.mime_types.must_equal(all + ::Rack::Mime::MIME_TYPES.values)
+      @configuration.mime_types.must_equal(all + Hanami::Action::Mime::MIME_TYPES.values)
     end
   end
 
@@ -441,7 +441,7 @@ describe Hanami::Controller::Configuration do
       @configuration.action_module.must_equal(::Hanami::Action)
       @configuration.modules.must_equal([])
       @configuration.send(:formats).must_equal(Hanami::Controller::Configuration::DEFAULT_FORMATS)
-      @configuration.mime_types.must_equal(Rack::Mime::MIME_TYPES.values)
+      @configuration.mime_types.must_equal(Hanami::Action::Mime::MIME_TYPES.values)
       @configuration.default_request_format.must_be_nil
       @configuration.default_response_format.must_be_nil
       @configuration.default_charset.must_be_nil
