@@ -10,20 +10,27 @@ module Hanami
       #
       # @see Hanami::Action::Rack#send_file
       class File
+
+        # The key that returns path info from the Rack env
+        #
+        # @since x.x.x
+        # @api private
+        PATH_INFO = "PATH_INFO".freeze
+
         # @param path [String,Pathname] file path
         #
         # @since 0.4.3
         # @api private
         def initialize(path)
-          @file = ::Rack::File.new(nil)
+          @file = ::Rack::File.new(Dir.pwd)
           @path = path
         end
 
         # @since 0.4.3
         # @api private
         def call(env)
-          @file.path = @path.to_s
-          @file.serving(env)
+          env[PATH_INFO] = @path
+          @file.get(env)
         rescue Errno::ENOENT
           [404, {}, nil]
         end
