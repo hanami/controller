@@ -142,7 +142,7 @@ module Hanami
       # @since 0.3.0
       # @api private
       def _values
-        flash.values
+        flash.select { |session_id, _| !delete?(session_id) }.values
       end
 
       # Determine if delete data from flash for the given Request ID

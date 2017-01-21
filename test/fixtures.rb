@@ -1274,6 +1274,25 @@ module FullStack
       end
     end
 
+    module Settings
+      class Index
+        include FullStack::Action
+
+        def call(params)
+          headers['X-Flash'] = flash[:message] || "Blank message"
+        end
+      end
+
+      class Create
+        include FullStack::Action
+
+        def call(params)
+          flash[:message] = "Saved!"
+          redirect_to "/settings"
+        end
+      end
+    end
+
     module Poll
       class Start
         include FullStack::Action
@@ -1351,6 +1370,9 @@ module FullStack
         get '/',     to: 'home#index'
         get '/head', to: 'home#head'
         resources :books, only: [:index, :create, :update]
+
+        get  '/settings', to: 'settings#index'
+        post '/settings', to: 'settings#create'
 
         get '/poll', to: 'poll#start'
 
