@@ -15,6 +15,18 @@ module Hanami
       # @since 0.7.0
       ROUTER_PARAMS = 'router.params'.freeze
 
+      # The key that returns Rack session params from the Rack env
+      # Please note that this is used only when an action is unit tested.
+      #
+      # @since x.x.x
+      # @api private
+      #
+      # @example
+      #   # action unit test
+      #   action.call('rack.session' => { 'foo' => 'bar' })
+      #   action.session[:foo] # => "bar"
+      RACK_SESSION = 'rack.session'.freeze
+
       # @attr_reader env [Hash] the Rack env
       #
       # @since 0.7.0
@@ -143,7 +155,13 @@ module Hanami
       # @since 0.7.0
       # @api private
       def _router_params(fallback = {})
-        env.fetch(ROUTER_PARAMS, fallback)
+        env.fetch(ROUTER_PARAMS) do
+          if session = fallback.delete(RACK_SESSION) # rubocop:disable Lint/AssignmentInCondition
+            fallback[RACK_SESSION] = Utils::Hash.new(session).symbolize!.to_hash
+          end
+
+          fallback
+        end
       end
     end
   end
