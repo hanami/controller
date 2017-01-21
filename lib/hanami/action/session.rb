@@ -1,4 +1,5 @@
 require 'hanami/action/flash'
+require 'hanami/action/session/session_hash'
 
 module Hanami
   module Action
@@ -58,7 +59,7 @@ module Hanami
       #     end
       #   end
       def session
-        @_env[SESSION_KEY] ||= {}
+        SessionHash.new(@_env[SESSION_KEY] || {})
       end
 
       # Read errors from flash or delegate to the superclass

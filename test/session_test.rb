@@ -22,6 +22,13 @@ describe Hanami::Action do
 
       action.exposures[:session].must_equal(session)
     end
+
+    it 'allows value access via symbolic keys' do
+      action = SessionAction.new
+      action.call({'rack.session' => { 'foo' => 'bar' }})
+
+      action.session[:foo].must_equal('bar')
+    end
   end
 
   describe 'flash' do
