@@ -282,7 +282,7 @@ module Hanami
       #     end
       #   end
       def send_file(path)
-        result = File.new(path).call(@_env)
+        result = File.new(path, self.class.configuration.public_directory).call(@_env)
         headers.merge!(result[1])
         halt result[0], result[2]
       end

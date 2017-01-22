@@ -46,6 +46,12 @@ describe 'Full stack application' do
       last_response.headers.key?('Content-Type').must_equal false
       last_response.body.must_be :empty?
     end
+
+    it "doesn't send file outside of public directory" do
+      get '/files/3', {}
+
+      last_response.status.must_equal 404
+    end
   end
 
   describe "if file doesn't exist" do

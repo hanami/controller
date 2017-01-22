@@ -360,6 +360,49 @@ describe Hanami::Controller::Configuration do
     end
   end
 
+  describe "#public_directory" do
+    describe "when not previously set" do
+      it "returns default value" do
+        expected = ::File.join(Dir.pwd, 'public')
+        actual   = @configuration.public_directory
+
+        # NOTE: For Rack compatibility it's important to have a string as public directory
+        actual.must_be_kind_of(String)
+        actual.must_equal(expected)
+      end
+    end
+
+    describe "when set with relative path" do
+      before do
+        @configuration.public_directory 'static'
+      end
+
+      it "returns the value" do
+        expected = ::File.join(Dir.pwd, 'static')
+        actual   = @configuration.public_directory
+
+        # NOTE: For Rack compatibility it's important to have a string as public directory
+        actual.must_be_kind_of(String)
+        actual.must_equal(expected)
+      end
+    end
+
+    describe "when set with absolute path" do
+      before do
+        @configuration.public_directory ::File.join(Dir.pwd, 'absolute')
+      end
+
+      it "returns the value" do
+        expected = ::File.join(Dir.pwd, 'absolute')
+        actual   = @configuration.public_directory
+
+        # NOTE: For Rack compatibility it's important to have a string as public directory
+        actual.must_be_kind_of(String)
+        actual.must_equal(expected)
+      end
+    end
+  end
+
   describe 'duplicate' do
     before do
       @configuration.reset!
@@ -369,6 +412,7 @@ describe Hanami::Controller::Configuration do
       @configuration.default_response_format :html
       @configuration.default_charset 'latin1'
       @configuration.default_headers({ 'X-Frame-Options' => 'DENY' })
+      @configuration.public_directory 'static'
       @config = @configuration.duplicate
     end
 
@@ -383,6 +427,7 @@ describe Hanami::Controller::Configuration do
       @config.default_response_format.must_equal @configuration.default_response_format
       @config.default_charset.must_equal         @configuration.default_charset
       @config.default_headers.must_equal         @configuration.default_headers
+      @config.public_directory.must_equal        @configuration.public_directory
     end
 
     it "doesn't affect the original configuration" do
@@ -395,6 +440,7 @@ describe Hanami::Controller::Configuration do
       @config.default_response_format :json
       @config.default_charset 'utf-8'
       @config.default_headers({ 'X-Frame-Options' => 'ALLOW ALL' })
+      @config.public_directory 'pub'
 
       @config.handle_exceptions.must_equal           false
       @config.handled_exceptions.must_equal          Hash[ArgumentError => 400]
@@ -406,6 +452,7 @@ describe Hanami::Controller::Configuration do
       @config.default_response_format.must_equal      :json
       @config.default_charset.must_equal              'utf-8'
       @config.default_headers.must_equal              ({ 'X-Frame-Options' => 'ALLOW ALL' })
+      @config.public_directory.must_equal             ::File.join(Dir.pwd, 'pub')
 
       @configuration.handle_exceptions.must_equal  true
       @configuration.handled_exceptions.must_equal Hash[]
@@ -417,6 +464,7 @@ describe Hanami::Controller::Configuration do
       @configuration.default_response_format.must_equal :html
       @configuration.default_charset.must_equal    'latin1'
       @configuration.default_headers.must_equal    ({ 'X-Frame-Options' => 'DENY' })
+      @configuration.public_directory.must_equal   ::File.join(Dir.pwd, 'static')
     end
   end
 
@@ -431,6 +479,7 @@ describe Hanami::Controller::Configuration do
       @configuration.default_response_format :another
       @configuration.default_charset 'kor-1'
       @configuration.default_headers({ 'X-Frame-Options' => 'ALLOW DENY' })
+      @configuration.public_directory 'files'
 
       @configuration.reset!
     end
@@ -446,6 +495,7 @@ describe Hanami::Controller::Configuration do
       @configuration.default_response_format.must_be_nil
       @configuration.default_charset.must_be_nil
       @configuration.default_headers.must_equal({})
+      @configuration.public_directory.must_equal(::File.join(Dir.pwd, 'public'))
     end
   end
 end
