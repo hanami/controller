@@ -940,9 +940,10 @@ module Glued
   class SendFile
     include Hanami::Action
     include Hanami::Action::Glue
+    configuration.public_directory "test"
 
     def call(params)
-      self.body = ::Rack::File.new(nil)
+      send_file "assets/test.txt"
     end
   end
 end
