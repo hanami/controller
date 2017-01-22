@@ -21,8 +21,8 @@ module Hanami
         #
         # @since 0.4.3
         # @api private
-        def initialize(path)
-          @file = ::Rack::File.new(Dir.pwd)
+        def initialize(path, root)
+          @file = ::Rack::File.new(root)
           @path = path
         end
 

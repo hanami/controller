@@ -26,6 +26,14 @@ module Hanami
       # @api private
       DEFAULT_ERROR_CODE = 500
 
+      # Default public directory
+      #
+      # It serves as base root for file downloads
+      #
+      # @since x.x.x
+      # @api private
+      DEFAULT_PUBLIC_DIRECTORY = 'public'.freeze
+
       # Default Mime type to format mapping
       #
       # @since 0.2.0
@@ -631,6 +639,14 @@ module Hanami
         @formats.key(format)
       end
 
+      def public_directory(value = nil)
+        if value.nil?
+          @public_directory
+        else
+          @public_directory = Pathname.new(Dir.pwd).join(value).to_s
+        end
+      end
+
       # Duplicate by copying the settings in a new instance.
       #
       # @return [Hanami::Controller::Configuration] a copy of the configuration
@@ -648,6 +664,7 @@ module Hanami
           c.default_response_format = default_response_format
           c.default_charset         = default_charset
           c.default_headers         = default_headers.dup
+          c.public_directory        = public_directory
           c.cookies = cookies.dup
         end
       end
@@ -677,6 +694,7 @@ module Hanami
         @default_charset         = nil
         @default_headers         = {}
         @cookies                 = {}
+        @public_directory        = ::File.join(Dir.pwd, "public")
         @action_module           = ::Hanami::Action
       end
 
@@ -722,6 +740,7 @@ module Hanami
       attr_writer :default_charset
       attr_writer :default_headers
       attr_writer :cookies
+      attr_writer :public_directory
     end
   end
 end

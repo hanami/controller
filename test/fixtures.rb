@@ -1097,6 +1097,7 @@ end
 module SendFileTest
   Controller = Hanami::Controller.duplicate(self) do
     handle_exceptions false
+    public_directory  "test"
   end
 
   module Files
@@ -1107,11 +1108,13 @@ module SendFileTest
         id = params[:id]
         # This if statement is only for testing purpose
         if id == "1"
-          send_file Pathname.new('test/assets/test.txt')
+          send_file Pathname.new('assets/test.txt')
         elsif id == "2"
-          send_file Pathname.new('test/assets/hanami.png')
+          send_file Pathname.new('assets/hanami.png')
+        elsif id == "3"
+          send_file Pathname.new('Gemfile')
         else
-          send_file Pathname.new('test/assets/unknown.txt')
+          send_file Pathname.new('assets/unknown.txt')
         end
       end
     end
@@ -1120,7 +1123,7 @@ module SendFileTest
       include SendFileTest::Action
 
       def call(params)
-        send_file Pathname.new('test/assets/test.txt')
+        send_file Pathname.new('assets/test.txt')
         redirect_to '/'
       end
     end
