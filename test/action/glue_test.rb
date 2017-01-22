@@ -7,7 +7,7 @@ describe Hanami::Action::Glue do
       let(:action) { Glued::SendFile.new }
 
       it "isn't renderable while sending file" do
-        action.call({})
+        action.call('REQUEST_METHOD' => 'GET')
         action.wont_be :renderable?
       end
     end
