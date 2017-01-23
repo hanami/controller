@@ -940,9 +940,10 @@ module Glued
   class SendFile
     include Hanami::Action
     include Hanami::Action::Glue
+    configuration.public_directory "test"
 
     def call(params)
-      self.body = ::Rack::File.new(nil)
+      send_file "assets/test.txt"
     end
   end
 end
@@ -1097,6 +1098,7 @@ end
 module SendFileTest
   Controller = Hanami::Controller.duplicate(self) do
     handle_exceptions false
+    public_directory  "test"
   end
 
   module Files
@@ -1107,11 +1109,13 @@ module SendFileTest
         id = params[:id]
         # This if statement is only for testing purpose
         if id == "1"
-          send_file Pathname.new('test/assets/test.txt')
+          send_file Pathname.new('assets/test.txt')
         elsif id == "2"
-          send_file Pathname.new('test/assets/hanami.png')
+          send_file Pathname.new('assets/hanami.png')
+        elsif id == "3"
+          send_file Pathname.new('Gemfile')
         else
-          send_file Pathname.new('test/assets/unknown.txt')
+          send_file Pathname.new('assets/unknown.txt')
         end
       end
     end
@@ -1120,7 +1124,7 @@ module SendFileTest
       include SendFileTest::Action
 
       def call(params)
-        send_file Pathname.new('test/assets/test.txt')
+        send_file Pathname.new('assets/test.txt')
         redirect_to '/'
       end
     end
@@ -1274,6 +1278,25 @@ module FullStack
       end
     end
 
+    module Settings
+      class Index
+        include FullStack::Action
+
+        def call(params)
+          headers['X-Flash'] = flash[:message] || "Blank message"
+        end
+      end
+
+      class Create
+        include FullStack::Action
+
+        def call(params)
+          flash[:message] = "Saved!"
+          redirect_to "/settings"
+        end
+      end
+    end
+
     module Poll
       class Start
         include FullStack::Action
@@ -1351,6 +1374,9 @@ module FullStack
         get '/',     to: 'home#index'
         get '/head', to: 'home#head'
         resources :books, only: [:index, :create, :update]
+
+        get  '/settings', to: 'settings#index'
+        post '/settings', to: 'settings#create'
 
         get '/poll', to: 'poll#start'
 

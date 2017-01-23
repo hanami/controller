@@ -48,6 +48,17 @@ describe 'Full stack application' do
     last_response.body.must_include %(Step 1 completed)
   end
 
+  it "doesn't return stale informations" do
+    post '/settings', {}
+    follow_redirect!
+
+    last_response.headers['X-Flash'].must_equal 'Saved!'
+
+    get '/settings'
+
+    last_response.headers['X-Flash'].must_equal "Blank message"
+  end
+
   it 'can access params with string symbols or methods' do
     patch '/books/1', {
       book: {
