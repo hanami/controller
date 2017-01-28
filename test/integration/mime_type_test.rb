@@ -84,6 +84,7 @@ module Mimes
     accept :html, :json, :custom
 
     def call(params)
+      self.body = format.to_s
     end
   end
 
@@ -286,6 +287,7 @@ describe 'Restricted Accept' do
 
     it 'returns the mime type according to the application defined policy' do
       @response.status.must_equal 200
+      @response.body.must_equal 'all'
     end
   end
 
@@ -295,6 +297,7 @@ describe 'Restricted Accept' do
 
       it 'returns the mime type according to the application defined policy' do
         @response.status.must_equal 200
+        @response.body.must_equal 'all'
       end
     end
 
@@ -303,6 +306,7 @@ describe 'Restricted Accept' do
 
       it 'accepts selected mime types' do
         @response.status.must_equal 200
+        @response.body.must_equal 'html'
       end
     end
 
@@ -311,6 +315,7 @@ describe 'Restricted Accept' do
 
       it 'accepts selected mime types' do
         @response.status.must_equal 200
+        @response.body.must_equal 'custom'
       end
     end
 
@@ -323,10 +328,22 @@ describe 'Restricted Accept' do
     end
 
     describe 'when weighted' do
-      let(:accept) { 'text/html,application/xhtml+xml,application/xml;q=0.9' }
+      describe 'with an accepted format as first choice' do
+        let(:accept) { 'text/html,application/xhtml+xml,application/xml;q=0.9' }
 
-      it 'accepts selected mime types' do
-        @response.status.must_equal 200
+        it 'accepts selected mime types' do
+          @response.status.must_equal 200
+          @response.body.must_equal 'html'
+        end
+      end
+
+      describe 'with an accepted format as last choice' do
+        let(:accept) { 'text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,*/*;q=0.5' }
+
+        it 'accepts selected mime types' do
+          @response.status.must_equal 200
+          @response.body.must_equal 'html'
+        end
       end
     end
   end
