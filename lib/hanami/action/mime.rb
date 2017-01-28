@@ -1,7 +1,6 @@
 require 'rack/utils'
 require 'hanami/utils'
 require 'hanami/utils/kernel'
-require 'hanami/utils/deprecation'
 
 module Hanami
   module Action
@@ -157,6 +156,8 @@ module Hanami
           mime_types = formats.map do |format|
             format_to_mime_type(format)
           end
+
+          configuration.restrict_mime_types!(mime_types)
 
           before do
             unless mime_types.find {|mt| accept?(mt) }
