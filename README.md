@@ -282,7 +282,7 @@ class Show
   expose :article
 
   def call(params)
-    @article = ArticleRepository.find params[:id]
+    @article = ArticleRepository.new.find(params[:id])
   end
 end
 
