@@ -13,7 +13,7 @@ module Hanami
 
         # The key that returns path info from the Rack env
         #
-        # @since x.x.x
+        # @since 1.0.0.beta1
         # @api private
         PATH_INFO = "PATH_INFO".freeze
 

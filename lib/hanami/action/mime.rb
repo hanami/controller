@@ -42,7 +42,7 @@ module Hanami
 
       # Most commom mime types used for responses
       #
-      # @since 0.9.0
+      # @since 1.0.0.beta1
       # @api private
       MIME_TYPES = {
         txt: 'text/plain',
