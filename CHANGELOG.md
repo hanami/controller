@@ -1,6 +1,18 @@
 # Hanami::Controller
 Complete, fast and testable actions for Rack
 
+## v1.0.0beta1 (unreleased)
+### Added
+- [Luca Guidi] Official support for Ruby: MRI 2.4
+
+### Fixed
+- [Marcello Rocha & Luca Guidi] Avoid MIME type conflicts for `Action#format` detection
+- [Matias H. Leidemer & Luca Guidi] Ensure `Flash` to return only fresh data
+- [Luca Guidi] Ensure `session` keys to be accessed as symbols in action unit tests
+
+### Changed
+- [Anton Davydov & Luca Guidi] Make it work only with Rack 2.0
+
 ## v0.8.1 - 2016-12-19
 ### Fixed
 - [Thorbjørn Hermansen] Don't pollute Rack env's `rack.exception` key if an exception is handled
