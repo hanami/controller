@@ -1,7 +1,7 @@
 # Hanami::Controller
 Complete, fast and testable actions for Rack
 
-## v1.0.0beta1 (unreleased)
+## v1.0.0beta1 - 2017-02-14
 ### Added
 - [Luca Guidi] Official support for Ruby: MRI 2.4
 
