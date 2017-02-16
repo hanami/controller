@@ -56,7 +56,7 @@ module Hanami
         end
 
         def fresh?
-          modified_since && Time.httpdate(modified_since).to_i >= @value.to_i
+          modified_since && !modified_since.empty? && Time.httpdate(modified_since).to_i >= @value.to_i
         end
 
         def header

@@ -323,5 +323,17 @@ describe 'Fresh' do
         end
       end
     end
+
+    describe 'when last modified is empty string' do
+      before do
+        @modified_since = Time.new(2014, 1, 8, 0, 0, 0)
+        @last_modified  = Time.new(2014, 2, 8, 0, 0, 0)
+      end
+
+      it 'completes request' do
+        response = @app.get('/last-modified', {'HTTP_IF_MODIFIED_SINCE' => ''})
+        response.status.must_equal 200
+      end
+    end
   end
 end
