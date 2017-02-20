@@ -330,9 +330,32 @@ describe 'Fresh' do
         @last_modified  = Time.new(2014, 2, 8, 0, 0, 0)
       end
 
-      it 'completes request' do
-        response = @app.get('/last-modified', {'HTTP_IF_MODIFIED_SINCE' => ''})
-        response.status.must_equal 200
+      describe 'and HTTP_IF_MODIFIED_SINCE empty' do
+        it 'completes request' do
+          response = @app.get('/last-modified', {'HTTP_IF_MODIFIED_SINCE' => ''})
+          response.status.must_equal 200
+        end
+      end
+
+      describe 'and HTTP_IF_MODIFIED_SINCE contain space string' do
+        it 'completes request' do
+          response = @app.get('/last-modified', {'HTTP_IF_MODIFIED_SINCE' => ' '})
+          response.status.must_equal 200
+        end
+      end
+
+      describe 'and HTTP_IF_NONE_MATCH empty' do
+        it 'completes request' do
+          response = @app.get('/last-modified', {'HTTP_IF_NONE_MATCH' => ''})
+          response.status.must_equal 200
+        end
+      end
+
+      describe 'and HTTP_IF_NONE_MATCH contain space string' do
+        it 'completes request' do
+          response = @app.get('/last-modified', {'HTTP_IF_NONE_MATCH' => ' '})
+          response.status.must_equal 200
+        end
       end
     end
   end
