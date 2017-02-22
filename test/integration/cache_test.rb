@@ -335,12 +335,26 @@ describe 'Fresh' do
           response = @app.get('/last-modified', {'HTTP_IF_MODIFIED_SINCE' => ''})
           response.status.must_equal 200
         end
+
+        it 'stays the Last-Modified header as time' do
+          Time.stub(:now, @modified_since) do
+            response = @app.get('/last-modified', {'HTTP_IF_MODIFIED_SINCE' => ''})
+            response.headers.fetch('Last-Modified').must_equal @modified_since.httpdate
+          end
+        end
       end
 
       describe 'and HTTP_IF_MODIFIED_SINCE contain space string' do
         it 'completes request' do
           response = @app.get('/last-modified', {'HTTP_IF_MODIFIED_SINCE' => ' '})
           response.status.must_equal 200
+        end
+
+        it 'stays the Last-Modified header as time' do
+          Time.stub(:now, @modified_since) do
+            response = @app.get('/last-modified', {'HTTP_IF_MODIFIED_SINCE' => ' '})
+            response.headers.fetch('Last-Modified').must_equal @modified_since.httpdate
+          end
         end
       end
 
@@ -349,12 +363,26 @@ describe 'Fresh' do
           response = @app.get('/last-modified', {'HTTP_IF_NONE_MATCH' => ''})
           response.status.must_equal 200
         end
+
+        it 'sets the ETag header is nil' do
+          Time.stub(:now, @modified_since) do
+            response = @app.get('/last-modified', {'HTTP_IF_NONE_MATCH' => ''})
+            response.headers['Last-Modified'].must_equal nil
+          end
+        end
       end
 
       describe 'and HTTP_IF_NONE_MATCH contain space string' do
         it 'completes request' do
           response = @app.get('/last-modified', {'HTTP_IF_NONE_MATCH' => ' '})
           response.status.must_equal 200
+        end
+
+        it 'sets the ETag header is nil' do
+          Time.stub(:now, @modified_since) do
+            response = @app.get('/last-modified', {'HTTP_IF_NONE_MATCH' => ' '})
+            response.headers['Last-Modified'].must_equal nil
+          end
         end
       end
     end
