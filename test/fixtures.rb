@@ -1106,6 +1106,7 @@ module SendFileTest
       include SendFileTest::Action
 
       def call(params)
+        p params[:id]
         id = params[:id]
         # This if statement is only for testing purpose
         if id == "1"
@@ -1117,6 +1118,14 @@ module SendFileTest
         else
           send_file Pathname.new('assets/unknown.txt')
         end
+      end
+    end
+
+    class Unsafe
+      include SendFileTest::Action
+
+      def call(params)
+        unsafe_send_file Pathname.new('Gemfile')
       end
     end
 
