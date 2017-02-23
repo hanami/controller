@@ -1136,6 +1136,14 @@ module SendFileTest
         redirect_to '/'
       end
     end
+    
+    class Glob
+      include Hanami::Action
+      
+      def call(params)
+        halt 200
+      end
+    end
   end
 end
 

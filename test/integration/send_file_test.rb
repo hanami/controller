@@ -5,6 +5,7 @@ SendFileRoutes = Hanami::Router.new(namespace: SendFileTest) do
   get '/files/flow',          to: 'files#flow'
   get '/files/:id(.:format)', to: 'files#show'
   get '/files/unsafe',        to: 'files#unsafe'
+  get '/files/(*glob)',       to: 'files#glob'
 end
 
 SendFileApplication = Rack::Builder.new do
