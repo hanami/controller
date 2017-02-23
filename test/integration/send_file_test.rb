@@ -114,10 +114,10 @@ describe 'Full stack application' do
       last_response.body.size.must_equal(file.size)
     end
     
-    it "returns 401 when I give a bogus id" do
+    it "returns 400 when I give a bogus id" do
       get '/files/not-an-id.json', {}
   
-      last_response.status.must_equal 401
+      last_response.status.must_equal 400
     end
     
 

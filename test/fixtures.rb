@@ -1122,7 +1122,7 @@ module SendFileTest
           
           @resource = repository_dot_find_by_id(id)
           # this is usually 406, but I want to distinguish it from the 406 below.
-          halt 401 unless @resource
+          halt 400 unless @resource
           extension = params[:format]
           
           case(extension)
