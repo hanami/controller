@@ -1141,7 +1141,7 @@ module SendFileTest
       include Hanami::Action
       
       def call(params)
-        halt 200
+        halt 202
       end
     end
   end
