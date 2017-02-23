@@ -31,6 +31,7 @@ module Hanami
         @session         = session
         @request_id      = request_id
         @last_request_id = session[LAST_REQUEST_KEY]
+        @merged          = {}
 
         session[SESSION_KEY]             ||= {}
         session[SESSION_KEY][request_id] ||= {}
@@ -54,7 +55,7 @@ module Hanami
       # @since 0.3.0
       # @api private
       def [](key)
-        last_request_flash.merge(data).fetch(key) do
+        @merged.fetch(key) do
           _values.find {|data| !data[key].nil? }
         end
       end
@@ -73,8 +74,9 @@ module Hanami
         # It may happen that `#flash` is nil, and those two methods will fail
         unless flash.nil?
           expire_stale!
-          set_last_request_id!
           remove!
+          merge!
+          set_last_request_id!
         end
       end
 
@@ -87,6 +89,13 @@ module Hanami
       # @api private
       def empty?
         _values.all?(&:empty?)
+      end
+
+      # @return [String]
+      #
+      # @since x.x.x
+      def inspect
+        "#<#{self.class}:#{'0x%x' % (__id__ << 1)} #{@merged.inspect}>"
       end
 
       private
@@ -133,6 +142,14 @@ module Hanami
       # @see Hanami::Action::Flash#empty?
       def remove!
         @session.delete(SESSION_KEY) if empty?
+      end
+
+      # @since x.x.x
+      # @api private
+      #
+      # @see Hanami::Action::Flash#[]
+      def merge!
+        @merged = last_request_flash.merge(data)
       end
 
       # Values from all the stored requests

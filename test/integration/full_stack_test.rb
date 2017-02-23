@@ -52,11 +52,11 @@ describe 'Full stack application' do
     post '/settings', {}
     follow_redirect!
 
-    last_response.headers['X-Flash'].must_equal 'Saved!'
+    last_response.body.must_match %r{Hanami::Action::Flash:0x[\d\w]* {:message=>"Saved!"}}
 
     get '/settings'
 
-    last_response.headers['X-Flash'].must_equal "Blank message"
+    last_response.body.must_match %r{Hanami::Action::Flash:0x[\d\w]* {}}
   end
 
   it 'can access params with string symbols or methods' do
