@@ -290,8 +290,6 @@ module Hanami
 
       # Send a file as response from anywhere in the file system.
       #
-      # It automatically handle the following cases:
-      #
       # @see Hanami::Action::Rack#send_file
       #
       # @param path [String, Pathname] path to the file to be sent
