@@ -1106,7 +1106,6 @@ module SendFileTest
       include SendFileTest::Action
 
       def call(params)
-        p params[:id]
         id = params[:id]
         # This if statement is only for testing purpose
         if id == "1"
