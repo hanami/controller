@@ -76,6 +76,57 @@ describe 'Full stack application' do
       last_response.body.must_equal "Not Found"
     end
   end
+  
+  describe 'using conditional glob routes and :format' do
+    it "serves up json" do
+      get '/files/500.json', {}
+  
+      file = Pathname.new('test/assets/resource-500.json')
+      
+      last_response.status.must_equal 200
+      last_response.headers['Content-Type'].must_equal 'application/json'
+      last_response.body.size.must_equal(file.size)
+    end
+
+    it "fails on an unknown format" do
+      get '/files/500.xml', {}
+  
+      last_response.status.must_equal 406
+    end
+
+    it "serves up html" do
+      get '/files/500.html', {}
+  
+      file = Pathname.new('test/assets/resource-500.html')
+      
+      last_response.status.must_equal 200
+      last_response.headers['Content-Type'].must_equal 'text/html; charset=utf-8'
+      last_response.body.size.must_equal(file.size)
+    end
+
+    it "works without a :format" do
+      get '/files/500', {}
+  
+      file = Pathname.new('test/assets/resource-500.json')
+      
+      last_response.status.must_equal 200
+      last_response.headers['Content-Type'].must_equal 'application/json'
+      last_response.body.size.must_equal(file.size)
+    end
+    
+    it "returns 401 when I give a bogus id" do
+      get '/files/not-an-id.json', {}
+  
+      last_response.status.must_equal 401
+    end
+    
+
+    it "blows up when :format is sent as an :id" do
+      get '/files/501.json', {}
+  
+      last_response.status.must_equal 404
+    end
+  end
 
   describe 'conditional get request' do
     it "shouldn't send file" do
