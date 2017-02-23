@@ -364,10 +364,10 @@ describe 'Fresh' do
           response.status.must_equal 200
         end
 
-        it 'sets the ETag header is nil' do
+        it "doesn't send Last-Modified" do
           Time.stub(:now, @modified_since) do
             response = @app.get('/last-modified', {'HTTP_IF_NONE_MATCH' => ''})
-            response.headers['Last-Modified'].must_equal nil
+            assert !response.headers.key?('Last-Modified')
           end
         end
       end
@@ -378,10 +378,10 @@ describe 'Fresh' do
           response.status.must_equal 200
         end
 
-        it 'sets the ETag header is nil' do
+        it "doesn't send Last-Modified" do
           Time.stub(:now, @modified_since) do
             response = @app.get('/last-modified', {'HTTP_IF_NONE_MATCH' => ' '})
-            response.headers['Last-Modified'].must_equal nil
+            assert !response.headers.key?('Last-Modified')
           end
         end
       end
