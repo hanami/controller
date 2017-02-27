@@ -1283,7 +1283,6 @@ module FullStack
         include FullStack::Action
 
         def call(params)
-          headers['X-Flash'] = flash[:message] || "Blank message"
         end
       end
 
@@ -1360,7 +1359,7 @@ module FullStack
       action = env.delete('hanami.action')
 
       if response[0] == 200 && action.renderable?
-        response[2] = "#{ action.class.name } #{ action.exposures } params: #{ action.params.to_h }"
+        response[2] = "#{ action.class.name } #{ action.exposures } params: #{ action.params.to_h } flash: #{ action.exposures[:flash].inspect }"
       end
 
       response
