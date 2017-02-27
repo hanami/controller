@@ -1120,6 +1120,14 @@ module SendFileTest
       end
     end
 
+    class Unsafe
+      include SendFileTest::Action
+
+      def call(params)
+        unsafe_send_file Pathname.new('Gemfile')
+      end
+    end
+
     class Flow
       include SendFileTest::Action
 

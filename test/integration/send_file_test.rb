@@ -2,8 +2,9 @@ require 'test_helper'
 require 'rack/test'
 
 SendFileRoutes = Hanami::Router.new(namespace: SendFileTest) do
-  get '/files/flow', to: 'files#flow'
-  get '/files/:id',  to: 'files#show'
+  get '/files/flow',          to: 'files#flow'
+  get '/files/:id(.:format)', to: 'files#show'
+  get '/files/unsafe',        to: 'files#unsafe'
 end
 
 SendFileApplication = Rack::Builder.new do
@@ -15,6 +16,18 @@ describe 'Full stack application' do
 
   def app
     SendFileApplication
+  end
+
+  describe 'send files from anywhere in the system' do
+    it 'responds 200 when the file exists' do
+      get '/files/unsafe', {}
+      file = Pathname.new('Gemfile')
+
+      last_response.status.must_equal 200
+      last_response.headers['Content-Length'].to_i.must_equal file.size
+      last_response.headers['Content-Type'].must_equal 'text/plain'
+      last_response.body.size.must_equal(file.size)
+    end
   end
 
   describe 'when file exists, app responds 200' do
