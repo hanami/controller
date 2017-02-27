@@ -1107,6 +1107,7 @@ module SendFileTest
 
       def call(params)
         id = params[:id]
+        
         # This if statement is only for testing purpose
         if id == "1"
           send_file Pathname.new('assets/test.txt')
@@ -1114,9 +1115,47 @@ module SendFileTest
           send_file Pathname.new('assets/hanami.png')
         elsif id == "3"
           send_file Pathname.new('Gemfile')
-        else
+        elsif id == "100"
           send_file Pathname.new('assets/unknown.txt')
+        else
+          # a more realistic example of globbing ':id(.:format)'
+          
+          @resource = repository_dot_find_by_id(id)
+          # this is usually 406, but I want to distinguish it from the 406 below.
+          halt 400 unless @resource
+          extension = params[:format]
+          
+          case(extension)
+          when 'html'
+            # in reality we'd render a template here, but as a test fixture, we'll simulate that answer
+            # we should have also checked #accept? but w/e
+            self.body = ::File.read(Pathname.new("test/#{@resource.asset_path}.html"))
+            self.status = 200
+            self.format = :html
+          when 'json', nil
+            self.format = :json
+            send_file Pathname.new("#{@resource.asset_path}.json")
+          else
+            halt 406
+          end
         end
+      end
+      
+      private
+      
+      Model = Struct.new(:id, :asset_path)
+      
+      def repository_dot_find_by_id(id)
+        return nil unless id =~ /^\d+$/
+        return Model.new(id.to_i, "assets/resource-#{id}")
+      end
+    end
+
+    class Unsafe
+      include SendFileTest::Action
+
+      def call(params)
+        unsafe_send_file Pathname.new('Gemfile')
       end
     end
 
@@ -1134,6 +1173,14 @@ module SendFileTest
       def call(params)
         send_file Pathname.new('assets/test.txt')
         redirect_to '/'
+      end
+    end
+    
+    class Glob
+      include Hanami::Action
+      
+      def call(params)
+        halt 202
       end
     end
   end
