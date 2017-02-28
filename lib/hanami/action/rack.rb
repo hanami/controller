@@ -257,6 +257,7 @@ module Hanami
       end
 
       # Send a file as response.
+      #  <tt>This method only sends files from the public directory</tt>
       #
       # It automatically handle the following cases:
       #
@@ -283,6 +284,32 @@ module Hanami
       #   end
       def send_file(path)
         result = File.new(path, self.class.configuration.public_directory).call(@_env)
+        headers.merge!(result[1])
+        halt result[0], result[2]
+      end
+
+      # Send a file as response from anywhere in the file system.
+      #
+      # @see Hanami::Action::Rack#send_file
+      #
+      # @param path [String, Pathname] path to the file to be sent
+      # @return [void]
+      #
+      # @since x.x.x
+      #
+      # @example
+      #   require 'hanami/controller'
+      #
+      #   class Show
+      #     include Hanami::Action
+      #
+      #     def call(params)
+      #       # ...
+      #       unsafe_send_file Pathname.new('/tmp/path/to/file')
+      #     end
+      #   end
+      def unsafe_send_file(path)
+        result = File.new(path, Pathname.new(path).dirname).call(@_env)
         headers.merge!(result[1])
         halt result[0], result[2]
       end

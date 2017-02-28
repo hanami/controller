@@ -323,5 +323,68 @@ describe 'Fresh' do
         end
       end
     end
+
+    describe 'when last modified is empty string' do
+      before do
+        @modified_since = Time.new(2014, 1, 8, 0, 0, 0)
+        @last_modified  = Time.new(2014, 2, 8, 0, 0, 0)
+      end
+
+      describe 'and HTTP_IF_MODIFIED_SINCE empty' do
+        it 'completes request' do
+          response = @app.get('/last-modified', {'HTTP_IF_MODIFIED_SINCE' => ''})
+          response.status.must_equal 200
+        end
+
+        it 'stays the Last-Modified header as time' do
+          Time.stub(:now, @modified_since) do
+            response = @app.get('/last-modified', {'HTTP_IF_MODIFIED_SINCE' => ''})
+            response.headers.fetch('Last-Modified').must_equal @modified_since.httpdate
+          end
+        end
+      end
+
+      describe 'and HTTP_IF_MODIFIED_SINCE contain space string' do
+        it 'completes request' do
+          response = @app.get('/last-modified', {'HTTP_IF_MODIFIED_SINCE' => ' '})
+          response.status.must_equal 200
+        end
+
+        it 'stays the Last-Modified header as time' do
+          Time.stub(:now, @modified_since) do
+            response = @app.get('/last-modified', {'HTTP_IF_MODIFIED_SINCE' => ' '})
+            response.headers.fetch('Last-Modified').must_equal @modified_since.httpdate
+          end
+        end
+      end
+
+      describe 'and HTTP_IF_NONE_MATCH empty' do
+        it 'completes request' do
+          response = @app.get('/last-modified', {'HTTP_IF_NONE_MATCH' => ''})
+          response.status.must_equal 200
+        end
+
+        it "doesn't send Last-Modified" do
+          Time.stub(:now, @modified_since) do
+            response = @app.get('/last-modified', {'HTTP_IF_NONE_MATCH' => ''})
+            assert !response.headers.key?('Last-Modified')
+          end
+        end
+      end
+
+      describe 'and HTTP_IF_NONE_MATCH contain space string' do
+        it 'completes request' do
+          response = @app.get('/last-modified', {'HTTP_IF_NONE_MATCH' => ' '})
+          response.status.must_equal 200
+        end
+
+        it "doesn't send Last-Modified" do
+          Time.stub(:now, @modified_since) do
+            response = @app.get('/last-modified', {'HTTP_IF_NONE_MATCH' => ' '})
+            assert !response.headers.key?('Last-Modified')
+          end
+        end
+      end
+    end
   end
 end
