@@ -10,7 +10,6 @@ module Hanami
       #
       # @see Hanami::Action::Rack#send_file
       class File
-
         # The key that returns path info from the Rack env
         #
         # @since 1.0.0.beta1
@@ -29,7 +28,9 @@ module Hanami
         # @since 0.4.3
         # @api private
         def call(env)
+          env = env.dup
           env[PATH_INFO] = @path
+
           @file.get(env)
         rescue Errno::ENOENT
           [404, {}, nil]
