@@ -60,6 +60,12 @@ module Hanami
       # @api private
       REQUEST_METHOD = 'REQUEST_METHOD'.freeze
 
+      # The Content-Length HTTP header
+      #
+      # @since 1.0.0.beta2
+      # @api private
+      CONTENT_LENGTH = 'Content-Length'.freeze
+
       # The non-standard HTTP header to pass the control over when a resource
       # cannot be found by the current endpoint
       #
@@ -369,6 +375,7 @@ module Hanami
 
         if response[RESPONSE_CODE] == NOT_FOUND
           headers.delete(X_CASCADE)
+          headers.delete(CONTENT_LENGTH)
           halt NOT_FOUND
         else
           halt response[RESPONSE_CODE], response[RESPONSE_BODY]
