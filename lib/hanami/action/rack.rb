@@ -10,11 +10,35 @@ module Hanami
     #
     # @since 0.1.0
     module Rack
+      # Rack SPEC response code
+      #
+      # @since x.x.x
+      # @api private
+      RESPONSE_CODE = 0
+
+      # Rack SPEC response headers
+      #
+      # @since x.x.x
+      # @api private
+      RESPONSE_HEADERS = 1
+
+      # Rack SPEC response body
+      #
+      # @since x.x.x
+      # @api private
+      RESPONSE_BODY = 2
+
       # The default HTTP response code
       #
       # @since 0.1.0
       # @api private
       DEFAULT_RESPONSE_CODE = 200
+
+      # Not Found
+      #
+      # @since x.x.x
+      # @api private
+      NOT_FOUND = 404
 
       # The default Rack response body
       #
@@ -35,6 +59,13 @@ module Hanami
       # @since 0.3.2
       # @api private
       REQUEST_METHOD = 'REQUEST_METHOD'.freeze
+
+      # The non-standard HTTP header to pass the control over when a resource
+      # cannot be found by the current endpoint
+      #
+      # @since x.x.x
+      # @api private
+      X_CASCADE = 'X-Cascade'.freeze
 
       # HEAD request
       #
@@ -283,9 +314,9 @@ module Hanami
       #     end
       #   end
       def send_file(path)
-        result = File.new(path, self.class.configuration.public_directory).call(@_env)
-        headers.merge!(result[1])
-        halt result[0], result[2]
+        _send_file(
+          File.new(path, self.class.configuration.public_directory).call(@_env)
+        )
       end
 
       # Send a file as response from anywhere in the file system.
@@ -309,9 +340,9 @@ module Hanami
       #     end
       #   end
       def unsafe_send_file(path)
-        result = File.new(path, Pathname.new(path).dirname).call(@_env)
-        headers.merge!(result[1])
-        halt result[0], result[2]
+        _send_file(
+          File.new(path, Pathname.new(path).dirname).call(@_env)
+        )
       end
 
       # Check if the current request is a HEAD
@@ -329,6 +360,19 @@ module Hanami
       # @since 0.4.4
       def request_method
         @_env[REQUEST_METHOD]
+      end
+
+      # @since x.x.x
+      # @api private
+      def _send_file(response)
+        headers.merge!(response[RESPONSE_HEADERS])
+
+        if response[RESPONSE_CODE] == NOT_FOUND
+          headers.delete(X_CASCADE)
+          halt NOT_FOUND
+        else
+          halt response[RESPONSE_CODE], response[RESPONSE_BODY]
+        end
       end
     end
   end
