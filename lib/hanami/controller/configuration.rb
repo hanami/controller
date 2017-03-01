@@ -651,11 +651,15 @@ module Hanami
         @formats.key(format)
       end
 
+      # @api private
+      # @since 1.0.0.beta2
+      attr_reader :root_directory
+
       def public_directory(value = nil)
         if value.nil?
           @public_directory
         else
-          @public_directory = Pathname.new(Dir.pwd).join(value).to_s
+          @public_directory = root_directory.join(value).to_s
         end
       end
 
@@ -706,7 +710,8 @@ module Hanami
         @default_charset         = nil
         @default_headers         = {}
         @cookies                 = {}
-        @public_directory        = ::File.join(Dir.pwd, "public")
+        @root_directory          = ::Pathname.new(Dir.pwd).realpath
+        @public_directory        = root_directory.join(DEFAULT_PUBLIC_DIRECTORY).to_s
         @action_module           = ::Hanami::Action
       end
 

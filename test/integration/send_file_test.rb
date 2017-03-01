@@ -2,10 +2,14 @@ require 'test_helper'
 require 'rack/test'
 
 SendFileRoutes = Hanami::Router.new(namespace: SendFileTest) do
-  get '/files/flow',          to: 'files#flow'
-  get '/files/unsafe',        to: 'files#unsafe'
-  get '/files/:id(.:format)', to: 'files#show'
-  get '/files/(*glob)',       to: 'files#glob'
+  get '/files/flow',                    to: 'files#flow'
+  get '/files/unsafe_local',            to: 'files#unsafe_local'
+  get '/files/unsafe_public',           to: 'files#unsafe_public'
+  get '/files/unsafe_absolute',         to: 'files#unsafe_absolute'
+  get '/files/unsafe_missing_local',    to: 'files#unsafe_missing_local'
+  get '/files/unsafe_missing_absolute', to: 'files#unsafe_missing_absolute'
+  get '/files/:id(.:format)',           to: 'files#show'
+  get '/files/(*glob)',                 to: 'files#glob'
 end
 
 SendFileApplication = Rack::Builder.new do
@@ -21,14 +25,54 @@ describe 'Full stack application' do
   end
 
   describe 'send files from anywhere in the system' do
-    it 'responds 200 when the file exists' do
-      get '/files/unsafe', {}
+    it 'responds 200 when a local file exists' do
+      get '/files/unsafe_local', {}
       file = Pathname.new('Gemfile')
 
       last_response.status.must_equal 200
       last_response.headers['Content-Length'].to_i.must_equal file.size
       last_response.headers['Content-Type'].must_equal 'text/plain'
       last_response.body.size.must_equal(file.size)
+    end
+
+    it 'responds 200 when a relative path file exists' do
+      get '/files/unsafe_public', {}
+      file = Pathname.new('test/assets/test.txt')
+
+      last_response.status.must_equal 200
+      last_response.headers['Content-Length'].to_i.must_equal file.size
+      last_response.headers['Content-Type'].must_equal 'text/plain'
+      last_response.body.size.must_equal(file.size)
+    end
+
+    it 'responds 200 when an absoute path file exists' do
+      get '/files/unsafe_absolute', {}
+      file = Pathname.new('Gemfile')
+
+      last_response.status.must_equal 200
+      last_response.headers['Content-Length'].to_i.must_equal file.size
+      last_response.headers['Content-Type'].must_equal 'text/plain'
+      last_response.body.size.must_equal(file.size)
+    end
+
+    it 'responds 404 when a relative path does not exists' do
+      get '/files/unsafe_missing_local', {}
+      body = "Not Found"
+
+      last_response.status.must_equal 404
+      last_response.headers['Content-Length'].to_i.must_equal body.bytesize
+      last_response.headers['Content-Type'].must_equal 'text/plain'
+      last_response.body.must_equal(body)
+    end
+
+    it 'responds 404 when an absolute path does not exists' do
+      get '/files/unsafe_missing_absolute', {}
+      body = "Not Found"
+
+      last_response.status.must_equal 404
+      last_response.headers['Content-Length'].to_i.must_equal body.bytesize
+      last_response.headers['Content-Type'].must_equal 'text/plain'
+      last_response.body.must_equal(body)
     end
   end
 

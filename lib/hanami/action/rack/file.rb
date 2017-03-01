@@ -22,8 +22,8 @@ module Hanami
         # @since 0.4.3
         # @api private
         def initialize(path, root)
-          @file = ::Rack::File.new(root)
-          @path = path
+          @file = ::Rack::File.new(root.to_s)
+          @path = path.to_s
         end
 
         # @since 0.4.3
