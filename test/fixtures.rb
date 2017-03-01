@@ -1119,12 +1119,12 @@ module SendFileTest
           send_file Pathname.new('assets/unknown.txt')
         else
           # a more realistic example of globbing ':id(.:format)'
-          
+
           @resource = repository_dot_find_by_id(id)
           # this is usually 406, but I want to distinguish it from the 406 below.
           halt 400 unless @resource
           extension = params[:format]
-          
+
           case(extension)
           when 'html'
             # in reality we'd render a template here, but as a test fixture, we'll simulate that answer
@@ -1140,30 +1140,54 @@ module SendFileTest
           end
         end
       end
-      
+
       private
-      
+
       Model = Struct.new(:id, :asset_path)
-      
+
       def repository_dot_find_by_id(id)
         return nil unless id =~ /^\d+$/
         return Model.new(id.to_i, "assets/resource-#{id}")
       end
     end
 
-    class Unsafe
+    class UnsafeLocal
       include SendFileTest::Action
 
       def call(params)
-        unsafe_send_file Pathname.new('Gemfile')
+        unsafe_send_file "Gemfile"
       end
     end
 
-    class Unsafe
+    class UnsafePublic
       include SendFileTest::Action
 
       def call(params)
-        unsafe_send_file Pathname.new('Gemfile')
+        unsafe_send_file "test/assets/test.txt"
+      end
+    end
+
+    class UnsafeAbsolute
+      include SendFileTest::Action
+
+      def call(params)
+        unsafe_send_file Pathname.new("Gemfile").realpath
+      end
+    end
+
+    class UnsafeMissingLocal
+      include SendFileTest::Action
+
+      def call(params)
+        unsafe_send_file "missing"
+      end
+    end
+
+    class UnsafeMissingAbsolute
+      include SendFileTest::Action
+
+      def call(params)
+        unsafe_send_file Pathname.new(".").join("missing")
       end
     end
 
@@ -1175,10 +1199,10 @@ module SendFileTest
         redirect_to '/'
       end
     end
-    
+
     class Glob
       include Hanami::Action
-      
+
       def call(params)
         halt 202
       end

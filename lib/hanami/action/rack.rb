@@ -346,8 +346,10 @@ module Hanami
       #     end
       #   end
       def unsafe_send_file(path)
+        directory = self.class.configuration.root_directory if Pathname.new(path).relative?
+
         _send_file(
-          File.new(path, Pathname.new(path).dirname).call(@_env)
+          File.new(path, directory).call(@_env)
         )
       end
 
