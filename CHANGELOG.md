@@ -1,7 +1,16 @@
 # Hanami::Controller
 Complete, fast and testable actions for Rack
 
-## v1.0.0beta1 - 2017-02-14
+## v1.0.0.beta2 - 2017-03-02
+### Added
+- [Marcello Rocha] Add `Action#unsafe_send_file` to send files outside of the public directory of a project
+
+### Fixed
+- [Anton Davydov] Ensure HTTP Cache to not crash when `HTTP_IF_MODIFIED_SINCE` and `HTTP_IF_NONE_MATCH` have blank values
+- [Luca Guidi] Keep flash values after a redirect
+- [Craig M. Wellington & Luca Guidi] Ensure to return 404 when `Action#send_file` cannot find a file with a globbed route
+
+## v1.0.0.beta1 - 2017-02-14
 ### Added
 - [Luca Guidi] Official support for Ruby: MRI 2.4
 
