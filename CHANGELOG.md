@@ -9,6 +9,7 @@ Complete, fast and testable actions for Rack
 - [Anton Davydov] Ensure HTTP Cache to not crash when `HTTP_IF_MODIFIED_SINCE` and `HTTP_IF_NONE_MATCH` have blank values
 - [Luca Guidi] Keep flash values after a redirect
 - [Craig M. Wellington & Luca Guidi] Ensure to return 404 when `Action#send_file` cannot find a file with a globbed route
+- [Luca Guidi] Don't mutate Rack env when sending files
 
 ## v1.0.0.beta1 - 2017-02-14
 ### Added
