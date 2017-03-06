@@ -940,7 +940,7 @@ class Csv
     self.format = :csv
     self.body = Enumerator.new do |yielder|
       yielder << csv_header
-      
+
       # Expensive operation is streamed as each line becomes available
       csv_body.each_line do |line|
         yielder << line
@@ -950,7 +950,7 @@ class Csv
 end
 ```
 
-Note: 
+Note:
 * In development, Hanami' code reloading needs to be disabled for streaming to work. This is because `Shotgun` interferes with the streaming action. You can disable it like this `hanami server --code-reloading=false`
 * Streaming does not work with WEBrick as it buffers its response. We recommend using `puma`, though you may find success with other servers
 
@@ -1204,6 +1204,6 @@ __Hanami::Controller__ uses [Semantic Versioning 2.0.0](http://semver.org)
 
 ## Copyright
 
-Copyright © 2014-2016 Luca Guidi – Released under MIT License
+Copyright © 2014-2017 Luca Guidi – Released under MIT License
 
 This project was formerly known as Lotus (`lotus-controller`).
