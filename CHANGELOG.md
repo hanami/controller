@@ -1,6 +1,8 @@
 # Hanami::Controller
 Complete, fast and testable actions for Rack
 
+## v1.0.0.beta3 (unreleased)
+
 ## v1.0.0.beta2 - 2017-03-02
 ### Added
 - [Marcello Rocha] Add `Action#unsafe_send_file` to send files outside of the public directory of a project
