@@ -41,6 +41,7 @@ module Hanami
 
       private
 
+      # @since 0.2.0
       def configuration
         self.class.configuration
       end

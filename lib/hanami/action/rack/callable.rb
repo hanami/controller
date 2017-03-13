@@ -1,4 +1,3 @@
-
 module Hanami
   module Action
     module Rack
@@ -10,6 +9,7 @@ module Hanami
         #   see the examples below.
         #
         # @since 0.4.0
+        # @api private
         #
         # @see Hanami::Action::Rack::ClassMethods#rack_builder
         # @see Hanami::Action::Rack::ClassMethods#use

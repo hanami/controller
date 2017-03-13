@@ -20,7 +20,7 @@ module Hanami
       # @since 0.3.0
       # @api private
       #
-      # @see http://www.ruby-doc.org/core-2.1.2/Module.html#method-i-included
+      # @see http://www.ruby-doc.org/core/Module.html#method-i-included
       def self.included(base)
         base.class_eval do
           include CacheControl, Expires
@@ -51,7 +51,6 @@ module Hanami
       # @return void
       #
       # @since 0.3.0
-      # @api public
       #
       # @example
       #   require 'hanami/controller'
@@ -74,7 +73,6 @@ module Hanami
       #
       #     end
       #   end
-      #
       def cache_control(*values)
         cache_control = CacheControl::Directives.new(*values)
         headers.merge!(cache_control.headers)
@@ -91,7 +89,6 @@ module Hanami
       # @return void
       #
       # @since 0.3.0
-      # @api public
       #
       # @example
       #   require 'hanami/controller'
@@ -115,7 +112,6 @@ module Hanami
       #
       #     end
       #   end
-      #
       def expires(amount, *values)
         expires = Expires::Directives.new(amount, *values)
         headers.merge!(expires.headers)
@@ -132,7 +128,6 @@ module Hanami
       # @return void
       #
       # @since 0.3.0
-      # @api public
       #
       # @example
       #   require 'hanami/controller'

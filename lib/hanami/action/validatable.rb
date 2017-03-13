@@ -9,6 +9,8 @@ module Hanami
       # @since 0.3.0
       PARAMS_CLASS_NAME = 'Params'.freeze
 
+      # @api private
+      # @since 0.1.0
       def self.included(base)
         base.extend ClassMethods
       end
@@ -48,6 +50,7 @@ module Hanami
         # @since 0.3.0
         #
         # @see Hanami::Action::Params
+        # @see http://hanamirb.org/guides/validations/overview/
         #
         # @example Anonymous Block
         #   require 'hanami/controller'
@@ -56,9 +59,9 @@ module Hanami
         #     include Hanami::Action
         #
         #     params do
-        #       param :first_name
-        #       param :last_name
-        #       param :email
+        #       required(:first_name)
+        #       required(:last_name)
+        #       required(:email)
         #     end
         #
         #     def call(params)
@@ -74,9 +77,9 @@ module Hanami
         #   require 'hanami/controller'
         #
         #   class SignupParams < Hanami::Action::Params
-        #     param :first_name
-        #     param :last_name
-        #     param :email
+        #     required(:first_name)
+        #     required(:last_name)
+        #     required(:email)
         #   end
         #
         #   class Signup

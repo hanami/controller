@@ -78,7 +78,6 @@ module Hanami
       # quota via <tt>X-Rate-Limit</tt>.
       #
       # @since 0.5.0
-      # @api public
       #
       # @see Hanami::Action::HEAD#finish
       #

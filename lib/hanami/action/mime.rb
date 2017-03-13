@@ -40,7 +40,7 @@ module Hanami
       # @api private
       DEFAULT_CHARSET = 'utf-8'.freeze
 
-      # Most commom mime types used for responses
+      # Most commom MIME Types used for responses
       #
       # @since 1.0.0.beta1
       # @api private

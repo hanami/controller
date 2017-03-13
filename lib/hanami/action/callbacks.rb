@@ -197,10 +197,14 @@ module Hanami
         end
 
         private
+        # @since 0.1.0
+        # @api private
         def _run_before_callbacks(params)
           self.class.before_callbacks.run(self, params)
         end
 
+        # @since 0.1.0
+        # @api private
         def _run_after_callbacks(params)
           self.class.after_callbacks.run(self, params)
         end

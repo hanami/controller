@@ -9,7 +9,6 @@ module Hanami
     #
     # @see http://www.rubydoc.info/gems/rack/Rack/Request
     class Request < ::Rack::Request
-
       # @raise [NotImplementedError]
       #
       # @since 0.3.1

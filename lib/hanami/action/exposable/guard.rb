@@ -15,6 +15,7 @@ module Hanami
       # Prevents exposure of reserved words
       #
       # @since 0.7.1
+      # @api private
       #
       # @see Hanami::Action::Exposable::Guard::ClassMethods#expose
       # @see Hanami::Action::Exposable::Guard::ClassMethods#reserved_word?
@@ -47,6 +48,7 @@ module Hanami
           # @return [void]
           #
           # @since 0.7.1
+          # @api private
           def expose(*names)
             detect_reserved_words!(names)
 

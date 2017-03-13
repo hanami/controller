@@ -4,6 +4,9 @@ require 'hanami/controller/configuration'
 require 'hanami/controller/version'
 require 'hanami/controller/error'
 
+# Hanami
+#
+# @since 0.1.0
 module Hanami
   # A set of logically grouped actions
   #
@@ -37,6 +40,8 @@ module Hanami
     #
     # @see Hanami::Action::Mime#format=
     class UnknownFormatError < Hanami::Controller::Error
+      # @since 0.2.0
+      # @api private
       def initialize(format)
         super("Cannot find a corresponding Mime type for '#{ format }'. Please configure it with Hanami::Controller::Configuration#format.")
       end
@@ -130,7 +135,7 @@ module Hanami
     #
     # @return [Module] a copy of Hanami::Controller
     #
-    # @since 0.2.0
+    # @since 0.2.0
     #
     # @see Hanami::Controller#dupe
     # @see Hanami::Controller::Configuration
@@ -252,4 +257,3 @@ module Hanami
     end
   end
 end
-

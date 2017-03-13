@@ -1,7 +1,6 @@
 module Hanami
   module Action
     module Cache
-
       # Cache-Control directives which have values
       #
       # @since 0.3.0
@@ -21,16 +20,24 @@ module Hanami
       # @since 0.3.0
       # @api private
       class ValueDirective
+        # @since 0.3.0
+        # @api private
         attr_reader :name
 
+        # @since 0.3.0
+        # @api private
         def initialize(name, value)
           @name, @value = name, value
         end
 
+        # @since 0.3.0
+        # @api private
         def to_str
           "#{@name.to_s.tr('_', '-')}=#{@value.to_i}"
         end
 
+        # @since 0.3.0
+        # @api private
         def valid?
           VALUE_DIRECTIVES.include? @name
         end
@@ -43,16 +50,24 @@ module Hanami
       # @since 0.3.0
       # @api private
       class NonValueDirective
+        # @since 0.3.0
+        # @api private
         attr_reader :name
 
+        # @since 0.3.0
+        # @api private
         def initialize(name)
           @name = name
         end
 
+        # @since 0.3.0
+        # @api private
         def to_str
           @name.to_s.tr('_', '-')
         end
 
+        # @since 0.3.0
+        # @api private
         def valid?
           NON_VALUE_DIRECTIVES.include? @name
         end
@@ -65,6 +80,8 @@ module Hanami
       class Directives
         include Enumerable
 
+        # @since 0.3.0
+        # @api private
         def initialize(*values)
           @directives = []
           values.each do |directive_key|
@@ -76,20 +93,28 @@ module Hanami
           end
         end
 
+        # @since 0.3.0
+        # @api private
         def each
           @directives.each { |d| yield d }
         end
 
+        # @since 0.3.0
+        # @api private
         def <<(directive)
           @directives << directive if directive.valid?
         end
 
+        # @since 0.3.0
+        # @api private
         def values
           @directives.delete_if do |directive|
             directive.name == :public && @directives.map(&:name).include?(:private)
           end
         end
 
+        # @since 0.3.0
+        # @api private
         def join(separator)
           values.join(separator)
         end

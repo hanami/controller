@@ -207,7 +207,19 @@ describe Hanami::Action::Params do
     end
 
     it "is it valid when all the validation criteria are met" do
-      params = TestParams.new(email: 'test@hanamirb.org', name: 'Luca', tos: '1', age: '34', address: { line_one: '10 High Street', deep: { deep_attr: 'blue' } })
+      params = TestParams.new(email: 'test@hanamirb.org',
+                              password: '123456',
+                              password_confirmation: '123456',
+                              name: 'Luca',
+                              tos: '1',
+                              age: '34',
+                              address: {
+                                line_one: '10 High Street',
+                                deep: {
+                                  deep_attr: 'blue'
+                                }
+                              }
+                             )
 
       params.valid?.must_equal true
       params.errors.must_be_empty
