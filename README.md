@@ -202,8 +202,8 @@ class Signup
   params do
     required(:first_name).filled(:str?)
     required(:last_name).filled(:str?)
-    required(:email).confirmation.filled?(:str?, format?: /@/)
-    required(:password).confirmation.filled(:str?)
+    required(:email).filled?(:str?, format?: /\A.+@.+\z/)
+    required(:password).filled(:str?).confirmation
     required(:terms_of_service).filled(:bool?)
     required(:age).filled(:int?, included_in?: 18..99)
     optional(:avatar).filled(size?: 1..(MEGABYTE * 3))

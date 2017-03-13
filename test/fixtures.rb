@@ -782,6 +782,7 @@ end
 class TestParams < Hanami::Action::Params
   params do
     required(:email).filled(format?: /\A.+@.+\z/)
+    optional(:password).filled(:str?).confirmation
     required(:name).filled
     required(:tos).filled(:bool?)
     required(:age).filled(:int?)
