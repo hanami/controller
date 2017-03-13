@@ -98,10 +98,12 @@ module Hanami
         end
       end
 
+      # @api private
       module ClassMethods
         # Build rack builder
         #
         # @return [Rack::Builder]
+        # @api private
         def rack_builder
           @rack_builder ||= begin
             extend Hanami::Action::Rack::Callable
@@ -242,6 +244,7 @@ module Hanami
         @request ||= ::Hanami::Action::Request.new(@_env)
       end
 
+      # Return parsed request body
       def parsed_request_body
         @_env.fetch(ROUTER_PARSED_BODY, nil)
       end

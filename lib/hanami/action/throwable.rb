@@ -28,6 +28,8 @@ module Hanami
       # @see https://github.com/hanami/controller/issues/133
       RACK_EXCEPTION = 'rack.exception'.freeze
 
+      # @since 0.1.0
+      # @api private
       def self.included(base)
         base.extend ClassMethods
       end

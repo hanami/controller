@@ -7,12 +7,14 @@ module Hanami
       # The key that returns raw input from the Rack env
       #
       # @since 0.7.0
+      # @api private
       RACK_INPUT    = 'rack.input'.freeze
 
       # The key that returns router params from the Rack env
       # This is a builtin integration for Hanami::Router
       #
       # @since 0.7.0
+      # @api private
       ROUTER_PARAMS = 'router.params'.freeze
 
       # The key that returns Rack session params from the Rack env
@@ -46,6 +48,7 @@ module Hanami
       # @return [Params]
       #
       # @since 0.7.0
+      # @api private
       def initialize(env)
         @env    = env
         @raw    = _extract_params

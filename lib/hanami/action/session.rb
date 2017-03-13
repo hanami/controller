@@ -80,7 +80,6 @@ module Hanami
       # @return [Hanami::Action::Flash] a Flash instance
       #
       # @since 0.3.0
-      # @api private
       #
       # @see Hanami::Action::Flash
       def flash

@@ -25,22 +25,29 @@ module Hanami
       #
       # @since 0.3.0
       # @api private
-      #
       class ETag
+        # @since 0.3.0
+        # @api private
         def initialize(env, value)
           @env, @value = env, value
         end
 
+        # @since 0.3.0
+        # @api private
         def fresh?
           none_match && @value == none_match
         end
 
+        # @since 0.3.0
+        # @api private
         def header
           { ETAG => @value } if none_match
         end
 
         private
 
+        # @since 0.3.0
+        # @api private
         def none_match
           @env[IF_NONE_MATCH]
         end
@@ -51,20 +58,28 @@ module Hanami
       # @since 0.3.0
       # @api private
       class LastModified
+        # @since 0.3.0
+        # @api private
         def initialize(env, value)
           @env, @value = env, value
         end
 
+        # @since 0.3.0
+        # @api private
         def fresh?
           !Hanami::Utils::Blank.blank?(modified_since) && Time.httpdate(modified_since).to_i >= @value.to_i
         end
 
+        # @since 0.3.0
+        # @api private
         def header
           { LAST_MODIFIED => @value.httpdate } if modified_since
         end
 
         private
 
+        # @since 0.3.0
+        # @api private
         def modified_since
           @env[IF_MODIFIED_SINCE]
         end
@@ -76,14 +91,20 @@ module Hanami
       # @since 0.3.0
       # @api private
       class ConditionalGet
+        # @since 0.3.0
+        # @api private
         def initialize(env, options)
           @validations = [ ETag.new(env, options[:etag]), LastModified.new(env, options[:last_modified]) ]
         end
 
+        # @since 0.3.0
+        # @api private
         def fresh?
           yield if @validations.any?(&:fresh?)
         end
 
+        # @since 0.3.0
+        # @api private
         def headers
           @validations.map(&:header).compact.reduce Hash.new, :merge
         end

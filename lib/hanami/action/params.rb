@@ -26,6 +26,34 @@ module Hanami
         end
       end
 
+      # Define params validations
+      #
+      # @param blk [Proc] the validations definitions
+      #
+      # @since 0.7.0
+      #
+      # @see http://hanamirb.org/guides/validations/overview/
+      #
+      # @example
+      #   class Signup
+      #     MEGABYTE = 1024 ** 2
+      #     include Hanami::Action
+      #
+      #     params do
+      #       required(:first_name).filled(:str?)
+      #       required(:last_name).filled(:str?)
+      #       required(:email).filled?(:str?, format?: /\A.+@.+\z/)
+      #       required(:password).filled(:str?).confirmation
+      #       required(:terms_of_service).filled(:bool?)
+      #       required(:age).filled(:int?, included_in?: 18..99)
+      #       optional(:avatar).filled(size?: 1..(MEGABYTE * 3))
+      #     end
+      #
+      #     def call(params)
+      #       halt 400 unless params.valid?
+      #       # ...
+      #     end
+      #   end
       def self.params(&blk)
         validations(&blk || ->() {})
       end
@@ -37,6 +65,7 @@ module Hanami
       # @return [Params]
       #
       # @since 0.1.0
+      # @api private
       def initialize(env)
         @env = env
         super(_extract_params)
@@ -115,6 +144,7 @@ module Hanami
 
       private
 
+      # @api private
       def _params
         @result.output.merge(_router_params)
       end

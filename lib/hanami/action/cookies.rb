@@ -23,7 +23,6 @@ module Hanami
       # @return [Hanami::Action::CookieJar] cookies
       #
       # @since 0.1.0
-      # @api public
       #
       # @see Hanami::Controller::Configuration#cookies
       # @see Hanami::Action::CookieJar#[]=
