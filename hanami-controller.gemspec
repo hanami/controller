@@ -6,8 +6,8 @@ require 'hanami/controller/version'
 Gem::Specification.new do |spec|
   spec.name          = 'hanami-controller'
   spec.version       = Hanami::Controller::VERSION
-  spec.authors       = ['Luca Guidi', 'Trung Lê', 'Alfonso Uceda']
-  spec.email         = ['me@lucaguidi.com', 'trung.le@ruby-journal.com', 'uceda73@gmail.com']
+  spec.authors       = ['Luca Guidi']
+  spec.email         = ['me@lucaguidi.com']
   spec.description   = %q{Complete, fast and testable actions for Rack}
   spec.summary       = %q{Complete, fast and testable actions for Rack and Hanami}
   spec.homepage      = 'http://hanamirb.org'
