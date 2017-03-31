@@ -1,6 +1,8 @@
 # Hanami::Controller
 Complete, fast and testable actions for Rack
 
+## v1.0.0.rc1 - 2017-03-31
+
 ## v1.0.0.beta3 - 2017-03-17
 ### Changed
 - [Luca Guidi] `Action#flash` is now public API
