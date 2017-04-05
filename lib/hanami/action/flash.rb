@@ -93,7 +93,7 @@ module Hanami
 
       # @return [String]
       #
-      # @since 1.0.0.beta2
+      # @since 1.0.0
       def inspect
         "#<#{self.class}:#{'0x%x' % (__id__ << 1)} #{@merged.inspect}>"
       end
@@ -144,7 +144,7 @@ module Hanami
         @session.delete(SESSION_KEY) if empty?
       end
 
-      # @since 1.0.0.beta2
+      # @since 1.0.0
       # @api private
       #
       # @see Hanami::Action::Flash#[]
