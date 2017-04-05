@@ -12,19 +12,19 @@ module Hanami
     module Rack
       # Rack SPEC response code
       #
-      # @since 1.0.0.beta2
+      # @since 1.0.0
       # @api private
       RESPONSE_CODE = 0
 
       # Rack SPEC response headers
       #
-      # @since 1.0.0.beta2
+      # @since 1.0.0
       # @api private
       RESPONSE_HEADERS = 1
 
       # Rack SPEC response body
       #
-      # @since 1.0.0.beta2
+      # @since 1.0.0
       # @api private
       RESPONSE_BODY = 2
 
@@ -36,7 +36,7 @@ module Hanami
 
       # Not Found
       #
-      # @since 1.0.0.beta2
+      # @since 1.0.0
       # @api private
       NOT_FOUND = 404
 
@@ -62,14 +62,14 @@ module Hanami
 
       # The Content-Length HTTP header
       #
-      # @since 1.0.0.beta2
+      # @since 1.0.0
       # @api private
       CONTENT_LENGTH = 'Content-Length'.freeze
 
       # The non-standard HTTP header to pass the control over when a resource
       # cannot be found by the current endpoint
       #
-      # @since 1.0.0.beta2
+      # @since 1.0.0
       # @api private
       X_CASCADE = 'X-Cascade'.freeze
 
@@ -335,7 +335,7 @@ module Hanami
       # @param path [String, Pathname] path to the file to be sent
       # @return [void]
       #
-      # @since 1.0.0.beta2
+      # @since 1.0.0
       #
       # @example
       #   require 'hanami/controller'
@@ -373,7 +373,7 @@ module Hanami
         @_env[REQUEST_METHOD]
       end
 
-      # @since 1.0.0.beta2
+      # @since 1.0.0
       # @api private
       def _send_file(response)
         headers.merge!(response[RESPONSE_HEADERS])

@@ -30,7 +30,7 @@ module Hanami
       #
       # It serves as base root for file downloads
       #
-      # @since 1.0.0.beta1
+      # @since 1.0.0
       # @api private
       DEFAULT_PUBLIC_DIRECTORY = 'public'.freeze
 
@@ -220,7 +220,7 @@ module Hanami
       #
       # @param exception [Exception] an exception
       #
-      # @since 1.0.0.beta1
+      # @since 1.0.0
       # @api private
       #
       # @see Hanami::Controller::Configuration#handle_exception
@@ -439,7 +439,7 @@ module Hanami
       #
       # @param mime_types [Array] the set of MIME types
       #
-      # @since 1.0.0.beta1
+      # @since 1.0.0
       # @api private
       #
       # @see Hanami::Action::Mime::ClassMethods#accept
@@ -652,7 +652,7 @@ module Hanami
       end
 
       # @api private
-      # @since 1.0.0.beta2
+      # @since 1.0.0
       attr_reader :root_directory
 
       def public_directory(value = nil)
