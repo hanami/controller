@@ -302,6 +302,26 @@ describe Hanami::Action::Params do
         @params.get(:address, :unknown).must_be_nil
       end
     end
+
+    describe "with nested parameters" do
+      before do
+        TestNestedParams = Class.new(Lotus::Action::Params) do
+          param :user do
+            param :email, presence: true
+          end
+        end
+      end
+
+      after do
+        Object.send(:remove_const, :TestNestedParams)
+      end
+
+      it "validates" do
+        params = TestNestedParams.new({ user: { email: "test@lotusrb.org" } })
+
+        refute params.valid?, "Expected nested parameters to be valid."
+      end
+    end
   end
 
   describe '#to_h' do
