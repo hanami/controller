@@ -106,16 +106,14 @@ module Hanami
       #   params.error_messages
       #     # => ["Email is missing", "Email is in invalid format", "Name is missing", "Tos is missing", "Age is missing", "Address is missing"]
       def error_messages(error_set = errors)
-        error_set.each_with_object([]) do |(key, messages), result|
+        error_set.flat_map do |key, messages|
           k = Utils::String.new(key).titleize
 
-          _messages = if messages.is_a?(Hash)
+          if messages.is_a?(Hash)
             error_messages(messages)
           else
-            messages.map { |message| "#{k} #{message}" }
+            messages.map! { |message| "#{k} #{message}" }
           end
-
-          result.concat(_messages)
         end
       end
 
