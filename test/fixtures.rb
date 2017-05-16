@@ -877,6 +877,13 @@ module Painters
       required(:painter).schema do
         required(:first_name).filled(:str?)
         required(:last_name).filled(:str?)
+        optional(:paintings).maybe do
+          each do
+            schema do
+              required(:name).filled
+            end
+          end
+        end
       end
     end
 
@@ -1108,7 +1115,7 @@ module SendFileTest
 
       def call(params)
         id = params[:id]
-        
+
         # This if statement is only for testing purpose
         if id == "1"
           send_file Pathname.new('assets/test.txt')

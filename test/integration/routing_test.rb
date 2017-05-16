@@ -1,12 +1,12 @@
 require 'test_helper'
 require 'hanami/router'
 
-Routes = Hanami::Router.new do
-  get '/',         to: 'root'
-  get '/team',     to: 'about#team'
+Routes = Hanami::Router.new(parsers: :json) do
+  get '/', to: 'root'
+  get '/team', to: 'about#team'
   get '/contacts', to: 'about#contacts'
 
-  resource  :identity
+  resource :identity
   resources :flowers
   resources :painters, only: [:update]
 end
@@ -61,7 +61,7 @@ describe 'Hanami::Router integration' do
     end
 
     it 'calls POST create' do
-      response = @app.post('/identity', params: { identity: { avatar: { image: 'jodosha.png' } }})
+      response = @app.post('/identity', params: { identity: { avatar: { image: 'jodosha.png' } } })
 
       response.status.must_equal 200
       response.body.must_equal %({:identity=>{:avatar=>{:image=>\"jodosha.png\"}}})
@@ -75,7 +75,7 @@ describe 'Hanami::Router integration' do
     end
 
     it 'calls PATCH update' do
-      response = @app.request('PATCH', '/identity', params: { identity: { avatar: { image: 'jodosha-2x.png' } }})
+      response = @app.request('PATCH', '/identity', params: { identity: { avatar: { image: 'jodosha-2x.png' } } })
 
       response.status.must_equal 200
       response.body.must_equal %({:identity=>{:avatar=>{:image=>\"jodosha-2x.png\"}}})
@@ -140,6 +140,14 @@ describe 'Hanami::Router integration' do
     end
 
     describe 'with validations' do
+      it 'does not replace parsed params with router params' do
+        json     = { painter: { first_name: 'Gustav', last_name: 'Klimt', paintings: [{ name: "The Kiss" }, { name: "The Maiden" }] } }.to_json
+        response = @app.request('PATCH', '/painters/23', { 'CONTENT_TYPE' => 'application/json', input: json })
+
+        response.status.must_equal 200
+        response.body.must_equal %({:painter=>{:first_name=>"Gustav", :last_name=>"Klimt", :paintings=>[{:name=>"The Kiss"}, {:name=>"The Maiden"}]}, :id=>"23"})
+      end
+
       it 'automatically whitelists params from router' do
         response = @app.request('PATCH', '/painters/23', params: { painter: { first_name: 'Gustav', last_name: 'Klimt' } })
 
