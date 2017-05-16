@@ -144,7 +144,7 @@ describe 'Hanami::Router integration' do
         response = @app.request('PATCH', '/painters/23', params: { painter: { first_name: 'Gustav', last_name: 'Klimt' } })
 
         response.status.must_equal 200
-        response.body.must_equal %({:painter=>{:first_name=>"Gustav", :last_name=>"Klimt"}, :id=>"23"})
+        response.body.must_equal %({:id=>"23", :painter=>{:first_name=>"Gustav", :last_name=>"Klimt"}})
       end
     end
   end
