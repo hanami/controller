@@ -20,7 +20,7 @@ module Hanami
       # The key that returns Rack session params from the Rack env
       # Please note that this is used only when an action is unit tested.
       #
-      # @since 1.0.0.beta1
+      # @since 1.0.0
       # @api private
       #
       # @example
