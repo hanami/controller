@@ -15,7 +15,7 @@ Gem::Specification.new do |spec|
 
   spec.files         = `git ls-files -- lib/* CHANGELOG.md LICENSE.md README.md hanami-controller.gemspec`.split($/)
   spec.executables   = []
-  spec.test_files    = spec.files.grep(%r{^(test)/})
+  spec.test_files    = spec.files.grep(%r{^(spec)/})
   spec.require_paths = ['lib']
   spec.required_ruby_version = '>= 2.3.0'
 
