@@ -40,7 +40,7 @@ RSpec.describe "Full stack application" do
 
     it "responds 200 when a relative path file exists" do
       get "/files/unsafe_public", {}
-      file = Pathname.new("test/assets/test.txt")
+      file = Pathname.new("spec/support/fixtures/test.txt")
 
       expect(response.status).to                         be(200)
       expect(response.headers["Content-Length"].to_i).to eq(file.size)
@@ -82,7 +82,7 @@ RSpec.describe "Full stack application" do
   context "when file exists, app responds 200" do
     it "sets Content-Type according to file type" do
       get "/files/1", {}
-      file = Pathname.new("test/assets/test.txt")
+      file = Pathname.new("spec/support/fixtures/test.txt")
 
       expect(response.status).to                         be(200)
       expect(response.headers["Content-Length"].to_i).to eq(file.size)
@@ -92,7 +92,7 @@ RSpec.describe "Full stack application" do
 
     it "sets Content-Type according to file type (ignoring HTTP_ACCEPT)" do
       get "/files/2", {}, "HTTP_ACCEPT" => "text/html"
-      file = Pathname.new("test/assets/hanami.png")
+      file = Pathname.new("spec/support/fixtures/hanami.png")
 
       expect(response.status).to                         be(200)
       expect(response.headers["Content-Length"].to_i).to eq(file.size)
@@ -129,7 +129,7 @@ RSpec.describe "Full stack application" do
     it "serves up json" do
       get "/files/500.json", {}
 
-      file = Pathname.new("test/assets/resource-500.json")
+      file = Pathname.new("spec/support/fixtures/resource-500.json")
 
       expect(response.status).to                         be(200)
       expect(response.headers["Content-Length"].to_i).to eq(file.size)
@@ -146,7 +146,7 @@ RSpec.describe "Full stack application" do
     it "serves up html" do
       get "/files/500.html", {}
 
-      file = Pathname.new("test/assets/resource-500.html")
+      file = Pathname.new("spec/support/fixtures/resource-500.html")
 
       expect(response.status).to                         be(200)
       expect(response.headers["Content-Length"].to_i).to eq(file.size)
@@ -157,7 +157,7 @@ RSpec.describe "Full stack application" do
     it "works without a :format" do
       get "/files/500", {}
 
-      file = Pathname.new("test/assets/resource-500.json")
+      file = Pathname.new("spec/support/fixtures/resource-500.json")
 
       expect(response.status).to                         be(200)
       expect(response.headers["Content-Length"].to_i).to eq(file.size)
@@ -180,7 +180,7 @@ RSpec.describe "Full stack application" do
 
   context "Conditional GET request" do
     it "shouldn't send file" do
-      if_modified_since = File.mtime("test/assets/test.txt").httpdate
+      if_modified_since = File.mtime("spec/support/fixtures/test.txt").httpdate
       get "/files/1", {}, "HTTP_ACCEPT" => "text/html", "HTTP_IF_MODIFIED_SINCE" => if_modified_since
 
       expect(response.status).to      be(304)

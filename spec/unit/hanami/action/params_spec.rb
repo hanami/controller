@@ -18,7 +18,7 @@ RSpec.describe Hanami::Action::Params do
       let(:action) { ParamsAction.new }
 
       it "raw gets all params" do
-        File.open('test/assets/multipart-upload.png', 'rb') do |upload|
+        File.open('spec/support/fixtures/multipart-upload.png', 'rb') do |upload|
           action.call('id' => '1', 'unknown' => '2', 'upload' => upload, '_csrf_token' => '3')
 
           expect(action.params[:id]).to eq('1')
