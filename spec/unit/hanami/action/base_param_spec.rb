@@ -1,27 +1,25 @@
 RSpec.describe Hanami::Action::BaseParams do
-  before do
-    @action = Test::Index.new
-  end
+  let(:action) { Test::Index.new }
 
   describe '#initialize' do
     it 'creates params without changing the raw request params' do
       env = { 'router.params' => { 'some' => { 'hash' => 'value' } } }
-      @action.call(env)
+      action.call(env)
       expect(env['router.params']).to eq('some' => { 'hash' => 'value' })
     end
   end
 
   describe '#valid?' do
     it 'always returns true' do
-      @action.call({})
-      expect(@action.params).to be_valid
+      action.call({})
+      expect(action.params).to be_valid
     end
   end
 
   describe '#each' do
     it 'iterates through params' do
-      params = Hanami::Action::BaseParams.new(expected = { song: 'Break The Habit' })
-      actual = Hash[]
+      params = described_class.new(expected = { song: 'Break The Habit' })
+      actual = {}
       params.each do |key, value|
         actual[key] = value
       end
@@ -31,7 +29,7 @@ RSpec.describe Hanami::Action::BaseParams do
   end
 
   describe '#get' do
-    let(:params) { Hanami::Action::BaseParams.new(delivery: { address: { city: 'Rome' } }) }
+    let(:params) { described_class.new(delivery: { address: { city: 'Rome' } }) }
 
     it 'returns value if present' do
       expect(params.get(:delivery, :address, :city)).to eq('Rome')

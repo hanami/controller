@@ -1,3 +1,4 @@
+require 'json'
 require 'digest/md5'
 require 'hanami/router'
 require 'hanami/utils/escape'
@@ -1349,7 +1350,7 @@ module FullStack
           valid = params.valid?
 
           self.status = 201
-          self.body = Marshal.dump({
+          self.body = JSON.generate({
             symbol_access: params[:book][:author] && params[:book][:author][:name],
             valid: valid,
             errors: params.errors.to_h

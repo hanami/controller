@@ -11,164 +11,150 @@ RSpec.describe Hanami::Action::Params do
   #   params.must_be :frozen?
   # end
 
-  describe 'raw params' do
-    before do
-      @params = Class.new(Hanami::Action::Params)
-    end
+  describe "#raw" do
+    let(:params) { Class.new(Hanami::Action::Params) }
 
-    describe "when this feature isn't enabled" do
-      before do
-        @action = ParamsAction.new
-      end
+    context "when this feature isn't enabled" do
+      let(:action) { ParamsAction.new }
 
-      it 'raw gets all params' do
+      it "raw gets all params" do
         File.open('test/assets/multipart-upload.png', 'rb') do |upload|
-          @action.call('id' => '1', 'unknown' => '2', 'upload' => upload, '_csrf_token' => '3')
+          action.call('id' => '1', 'unknown' => '2', 'upload' => upload, '_csrf_token' => '3')
 
-          expect(@action.params[:id]).to eq('1')
-          expect(@action.params[:unknown]).to eq('2')
-          expect(FileUtils.cmp(@action.params[:upload], upload)).to be(true)
-          expect(@action.params[:_csrf_token]).to eq('3')
+          expect(action.params[:id]).to eq('1')
+          expect(action.params[:unknown]).to eq('2')
+          expect(FileUtils.cmp(action.params[:upload], upload)).to be(true)
+          expect(action.params[:_csrf_token]).to eq('3')
 
-          expect(@action.params.raw.fetch('id')).to eq('1')
-          expect(@action.params.raw.fetch('unknown')).to eq('2')
-          expect(@action.params.raw.fetch('upload')).to eq(upload)
-          expect(@action.params.raw.fetch('_csrf_token')).to eq('3')
+          expect(action.params.raw.fetch('id')).to eq('1')
+          expect(action.params.raw.fetch('unknown')).to eq('2')
+          expect(action.params.raw.fetch('upload')).to eq(upload)
+          expect(action.params.raw.fetch('_csrf_token')).to eq('3')
         end
       end
     end
 
-    describe 'when this feature is enabled' do
-      before do
-        @action = WhitelistedUploadDslAction.new
-      end
+    context "when this feature is enabled" do
+      let(:action) { WhitelistedUploadDslAction.new }
 
-      it 'raw gets all params' do
+      it "raw gets all params" do
         Tempfile.create('multipart-upload') do |upload|
-          @action.call('id' => '1', 'unknown' => '2', 'upload' => upload, '_csrf_token' => '3')
+          action.call('id' => '1', 'unknown' => '2', 'upload' => upload, '_csrf_token' => '3')
 
-          expect(@action.params[:id]).to          eq('1')
-          expect(@action.params[:unknown]).to     be(nil)
-          expect(@action.params[:upload]).to      eq(upload)
-          expect(@action.params[:_csrf_token]).to eq('3')
+          expect(action.params[:id]).to          eq('1')
+          expect(action.params[:unknown]).to     be(nil)
+          expect(action.params[:upload]).to      eq(upload)
+          expect(action.params[:_csrf_token]).to eq('3')
 
-          expect(@action.params.raw.fetch('id')).to          eq('1')
-          expect(@action.params.raw.fetch('unknown')).to     eq('2')
-          expect(@action.params.raw.fetch('upload')).to      eq(upload)
-          expect(@action.params.raw.fetch('_csrf_token')).to eq('3')
+          expect(action.params.raw.fetch('id')).to          eq('1')
+          expect(action.params.raw.fetch('unknown')).to     eq('2')
+          expect(action.params.raw.fetch('upload')).to      eq(upload)
+          expect(action.params.raw.fetch('_csrf_token')).to eq('3')
         end
       end
     end
   end
 
-  describe 'whitelisting' do
-    before do
-      @params = Class.new(Hanami::Action::Params)
-    end
+  describe "whitelisting" do
+    let(:params) { Class.new(Hanami::Action::Params) }
 
-    describe "when this feature isn't enabled" do
-      before do
-        @action = ParamsAction.new
-      end
+    context "when this feature isn't enabled" do
+      let(:action) { ParamsAction.new }
 
-      it 'creates a Params innerclass' do
+      it "creates a Params innerclass" do
         expect(defined?(ParamsAction::Params)).to eq('constant')
         expect(ParamsAction::Params.ancestors).to include(Hanami::Action::Params)
       end
 
-      describe 'in testing mode' do
-        it 'returns all the params as they are' do
+      context "in testing mode" do
+        it "returns all the params as they are" do
           # For unit tests in Hanami projects, developers may want to define
           # params with symbolized keys.
-          _, _, body = @action.call(a: '1', b: '2', c: '3')
+          _, _, body = action.call(a: '1', b: '2', c: '3')
           expect(body).to eq([%({:a=>"1", :b=>"2", :c=>"3"})])
         end
       end
 
-      describe 'in a Rack context' do
-        it 'returns all the params as they are' do
+      context "in a Rack context" do
+        it "returns all the params as they are" do
           # Rack params are always stringified
-          response = Rack::MockRequest.new(@action).request('PATCH', '?id=23', params: { 'x' => { 'foo' => 'bar' } })
+          response = Rack::MockRequest.new(action).request('PATCH', '?id=23', params: { 'x' => { 'foo' => 'bar' } })
           expect(response.body).to match(%({:id=>"23", :x=>{:foo=>"bar"}}))
         end
       end
 
-      describe 'with Hanami::Router' do
-        it 'returns all the params as they are' do
+      context "with Hanami::Router" do
+        it "returns all the params as they are" do
           # Hanami::Router params are always symbolized
-          _, _, body = @action.call('router.params' => { id: '23' })
+          _, _, body = action.call('router.params' => { id: '23' })
           expect(body).to eq([%({:id=>"23"})])
         end
       end
     end
 
-    describe 'when this feature is enabled' do
-      describe 'with an explicit class' do
-        before do
-          @action = WhitelistedParamsAction.new
-        end
+    context "when this feature is enabled" do
+      context "with an explicit class" do
+        let(:action) { WhitelistedParamsAction.new }
 
         # For unit tests in Hanami projects, developers may want to define
         # params with symbolized keys.
-        describe 'in testing mode' do
-          it 'returns only the listed params' do
-            _, _, body = @action.call(id: 23, unknown: 4, article: { foo: 'bar', tags: [:cool] })
+        context "in testing mode" do
+          it "returns only the listed params" do
+            _, _, body = action.call(id: 23, unknown: 4, article: { foo: 'bar', tags: [:cool] })
             expect(body).to eq([%({:id=>23, :article=>{:tags=>[:cool]}})])
           end
 
           it "doesn't filter _csrf_token" do
-            _, _, body = @action.call(_csrf_token: 'abc')
+            _, _, body = action.call(_csrf_token: 'abc')
             expect(body).to eq( [%({:_csrf_token=>"abc"})])
           end
         end
 
-        describe "in a Rack context" do
-          it 'returns only the listed params' do
-            response = Rack::MockRequest.new(@action).request('PATCH', "?id=23", params: { x: { foo: 'bar' } })
+        context "in a Rack context" do
+          it "returns only the listed params" do
+            response = Rack::MockRequest.new(action).request('PATCH', "?id=23", params: { x: { foo: 'bar' } })
             expect(response.body).to match(%({:id=>"23"}))
           end
 
           it "doesn't filter _csrf_token" do
-            response = Rack::MockRequest.new(@action).request('PATCH', "?id=1", params: { _csrf_token: 'def', x: { foo: 'bar' } })
+            response = Rack::MockRequest.new(action).request('PATCH', "?id=1", params: { _csrf_token: 'def', x: { foo: 'bar' } })
             expect(response.body).to match(%(:_csrf_token=>"def", :id=>"1"))
           end
         end
 
-        describe "with Hanami::Router" do
-          it 'returns all the params coming from the router, even if NOT whitelisted' do
-            _, _, body = @action.call('router.params' => { id: 23, another: 'x' })
+        context "with Hanami::Router" do
+          it "returns all the params coming from the router, even if NOT whitelisted" do
+            _, _, body = action.call('router.params' => { id: 23, another: 'x' })
             expect(body).to eq([%({:id=>23, :another=>"x"})])
           end
         end
       end
 
-      describe "with an anoymous class" do
-        before do
-          @action = WhitelistedDslAction.new
-        end
+      context "with an anoymous class" do
+        let(:action) { WhitelistedDslAction.new }
 
-        it 'creates a Params innerclass' do
+        it "creates a Params innerclass" do
           expect(defined?(WhitelistedDslAction::Params)).to eq('constant')
           expect(WhitelistedDslAction::Params.ancestors).to include(Hanami::Action::Params)
         end
 
-        describe "in testing mode" do
-          it 'returns only the listed params' do
-            _, _, body = @action.call(username: 'jodosha', unknown: 'field')
+        context "in testing mode" do
+          it "returns only the listed params" do
+            _, _, body = action.call(username: 'jodosha', unknown: 'field')
             expect(body).to eq([%({:username=>"jodosha"})])
           end
         end
 
-        describe "in a Rack context" do
-          it 'returns only the listed params' do
-            response = Rack::MockRequest.new(@action).request('PATCH', "?username=jodosha", params: { x: { foo: 'bar' } })
+        context "in a Rack context" do
+          it "returns only the listed params" do
+            response = Rack::MockRequest.new(action).request('PATCH', "?username=jodosha", params: { x: { foo: 'bar' } })
             expect(response.body).to match(%({:username=>"jodosha"}))
           end
         end
 
-        describe "with Hanami::Router" do
-          it 'returns all the router params, even if NOT whitelisted' do
-            _, _, body = @action.call('router.params' => { username: 'jodosha', y: 'x' })
+        context "with Hanami::Router" do
+          it "returns all the router params, even if NOT whitelisted" do
+            _, _, body = action.call('router.params' => { username: 'jodosha', y: 'x' })
             expect(body).to eq([%({:username=>"jodosha", :y=>"x"})])
           end
         end
@@ -234,70 +220,68 @@ RSpec.describe Hanami::Action::Params do
     end
   end
 
-  describe '#get' do
-    describe 'with data' do
-      before do
-        @params = TestParams.new(
+  describe "#get" do
+    context "with data" do
+      let(:params) do
+        TestParams.new(
           name: 'John',
           address: { line_one: '10 High Street', deep: { deep_attr: 1 } },
           array: [{ name: 'Lennon' }, { name: 'Wayne' }]
         )
       end
 
-      it 'returns nil for nil argument' do
-        expect(@params.get(nil)).to be(nil)
+      it "returns nil for nil argument" do
+        expect(params.get(nil)).to be(nil)
       end
 
-      it 'returns nil for unknown param' do
-        expect(@params.get(:unknown)).to be(nil)
+      it "returns nil for unknown param" do
+        expect(params.get(:unknown)).to be(nil)
       end
 
-      it 'allows to read top level param' do
-        expect(@params.get(:name)).to eq('John')
+      it "allows to read top level param" do
+        expect(params.get(:name)).to eq('John')
       end
 
-      it 'allows to read nested param' do
-        expect(@params.get(:address, :line_one)).to eq('10 High Street')
+      it "allows to read nested param" do
+        expect(params.get(:address, :line_one)).to eq('10 High Street')
       end
 
-      it 'returns nil for uknown nested param' do
-        expect(@params.get(:address, :unknown)).to be(nil)
+      it "returns nil for uknown nested param" do
+        expect(params.get(:address, :unknown)).to be(nil)
       end
 
-      it 'allows to read datas under arrays' do
-        expect(@params.get(:array, 0, :name)).to eq('Lennon')
-        expect(@params.get(:array, 1, :name)).to eq('Wayne')
+      it "allows to read datas under arrays" do
+        expect(params.get(:array, 0, :name)).to eq('Lennon')
+        expect(params.get(:array, 1, :name)).to eq('Wayne')
       end
     end
 
-    describe 'without data' do
-      before do
-        @params = TestParams.new({})
+    context "without data" do
+      let(:params) { TestParams.new({}) }
+
+      it "returns nil for nil argument" do
+        expect(params.get(nil)).to be(nil)
       end
 
-      it 'returns nil for nil argument' do
-        expect(@params.get(nil)).to be(nil)
+      it "returns nil for unknown param" do
+        expect(params.get(:unknown)).to be(nil)
       end
 
-      it 'returns nil for unknown param' do
-        expect(@params.get(:unknown)).to be(nil)
+      it "returns nil for top level param" do
+        expect(params.get(:name)).to be(nil)
       end
 
-      it 'returns nil for top level param' do
-        expect(@params.get(:name)).to be(nil)
+      it "returns nil for nested param" do
+        expect(params.get(:address, :line_one)).to be(nil)
       end
 
-      it 'returns nil for nested param' do
-        expect(@params.get(:address, :line_one)).to be(nil)
-      end
-
-      it 'returns nil for uknown nested param' do
-        expect(@params.get(:address, :unknown)).to be(nil)
+      it "returns nil for uknown nested param" do
+        expect(params.get(:address, :unknown)).to be(nil)
       end
     end
   end
 
-  describe '#to_h' do
+  describe "#to_h" do
     let(:params) { TestParams.new(name: 'Jane') }
 
     it "returns a ::Hash" do
@@ -316,7 +300,7 @@ RSpec.describe Hanami::Action::Params do
     #   params.to_h).to eq((Hash['id' => '23'])
     # end
 
-    it 'handles nested params' do
+    it "handles nested params" do
       input = {
         'address' => {
           'deep' => {
@@ -341,9 +325,9 @@ RSpec.describe Hanami::Action::Params do
       expect(actual[:address][:deep]).to be_kind_of(::Hash)
     end
 
-    describe 'when whitelisting' do
+    context "when whitelisting" do
       # This is bug 113.
-      it 'handles nested params' do
+      it "handles nested params" do
         input = {
           'name' => 'John',
           'age' => 1,
@@ -376,7 +360,7 @@ RSpec.describe Hanami::Action::Params do
     end
   end
 
-  describe '#to_hash' do
+  describe "#to_hash" do
     let(:params) { TestParams.new(name: 'Jane') }
 
     it "returns a ::Hash" do
@@ -395,7 +379,7 @@ RSpec.describe Hanami::Action::Params do
     #   params.to_hash).to eq((Hash['id' => '23'])
     # end
 
-    it 'handles nested params' do
+    it "handles nested params" do
       input = {
         'address' => {
           'deep' => {
@@ -420,9 +404,9 @@ RSpec.describe Hanami::Action::Params do
       expect(actual[:address][:deep]).to be_kind_of(::Hash)
     end
 
-    describe 'when whitelisting' do
+    context "when whitelisting" do
       # This is bug 113.
-      it 'handles nested params' do
+      it "handles nested params" do
         input = {
           'name' => 'John',
           'age' => 1,

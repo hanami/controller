@@ -3,8 +3,8 @@ RSpec.describe Hanami::Action do
     Hanami::Controller.unload!
   end
 
-  describe '.handle_exception' do
-    it 'handle an exception with the given status' do
+  describe ".handle_exception" do
+    it "handle an exception with the given status" do
       response = HandledExceptionAction.new.call({})
 
       expect(response[0]).to be(404)
@@ -16,8 +16,8 @@ RSpec.describe Hanami::Action do
       expect(response[0]).to be(500)
     end
 
-    describe 'with global handled exceptions' do
-      it 'handles raised exception' do
+    describe "with global handled exceptions" do
+      it "handles raised exception" do
         response = GlobalHandledExceptionAction.new.call({})
 
         expect(response[0]).to be(400)
@@ -25,7 +25,7 @@ RSpec.describe Hanami::Action do
     end
   end
 
-  describe '#throw' do
+  describe "#throw" do
     HTTP_TEST_STATUSES.each do |code, body|
       next if HTTP_TEST_STATUSES_WITHOUT_BODY.include?(code)
 
@@ -38,50 +38,50 @@ RSpec.describe Hanami::Action do
     end
 
     it "throws an HTTP status code with given message" do
-      response = ThrowCodeAction.new.call(status: 401, message: 'Secret Sauce')
+      response = ThrowCodeAction.new.call(status: 401, message: "Secret Sauce")
 
       expect(response[0]).to be(401)
-      expect(response[2]).to eq(['Secret Sauce'])
+      expect(response[2]).to eq(["Secret Sauce"])
     end
 
-    it 'throws the code as it is, when not recognized' do
+    it "throws the code as it is, when not recognized" do
       response = ThrowCodeAction.new.call(status: 2_131_231)
 
       expect(response[0]).to be(500)
-      expect(response[2]).to eq(['Internal Server Error'])
+      expect(response[2]).to eq(["Internal Server Error"])
     end
 
-    it 'stops execution of before filters (method)' do
+    it "stops execution of before filters (method)" do
       response = ThrowBeforeMethodAction.new.call({})
 
       expect(response[0]).to be(401)
-      expect(response[2]).to eq(['Unauthorized'])
+      expect(response[2]).to eq(["Unauthorized"])
     end
 
-    it 'stops execution of before filters (block)' do
+    it "stops execution of before filters (block)" do
       response = ThrowBeforeBlockAction.new.call({})
 
       expect(response[0]).to be(401)
-      expect(response[2]).to eq(['Unauthorized'])
+      expect(response[2]).to eq(["Unauthorized"])
     end
 
-    it 'stops execution of after filters (method)' do
+    it "stops execution of after filters (method)" do
       response = ThrowAfterMethodAction.new.call({})
 
       expect(response[0]).to be(408)
-      expect(response[2]).to eq(['Request Timeout'])
+      expect(response[2]).to eq(["Request Timeout"])
     end
 
-    it 'stops execution of after filters (block)' do
+    it "stops execution of after filters (block)" do
       response = ThrowAfterBlockAction.new.call({})
 
       expect(response[0]).to be(408)
-      expect(response[2]).to eq(['Request Timeout'])
+      expect(response[2]).to eq(["Request Timeout"])
     end
   end
 
-  describe 'using Kernel#throw in an action' do
-    it 'should work' do
+  describe "using Kernel#throw in an action" do
+    it "should work" do
       response = CatchAndThrowSymbolAction.new.call({})
 
       expect(response[0]).to be(200)

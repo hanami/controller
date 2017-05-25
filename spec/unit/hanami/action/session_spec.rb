@@ -1,36 +1,36 @@
 RSpec.describe Hanami::Action do
-  describe 'session' do
-    it 'captures session from Rack env' do
+  describe "#session" do
+    it "captures session from Rack env" do
       action = SessionAction.new
-      action.call('rack.session' => session = { 'user_id' => '23' })
+      action.call("rack.session" => session = { "user_id" => "23" })
 
       expect(action.session).to eq(session)
     end
 
-    it 'returns empty hash when it is missing' do
+    it "returns empty hash when it is missing" do
       action = SessionAction.new
       action.call({})
 
       expect(action.session).to eq({})
     end
 
-    it 'exposes session' do
+    it "exposes session" do
       action = SessionAction.new
-      action.call('rack.session' => session = { 'foo' => 'bar' })
+      action.call("rack.session" => session = { "foo" => "bar" })
 
       expect(action.exposures[:session]).to eq(session)
     end
 
-    it 'allows value access via symbols' do
+    it "allows value access via symbols" do
       action = SessionAction.new
-      action.call('rack.session' => { 'foo' => 'bar' })
+      action.call("rack.session" => { "foo" => "bar" })
 
-      expect(action.session[:foo]).to eq('bar')
+      expect(action.session[:foo]).to eq("bar")
     end
   end
 
-  describe 'flash' do
-    it 'exposes flash' do
+  describe "flash" do
+    it "exposes flash" do
       action = FlashAction.new
       action.call({})
 

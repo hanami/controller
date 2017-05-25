@@ -1,12 +1,6 @@
 require 'hanami/action/request'
 
 RSpec.describe Hanami::Action::Request do
-  def build_request(attributes = {})
-    url = 'http://example.com/foo?q=bar'
-    env = Rack::MockRequest.env_for(url, attributes)
-    Hanami::Action::Request.new(env)
-  end
-
   describe '#body' do
     it 'exposes the raw body of the request' do
       body    = build_request(input: 'This is the body').body
@@ -158,10 +152,18 @@ RSpec.describe Hanami::Action::Request do
         []=
         values_at
       )
-      request = Hanami::Action::Request.new({})
+      request = described_class.new({})
       methods.each do |method|
         expect { request.send(method) }.to raise_error(NotImplementedError)
       end
     end
+  end
+
+  private
+
+  def build_request(attributes = {})
+    url = 'http://example.com/foo?q=bar'
+    env = Rack::MockRequest.env_for(url, attributes)
+    described_class.new(env)
   end
 end
