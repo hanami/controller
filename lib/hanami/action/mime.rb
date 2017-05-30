@@ -560,33 +560,38 @@ module Hanami
       # @see https://github.com/rack/rack/pull/659
       # @see https://github.com/hanami/controller/issues/59
       # @see https://github.com/hanami/controller/issues/104
+      # @see https://github.com/hanami/controller/issues/275
       def best_q_match(q_value_header, available_mimes)
-        values = ::Rack::Utils.q_values(q_value_header)
-        values = values.map do |req_mime, quality|
-          if req_mime == DEFAULT_ACCEPT
-            # See https://github.com/hanami/controller/issues/167
-            match = default_content_type
-          else
-            match = available_mimes.find { |am| ::Rack::Mime.match?(am, req_mime) }
-          end
+        values = []
+        ::Rack::Utils.q_values(q_value_header).each_with_index do |(req_mime, quality), index|
+          match = available_mimes.find { |am| ::Rack::Mime.match?(am, req_mime) }
           next unless match
-          [match, quality]
-        end.compact
-
-        if Hanami::Utils.jruby?
-          # See https://github.com/hanami/controller/issues/59
-          # See https://github.com/hanami/controller/issues/104
-          values.reverse!
-        else
-          # See https://github.com/jruby/jruby/issues/3004
-          values.sort!
+          values << Specification.new(req_mime, quality, index, match)
         end
 
-        value = values.sort_by do |match, quality|
-          (match.split('/'.freeze, 2).count('*'.freeze) * -10) + quality
-        end.last
+        value = values.sort.last
 
-        value.first if value
+        if value
+          return default_content_type if value.mime == DEFAULT_ACCEPT
+          value.format
+        end
+      end
+
+      class Specification
+        attr_reader :quality, :index, :mime, :format
+        def initialize(mime, quality, index, format)
+          @mime, @quality, @index, @format = mime, quality, index, format
+        end
+
+        def <=>(other)
+          return quality <=> other.quality unless quality == other.quality
+          return priority <=> other.priority unless priority == other.priority
+          other.index <=> index
+        end
+
+        def priority
+          @priority ||= (mime.split('/'.freeze, 2).count('*'.freeze) * -10) + quality
+        end
       end
     end
   end
