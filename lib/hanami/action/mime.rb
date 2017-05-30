@@ -265,13 +265,8 @@ module Hanami
       #   end
       def content_type
         return @content_type unless @content_type.nil?
-
-        if accept_header?
-          type = content_type_from_accept_header
-          return type if type
-        end
-
-        default_response_type || default_content_type || DEFAULT_CONTENT_TYPE
+        @content_type = content_type_from_accept_header if accept_header?
+        @content_type || default_response_type || default_content_type || DEFAULT_CONTENT_TYPE
       end
 
       # Action charset setter, receives new charset value
