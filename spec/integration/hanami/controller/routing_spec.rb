@@ -1,6 +1,6 @@
 require 'hanami/router'
 
-Routes = Hanami::Router.new do
+Routes = Hanami::Router.new(parsers: :json) do
   get '/',         to: 'root'
   get '/team',     to: 'about#team'
   get '/contacts', to: 'about#contacts'
@@ -141,7 +141,15 @@ RSpec.describe 'Hanami::Router integration' do
         response = app.request("PATCH", "/painters/23", params: { painter: { first_name: "Gustav", last_name: "Klimt" } })
 
         expect(response.status).to be(200)
-        expect(response.body).to   eq(%({:painter=>{:first_name=>"Gustav", :last_name=>"Klimt"}, :id=>"23"}))
+        expect(response.body).to   eq(%({:id=>"23", :painter=>{:first_name=>"Gustav", :last_name=>"Klimt"}}))
+      end
+
+      it "doesn't replace parsed params with router params" do
+        json     = { painter: { first_name: 'Gustav', last_name: 'Klimt', paintings: [{ name: "The Kiss" }, { name: "The Maiden" }] } }.to_json
+        response = app.request('PATCH', '/painters/23', 'CONTENT_TYPE' => 'application/json', input: json)
+
+        expect(response.status).to be(200)
+        expect(response.body).to   eq(%({:painter=>{:first_name=>"Gustav", :last_name=>"Klimt", :paintings=>[{:name=>"The Kiss"}, {:name=>"The Maiden"}]}, :id=>"23"}))
       end
     end
   end
