@@ -64,6 +64,9 @@ module Hanami
       end
     end
 
+    def initialize(**)
+    end
+
     private
 
     # Finalize the response

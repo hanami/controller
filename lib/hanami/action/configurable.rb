@@ -30,6 +30,7 @@ module Hanami
         config = Hanami::Controller::Configuration.for(base)
 
         base.class_eval do
+          prepend InstanceMethods
           include Utils::ClassAttribute
 
           class_attribute :configuration
@@ -39,12 +40,17 @@ module Hanami
         config.copy!(base)
       end
 
+      module InstanceMethods
+        def initialize(configuration: self.class.configuration, **args)
+          super(**args)
+          @configuration = configuration
+        end
+      end
+
       private
 
       # @since 0.2.0
-      def configuration
-        self.class.configuration
-      end
+      attr_reader :configuration
     end
   end
 end

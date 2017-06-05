@@ -308,7 +308,7 @@ class BeforeMethodAction
   append_before :add_first_name_to_logger, :add_last_name_to_logger
   prepend_before :add_title_to_logger
 
-  def initialize
+  def initialize(*)
     @logger = []
   end
 
@@ -400,7 +400,7 @@ class AfterMethodAction
   append_after :add_first_name_to_logger, :add_last_name_to_logger
   prepend_after :add_title_to_logger
 
-  def initialize
+  def initialize(*)
     @logger = []
   end
 
