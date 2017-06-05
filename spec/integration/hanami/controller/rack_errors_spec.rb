@@ -20,8 +20,8 @@ end
 
 class HandledExceptionSubclass < HandledException; end
 
-Hanami::Controller.configure do
-  handle_exception FrameworkHandledException => 500
+Hanami::Controller.configure do |config|
+  config.handle_exception FrameworkHandledException => 500
 end
 
 module Errors
@@ -83,9 +83,9 @@ DisabledErrorsRoutes = Hanami::Router.new do
   get '/framework_managed', to: 'disabled_errors#framework_managed'
 end
 
-Hanami::Controller.configure do
-  handle_exceptions false
-  handle_exception FrameworkHandledException => 500
+Hanami::Controller.configure do |config|
+  config.handle_exceptions = false
+  config.handle_exception FrameworkHandledException => 500
 end
 
 module DisabledErrors

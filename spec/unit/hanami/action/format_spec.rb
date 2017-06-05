@@ -20,7 +20,7 @@ RSpec.describe Hanami::Action do
     class Configuration
       include Hanami::Action
 
-      configuration.default_request_format :jpg
+      configuration.default_request_format = :jpg
 
       def call(_params)
         self.body = format

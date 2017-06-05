@@ -39,8 +39,8 @@ RSpec.describe Hanami::Controller do
 
     it "allows to configure the framework" do
       Hanami::Controller.class_eval do
-        configure do
-          handle_exceptions false
+        configure do |config|
+          config.handle_exceptions = false
         end
       end
 
@@ -49,12 +49,12 @@ RSpec.describe Hanami::Controller do
 
     it "allows to override one value" do
       Hanami::Controller.class_eval do
-        configure do
-          handle_exception ArgumentError => 400
+        configure do |config|
+          config.handle_exception ArgumentError => 400
         end
 
-        configure do
-          handle_exception NotImplementedError => 418
+        configure do |config|
+          config.handle_exception NotImplementedError => 418
         end
       end
 
@@ -64,7 +64,7 @@ RSpec.describe Hanami::Controller do
 
   describe ".duplicate" do
     before do
-      Hanami::Controller.configure { handle_exception ArgumentError => 400 }
+      Hanami::Controller.configure { |config| config.handle_exception ArgumentError => 400 }
 
       module Duplicated
         Controller = Hanami::Controller.duplicate(self)
@@ -79,9 +79,9 @@ RSpec.describe Hanami::Controller do
       end
 
       module DuplicatedConfigure
-        Controller = Hanami::Controller.duplicate(self) do
-          reset!
-          handle_exception StandardError => 400
+        Controller = Hanami::Controller.duplicate(self) do |config|
+          config.reset!
+          config.handle_exception StandardError => 400
         end
       end
     end

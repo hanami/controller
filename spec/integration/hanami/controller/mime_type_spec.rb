@@ -25,8 +25,8 @@ module Mimes
   class Configuration
     include Hanami::Action
 
-    configuration.default_request_format :html
-    configuration.default_charset 'ISO-8859-1'
+    configuration.default_request_format = :html
+    configuration.default_charset = 'ISO-8859-1'
 
     def call(_params)
       self.body = format
@@ -98,8 +98,8 @@ module Mimes
   class DefaultResponse
     include Hanami::Action
 
-    configuration.default_request_format :html
-    configuration.default_response_format :json
+    configuration.default_request_format = :html
+    configuration.default_response_format = :json
 
     def call(_params)
       self.body = configuration.default_request_format
@@ -109,7 +109,7 @@ module Mimes
   class OverrideDefaultResponse
     include Hanami::Action
 
-    configuration.default_response_format :json
+    configuration.default_response_format = :json
 
     def call(_params)
       self.format = :xml

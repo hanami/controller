@@ -111,16 +111,6 @@ module Hanami
         reset!
       end
 
-      # @attr_writer handle_exceptions [TrueClass,FalseClass] Handle exceptions
-      #   with an HTTP status or leave them uncaught
-      #
-      # @since 0.2.0
-      #
-      # @return void
-      #
-      # @see Hanami::Controller::Configuration#handle_exceptions
-      attr_writer :handle_exceptions
-
       # Handle exceptions with an HTTP status or let them uncaught
       #
       # If this value is set to `true`, the configured exceptions will return
@@ -128,17 +118,11 @@ module Hanami
       #
       # If this value is set to `false`, the exceptions won't be caught.
       #
-      # This is part of a DSL, for this reason when this method is called with
-      # an argument, it will set the corresponding instance variable. When
-      # called without, it will return the already set value, or the default.
+      # @attr_writer handle_exceptions [TrueClass,FalseClass] Handle exceptions
+      #   with an HTTP status or leave them uncaught
       #
-      # @overload handle_exceptions(value)
-      #   Sets the given value
-      #   @param value [TrueClass, FalseClass] true or false, default to true
-      #
-      # @overload handle_exceptions
-      #   Gets the value
-      #   @return [TrueClass, FalseClass]
+      # @attr_reader handle_exceptions [TrueClass,FalseClass] The result of the
+      #   check
       #
       # @since 0.2.0
       #
@@ -147,24 +131,8 @@ module Hanami
       # @see Hanami::Action::Throwable
       # @see http://httpstatus.es/500
       #
-      # @example Getting the value
-      #   require 'hanami/controller'
-      #
-      #   Hanami::Controller.configuration.handle_exceptions # => true
-      #
-      # @example Setting the value
-      #   require 'hanami/controller'
-      #
-      #   Hanami::Controller.configure do
-      #     handle_exceptions false
-      #   end
-      def handle_exceptions(value = nil)
-        if value.nil?
-          @handle_exceptions
-        else
-          @handle_exceptions = value
-        end
-      end
+      # FIXME: new API docs
+      attr_accessor :handle_exceptions
 
       # Specify how to handle an exception with an HTTP status
       #
@@ -241,75 +209,13 @@ module Hanami
       #
       # If not set, the default value is `Hanami::Action`
       #
-      # This is part of a DSL, for this reason when this method is called with
-      # an argument, it will set the corresponding instance variable. When
-      # called without, it will return the already set value, or the default.
-      #
-      # @overload action_module(value)
-      #   Sets the given value
-      #   @param value [Module] the module to be included in all the actions
-      #
-      # @overload action_module
-      #   Gets the value
-      #   @return [Module]
-      #
       # @since 0.2.0
       #
       # @see Hanami::Controller::Dsl#action
       # @see Hanami::Controller#duplicate
       #
-      # @example Getting the value
-      #   require 'hanami/controller'
-      #
-      #   Hanami::Controller.configuration.action_module # => Hanami::Action
-      #
-      # @example Setting the value
-      #   require 'hanami/controller'
-      #
-      #   module MyAction
-      #   end
-      #
-      #   Hanami::Controller.configure do
-      #     action_module MyAction
-      #   end
-      #
-      #   module Dashboard
-      #     # It includes MyAction, instead of Hanami::Action
-      #     class Index
-      #       include MyAction
-      #
-      #       def call(params)
-      #         # ...
-      #       end
-      #     end
-      #   end
-      #
-      # @example Duplicated framework
-      #   require 'hanami/controller'
-      #
-      #   module MyApp
-      #     Controller = Hanami::Controller.duplicate(self)
-      #
-      #     module Controllers::Dashboard
-      #       include MyApp::Controller
-      #
-      #       # It includes MyApp::Action, instead of Hanami::Action
-      #       class Index
-      #         include MyApp::Action
-      #
-      #         def call(params)
-      #           # ...
-      #         end
-      #       end
-      #     end
-      #   end
-      def action_module(value = nil)
-        if value.nil?
-          @action_module
-        else
-          @action_module = value
-        end
-      end
+      # FIXME: new API docs
+      attr_accessor :action_module
 
       # Configure the logic to be executed when Hanami::Action is included
       # This is useful to DRY code by having a single place where to configure
@@ -456,41 +362,16 @@ module Hanami
       #
       # By default this value is nil.
       #
-      # This is part of a DSL, for this reason when this method is called with
-      # an argument, it will set the corresponding instance variable. When
-      # called without, it will return the already set value, or the default.
-      #
-      # @overload default_request_format(format)
-      #   Sets the given value
-      #   @param format [#to_sym] the symbol format
-      #   @raise [TypeError] if it cannot be coerced to a symbol
-      #
-      # @overload default_request_format
-      #   Gets the value
-      #   @return [Symbol,nil]
-      #
       # @since 0.5.0
       #
       # @see Hanami::Action::Mime
       #
-      # @example Getting the value
-      #   require 'hanami/controller'
-      #
-      #   Hanami::Controller.configuration.default_request_format # => nil
-      #
-      # @example Setting the value
-      #   require 'hanami/controller'
-      #
-      #   Hanami::Controller.configure do
-      #     default_request_format :html
-      #   end
-      def default_request_format(format = nil)
-        if format
-          @default_request_format = Utils::Kernel.Symbol(format)
-        else
-          @default_request_format
-        end
+      # FIXME: new API docs
+      def default_request_format=(value)
+        @default_request_format = Utils::Kernel.Symbol(value) unless value.nil?
       end
+
+      attr_reader :default_request_format
 
       # Set a format to be used for all responses regardless of the request type.
       #
@@ -500,41 +381,16 @@ module Hanami
       #
       # By default this value is nil.
       #
-      # This is part of a DSL, for this reason when this method is called with
-      # an argument, it will set the corresponding instance variable. When
-      # called without, it will return the already set value, or the default.
-      #
-      # @overload default_response_format(format)
-      #   Sets the given value
-      #   @param format [#to_sym] the symbol format
-      #   @raise [TypeError] if it cannot be coerced to a symbol
-      #
-      # @overload default_response_format
-      #   Gets the value
-      #   @return [Symbol,nil]
-      #
       # @since 0.5.0
       #
       # @see Hanami::Action::Mime
       #
-      # @example Getting the value
-      #   require 'hanami/controller'
-      #
-      #   Hanami::Controller.configuration.default_response_format # => nil
-      #
-      # @example Setting the value
-      #   require 'hanami/controller'
-      #
-      #   Hanami::Controller.configure do
-      #     default_response_format :json
-      #   end
-      def default_response_format(format = nil)
-        if format
-          @default_response_format = Utils::Kernel.Symbol(format)
-        else
-          @default_response_format
-        end
+      # FIXME: new API docs
+      def default_response_format=(value)
+        @default_response_format = Utils::Kernel.Symbol(value) unless value.nil?
       end
+
+      attr_reader :default_response_format
 
       # Set a charset as default fallback for all the requests without a strict
       # requirement for the charset.
@@ -545,24 +401,8 @@ module Hanami
       #
       # @see Hanami::Action::Mime
       #
-      # @example Getting the value
-      #   require 'hanami/controller'
-      #
-      #   Hanami::Controller.configuration.default_charset # => nil
-      #
-      # @example Setting the value
-      #   require 'hanami/controller'
-      #
-      #   Hanami::Controller.configure do
-      #     default_charset 'koi8-r'
-      #   end
-      def default_charset(charset = nil)
-        if charset
-          @default_charset = charset
-        else
-          @default_charset
-        end
-      end
+      # FIXME: new API docs
+      attr_accessor :default_charset
 
       # Set default headers for all responses
       #
@@ -655,13 +495,12 @@ module Hanami
       # @since 1.0.0
       attr_reader :root_directory
 
-      def public_directory(value = nil)
-        if value.nil?
-          @public_directory
-        else
-          @public_directory = root_directory.join(value).to_s
-        end
+      # FIXME: API docs
+      def public_directory=(value)
+        @public_directory = root_directory.join(value).to_s
       end
+
+      attr_reader :public_directory
 
       # Duplicate by copying the settings in a new instance.
       #
@@ -750,14 +589,9 @@ module Hanami
 
       attr_accessor :handled_exceptions
       attr_accessor :formats
-      attr_writer :action_module
       attr_writer :modules
-      attr_writer :default_request_format
-      attr_writer :default_response_format
-      attr_writer :default_charset
       attr_writer :default_headers
       attr_writer :cookies
-      attr_writer :public_directory
     end
   end
 end

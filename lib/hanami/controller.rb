@@ -71,8 +71,8 @@ module Hanami
     #   Hanami::Controller.configure do
     #     handle_exceptions false
     #   end
-    def self.configure(&blk)
-      configuration.instance_eval(&blk)
+    def self.configure
+      yield configuration
     end
 
     # Duplicate Hanami::Controller in order to create a new separated instance
@@ -238,8 +238,8 @@ module Hanami
         mod.module_eval %{ Action = Hanami::Action.dup }
 
         duplicated.module_eval %{
-          configure do
-            action_module #{ mod }::Action
+          configure do |config|
+            config.action_module = #{ mod }::Action
           end
         }
 

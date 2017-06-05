@@ -367,7 +367,7 @@ class ErrorBeforeMethodAction < BeforeMethodAction
 end
 
 class HandledErrorBeforeMethodAction < BeforeMethodAction
-  configuration.handle_exceptions true
+  configuration.handle_exceptions = true
   handle_exception RecordNotFound => 404
 
   private
@@ -453,7 +453,7 @@ class ErrorAfterMethodAction < AfterMethodAction
 end
 
 class HandledErrorAfterMethodAction < AfterMethodAction
-  configuration.handle_exceptions true
+  configuration.handle_exceptions = true
   handle_exception RecordNotFound => 404
 
   private
@@ -694,8 +694,8 @@ class DomainLogicException < StandardError
 end
 
 Hanami::Controller.class_eval do
-  configure do
-    handle_exception DomainLogicException => 400
+  configure do |config|
+    config.handle_exception DomainLogicException => 400
   end
 end
 
@@ -949,7 +949,7 @@ module Glued
   class SendFile
     include Hanami::Action
     include Hanami::Action::Glue
-    configuration.public_directory "spec/support/fixtures"
+    configuration.public_directory = "spec/support/fixtures"
 
     def call(params)
       send_file "test.txt"
@@ -996,14 +996,14 @@ module MusicPlayer
 
   Controller.module_eval do
     configuration.reset!
-    configure do
-      handle_exception ArgumentError => 400
-      action_module    MusicPlayer::Action
-      default_headers({
+    configure do |config|
+      config.handle_exception ArgumentError => 400
+      config.action_module = MusicPlayer::Action
+      config.default_headers(
         "X-Frame-Options" => "DENY"
-      })
+      )
 
-      prepare do
+      config.prepare do
         include Hanami::Action::Cookies
         include Hanami::Action::Session
         include MusicPlayer::Controllers::Authentication
@@ -1077,7 +1077,7 @@ class VisibilityAction
   include Hanami::Action::Cookies
   include Hanami::Action::Session
 
-  self.configuration.handle_exceptions false
+  configuration.handle_exceptions = false
 
   def call(params)
     self.body   = 'x'
@@ -1105,9 +1105,9 @@ class VisibilityAction
 end
 
 module SendFileTest
-  Controller = Hanami::Controller.duplicate(self) do
-    handle_exceptions false
-    public_directory  "spec/support/fixtures"
+  Controller = Hanami::Controller.duplicate(self) do |config|
+    config.handle_exceptions = false
+    config.public_directory  = "spec/support/fixtures"
   end
 
   module Files
@@ -1220,13 +1220,13 @@ module SendFileTest
 end
 
 module HeadTest
-  Controller = Hanami::Controller.duplicate(self) do
-    handle_exceptions false
-    default_headers({
+  Controller = Hanami::Controller.duplicate(self) do |config|
+    config.handle_exceptions = false
+    config.default_headers(
       "X-Frame-Options" => "DENY"
-    })
+    )
 
-    prepare do
+    config.prepare do
       include Hanami::Action::Glue
       include Hanami::Action::Session
     end
@@ -1287,10 +1287,10 @@ module HeadTest
 end
 
 module FullStack
-  Controller = Hanami::Controller.duplicate(self) do
-    handle_exceptions false
+  Controller = Hanami::Controller.duplicate(self) do |config|
+    config.handle_exceptions = false
 
-    prepare do
+    config.prepare do
       include Hanami::Action::Glue
       include Hanami::Action::Session
     end
@@ -1541,10 +1541,10 @@ class HandledRackExceptionSubclassAction
 end
 
 module SessionWithCookies
-  Controller = Hanami::Controller.duplicate(self) do
-    handle_exceptions false
+  Controller = Hanami::Controller.duplicate(self) do |config|
+    config.handle_exceptions = false
 
-    prepare do
+    config.prepare do
       include Hanami::Action::Glue
       include Hanami::Action::Session
       include Hanami::Action::Cookies
@@ -1595,10 +1595,10 @@ module SessionWithCookies
 end
 
 module SessionsWithoutCookies
-  Controller = Hanami::Controller.duplicate(self) do
-    handle_exceptions false
+  Controller = Hanami::Controller.duplicate(self) do |config|
+    config.handle_exceptions = false
 
-    prepare do
+    config.prepare do
       include Hanami::Action::Glue
       include Hanami::Action::Session
     end

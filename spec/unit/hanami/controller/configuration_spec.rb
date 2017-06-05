@@ -19,16 +19,6 @@ RSpec.describe Hanami::Controller::Configuration do
       configuration.handle_exceptions = false
       expect(configuration.handle_exceptions).to be(false)
     end
-
-    it 'allows to set the value with a dsl' do
-      configuration.handle_exceptions(false)
-      expect(configuration.handle_exceptions).to be(false)
-    end
-
-    it 'ignores nil' do
-      configuration.handle_exceptions(nil)
-      expect(configuration.handle_exceptions).to be(true)
-    end
   end
 
   describe 'handled exceptions' do
@@ -69,7 +59,7 @@ RSpec.describe Hanami::Controller::Configuration do
 
     describe 'when previously configured' do
       before do
-        configuration.action_module(CustomAction)
+        configuration.action_module = CustomAction
       end
 
       it 'returns the value' do
@@ -217,7 +207,7 @@ RSpec.describe Hanami::Controller::Configuration do
 
     describe "when set" do
       before do
-        configuration.default_request_format :html
+        configuration.default_request_format = :html
       end
 
       it 'returns the value' do
@@ -226,7 +216,7 @@ RSpec.describe Hanami::Controller::Configuration do
     end
 
     it 'raises an error if the given format cannot be coerced into symbol' do
-      expect { configuration.default_request_format(23) }.to raise_error(TypeError)
+      expect { configuration.default_request_format = 23 }.to raise_error(TypeError)
     end
   end
 
@@ -239,7 +229,7 @@ RSpec.describe Hanami::Controller::Configuration do
 
     describe "when set" do
       before do
-        configuration.default_response_format :json
+        configuration.default_response_format = :json
       end
 
       it 'returns the value' do
@@ -248,7 +238,7 @@ RSpec.describe Hanami::Controller::Configuration do
     end
 
     it 'raises an error if the given format cannot be coerced into symbol' do
-      expect { configuration.default_response_format(23) }.to raise_error(TypeError)
+      expect { configuration.default_response_format = 23 }.to raise_error(TypeError)
     end
   end
 
@@ -261,7 +251,7 @@ RSpec.describe Hanami::Controller::Configuration do
 
     describe "when set" do
       before do
-        configuration.default_charset 'latin1'
+        configuration.default_charset = 'latin1'
       end
 
       it 'returns the value' do
@@ -376,7 +366,7 @@ RSpec.describe Hanami::Controller::Configuration do
 
     describe "when set with relative path" do
       before do
-        configuration.public_directory 'static'
+        configuration.public_directory = 'static'
       end
 
       it "returns the value" do
@@ -391,7 +381,7 @@ RSpec.describe Hanami::Controller::Configuration do
 
     describe "when set with absolute path" do
       before do
-        configuration.public_directory ::File.join(Dir.pwd, 'absolute')
+        configuration.public_directory = ::File.join(Dir.pwd, 'absolute')
       end
 
       it "returns the value" do
@@ -410,11 +400,11 @@ RSpec.describe Hanami::Controller::Configuration do
       configuration.reset!
       configuration.prepare { include Kernel }
       configuration.format custom: 'custom/format'
-      configuration.default_request_format :html
-      configuration.default_response_format :html
-      configuration.default_charset 'latin1'
+      configuration.default_request_format = :html
+      configuration.default_response_format = :html
+      configuration.default_charset = 'latin1'
       configuration.default_headers({ 'X-Frame-Options' => 'DENY' })
-      configuration.public_directory 'static'
+      configuration.public_directory = 'static'
     end
 
     let(:config) { configuration.duplicate }
@@ -436,14 +426,14 @@ RSpec.describe Hanami::Controller::Configuration do
     it "doesn't affect the original configuration" do
       config.handle_exceptions = false
       config.handle_exception ArgumentError => 400
-      config.action_module    CustomAction
+      config.action_module = CustomAction
       config.prepare          { include Comparable }
       config.format another: 'another/format'
-      config.default_request_format  :json
-      config.default_response_format :json
-      config.default_charset 'utf-8'
+      config.default_request_format = :json
+      config.default_response_format = :json
+      config.default_charset = 'utf-8'
       config.default_headers({ 'X-Frame-Options' => 'ALLOW ALL' })
-      config.public_directory 'pub'
+      config.public_directory = 'pub'
 
       expect(config.handle_exceptions).to            be(false)
       expect(config.handled_exceptions).to           eq(ArgumentError => 400)
@@ -475,14 +465,14 @@ RSpec.describe Hanami::Controller::Configuration do
     before do
       configuration.handle_exceptions = false
       configuration.handle_exception ArgumentError => 400
-      configuration.action_module    CustomAction
+      configuration.action_module = CustomAction
       configuration.modules          { include Kernel }
       configuration.format another: 'another/format'
-      configuration.default_request_format  :another
-      configuration.default_response_format :another
-      configuration.default_charset 'kor-1'
+      configuration.default_request_format = :another
+      configuration.default_response_format = :another
+      configuration.default_charset = 'kor-1'
       configuration.default_headers({ 'X-Frame-Options' => 'ALLOW DENY' })
-      configuration.public_directory 'files'
+      configuration.public_directory = 'files'
 
       configuration.reset!
     end
