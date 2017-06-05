@@ -1,6 +1,10 @@
 # Hanami::Controller
 Complete, fast and testable actions for Rack
 
+## v1.0.1 (unreleased)
+### Fixed
+- [Marcello Rocha] Ensure validation params to be symbolized in all the environments
+
 ## v1.0.0 - 2017-04-06
 
 ## v1.0.0.rc1 - 2017-03-31

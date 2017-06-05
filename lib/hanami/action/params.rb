@@ -146,7 +146,7 @@ module Hanami
 
       # @api private
       def _params
-        @result.output.merge(_router_params)
+        _router_params.merge(@result.output)
       end
     end
   end
