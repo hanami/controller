@@ -568,11 +568,11 @@ module Hanami
           next unless match
           values << Specification.new(req_mime, quality, index, match)
         end
-
+        p values
         value = values.sort.last
 
         if value
-          return default_content_type if value.mime == DEFAULT_ACCEPT
+          # return default_content_type if value.mime == DEFAULT_ACCEPT
           value.format
         end
       end
