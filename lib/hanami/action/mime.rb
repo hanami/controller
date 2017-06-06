@@ -569,14 +569,17 @@ module Hanami
           values << Specification.new(req_mime, quality, index, match)
         end
 
-        value = values.sort.last
+        value = values.max
         value.format if value
       end
 
       class Specification
-        attr_reader :quality, :index, :mime, :format
-        def initialize(mime, quality, index, format)
-          @mime, @quality, @index, @format = mime, quality, index, format
+        include Comparable
+
+        attr_reader :quality, :index, :mime, :format, :priority
+        def initialize(mime, quality, index, format = mime)
+          @quality, @index, @format = quality, index, format
+          calculate_priority(mime)
         end
 
         def <=>(other)
@@ -585,7 +588,9 @@ module Hanami
           other.index <=> index
         end
 
-        def priority
+        private
+
+        def calculate_priority(mime)
           @priority ||= (mime.split('/'.freeze, 2).count('*'.freeze) * -10) + quality
         end
       end
