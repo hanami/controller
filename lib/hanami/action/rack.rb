@@ -324,7 +324,7 @@ module Hanami
       #   end
       def send_file(path)
         _send_file(
-          File.new(path, self.class.configuration.public_directory).call(@_env)
+          File.new(path, configuration.public_directory).call(@_env)
         )
       end
 

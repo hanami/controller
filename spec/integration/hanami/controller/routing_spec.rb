@@ -1,17 +1,5 @@
-require 'hanami/router'
-
-Routes = Hanami::Router.new(parsers: :json) do
-  get '/',         to: 'root'
-  get '/team',     to: 'about#team'
-  get '/contacts', to: 'about#contacts'
-
-  resource  :identity
-  resources :flowers
-  resources :painters, only: [:update]
-end
-
 RSpec.describe 'Hanami::Router integration' do
-  let(:app) { Rack::MockRequest.new(Routes) }
+  let(:app) { Rack::MockRequest.new(RouterIntegration::Application.new) }
 
   it "calls simple action" do
     response = app.get("/")

@@ -1,5 +1,5 @@
 RSpec.describe Hanami::Action::BaseParams do
-  let(:action) { Test::Index.new }
+  let(:action) { Test::Index.new(configuration: configuration) }
 
   describe '#initialize' do
     it 'creates params without changing the raw request params' do

@@ -9,7 +9,7 @@ RSpec.describe "Framework configuration" do
   end
 
   it "inheriths configurations at the framework level" do
-    _, _, body = MusicPlayer::Controllers::Dashboard::Index.new.call({})
+    _, _, body = MusicPlayer::Controllers::Dashboard::Index.new(configuration: configuration).call({})
     expect(body).to eq(["Muzic!"])
   end
 
@@ -51,14 +51,14 @@ RSpec.describe "Framework configuration" do
   end
 
   it "correctly includes user defined modules" do
-    code, _, body = MusicPlayer::Controllers::Artists::Index.new.call({})
+    code, _, body = MusicPlayer::Controllers::Artists::Index.new(configuration: configuration).call({})
     expect(code).to be(200)
     expect(body).to eq(["Luca"])
   end
 
   describe "default headers" do
     it "if default headers aren't setted only content-type header is returned" do
-      code, headers, = FullStack::Controllers::Home::Index.new.call({})
+      code, headers, = FullStack::Controllers::Home::Index.new(configuration: configuration).call({})
       expect(code).to    be(200)
       expect(headers).to eq("Content-Type" => "application/octet-stream; charset=utf-8")
     end
@@ -70,7 +70,7 @@ RSpec.describe "Framework configuration" do
     end
 
     it "default headers overrided in action" do
-      code, headers, = MusicPlayer::Controllers::Dashboard::Index.new.call({})
+      code, headers, = MusicPlayer::Controllers::Dashboard::Index.new(configuration: configuration).call({})
       expect(code).to    be(200)
       expect(headers).to eq("Content-Type" => "application/octet-stream; charset=utf-8", "X-Frame-Options" => "ALLOW FROM https://example.org")
     end

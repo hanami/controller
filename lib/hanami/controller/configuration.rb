@@ -107,8 +107,9 @@ module Hanami
       #   instance
       #
       # @since 0.2.0
-      def initialize
+      def initialize(&blk)
         reset!
+        instance_eval(&blk) unless blk.nil?
       end
 
       # Handle exceptions with an HTTP status or let them uncaught

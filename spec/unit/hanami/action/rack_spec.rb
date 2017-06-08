@@ -1,5 +1,5 @@
 RSpec.describe Hanami::Action::Rack do
-  let(:action) { MethodInspectionAction.new }
+  let(:action) { MethodInspectionAction.new(configuration: configuration) }
 
   %w(GET POST PATCH PUT DELETE TRACE OPTIONS).each do |verb|
     it "returns current request method (#{verb})" do

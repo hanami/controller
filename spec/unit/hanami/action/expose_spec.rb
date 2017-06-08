@@ -1,7 +1,7 @@
 RSpec.describe Hanami::Action do
   describe '.expose' do
     it 'creates a getter for the given ivar' do
-      action = ExposeAction.new
+      action = ExposeAction.new(configuration: configuration)
 
       response = action.call({})
       expect(response[0]).to be(200)
@@ -29,7 +29,7 @@ RSpec.describe Hanami::Action do
         end
       end
 
-      subject { action_class.new.exposures }
+      subject { action_class.new(configuration: configuration).exposures }
 
       it 'adds a key to exposures list' do
         expect(subject).to include(:flash)
@@ -42,7 +42,7 @@ RSpec.describe Hanami::Action do
       it 'does not fail' do
         ExposeReservedWordAction.expose_reserved_word(using_internal_method: true)
 
-        action = ExposeReservedWordAction.new
+        action = ExposeReservedWordAction.new(configuration: configuration)
         action.call({})
 
         expect(action.exposures).to include(:flash)

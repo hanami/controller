@@ -1,29 +1,6 @@
 require 'hanami/router'
 require 'hanami/action/cache'
 
-CacheControlRoutes = Hanami::Router.new do
-  get '/default',              to: 'cache_control#default'
-  get '/overriding',           to: 'cache_control#overriding'
-  get '/symbol',               to: 'cache_control#symbol'
-  get '/symbols',              to: 'cache_control#symbols'
-  get '/hash',                 to: 'cache_control#hash'
-  get '/private-and-public',   to: 'cache_control#private_public'
-end
-
-ExpiresRoutes = Hanami::Router.new do
-  get '/default',              to: 'expires#default'
-  get '/overriding',           to: 'expires#overriding'
-  get '/symbol',               to: 'expires#symbol'
-  get '/symbols',              to: 'expires#symbols'
-  get '/hash',                 to: 'expires#hash'
-end
-
-ConditionalGetRoutes = Hanami::Router.new do
-  get '/etag',               to: 'conditional_get#etag'
-  get '/last-modified',      to: 'conditional_get#last_modified'
-  get '/etag-last-modified', to: 'conditional_get#etag_last_modified'
-end
-
 module CacheControl
   class Default
     include Hanami::Action
@@ -81,6 +58,28 @@ module CacheControl
       cache_control :private, :public
     end
   end
+
+  class Application
+    def initialize
+      routes = Hanami::Router.new do
+        get '/default',            to: 'cache_control#default'
+        get '/overriding',         to: 'cache_control#overriding'
+        get '/symbol',             to: 'cache_control#symbol'
+        get '/symbols',            to: 'cache_control#symbols'
+        get '/hash',               to: 'cache_control#hash'
+        get '/private-and-public', to: 'cache_control#private_public'
+      end
+
+      @app = Rack::Builder.new do
+        use Rack::Lint
+        run routes
+      end.to_app
+    end
+
+    def call(env)
+      @app.call(env)
+    end
+  end
 end
 
 module Expires
@@ -131,6 +130,27 @@ module Expires
       expires 900, :public, :no_store, s_maxage: 86_400, min_fresh: 500, max_stale: 700
     end
   end
+
+  class Application
+    def initialize
+      routes = Hanami::Router.new do
+        get '/default',              to: 'expires#default'
+        get '/overriding',           to: 'expires#overriding'
+        get '/symbol',               to: 'expires#symbol'
+        get '/symbols',              to: 'expires#symbols'
+        get '/hash',                 to: 'expires#hash'
+      end
+
+      @app = Rack::Builder.new do
+        use Rack::Lint
+        run routes
+      end.to_app
+    end
+
+    def call(env)
+      @app.call(env)
+    end
+  end
 end
 
 module ConditionalGet
@@ -160,11 +180,34 @@ module ConditionalGet
       fresh etag: 'updated', last_modified: Time.now
     end
   end
+
+  class Application
+    def initialize
+      routes = Hanami::Router.new do
+        get '/etag',               to: 'conditional_get#etag'
+        get '/last-modified',      to: 'conditional_get#last_modified'
+        get '/etag-last-modified', to: 'conditional_get#etag_last_modified'
+      end
+
+      @app = Rack::Builder.new do
+        # FIXME: enable again Rack::Lint. It looks like there was some problems
+        # with the headers that we never discovered, because this is the first
+        # time we add Lint to these tests.
+        #
+        # use Rack::Lint
+        run routes
+      end
+    end
+
+    def call(env)
+      @app.call(env)
+    end
+  end
 end
 
 RSpec.describe "HTTP Cache" do
   describe "Cache control" do
-    let(:app) { Rack::MockRequest.new(CacheControlRoutes) }
+    let(:app) { Rack::MockRequest.new(CacheControl::Application.new) }
 
     context "default cache control" do
       it "returns default Cache-Control headers" do
@@ -204,7 +247,7 @@ RSpec.describe "HTTP Cache" do
   end
 
   describe "Expires" do
-    let(:app) { Rack::MockRequest.new(ExpiresRoutes) }
+    let(:app) { Rack::MockRequest.new(Expires::Application.new) }
 
     context "default cache control" do
       it "returns default Cache-Control headers" do
@@ -251,7 +294,7 @@ RSpec.describe "HTTP Cache" do
   end
 
   describe "Fresh" do
-    let(:app) { Rack::MockRequest.new(ConditionalGetRoutes) }
+    let(:app) { Rack::MockRequest.new(ConditionalGet::Application.new) }
 
     describe "#etag" do
       context "when etag matches HTTP_IF_NONE_MATCH header" do

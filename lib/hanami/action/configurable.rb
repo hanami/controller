@@ -44,6 +44,8 @@ module Hanami
         def initialize(configuration: self.class.configuration, **args)
           super(**args)
           @configuration = configuration
+          # FIXME: this has to be removed when Hanami::Controller.finalize is implemented
+          @configuration.copy!(self.class)
         end
       end
 

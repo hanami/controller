@@ -8,19 +8,9 @@ RSpec.describe 'Rack middleware integration' do
   end
 
   context "when an action mounts a Rack middleware" do
-    let(:app) { UseActionApplication }
+    let(:app) { UseAction::Application.new }
 
     it "uses the specified Rack middleware" do
-      router = Hanami::Router.new do
-        get "/", to: "use_action#index"
-        get "/show", to: "use_action#show"
-        get "/edit", to: "use_action#edit"
-      end
-
-      UseActionApplication = Rack::Builder.new do
-        run router
-      end.to_app
-
       get "/"
 
       expect(response.status).to                        be(200)
@@ -46,17 +36,9 @@ RSpec.describe 'Rack middleware integration' do
   end
 
   context "not an action doesn't mount a Rack middleware" do
-    let(:app) { NoUseActionApplication }
+    let(:app) { NoUseAction::Application.new }
 
     it "action doens't use a middleware" do
-      router = Hanami::Router.new do
-        get "/", to: "no_use_action#index"
-      end
-
-      NoUseActionApplication = Rack::Builder.new do
-        run router
-      end.to_app
-
       get "/"
 
       expect(response.status).to      be(200)

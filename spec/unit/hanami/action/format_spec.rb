@@ -29,7 +29,7 @@ RSpec.describe Hanami::Action do
   end
 
   describe '#format' do
-    let(:action) { FormatController::Lookup.new }
+    let(:action) { FormatController::Lookup.new(configuration: configuration) }
 
     it 'lookup to #content_type if was not explicitly set (default: application/octet-stream)' do
       status, headers, = action.call({})

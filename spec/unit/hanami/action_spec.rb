@@ -1,27 +1,29 @@
 RSpec.describe Hanami::Action do
-  describe ".configuration" do
-    after do
-      CallAction.configuration.reset!
-    end
+  # FIXME: resume the "doesn't interfer" spec
+  #
+  # describe ".configuration" do
+  #   after do
+  #     CallAction.configuration.reset!
+  #   end
 
-    it "has the same defaults of Hanami::Controller" do
-      expected = Hanami::Controller.configuration
-      actual   = CallAction.configuration
+  #   it "has the same defaults of Hanami::Controller" do
+  #     expected = Hanami::Controller.configuration
+  #     actual   = CallAction.configuration
 
-      expect(actual.handle_exceptions).to eq(expected.handle_exceptions)
-    end
+  #     expect(actual.handle_exceptions).to eq(expected.handle_exceptions)
+  #   end
 
-    it "doesn't interfer with other action's configurations" do
-      CallAction.configuration.handle_exceptions = false
+  #   it "doesn't interfer with other action's configurations" do
+  #     CallAction.configuration.handle_exceptions = false
 
-      expect(Hanami::Controller.configuration.handle_exceptions).to be(true)
-      expect(ErrorCallAction.configuration.handle_exceptions).to    be(true)
-    end
-  end
+  #     expect(Hanami::Controller.configuration.handle_exceptions).to be(true)
+  #     expect(ErrorCallAction.configuration.handle_exceptions).to    be(true)
+  #   end
+  # end
 
   describe "#call" do
     it "calls an action" do
-      response = CallAction.new.call({})
+      response = CallAction.new(configuration: configuration).call({})
 
       expect(response[0]).to eq(201)
       expect(response[1]).to eq('Content-Type' => 'application/octet-stream; charset=utf-8', 'X-Custom' => 'OK')
@@ -30,7 +32,7 @@ RSpec.describe Hanami::Action do
 
     context "when exception handling code is enabled" do
       it "returns an HTTP 500 status code when an exception is raised" do
-        response = ErrorCallAction.new.call({})
+        response = ErrorCallAction.new(configuration: configuration).call({})
 
         expect(response[0]).to eq(500)
         expect(response[2]).to eq(['Internal Server Error'])
@@ -80,16 +82,14 @@ RSpec.describe Hanami::Action do
     end
 
     context "when exception handling code is disabled" do
-      before do
-        ErrorCallAction.configuration.handle_exceptions = false
-      end
-
-      after do
-        ErrorCallAction.configuration.reset!
+      let(:configuration) do
+        Hanami::Controller::Configuration.new do |config|
+          config.handle_exceptions = false
+        end
       end
 
       it "should raise an actual exception" do
-        expect { ErrorCallAction.new.call({}) }.to raise_error(RuntimeError)
+        expect { ErrorCallAction.new(configuration: configuration).call({}) }.to raise_error(RuntimeError)
       end
     end
   end
@@ -106,7 +106,7 @@ RSpec.describe Hanami::Action do
         end
       end
 
-      action = action_class.new
+      action = action_class.new(configuration: configuration)
       env = Rack::MockRequest.env_for('http://example.com/foo')
       action.call(env)
 
@@ -127,7 +127,7 @@ RSpec.describe Hanami::Action do
         end
       end
 
-      action = action_class.new
+      action = action_class.new(configuration: configuration)
       env = Rack::MockRequest.env_for('http://example.com/foo',
                                       'router.parsed_body' => { 'a' => 'foo' })
       action.call(env)
@@ -137,7 +137,7 @@ RSpec.describe Hanami::Action do
   end
 
   describe "Method visibility" do
-    let(:action) { VisibilityAction.new }
+    let(:action) { VisibilityAction.new(configuration: configuration) }
 
     it "ensures that protected and private methods can be safely invoked by developers" do
       status, headers, body = action.call({})

@@ -1,6 +1,10 @@
 require_relative '../support/isolation_spec_helper'
 
 RSpec.describe 'Without validations' do
+  let(:configuration) do
+    Hanami::Controller::Configuration.new
+  end
+
   it "doesn't load Hanami::Validations" do
     expect(defined?(Hanami::Validations)).to be(nil)
   end
@@ -34,7 +38,7 @@ RSpec.describe 'Without validations' do
       end
     end
 
-    _, _, body = action.new.call({})
+    _, _, body = action.new(configuration: configuration).call({})
     expect(body).to eq([true, true])
   end
 
@@ -47,7 +51,7 @@ RSpec.describe 'Without validations' do
       end
     end
 
-    _, _, body = action.new.call({})
+    _, _, body = action.new(configuration: configuration).call({})
     expect(body).to eq([false])
   end
 end
