@@ -406,35 +406,7 @@ module Hanami
       end
 
       attr_reader :public_directory
-
-      # Duplicate by copying the settings in a new instance.
-      #
-      # @return [Hanami::Controller::Configuration] a copy of the configuration
-      #
-      # @since 0.2.0
-      # @api private
-      def duplicate
-        Configuration.new.tap do |c|
-          c.handle_exceptions       = handle_exceptions
-          c.handled_exceptions      = handled_exceptions.dup
-          c.formats                 = formats.dup
-          c.default_request_format  = default_request_format
-          c.default_response_format = default_response_format
-          c.default_charset         = default_charset
-          c.default_headers         = default_headers.dup
-          c.public_directory        = public_directory
-          c.cookies = cookies.dup
-        end
-      end
-
-      # FIXME turn into attr_reader
-      attr_accessor :handled_exceptions
-
-      protected
-
-      attr_accessor :formats
-      attr_writer :default_headers
-      attr_writer :cookies
+      attr_reader :handled_exceptions
     end
   end
 end
