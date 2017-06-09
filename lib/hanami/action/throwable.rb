@@ -31,7 +31,10 @@ module Hanami
       # @since 0.1.0
       # @api private
       def self.included(base)
-        base.extend ClassMethods
+        base.class_eval do
+          @handled_exceptions = {}
+          extend ClassMethods
+        end
       end
 
       # Throw API class methods
@@ -39,6 +42,11 @@ module Hanami
       # @since 0.1.0
       # @api private
       module ClassMethods
+        # FIXME: make this thread-safe
+        def handled_exceptions
+          @handled_exceptions ||= {}
+        end
+
         private
 
         # Handle the given exception with an HTTP status code.
@@ -71,7 +79,7 @@ module Hanami
         #
         #   Show.new.call({id: 1}) # => [404, {}, ['Not Found']]
         def handle_exception(exception)
-          configuration.handle_exception(exception)
+          handled_exceptions.merge!(exception)
         end
       end
 
@@ -137,6 +145,28 @@ module Hanami
       end
 
       private
+
+      DEFAULT_ERROR_CODE = 500
+
+      attr_reader :handled_exceptions
+
+      def handled_exception?(exception)
+        handled_exceptions &&
+          !exception_handler_for(exception).nil?
+      end
+
+      def exception_handler(exception)
+        exception_handler_for(exception) || DEFAULT_ERROR_CODE
+      end
+
+      def exception_handler_for(exception)
+        handled_exceptions.each do |exception_class, handler|
+          return handler if exception.kind_of?(exception_class)
+        end
+
+        nil
+      end
+
       # @since 0.1.0
       # @api private
       def _rescue
@@ -153,7 +183,7 @@ module Hanami
       # @since 0.2.0
       # @api private
       def _reference_in_rack_errors(exception)
-        return if configuration.handled_exception?(exception)
+        return if handled_exception?(exception)
 
         @_env[RACK_EXCEPTION] = exception
 
@@ -183,7 +213,7 @@ module Hanami
       # @since 0.3.0
       # @api private
       def _exception_handler(exception)
-        handler = configuration.exception_handler(exception)
+        handler = exception_handler(exception)
 
         if respond_to?(handler.to_s, true)
           method(handler)

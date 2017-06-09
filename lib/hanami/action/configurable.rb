@@ -44,6 +44,8 @@ module Hanami
         def initialize(configuration: self.class.configuration, **args)
           super(**args)
           @configuration = configuration
+
+          # MIME Types
           @accepted_mime_types = @configuration.restrict_mime_types(
               self.class.accepted_formats.map do |format|
                 format_to_mime_type(format)
@@ -53,6 +55,12 @@ module Hanami
           if @accepted_mime_types.any?
             @accepted_mime_types = @configuration.restrict_mime_types!(@accepted_mime_types)
           end
+
+          # Exceptions
+          @handled_exceptions = @configuration.handled_exceptions.merge(self.class.handled_exceptions)
+          @handled_exceptions = Hash[
+            @handled_exceptions.sort{|(ex1,_),(ex2,_)| ex1.ancestors.include?(ex2) ? -1 : 1 }
+          ]
 
           # FIXME: this has to be removed when Hanami::Controller.finalize is implemented
           @configuration.copy!(self.class)

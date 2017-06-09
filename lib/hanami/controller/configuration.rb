@@ -157,48 +157,6 @@ module Hanami
       #   end
       def handle_exception(exception)
         @handled_exceptions.merge!(exception)
-        _sort_handled_exceptions!
-      end
-
-      # Return a callable handler for the given exception
-      #
-      # @param exception [Exception] an exception
-      #
-      # @since 0.3.0
-      # @api private
-      #
-      # @see Hanami::Controller::Configuration#handle_exception
-      def exception_handler(exception)
-        exception_handler_for(exception) || DEFAULT_ERROR_CODE
-      end
-
-      # Check if the given exception is handled.
-      #
-      # @param exception [Exception] an exception
-      #
-      # @since 0.3.2
-      # @api private
-      #
-      # @see Hanami::Controller::Configuration#handle_exception
-      def handled_exception?(exception)
-        handled_exceptions &&
-          !exception_handler_for(exception).nil?
-      end
-
-      # Finds configured handler for given exception, or nil if not found.
-      #
-      # @param exception [Exception] an exception
-      #
-      # @since 1.0.0
-      # @api private
-      #
-      # @see Hanami::Controller::Configuration#handle_exception
-      def exception_handler_for(exception)
-        @handled_exceptions.each do |exception_class, handler|
-          return handler if exception.kind_of?(exception_class)
-        end
-
-        nil
       end
 
       # Specify which is the default action module to be included when we use
@@ -583,16 +541,11 @@ module Hanami
         freeze
       end
 
-      protected
-      # @since 0.5.0
-      # @api private
-      def _sort_handled_exceptions!
-        @handled_exceptions = Hash[
-          @handled_exceptions.sort{|(ex1,_),(ex2,_)| ex1.ancestors.include?(ex2) ? -1 : 1 }
-        ]
-      end
-
+      # FIXME turn into attr_reader
       attr_accessor :handled_exceptions
+
+      protected
+
       attr_accessor :formats
       attr_writer :modules
       attr_writer :default_headers

@@ -32,24 +32,6 @@ RSpec.describe Hanami::Controller::Configuration do
     end
   end
 
-  describe 'exception_handler' do
-    describe 'when the given error is unknown' do
-      it 'returns the default value' do
-        expect(configuration.exception_handler(Exception)).to be(500)
-      end
-    end
-
-    describe 'when the given error was registered' do
-      before do
-        configuration.handle_exception NotImplementedError => 400
-      end
-
-      it 'returns configured value when an exception instance is given' do
-        expect(configuration.exception_handler(NotImplementedError.new)).to be(400)
-      end
-    end
-  end
-
   describe 'action_module' do
     describe 'when not previously configured' do
       it 'returns the default value' do
