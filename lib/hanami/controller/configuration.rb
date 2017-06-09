@@ -533,14 +533,6 @@ module Hanami
         end
       end
 
-      # Load the framework
-      #
-      # @since 0.3.0
-      # @api private
-      def load!
-        freeze
-      end
-
       # FIXME turn into attr_reader
       attr_accessor :handled_exceptions
 

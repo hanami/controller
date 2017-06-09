@@ -74,14 +74,5 @@ module Hanami
     def self.configure
       yield configuration
     end
-
-    # Framework loading entry point
-    #
-    # @return [void]
-    #
-    # @since 0.3.0
-    def self.load!
-      configuration.load!
-    end
   end
 end
