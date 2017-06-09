@@ -49,8 +49,8 @@ module Hanami
       #
       # @see Hanami::Action#finish
       def finish
-        super
         @_env[ENV_KEY] = self
+        super
       end
 
       # Check if the request's body is a file

@@ -147,8 +147,8 @@ module Hanami
       #
       # @see Hanami::Action#finish
       def finish
-        super
         flash.clear
+        super
       end
     end
   end

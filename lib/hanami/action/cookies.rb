@@ -76,8 +76,8 @@ module Hanami
       #
       # @see Hanami::Action#finish
       def finish
-        super
         cookies.finish
+        super
       end
     end
   end

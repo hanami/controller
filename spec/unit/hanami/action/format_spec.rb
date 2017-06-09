@@ -84,7 +84,7 @@ RSpec.describe Hanami::Action do
       expect(status).to                  be(200)
     end
 
-    Hanami::Action::Mime::MIME_TYPES.each do |format, mime_type|
+    Hanami::Action::MIME_TYPES.each do |format, mime_type|
       it "accepts '#{mime_type}' and returns :#{format}" do
         status, headers, = action.call('HTTP_ACCEPT' => mime_type)
 
@@ -123,7 +123,7 @@ RSpec.describe Hanami::Action do
       end
     end
 
-    Hanami::Action::Mime::MIME_TYPES.each do |format, mime_type|
+    Hanami::Action::MIME_TYPES.each do |format, mime_type|
       it "sets #{format} and returns '#{mime_type}'" do
         _, headers, = action.call(format: format)
 

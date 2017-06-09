@@ -50,8 +50,8 @@ module Hanami
         #
         # @see Hanami::Action#finish
         def finish
-          super
           headers.merge!(self.class.cache_control_directives.headers) unless headers.include? HEADER
+          super
         end
 
         # Class which stores CacheControl values

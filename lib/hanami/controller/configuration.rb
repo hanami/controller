@@ -181,7 +181,7 @@ module Hanami
       def mime_types
         # FIXME: this isn't efficient. speed it up!
         ((@formats.keys - DEFAULT_FORMATS.keys) +
-         Hanami::Action::Mime::MIME_TYPES.values).freeze
+         Hanami::Action::MIME_TYPES.values).freeze
       end
 
       def restrict_mime_types(mime_types)
