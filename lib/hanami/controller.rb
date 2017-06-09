@@ -75,57 +75,6 @@ module Hanami
       yield configuration
     end
 
-    # Duplicate Hanami::Controller in order to create a new separated instance
-    # of the framework.
-    #
-    # The new instance of the framework will be completely decoupled from the
-    # original. It will inherit the configuration, but all the changes that
-    # happen after the duplication, won't be reflected on the other copies.
-    #
-    # @return [Module] a copy of Hanami::Controller
-    #
-    # @since 0.2.0
-    # @api private
-    #
-    # @example Basic usage
-    #   require 'hanami/controller'
-    #
-    #   module MyApp
-    #     Controller = Hanami::Controller.dupe
-    #   end
-    #
-    #   MyApp::Controller == Hanami::Controller # => false
-    #
-    #   MyApp::Controller.configuration ==
-    #     Hanami::Controller.configuration # => false
-    #
-    # @example Inheriting configuration
-    #   require 'hanami/controller'
-    #
-    #   Hanami::Controller.configure do
-    #     handle_exceptions false
-    #   end
-    #
-    #   module MyApp
-    #     Controller = Hanami::Controller.dupe
-    #   end
-    #
-    #   module MyApi
-    #     Controller = Hanami::Controller.dupe
-    #     Controller.configure do
-    #       handle_exceptions true
-    #     end
-    #   end
-    #
-    #   Hanami::Controller.configuration.handle_exceptions # => false
-    #   MyApp::Controller.configuration.handle_exceptions # => false
-    #   MyApi::Controller.configuration.handle_exceptions # => true
-    def self.dupe
-      dup.tap do |duplicated|
-        duplicated.configuration = configuration.duplicate
-      end
-    end
-
     # Framework loading entry point
     #
     # @return [void]

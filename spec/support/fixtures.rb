@@ -933,26 +933,6 @@ module App2
 end
 
 module MusicPlayer
-  Controller = Hanami::Controller.dupe
-  Action     = Hanami::Action.dup
-
-  Controller.module_eval do
-    configuration.reset!
-    configure do |config|
-      config.handle_exception ArgumentError => 400
-      config.action_module = MusicPlayer::Action
-      config.default_headers(
-        "X-Frame-Options" => "DENY"
-      )
-
-      config.prepare do
-        include Hanami::Action::Cookies
-        include Hanami::Action::Session
-        include MusicPlayer::Controllers::Authentication
-      end
-    end
-  end
-
   module Controllers
     module Authentication
       def self.included(action)
@@ -967,7 +947,7 @@ module MusicPlayer
 
     class Dashboard
       class Index
-        include MusicPlayer::Action
+        include Hanami::Action
 
         def call(params)
           self.body = 'Muzic!'
@@ -976,7 +956,7 @@ module MusicPlayer
       end
 
       class Show
-        include MusicPlayer::Action
+        include Hanami::Action
 
         def call(params)
           raise ArgumentError
@@ -986,7 +966,7 @@ module MusicPlayer
 
     module Artists
       class Index
-        include MusicPlayer::Action
+        include Hanami::Action
 
         def call(params)
           self.body = current_user
@@ -994,7 +974,7 @@ module MusicPlayer
       end
 
       class Show
-        include MusicPlayer::Action
+        include Hanami::Action
 
         handle_exception ArtistNotFound => 404
 
@@ -1006,10 +986,28 @@ module MusicPlayer
   end
 
   class StandaloneAction
-    include MusicPlayer::Action
+    include Hanami::Action
 
     def call(params)
       raise ArgumentError
+    end
+  end
+
+  class Application
+    def initialize
+      configuration = Hanami::Controller::Configuration.new do |config|
+        config.handle_exception ArgumentError => 400
+        config.action_module = Hanami::Action
+        config.default_headers(
+          "X-Frame-Options" => "DENY"
+        )
+
+        config.prepare do
+          include Hanami::Action::Cookies
+          include Hanami::Action::Session
+          include MusicPlayer::Controllers::Authentication
+        end
+      end
     end
   end
 end
