@@ -1,14 +1,5 @@
 RSpec.describe Hanami::Controller::Configuration do
-  before do
-    module CustomAction
-    end
-  end
-
   let(:configuration) { Hanami::Controller::Configuration.new }
-
-  after do
-    Object.send(:remove_const, :CustomAction)
-  end
 
   describe 'handle exceptions' do
     it 'returns true by default' do
@@ -153,10 +144,6 @@ RSpec.describe Hanami::Controller::Configuration do
         configuration.format htm: 'text/html'
       end
 
-      after do
-        configuration.reset!
-      end
-
       it 'returns the custom defined mime type, which takes the precedence over the builtin value' do
         expect(configuration.format_for('text/html')).to eq(:htm)
       end
@@ -174,10 +161,6 @@ RSpec.describe Hanami::Controller::Configuration do
         configuration.format htm: 'text/html'
       end
 
-      after do
-        configuration.reset!
-      end
-
       it 'returns the custom defined format, which takes the precedence over the builtin value' do
         expect(configuration.mime_type_for(:htm)).to eq('text/html')
       end
@@ -185,10 +168,6 @@ RSpec.describe Hanami::Controller::Configuration do
   end
 
   describe '#default_headers' do
-    after do
-      configuration.reset!
-    end
-
     describe "when not previously set" do
       it 'returns default value' do
         expect(configuration.default_headers).to eq({})
@@ -278,7 +257,6 @@ RSpec.describe Hanami::Controller::Configuration do
 
   describe 'duplicate' do
     before do
-      configuration.reset!
       configuration.format custom: 'custom/format'
       configuration.default_request_format = :html
       configuration.default_response_format = :html
@@ -330,33 +308,6 @@ RSpec.describe Hanami::Controller::Configuration do
       expect(configuration.default_charset).to              eq('latin1')
       expect(configuration.default_headers).to              eq('X-Frame-Options' => 'DENY')
       expect(configuration.public_directory).to             eq(::File.join(Dir.pwd, 'static'))
-    end
-  end
-
-  describe 'reset!' do
-    before do
-      configuration.handle_exceptions = false
-      configuration.handle_exception ArgumentError => 400
-      configuration.format another: 'another/format'
-      configuration.default_request_format = :another
-      configuration.default_response_format = :another
-      configuration.default_charset = 'kor-1'
-      configuration.default_headers({ 'X-Frame-Options' => 'ALLOW DENY' })
-      configuration.public_directory = 'files'
-
-      configuration.reset!
-    end
-
-    it 'resets to the defaults' do
-      expect(configuration.handle_exceptions).to       be(true)
-      expect(configuration.handled_exceptions).to      eq({})
-      expect(configuration.send(:formats)).to          eq(Hanami::Controller::Configuration::DEFAULT_FORMATS)
-      expect(configuration.mime_types).to              eq(Hanami::Action::Mime::MIME_TYPES.values)
-      expect(configuration.default_request_format).to  be(nil)
-      expect(configuration.default_response_format).to be(nil)
-      expect(configuration.default_charset).to         be(nil)
-      expect(configuration.default_headers).to         eq({})
-      expect(configuration.public_directory).to        eq(::File.join(Dir.pwd, 'public'))
     end
   end
 end

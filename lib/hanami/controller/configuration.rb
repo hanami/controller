@@ -108,7 +108,17 @@ module Hanami
       #
       # @since 0.2.0
       def initialize(&blk)
-        reset!
+        @handle_exceptions       = true
+        @handled_exceptions      = {}
+        @formats                 = DEFAULT_FORMATS.dup
+        @mime_types              = nil
+        @default_request_format  = nil
+        @default_response_format = nil
+        @default_charset         = nil
+        @default_headers         = {}
+        @cookies                 = {}
+        @root_directory          = ::Pathname.new(Dir.pwd).realpath
+        @public_directory        = root_directory.join(DEFAULT_PUBLIC_DIRECTORY).to_s
         instance_eval(&blk) unless blk.nil?
       end
 
@@ -415,24 +425,6 @@ module Hanami
           c.public_directory        = public_directory
           c.cookies = cookies.dup
         end
-      end
-
-      # Reset all the values to the defaults
-      #
-      # @since 0.2.0
-      # @api private
-      def reset!
-        @handle_exceptions       = true
-        @handled_exceptions      = {}
-        @formats                 = DEFAULT_FORMATS.dup
-        @mime_types              = nil
-        @default_request_format  = nil
-        @default_response_format = nil
-        @default_charset         = nil
-        @default_headers         = {}
-        @cookies                 = {}
-        @root_directory          = ::Pathname.new(Dir.pwd).realpath
-        @public_directory        = root_directory.join(DEFAULT_PUBLIC_DIRECTORY).to_s
       end
 
       # FIXME turn into attr_reader
