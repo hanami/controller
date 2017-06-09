@@ -159,74 +159,6 @@ module Hanami
         @handled_exceptions.merge!(exception)
       end
 
-      # Specify which is the default action module to be included when we use
-      # the `Hanami::Controller.action` method.
-      #
-      # This setting is useful when we use multiple instances of the framework
-      # in the same process, so we want to ensure that the actions will include
-      # `MyApp::Action`, rather than `AnotherApp::Action`.
-      #
-      # If not set, the default value is `Hanami::Action`
-      #
-      # @since 0.2.0
-      #
-      # @see Hanami::Controller::Dsl#action
-      # @see Hanami::Controller#duplicate
-      #
-      # FIXME: new API docs
-      attr_accessor :action_module
-
-      # Configure the logic to be executed when Hanami::Action is included
-      # This is useful to DRY code by having a single place where to configure
-      # shared behaviors like authentication, sessions, cookies etc.
-      #
-      # This method can be called multiple times.
-      #
-      # @param blk [Proc] the code block
-      #
-      # @return [void]
-      #
-      # @raise [ArgumentError] if called without passing a block
-      #
-      # @since 0.3.0
-      #
-      # @see Hanami::Controller.configure
-      # @see Hanami::Controller.duplicate
-      #
-      # @example Configure shared logic.
-      #   require 'hanami/controller'
-      #
-      #   Hanami::Controller.configure do
-      #     prepare do
-      #       include Hanami::Action::Session
-      #       include MyAuthentication
-      #       use SomeMiddleWare
-      #
-      #       before { authenticate! }
-      #     end
-      #   end
-      #
-      #   module Dashboard
-      #     class Index
-      #       # When Hanami::Action is included, it will:
-      #       #   * Include `Hanami::Action::Session` and `MyAuthentication`
-      #       #   * Configure to use `SomeMiddleWare`
-      #       #   * Configure a `before` callback that triggers `#authenticate!`
-      #       include Hanami::Action
-      #
-      #       def call(params)
-      #         # ...
-      #       end
-      #     end
-      #   end
-      def prepare(&blk)
-        if block_given?
-          @modules.push(blk)
-        else
-          raise ArgumentError.new('Please provide a block')
-        end
-      end
-
       # Register a format
       #
       # @param hash [Hash] the symbol format must be the key and the mime type
@@ -475,8 +407,6 @@ module Hanami
         Configuration.new.tap do |c|
           c.handle_exceptions       = handle_exceptions
           c.handled_exceptions      = handled_exceptions.dup
-          c.action_module           = action_module
-          c.modules                 = modules.dup
           c.formats                 = formats.dup
           c.default_request_format  = default_request_format
           c.default_response_format = default_response_format
@@ -487,16 +417,6 @@ module Hanami
         end
       end
 
-      # Return included modules
-      #
-      # @return [Array<Proc>] array of included blocks
-      #
-      # @since 0.2.0
-      # @api private
-      #
-      # @see Hanami::Controller::Configuration#prepare
-      attr_reader :modules
-
       # Reset all the values to the defaults
       #
       # @since 0.2.0
@@ -504,7 +424,6 @@ module Hanami
       def reset!
         @handle_exceptions       = true
         @handled_exceptions      = {}
-        @modules                 = []
         @formats                 = DEFAULT_FORMATS.dup
         @mime_types              = nil
         @default_request_format  = nil
@@ -514,23 +433,6 @@ module Hanami
         @cookies                 = {}
         @root_directory          = ::Pathname.new(Dir.pwd).realpath
         @public_directory        = root_directory.join(DEFAULT_PUBLIC_DIRECTORY).to_s
-        @action_module           = ::Hanami::Action
-      end
-
-      # Copy the configuration for the given action
-      #
-      # @param base [Class] the target action
-      #
-      # @return void
-      #
-      # @since 0.3.0
-      # @api private
-      #
-      # @see Hanami::Controller::Configurable.included
-      def copy!(base)
-        modules.each do |mod|
-          base.class_eval(&mod)
-        end
       end
 
       # FIXME turn into attr_reader
@@ -539,7 +441,6 @@ module Hanami
       protected
 
       attr_accessor :formats
-      attr_writer :modules
       attr_writer :default_headers
       attr_writer :cookies
     end

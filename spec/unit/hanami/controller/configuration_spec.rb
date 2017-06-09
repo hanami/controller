@@ -32,107 +32,6 @@ RSpec.describe Hanami::Controller::Configuration do
     end
   end
 
-  describe 'action_module' do
-    describe 'when not previously configured' do
-      it 'returns the default value' do
-        expect(configuration.action_module).to eq(::Hanami::Action)
-      end
-    end
-
-    describe 'when previously configured' do
-      before do
-        configuration.action_module = CustomAction
-      end
-
-      it 'returns the value' do
-        expect(configuration.action_module).to eq(CustomAction)
-      end
-    end
-  end
-
-  describe 'modules' do
-    before do
-      unless defined?(FakeAction)
-        class FakeAction
-        end
-      end
-
-      unless defined?(FakeCallable)
-        module FakeCallable
-          def call(_)
-            [status, {}, ['Callable']]
-          end
-
-          def status
-            200
-          end
-        end
-      end
-
-      unless defined?(FakeStatus)
-        module FakeStatus
-          def status
-            318
-          end
-        end
-      end
-    end
-
-    after do
-      Object.send(:remove_const, :FakeAction)
-      Object.send(:remove_const, :FakeCallable)
-      Object.send(:remove_const, :FakeStatus)
-    end
-
-    describe 'when not previously configured' do
-      it 'is empty' do
-        expect(configuration.modules).to be_empty
-      end
-    end
-
-    describe 'when prepare with no block' do
-      it 'raises error' do
-        expect { configuration.prepare }.to raise_error(ArgumentError, 'Please provide a block')
-      end
-    end
-
-    describe 'when previously configured' do
-      before do
-        configuration.prepare do
-          include FakeCallable
-        end
-      end
-
-      it 'allows to configure additional modules to include' do
-        configuration.prepare do
-          include FakeStatus
-        end
-
-        configuration.modules.each do |mod|
-          FakeAction.class_eval(&mod)
-        end
-
-        code, _, body = FakeAction.new.call({})
-        expect(code).to be(318)
-        expect(body).to eq(['Callable'])
-      end
-    end
-
-    it 'allows to configure modules to include' do
-      configuration.prepare do
-        include FakeCallable
-      end
-
-      configuration.modules.each do |mod|
-        FakeAction.class_eval(&mod)
-      end
-
-      code, _, body = FakeAction.new.call({})
-      expect(code).to be(200)
-      expect(body).to eq(['Callable'])
-    end
-  end
-
   describe '#format' do
     before do
       configuration.format custom: 'custom/format'
@@ -380,7 +279,6 @@ RSpec.describe Hanami::Controller::Configuration do
   describe 'duplicate' do
     before do
       configuration.reset!
-      configuration.prepare { include Kernel }
       configuration.format custom: 'custom/format'
       configuration.default_request_format = :html
       configuration.default_response_format = :html
@@ -394,8 +292,6 @@ RSpec.describe Hanami::Controller::Configuration do
     it 'returns a copy of the configuration' do
       expect(config.handle_exceptions).to       eq(configuration.handle_exceptions)
       expect(config.handled_exceptions).to      eq(configuration.handled_exceptions)
-      expect(config.action_module).to           eq(configuration.action_module)
-      expect(config.modules).to                 eq(configuration.modules)
       expect(config.send(:formats)).to          eq(configuration.send(:formats))
       expect(config.mime_types).to              eq(configuration.mime_types)
       expect(config.default_request_format).to  eq(configuration.default_request_format)
@@ -408,8 +304,6 @@ RSpec.describe Hanami::Controller::Configuration do
     it "doesn't affect the original configuration" do
       config.handle_exceptions = false
       config.handle_exception ArgumentError => 400
-      config.action_module = CustomAction
-      config.prepare          { include Comparable }
       config.format another: 'another/format'
       config.default_request_format = :json
       config.default_response_format = :json
@@ -419,8 +313,6 @@ RSpec.describe Hanami::Controller::Configuration do
 
       expect(config.handle_exceptions).to            be(false)
       expect(config.handled_exceptions).to           eq(ArgumentError => 400)
-      expect(config.action_module).to                eq(CustomAction)
-      expect(config.modules.size).to                 be(2)
       expect(config.format_for('another/format')).to eq(:another)
       expect(config.mime_types).to                   include('another/format')
       expect(config.default_request_format).to       eq(:json)
@@ -431,8 +323,6 @@ RSpec.describe Hanami::Controller::Configuration do
 
       expect(configuration.handle_exceptions).to            be(true)
       expect(configuration.handled_exceptions).to           eq({})
-      expect(configuration.action_module).to                eq(::Hanami::Action)
-      expect(configuration.modules.size).to                 be(1)
       expect(configuration.format_for('another/format')).to be(nil)
       expect(configuration.mime_types).to_not               include('another/format')
       expect(configuration.default_request_format).to       eq(:html)
@@ -447,8 +337,6 @@ RSpec.describe Hanami::Controller::Configuration do
     before do
       configuration.handle_exceptions = false
       configuration.handle_exception ArgumentError => 400
-      configuration.action_module = CustomAction
-      configuration.modules          { include Kernel }
       configuration.format another: 'another/format'
       configuration.default_request_format = :another
       configuration.default_response_format = :another
@@ -462,8 +350,6 @@ RSpec.describe Hanami::Controller::Configuration do
     it 'resets to the defaults' do
       expect(configuration.handle_exceptions).to       be(true)
       expect(configuration.handled_exceptions).to      eq({})
-      expect(configuration.action_module).to           eq(::Hanami::Action)
-      expect(configuration.modules).to                 eq([])
       expect(configuration.send(:formats)).to          eq(Hanami::Controller::Configuration::DEFAULT_FORMATS)
       expect(configuration.mime_types).to              eq(Hanami::Action::Mime::MIME_TYPES.values)
       expect(configuration.default_request_format).to  be(nil)

@@ -948,6 +948,9 @@ module MusicPlayer
     class Dashboard
       class Index
         include Hanami::Action
+        include Hanami::Action::Cookies
+        include Hanami::Action::Session
+        include MusicPlayer::Controllers::Authentication
 
         def call(params)
           self.body = 'Muzic!'
@@ -957,6 +960,9 @@ module MusicPlayer
 
       class Show
         include Hanami::Action
+        include Hanami::Action::Cookies
+        include Hanami::Action::Session
+        include MusicPlayer::Controllers::Authentication
 
         def call(params)
           raise ArgumentError
@@ -967,6 +973,9 @@ module MusicPlayer
     module Artists
       class Index
         include Hanami::Action
+        include Hanami::Action::Cookies
+        include Hanami::Action::Session
+        include MusicPlayer::Controllers::Authentication
 
         def call(params)
           self.body = current_user
@@ -975,6 +984,9 @@ module MusicPlayer
 
       class Show
         include Hanami::Action
+        include Hanami::Action::Cookies
+        include Hanami::Action::Session
+        include MusicPlayer::Controllers::Authentication
 
         handle_exception ArtistNotFound => 404
 
@@ -987,6 +999,9 @@ module MusicPlayer
 
   class StandaloneAction
     include Hanami::Action
+    include Hanami::Action::Cookies
+    include Hanami::Action::Session
+    include MusicPlayer::Controllers::Authentication
 
     def call(params)
       raise ArgumentError
@@ -997,16 +1012,9 @@ module MusicPlayer
     def initialize
       configuration = Hanami::Controller::Configuration.new do |config|
         config.handle_exception ArgumentError => 400
-        config.action_module = Hanami::Action
         config.default_headers(
           "X-Frame-Options" => "DENY"
         )
-
-        config.prepare do
-          include Hanami::Action::Cookies
-          include Hanami::Action::Session
-          include MusicPlayer::Controllers::Authentication
-        end
       end
     end
   end
@@ -1193,6 +1201,8 @@ module HeadTest
   module Home
     class Index
       include Hanami::Action
+      include Hanami::Action::Glue
+      include Hanami::Action::Session
 
       def call(params)
         self.body = 'index'
@@ -1202,6 +1212,8 @@ module HeadTest
     class Code
       include Hanami::Action
       include Hanami::Action::Cache
+      include Hanami::Action::Glue
+      include Hanami::Action::Session
 
       def call(params)
         content = 'code'
@@ -1224,6 +1236,8 @@ module HeadTest
 
     class Override
       include Hanami::Action
+      include Hanami::Action::Glue
+      include Hanami::Action::Session
 
       def call(params)
         self.headers.merge!(
@@ -1250,11 +1264,6 @@ module HeadTest
         config.default_headers(
           "X-Frame-Options" => "DENY"
         )
-
-        config.prepare do
-          include Hanami::Action::Glue
-          include Hanami::Action::Session
-        end
       end
 
       resolver = EndpointResolver.new(configuration: configuration, namespace: HeadTest)
@@ -1281,6 +1290,8 @@ module FullStack
     module Home
       class Index
         include Hanami::Action
+        include Hanami::Action::Glue
+        include Hanami::Action::Session
         expose :greeting
 
         def call(params)
@@ -1290,6 +1301,8 @@ module FullStack
 
       class Head
         include Hanami::Action
+        include Hanami::Action::Glue
+        include Hanami::Action::Session
 
         def call(params)
           headers['X-Renderable'] = renderable?.to_s
@@ -1301,6 +1314,8 @@ module FullStack
     module Books
       class Index
         include Hanami::Action
+        include Hanami::Action::Glue
+        include Hanami::Action::Session
 
         def call(params)
         end
@@ -1308,6 +1323,8 @@ module FullStack
 
       class Create
         include Hanami::Action
+        include Hanami::Action::Glue
+        include Hanami::Action::Session
 
         params do
           required(:title).filled(:str?)
@@ -1322,6 +1339,8 @@ module FullStack
 
       class Update
         include Hanami::Action
+        include Hanami::Action::Glue
+        include Hanami::Action::Session
 
         params do
           required(:id).value(:int?)
@@ -1350,6 +1369,8 @@ module FullStack
     module Settings
       class Index
         include Hanami::Action
+        include Hanami::Action::Glue
+        include Hanami::Action::Session
 
         def call(params)
         end
@@ -1357,6 +1378,8 @@ module FullStack
 
       class Create
         include Hanami::Action
+        include Hanami::Action::Glue
+        include Hanami::Action::Session
 
         def call(params)
           flash[:message] = "Saved!"
@@ -1368,6 +1391,8 @@ module FullStack
     module Poll
       class Start
         include Hanami::Action
+        include Hanami::Action::Glue
+        include Hanami::Action::Session
 
         def call(params)
           redirect_to '/poll/1'
@@ -1376,6 +1401,8 @@ module FullStack
 
       class Step1
         include Hanami::Action
+        include Hanami::Action::Glue
+        include Hanami::Action::Session
 
         def call(params)
           if @_env['REQUEST_METHOD'] == 'GET'
@@ -1389,6 +1416,8 @@ module FullStack
 
       class Step2
         include Hanami::Action
+        include Hanami::Action::Glue
+        include Hanami::Action::Session
 
         def call(params)
           if @_env['REQUEST_METHOD'] == 'POST'
@@ -1402,6 +1431,8 @@ module FullStack
     module Users
       class Show
         include Hanami::Action
+        include Hanami::Action::Glue
+        include Hanami::Action::Session
 
         before :redirect_to_root
         after :set_body
@@ -1439,11 +1470,6 @@ module FullStack
     def initialize
       configuration = Hanami::Controller::Configuration.new do |config|
         config.handle_exceptions = false
-
-        config.prepare do
-          include Hanami::Action::Glue
-          include Hanami::Action::Session
-        end
       end
 
       resolver = EndpointResolver.new(configuration: configuration, namespace: FullStack::Controllers)
@@ -1535,6 +1561,9 @@ module SessionWithCookies
     module Home
       class Index
         include Hanami::Action
+        include Hanami::Action::Glue
+        include Hanami::Action::Session
+        include Hanami::Action::Cookies
 
         def call(params)
         end
@@ -1558,12 +1587,6 @@ module SessionWithCookies
     def initialize
       configuration = Hanami::Controller::Configuration.new do |config|
         config.handle_exceptions = false
-
-        config.prepare do
-          include Hanami::Action::Glue
-          include Hanami::Action::Session
-          include Hanami::Action::Cookies
-        end
       end
 
       resolver = EndpointResolver.new(configuration: configuration, namespace: SessionWithCookies::Controllers)
@@ -1590,6 +1613,8 @@ module SessionsWithoutCookies
     module Home
       class Index
         include Hanami::Action
+        include Hanami::Action::Glue
+        include Hanami::Action::Session
 
         def call(params)
         end
@@ -1613,11 +1638,6 @@ module SessionsWithoutCookies
     def initialize
       configuration = Hanami::Controller::Configuration.new do |config|
         config.handle_exceptions = false
-
-        config.prepare do
-          include Hanami::Action::Glue
-          include Hanami::Action::Session
-        end
       end
 
       resolver = EndpointResolver.new(configuration: configuration, namespace: SessionsWithoutCookies::Controllers)
