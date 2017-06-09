@@ -145,14 +145,13 @@ RSpec.describe Hanami::Action::Request do
         content_type
         session
         cookies
-        params
         update_param
         delete_param
         []
         []=
         values_at
       )
-      request = described_class.new({})
+      request = described_class.new({}, {})
       methods.each do |method|
         expect { request.send(method) }.to raise_error(NotImplementedError)
       end
@@ -164,6 +163,6 @@ RSpec.describe Hanami::Action::Request do
   def build_request(attributes = {})
     url = 'http://example.com/foo?q=bar'
     env = Rack::MockRequest.env_for(url, attributes)
-    described_class.new(env)
+    described_class.new(env, {})
   end
 end

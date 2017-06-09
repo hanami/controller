@@ -99,8 +99,8 @@ RSpec.describe Hanami::Action do
       action_class = Class.new(Hanami::Action) do
         expose :req
 
-        def call(_)
-          @req = request
+        def call(req, _res)
+          @req = req
         end
       end
 
@@ -118,7 +118,7 @@ RSpec.describe Hanami::Action do
       action_class = Class.new(Hanami::Action) do
         expose :request_body
 
-        def call(_)
+        def call(_req, _res)
           @request_body = parsed_request_body
         end
       end

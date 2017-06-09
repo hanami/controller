@@ -1,12 +1,12 @@
 RSpec.describe Hanami::Action do
   class FormatController
     class Lookup < Hanami::Action
-      def call(params)
+      def call(*)
       end
     end
 
     class Custom < Hanami::Action
-      def call(params)
+      def call(*)
         self.format = params[:format]
       end
 
@@ -18,7 +18,7 @@ RSpec.describe Hanami::Action do
     end
 
     class Configuration < Hanami::Action
-      def call(_params)
+      def call(*)
         self.body = format
       end
 

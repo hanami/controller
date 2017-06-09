@@ -6,6 +6,7 @@ end
 
 require 'securerandom'
 require 'hanami/action/request'
+require 'hanami/action/response'
 require 'hanami/action/base_params'
 require 'hanami/action/rack/file'
 
@@ -594,11 +595,13 @@ module Hanami
       # @api private
       def call(env)
         _rescue do
-          @_env    = env
-          @headers = ::Rack::Utils::HeaderHash.new(configuration.default_headers)
-          @params  = self.class.params_class.new(@_env)
+          @_env     = env
+          @headers  = ::Rack::Utils::HeaderHash.new(configuration.default_headers)
+          @params   = self.class.params_class.new(@_env)
+          @request  = Hanami::Action::Request.new(@_env, @params)
+          @response = Hanami::Action::Response.new
           _run_before_callbacks(@params)
-          super @params
+          super @request, @response
           _run_after_callbacks(@params)
         end
 
@@ -845,9 +848,7 @@ module Hanami
     #       secure = request.ssl?
     #     end
     #   end
-    def request
-      @request ||= ::Hanami::Action::Request.new(@_env)
-    end
+    attr_reader :request
 
     # Return parsed request body
     def parsed_request_body

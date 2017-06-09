@@ -9,6 +9,13 @@ module Hanami
     #
     # @see http://www.rubydoc.info/gems/rack/Rack/Request
     class Request < ::Rack::Request
+      attr_reader :params
+
+      def initialize(env, params)
+        super(env)
+        @params = params
+      end
+
       # @raise [NotImplementedError]
       #
       # @since 0.3.1
@@ -31,14 +38,6 @@ module Hanami
       # @api private
       def cookies
         raise NotImplementedError, 'Please include Action::Cookies and use Action#cookies'
-      end
-
-      # @raise [NotImplementedError]
-      #
-      # @since 0.3.1
-      # @api private
-      def params
-        raise NotImplementedError, 'Please use params passed to Action#call'
       end
 
       # @raise [NotImplementedError]
