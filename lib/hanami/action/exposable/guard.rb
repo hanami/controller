@@ -9,7 +9,7 @@ module Hanami
     end
   end
 
-  module Action
+  class Action
     module Exposable
       # Guard for Exposures API.
       # Prevents exposure of reserved words

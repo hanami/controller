@@ -1,7 +1,7 @@
 require 'hanami/action/flash'
 
 module Hanami
-  module Action
+  class Action
     # Session API
     #
     # This module isn't included by default.

@@ -1,7 +1,7 @@
 require 'rack/request'
 
 module Hanami
-  module Action
+  class Action
     # An HTTP request based on top of Rack::Request.
     # This guarantees backwards compatibility with with Rack.
     #

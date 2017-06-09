@@ -1,5 +1,5 @@
 module Hanami
-  module Action
+  class Action
     # Glue code for full stack Hanami applications
     #
     # This includes missing rendering logic that it makes sense to include

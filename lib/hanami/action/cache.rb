@@ -3,7 +3,7 @@ require 'hanami/action/cache/expires'
 require 'hanami/action/cache/conditional_get'
 
 module Hanami
-  module Action
+  class Action
     # Cache type API
     #
     # @since 0.3.0

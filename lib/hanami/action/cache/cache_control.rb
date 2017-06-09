@@ -1,7 +1,7 @@
 require 'hanami/action/cache/directives'
 
 module Hanami
-  module Action
+  class Action
     module Cache
       # Module with Cache-Control logic
       #

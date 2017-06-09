@@ -2,7 +2,7 @@ require 'rack/request'
 require 'hanami/utils/hash'
 
 module Hanami
-  module Action
+  class Action
     class BaseParams
       # The key that returns raw input from the Rack env
       #

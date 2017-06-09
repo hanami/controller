@@ -2,7 +2,7 @@ require 'hanami/action/base_params'
 require 'hanami/validations/form'
 
 module Hanami
-  module Action
+  class Action
     # A set of params requested by the client
     #
     # It's able to extract the relevant params from a Rack env of from an Hash.

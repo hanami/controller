@@ -20,9 +20,7 @@ RSpec.describe Hanami::Action do
 
     describe 'when reserved word is not used' do
       let(:action_class) do
-        Class.new do
-          include Hanami::Action
-
+        Class.new(Hanami::Action) do
           include Module.new { def flash; end }
 
           expose :flash

@@ -1,5 +1,5 @@
 module Hanami
-  module Action
+  class Action
     # Container useful to transport data with the HTTP session
     # It has a life span of one HTTP request or redirect.
     #

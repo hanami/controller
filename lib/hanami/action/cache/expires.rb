@@ -1,7 +1,7 @@
 require 'hanami/action/cache/cache_control'
 
 module Hanami
-  module Action
+  class Action
     module Cache
       # Module with Expires logic
       #

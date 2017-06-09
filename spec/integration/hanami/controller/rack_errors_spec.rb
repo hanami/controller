@@ -12,32 +12,25 @@ end
 class HandledExceptionSubclass < HandledException; end
 
 module Errors
-  class WithoutMessage
-    include Hanami::Action
-
+  class WithoutMessage < Hanami::Action
     def call(_params)
       raise AuthException
     end
   end
 
-  class WithMessage
-    include Hanami::Action
-
+  class WithMessage < Hanami::Action
     def call(_params)
       raise AuthException, "you're not authorized to see this page!"
     end
   end
 
-  class WithCustomMessage
-    include Hanami::Action
-
+  class WithCustomMessage < Hanami::Action
     def call(_params)
       raise CustomAuthException, 'plz go away!!'
     end
   end
 
-  class ActionManaged
-    include Hanami::Action
+  class ActionManaged < Hanami::Action
     handle_exception HandledException => 400
 
     def call(_params)
@@ -45,8 +38,7 @@ module Errors
     end
   end
 
-  class ActionManagedSubclass
-    include Hanami::Action
+  class ActionManagedSubclass < Hanami::Action
     handle_exception HandledException => 400
 
     def call(_params)
@@ -54,9 +46,7 @@ module Errors
     end
   end
 
-  class FrameworkManaged
-    include Hanami::Action
-
+  class FrameworkManaged < Hanami::Action
     def call(_params)
       raise FrameworkHandledException
     end
@@ -91,8 +81,7 @@ module Errors
 end
 
 module DisabledErrors
-  class ActionManaged
-    include Hanami::Action
+  class ActionManaged < Hanami::Action
     handle_exception HandledException => 400
 
     def call(_params)
@@ -100,9 +89,7 @@ module DisabledErrors
     end
   end
 
-  class FrameworkManaged
-    include Hanami::Action
-
+  class FrameworkManaged < Hanami::Action
     def call(_params)
       raise FrameworkHandledException
     end

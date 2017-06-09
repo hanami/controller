@@ -96,9 +96,7 @@ RSpec.describe Hanami::Action do
 
   describe "#request" do
     it "gets a Rack-like request object" do
-      action_class = Class.new do
-        include Hanami::Action
-
+      action_class = Class.new(Hanami::Action) do
         expose :req
 
         def call(_)
@@ -117,9 +115,7 @@ RSpec.describe Hanami::Action do
 
   describe "#parsed_request_body" do
     it "exposes the body of the request parsed by router body parsers" do
-      action_class = Class.new do
-        include Hanami::Action
-
+      action_class = Class.new(Hanami::Action) do
         expose :request_body
 
         def call(_)

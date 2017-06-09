@@ -1,7 +1,7 @@
 require 'hanami/utils/hash'
 
 module Hanami
-  module Action
+  class Action
     # A set of HTTP Cookies
     #
     # It acts as an Hash

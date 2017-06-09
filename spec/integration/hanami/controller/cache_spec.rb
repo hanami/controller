@@ -2,8 +2,7 @@ require 'hanami/router'
 require 'hanami/action/cache'
 
 module CacheControl
-  class Default
-    include Hanami::Action
+  class Default < Hanami::Action
     include Hanami::Action::Cache
 
     cache_control :public, max_age: 600
@@ -12,8 +11,7 @@ module CacheControl
     end
   end
 
-  class Overriding
-    include Hanami::Action
+  class Overriding < Hanami::Action
     include Hanami::Action::Cache
 
     cache_control :public, max_age: 600
@@ -23,8 +21,7 @@ module CacheControl
     end
   end
 
-  class Symbol
-    include Hanami::Action
+  class Symbol < Hanami::Action
     include Hanami::Action::Cache
 
     def call(_params)
@@ -32,8 +29,7 @@ module CacheControl
     end
   end
 
-  class Symbols
-    include Hanami::Action
+  class Symbols < Hanami::Action
     include Hanami::Action::Cache
 
     def call(_params)
@@ -41,8 +37,7 @@ module CacheControl
     end
   end
 
-  class Hash
-    include Hanami::Action
+  class Hash < Hanami::Action
     include Hanami::Action::Cache
 
     def call(_params)
@@ -50,8 +45,7 @@ module CacheControl
     end
   end
 
-  class PrivatePublic
-    include Hanami::Action
+  class PrivatePublic < Hanami::Action
     include Hanami::Action::Cache
 
     def call(_params)
@@ -86,8 +80,7 @@ module CacheControl
 end
 
 module Expires
-  class Default
-    include Hanami::Action
+  class Default < Hanami::Action
     include Hanami::Action::Cache
 
     expires 900, :public, :no_cache
@@ -96,8 +89,7 @@ module Expires
     end
   end
 
-  class Overriding
-    include Hanami::Action
+  class Overriding < Hanami::Action
     include Hanami::Action::Cache
 
     expires 900, :public, :no_cache
@@ -107,8 +99,7 @@ module Expires
     end
   end
 
-  class Symbol
-    include Hanami::Action
+  class Symbol < Hanami::Action
     include Hanami::Action::Cache
 
     def call(_params)
@@ -116,8 +107,7 @@ module Expires
     end
   end
 
-  class Symbols
-    include Hanami::Action
+  class Symbols < Hanami::Action
     include Hanami::Action::Cache
 
     def call(_params)
@@ -125,8 +115,7 @@ module Expires
     end
   end
 
-  class Hash
-    include Hanami::Action
+  class Hash < Hanami::Action
     include Hanami::Action::Cache
 
     def call(_params)
@@ -160,8 +149,7 @@ module Expires
 end
 
 module ConditionalGet
-  class Etag
-    include Hanami::Action
+  class Etag < Hanami::Action
     include Hanami::Action::Cache
 
     def call(_params)
@@ -169,8 +157,7 @@ module ConditionalGet
     end
   end
 
-  class LastModified
-    include Hanami::Action
+  class LastModified < Hanami::Action
     include Hanami::Action::Cache
 
     def call(_params)
@@ -178,8 +165,7 @@ module ConditionalGet
     end
   end
 
-  class EtagLastModified
-    include Hanami::Action
+  class EtagLastModified < Hanami::Action
     include Hanami::Action::Cache
 
     def call(_params)

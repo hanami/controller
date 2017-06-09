@@ -1,7 +1,7 @@
 require 'hanami/action/cookie_jar'
 
 module Hanami
-  module Action
+  class Action
     # Cookies API
     #
     # This module isn't included by default.
