@@ -44,6 +44,16 @@ module Hanami
         def initialize(configuration: self.class.configuration, **args)
           super(**args)
           @configuration = configuration
+          @accepted_mime_types = @configuration.restrict_mime_types(
+              self.class.accepted_formats.map do |format|
+                format_to_mime_type(format)
+              end
+            )
+
+          if @accepted_mime_types.any?
+            @accepted_mime_types = @configuration.restrict_mime_types!(@accepted_mime_types)
+          end
+
           # FIXME: this has to be removed when Hanami::Controller.finalize is implemented
           @configuration.copy!(self.class)
         end

@@ -109,18 +109,16 @@ module Hanami
       # @see http://www.ruby-doc.org/core-2.1.2/Module.html#method-i-included
       def self.included(base)
         base.class_eval do
+          @accepted_formats = []
+
           extend ClassMethods
           prepend InstanceMethods
         end
       end
 
       module ClassMethods
-        # @since 0.2.0
-        # @api private
-        def format_to_mime_type(format)
-          configuration.mime_type_for(format) ||
-            MIME_TYPES[format] or
-            raise Hanami::Controller::UnknownFormatError.new(format)
+        def accepted_formats
+          @accepted_formats || []
         end
 
         private
@@ -153,17 +151,8 @@ module Hanami
         #   # When called with "application/json" => 200
         #   # When called with "application/xml"  => 406
         def accept(*formats)
-          mime_types = formats.map do |format|
-            format_to_mime_type(format)
-          end
-
-          configuration.restrict_mime_types!(mime_types)
-
-          before do
-            unless mime_types.find {|mt| accept?(mt) }
-              halt 406
-            end
-          end
+          @accepted_formats = *formats
+          before :enforce_accepted_mime_types
         end
       end
 
@@ -453,7 +442,7 @@ module Hanami
       #   action.format           # => :custom
       def format=(format)
         @format       = Utils::Kernel.Symbol(format)
-        @content_type = self.class.format_to_mime_type(@format)
+        @content_type = format_to_mime_type(@format)
       end
 
       # Match the given mime type with the Accept header
@@ -507,6 +496,12 @@ module Hanami
         accept != DEFAULT_ACCEPT
       end
 
+      def enforce_accepted_mime_types
+        return unless @accepted_mime_types.find { |mt| accept?(mt) }.nil?
+
+        halt 406
+      end
+
       # Look at the Accept header for the current request and see if it
       # matches any of the common MIME types (see Hanami::Action::Mime#MIME_TYPES)
       # or the custom registered ones (see Hanami::Controller::Configuration#format).
@@ -527,15 +522,21 @@ module Hanami
       # @since 0.5.0
       # @api private
       def default_response_type
-        self.class.format_to_mime_type(configuration.default_response_format) if configuration.default_response_format
+        format_to_mime_type(configuration.default_response_format) if configuration.default_response_format
       end
 
       # @since 0.2.0
       # @api private
       def default_content_type
-        self.class.format_to_mime_type(
+        format_to_mime_type(
           configuration.default_request_format
         ) if configuration.default_request_format
+      end
+
+      def format_to_mime_type(format)
+        configuration.mime_type_for(format) ||
+          MIME_TYPES[format] or
+          raise Hanami::Controller::UnknownFormatError.new(format)
       end
 
       # @since 0.2.0
