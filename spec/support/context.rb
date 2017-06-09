@@ -3,12 +3,7 @@ module RSpec
     module Context
       def self.included(base)
         base.class_eval do
-          let(:configuration) do
-            configuration = Hanami::Controller::Configuration.new do |config|
-            end
-
-            # Hanami::Controller.finalize(configuration)
-          end
+          let(:configuration) { Hanami::Controller::Configuration.new }
         end
       end
     end

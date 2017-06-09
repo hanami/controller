@@ -120,6 +120,7 @@ module Hanami
         @root_directory          = ::Pathname.new(Dir.pwd).realpath
         @public_directory        = root_directory.join(DEFAULT_PUBLIC_DIRECTORY).to_s
         instance_eval(&blk) unless blk.nil?
+        freeze
       end
 
       # Handle exceptions with an HTTP status or let them uncaught
@@ -225,7 +226,6 @@ module Hanami
         symbol, mime_type = *Utils::Kernel.Array(hash)
 
         @formats[Utils::Kernel.String(mime_type)] = Utils::Kernel.Symbol(symbol)
-        @mime_types = nil
       end
 
       # Return the configured format's MIME types
@@ -236,10 +236,9 @@ module Hanami
       # @see Hanami::Controller::Configuration#format
       # @see Hanami::Action::Mime::MIME_TYPES
       def mime_types
-        @mime_types ||= begin
-                          ((@formats.keys - DEFAULT_FORMATS.keys) +
-                          Hanami::Action::Mime::MIME_TYPES.values).freeze
-                        end
+        # FIXME: this isn't efficient. speed it up!
+        ((@formats.keys - DEFAULT_FORMATS.keys) +
+         Hanami::Action::Mime::MIME_TYPES.values).freeze
       end
 
       def restrict_mime_types(mime_types)

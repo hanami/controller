@@ -1,5 +1,11 @@
 RSpec.describe Hanami::Controller::Configuration do
-  let(:configuration) { Hanami::Controller::Configuration.new }
+  let(:configuration) { described_class.new }
+
+  describe "#initialize" do
+    it "returns a frozen instance" do
+      expect(configuration).to be_frozen
+    end
+  end
 
   describe 'handle exceptions' do
     it 'returns true by default' do
@@ -7,7 +13,10 @@ RSpec.describe Hanami::Controller::Configuration do
     end
 
     it 'allows to set the value with a writer' do
-      configuration.handle_exceptions = false
+      configuration = described_class.new do |config|
+        config.handle_exceptions = false
+      end
+
       expect(configuration.handle_exceptions).to be(false)
     end
   end
@@ -18,15 +27,16 @@ RSpec.describe Hanami::Controller::Configuration do
     end
 
     it 'allows to set an exception' do
-      configuration.handle_exception ArgumentError => 400
+      configuration = described_class.new do |config|
+        config.handle_exception ArgumentError => 400
+      end
+
       expect(configuration.handled_exceptions).to include(ArgumentError)
     end
   end
 
   describe '#format' do
     before do
-      configuration.format custom: 'custom/format'
-
       BaseObject = Class.new(BasicObject) do
         def hash
           23
@@ -36,6 +46,12 @@ RSpec.describe Hanami::Controller::Configuration do
 
     after do
       Object.send(:remove_const, :BaseObject)
+    end
+
+    let(:configuration) do
+      described_class.new do |config|
+        config.format custom: 'custom/format'
+      end
     end
 
     it 'registers the given format' do
@@ -52,8 +68,10 @@ RSpec.describe Hanami::Controller::Configuration do
   end
 
   describe '#mime_types' do
-    before do
-      configuration.format custom: 'custom/format'
+    let(:configuration) do
+      described_class.new do |config|
+        config.format custom: 'custom/format'
+      end
     end
 
     it 'returns all known MIME types' do
@@ -78,8 +96,10 @@ RSpec.describe Hanami::Controller::Configuration do
     end
 
     describe "when set" do
-      before do
-        configuration.default_request_format = :html
+      let(:configuration) do
+        described_class.new do |config|
+          config.default_request_format = :html
+        end
       end
 
       it 'returns the value' do
@@ -88,7 +108,11 @@ RSpec.describe Hanami::Controller::Configuration do
     end
 
     it 'raises an error if the given format cannot be coerced into symbol' do
-      expect { configuration.default_request_format = 23 }.to raise_error(TypeError)
+      expect do
+        described_class.new do |config|
+          config.default_request_format = 23
+        end
+      end.to raise_error(TypeError)
     end
   end
 
@@ -100,8 +124,10 @@ RSpec.describe Hanami::Controller::Configuration do
     end
 
     describe "when set" do
-      before do
-        configuration.default_response_format = :json
+      let(:configuration) do
+        described_class.new do |config|
+          config.default_response_format = :json
+        end
       end
 
       it 'returns the value' do
@@ -110,7 +136,11 @@ RSpec.describe Hanami::Controller::Configuration do
     end
 
     it 'raises an error if the given format cannot be coerced into symbol' do
-      expect { configuration.default_response_format = 23 }.to raise_error(TypeError)
+      expect do
+        described_class.new do |config|
+          config.default_response_format = 23
+        end
+      end.to raise_error(TypeError)
     end
   end
 
@@ -122,8 +152,10 @@ RSpec.describe Hanami::Controller::Configuration do
     end
 
     describe "when set" do
-      before do
-        configuration.default_charset = 'latin1'
+      let(:configuration) do
+        described_class.new do |config|
+          config.default_charset = 'latin1'
+        end
       end
 
       it 'returns the value' do
@@ -140,8 +172,10 @@ RSpec.describe Hanami::Controller::Configuration do
     end
 
     describe 'with custom defined formats' do
-      before do
-        configuration.format htm: 'text/html'
+      let(:configuration) do
+        described_class.new do |config|
+          config.format htm: 'text/html'
+        end
       end
 
       it 'returns the custom defined mime type, which takes the precedence over the builtin value' do
@@ -157,8 +191,10 @@ RSpec.describe Hanami::Controller::Configuration do
     end
 
     describe 'with custom defined formats' do
-      before do
-        configuration.format htm: 'text/html'
+      let(:configuration) do
+        described_class.new do |config|
+          config.format htm: 'text/html'
+        end
       end
 
       it 'returns the custom defined format, which takes the precedence over the builtin value' do
@@ -174,35 +210,26 @@ RSpec.describe Hanami::Controller::Configuration do
       end
     end
 
-    describe "when set" do
-      let(:headers) { { 'X-Frame-Options' => 'DENY' } }
-
-      before do
-        configuration.default_headers(headers)
+    context "when set" do
+      let(:configuration) do
+        h = headers
+        described_class.new do |config|
+          config.default_headers(h)
+        end
       end
+
+      let(:headers) { { 'X-Frame-Options' => 'DENY' } }
 
       it 'returns the value' do
         expect(configuration.default_headers).to eq(headers)
       end
 
-      describe "multiple times" do
-        before do
-          configuration.default_headers(headers)
-          configuration.default_headers('X-Foo' => 'BAR')
-        end
-
-        it 'returns the value' do
-          expect(configuration.default_headers).to eq(
-            'X-Frame-Options' => 'DENY',
-            'X-Foo'           => 'BAR'
-          )
-        end
-      end
-
-      describe "with nil values" do
-        before do
-          configuration.default_headers(headers)
-          configuration.default_headers('X-NIL' => nil)
+      context "with nil values" do
+        let(:configuration) do
+          h = headers
+          described_class.new do |config|
+            config.default_headers(h.merge('X-NIL' => nil))
+          end
         end
 
         it 'rejects those' do
@@ -225,8 +252,10 @@ RSpec.describe Hanami::Controller::Configuration do
     end
 
     describe "when set with relative path" do
-      before do
-        configuration.public_directory = 'static'
+      let(:configuration) do
+        described_class.new do |config|
+          config.public_directory = 'static'
+        end
       end
 
       it "returns the value" do
@@ -240,8 +269,10 @@ RSpec.describe Hanami::Controller::Configuration do
     end
 
     describe "when set with absolute path" do
-      before do
-        configuration.public_directory = ::File.join(Dir.pwd, 'absolute')
+      let(:configuration) do
+        described_class.new do |config|
+          config.public_directory = ::File.join(Dir.pwd, 'absolute')
+        end
       end
 
       it "returns the value" do
