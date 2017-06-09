@@ -96,7 +96,7 @@ end
 class CallAction < Hanami::Action
   def call(req, res)
     res.status = 201
-    self.body    = 'Hi from TestAction!'
+    res.body   = 'Hi from TestAction!'
     self.headers.merge!({ 'X-Custom' => 'OK' })
   end
 end
@@ -378,7 +378,7 @@ class GetCookiesAction < Hanami::Action
   include Hanami::Action::Cookies
 
   def call(req, res)
-    self.body = cookies[:foo]
+    res.body = cookies[:foo]
   end
 end
 
@@ -386,7 +386,7 @@ class ChangeCookiesAction < Hanami::Action
   include Hanami::Action::Cookies
 
   def call(req, res)
-    self.body = cookies[:foo]
+    res.body = cookies[:foo]
     cookies[:foo] = 'baz'
   end
 end
@@ -395,7 +395,7 @@ class GetDefaultCookiesAction < Hanami::Action
   include Hanami::Action::Cookies
 
   def call(req, res)
-    self.body = ''
+    res.body = ''
     cookies[:bar] = 'foo'
   end
 end
@@ -404,7 +404,7 @@ class GetOverwrittenCookiesAction < Hanami::Action
   include Hanami::Action::Cookies
 
   def call(req, res)
-    self.body = ''
+    res.body = ''
     cookies[:bar] = { value: 'foo', domain: 'hanamirb.com', path: '/action', secure: false, httponly: false }
   end
 end
@@ -421,7 +421,7 @@ class SetCookiesAction < Hanami::Action
   include Hanami::Action::Cookies
 
   def call(req, res)
-    self.body = 'yo'
+    res.body = 'yo'
     cookies[:foo] = 'yum!'
   end
 end
@@ -466,7 +466,7 @@ class ThrowBeforeMethodAction < Hanami::Action
   before :set_body
 
   def call(req, res)
-    self.body = 'Hello!'
+    res.body = 'Hello!'
   end
 
   private
@@ -475,16 +475,16 @@ class ThrowBeforeMethodAction < Hanami::Action
   end
 
   def set_body
-    self.body = 'Hi!'
+    res.body = 'Hi!'
   end
 end
 
 class ThrowBeforeBlockAction < Hanami::Action
   before { halt 401 }
-  before { self.body = 'Hi!' }
+  before { res.body = 'Hi!' }
 
   def call(req, res)
-    self.body = 'Hello!'
+    res.body = 'Hello!'
   end
 end
 
@@ -493,7 +493,7 @@ class ThrowAfterMethodAction < Hanami::Action
   after :set_body
 
   def call(req, res)
-    self.body = 'Hello!'
+    res.body = 'Hello!'
   end
 
   private
@@ -502,16 +502,16 @@ class ThrowAfterMethodAction < Hanami::Action
   end
 
   def set_body
-    self.body = 'Later!'
+    res.body = 'Later!'
   end
 end
 
 class ThrowAfterBlockAction < Hanami::Action
   after { halt 408 }
-  after { self.body = 'Later!' }
+  after { res.body = 'Later!' }
 
   def call(req, res)
-    self.body = 'Hello!'
+    res.body = 'Hello!'
   end
 end
 
@@ -540,7 +540,7 @@ end
 
 class ParamsAction < Hanami::Action
   def call(req, res)
-    self.body = params.to_h.inspect
+    res.body = params.to_h.inspect
   end
 end
 
@@ -557,7 +557,7 @@ class WhitelistedParamsAction < Hanami::Action
   params Params
 
   def call(req, res)
-    self.body = params.to_h.inspect
+    res.body = params.to_h.inspect
   end
 end
 
@@ -567,7 +567,7 @@ class WhitelistedDslAction < Hanami::Action
   end
 
   def call(req, res)
-    self.body = params.to_h.inspect
+    res.body = params.to_h.inspect
   end
 end
 
@@ -578,7 +578,7 @@ class WhitelistedUploadDslAction < Hanami::Action
   end
 
   def call(req, res)
-    self.body = params.to_h.inspect
+    res.body = params.to_h.inspect
   end
 end
 
@@ -627,7 +627,7 @@ end
 
 class Root < Hanami::Action
   def call(req, res)
-    self.body = params.to_h.inspect
+    res.body = params.to_h.inspect
     headers.merge!({'X-Test' => 'test'})
   end
 end
@@ -635,14 +635,14 @@ end
 module About
   class Team < Hanami::Action
     def call(req, res)
-      self.body = params.to_h.inspect
+      res.body = params.to_h.inspect
       headers.merge!({'X-Test' => 'test'})
     end
   end
 
   class Contacts < Hanami::Action
     def call(req, res)
-      self.body = params.to_h.inspect
+      res.body = params.to_h.inspect
     end
   end
 end
@@ -650,37 +650,37 @@ end
 module Identity
   class Show < Hanami::Action
     def call(req, res)
-      self.body = params.to_h.inspect
+      res.body = params.to_h.inspect
     end
   end
 
   class New < Hanami::Action
     def call(req, res)
-      self.body = params.to_h.inspect
+      res.body = params.to_h.inspect
     end
   end
 
   class Create < Hanami::Action
     def call(req, res)
-      self.body = params.to_h.inspect
+      res.body = params.to_h.inspect
     end
   end
 
   class Edit < Hanami::Action
     def call(req, res)
-      self.body = params.to_h.inspect
+      res.body = params.to_h.inspect
     end
   end
 
   class Update < Hanami::Action
     def call(req, res)
-      self.body = params.to_h.inspect
+      res.body = params.to_h.inspect
     end
   end
 
   class Destroy < Hanami::Action
     def call(req, res)
-      self.body = params.to_h.inspect
+      res.body = params.to_h.inspect
     end
   end
 end
@@ -688,43 +688,43 @@ end
 module Flowers
   class Index < Hanami::Action
     def call(req, res)
-      self.body = params.to_h.inspect
+      res.body = params.to_h.inspect
     end
   end
 
   class Show < Hanami::Action
     def call(req, res)
-      self.body = params.to_h.inspect
+      res.body = params.to_h.inspect
     end
   end
 
   class New < Hanami::Action
     def call(req, res)
-      self.body = params.to_h.inspect
+      res.body = params.to_h.inspect
     end
   end
 
   class Create < Hanami::Action
     def call(req, res)
-      self.body = params.to_h.inspect
+      res.body = params.to_h.inspect
     end
   end
 
   class Edit < Hanami::Action
     def call(req, res)
-      self.body = params.to_h.inspect
+      res.body = params.to_h.inspect
     end
   end
 
   class Update < Hanami::Action
     def call(req, res)
-      self.body = params.to_h.inspect
+      res.body = params.to_h.inspect
     end
   end
 
   class Destroy < Hanami::Action
     def call(req, res)
-      self.body = params.to_h.inspect
+      res.body = params.to_h.inspect
     end
   end
 end
@@ -746,7 +746,7 @@ module Painters
     end
 
     def call(req, res)
-      self.body = params.to_h.inspect
+      res.body = params.to_h.inspect
     end
   end
 end
@@ -757,7 +757,7 @@ module Dashboard
     before :authenticate!
 
     def call(req, res)
-      self.body = "User ID from session: #{session[:user_id]}"
+      res.body = "User ID from session: #{session[:user_id]}"
     end
 
     private
@@ -879,7 +879,7 @@ module MusicPlayer
         include MusicPlayer::Controllers::Authentication
 
         def call(req, res)
-          self.body = 'Muzic!'
+          res.body = 'Muzic!'
           headers['X-Frame-Options'] = 'ALLOW FROM https://example.org'
         end
       end
@@ -902,7 +902,7 @@ module MusicPlayer
         include MusicPlayer::Controllers::Authentication
 
         def call(req, res)
-          self.body = current_user
+          res.body = current_user
         end
       end
 
@@ -947,7 +947,7 @@ class VisibilityAction < Hanami::Action
   include Hanami::Action::Session
 
   def call(req, res)
-    self.body   = 'x'
+    res.body   = 'x'
     res.status = 201
     self.format = :json
 
@@ -1004,7 +1004,7 @@ module SendFileTest
           when 'html'
             # in reality we'd render a template here, but as a test fixture, we'll simulate that answer
             # we should have also checked #accept? but w/e
-            self.body = ::File.read(Pathname.new("spec/support/fixtures/#{@resource.asset_path}.html"))
+            res.body = ::File.read(Pathname.new("spec/support/fixtures/#{@resource.asset_path}.html"))
             res.status = 200
             self.format = :html
           when 'json', nil
@@ -1109,7 +1109,7 @@ module HeadTest
       include Hanami::Action::Session
 
       def call(req, res)
-        self.body = 'index'
+        res.body = 'index'
       end
     end
 
@@ -1133,7 +1133,7 @@ module HeadTest
         )
 
         res.status = params[:code].to_i
-        self.body   = 'code'
+        res.body   = 'code'
       end
     end
 
@@ -1206,7 +1206,7 @@ module FullStack
 
         def call(req, res)
           headers['X-Renderable'] = renderable?.to_s
-          self.body = 'foo'
+          res.body = 'foo'
         end
       end
     end
@@ -1254,7 +1254,7 @@ module FullStack
           valid = params.valid?
 
           res.status = 201
-          self.body = JSON.generate({
+          res.body = JSON.generate({
             symbol_access: params[:book][:author] && params[:book][:author][:name],
             valid: valid,
             errors: params.errors.to_h
@@ -1329,7 +1329,7 @@ module FullStack
         after :set_body
 
         def call(req, res)
-          self.body = "call method shouldn't be called"
+          res.body = "call method shouldn't be called"
         end
 
         private
@@ -1339,7 +1339,7 @@ module FullStack
         end
 
         def set_body
-          self.body = "after callback shouldn't be called"
+          res.body = "after callback shouldn't be called"
         end
       end
     end
@@ -1401,7 +1401,7 @@ end
 
 class MethodInspectionAction < Hanami::Action
   def call(req, res)
-    self.body = request_method
+    res.body = request_method
   end
 end
 
@@ -1541,14 +1541,14 @@ end
 
 module Mimes
   class Default < Hanami::Action
-    def call(*)
-      self.body = format
+    def call(_req, res)
+      res.body = format
     end
   end
 
   class Configuration < Hanami::Action
-    def call(*)
-      self.body = format
+    def call(_req, res)
+      res.body = format
     end
 
     private
@@ -1563,44 +1563,44 @@ module Mimes
   end
 
   class Custom < Hanami::Action
-    def call(*)
+    def call(_req, res)
       self.format = :xml
-      self.body   = format
+      res.body    = format
     end
   end
 
   class Latin < Hanami::Action
-    def call(*)
+    def call(_req, res)
       self.charset = 'latin1'
       self.format  = :html
-      self.body    = format
+      res.body     = format
     end
   end
 
   class Accept < Hanami::Action
-    def call(*)
+    def call(_req, res)
       headers['X-AcceptDefault'] = accept?('application/octet-stream').to_s
       headers['X-AcceptHtml']    = accept?('text/html').to_s
       headers['X-AcceptXml']     = accept?('application/xml').to_s
       headers['X-AcceptJson']    = accept?('text/json').to_s
 
-      self.body = format
+      res.body = format
     end
   end
 
   class CustomFromAccept < Hanami::Action
     accept :json, :custom
 
-    def call(*)
-      self.body = format
+    def call(_req, res)
+      res.body = format
     end
   end
 
   class Restricted < Hanami::Action
     accept :html, :json, :custom
 
-    def call(*)
-      self.body = format.to_s
+    def call(_req, res)
+      res.body = format.to_s
     end
   end
 
@@ -1611,8 +1611,8 @@ module Mimes
   end
 
   class DefaultResponse < Hanami::Action
-    def call(*)
-      self.body = default_request_format
+    def call(_req, res)
+      res.body = default_request_format
     end
 
     private

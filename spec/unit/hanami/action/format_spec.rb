@@ -18,8 +18,8 @@ RSpec.describe Hanami::Action do
     end
 
     class Configuration < Hanami::Action
-      def call(*)
-        self.body = format
+      def call(_req, res)
+        res.body = format
       end
 
       private

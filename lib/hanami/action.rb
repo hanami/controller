@@ -92,12 +92,6 @@ module Hanami
       'extension-header' => true
     }.freeze
 
-    # The default Rack response body
-    #
-    # @since 0.1.0
-    # @api private
-    DEFAULT_RESPONSE_BODY = []
-
     # The default HTTP Request ID length
     #
     # @since 0.3.0
@@ -604,7 +598,6 @@ module Hanami
     end
 
     def initialize(**)
-      @_body   = nil
       @content_type = nil
       @charset      = nil
     end
@@ -810,7 +803,7 @@ module Hanami
     # @see Hanami::Action::Rack#headers
     # @see Hanami::Action::Rack#body=
     def serialized_response
-      [ response.status, headers, @_body || DEFAULT_RESPONSE_BODY.dup ]
+      [ response.status, headers, response.body ]
     end
 
     # Calculates an unique ID for the current request
@@ -905,7 +898,7 @@ module Hanami
     # @see Hanami::Http::Status:ALL
     def status(code, message)
       response.status = code
-      self.body   = message
+      response.body   = message
     end
 
     # @since 0.3.2
@@ -917,29 +910,6 @@ module Hanami
     private
 
     attr_reader :configuration
-
-    # Sets the body of the response
-    #
-    # @param body [String] the body of the response
-    # @return [void]
-    #
-    # @since 0.1.0
-    #
-    # @example
-    #   require 'hanami/controller'
-    #
-    #   class Show
-    #     include Hanami::Action
-    #
-    #     def call(params)
-    #       # ...
-    #       self.body = 'Hi!'
-    #     end
-    #   end
-    def body=(body)
-      body   = Array(body) unless body.respond_to?(:each)
-      @_body = body
-    end
 
     # Send a file as response.
     #  <tt>This method only sends files from the public directory</tt>
@@ -1516,7 +1486,7 @@ module Hanami
       headers[CONTENT_TYPE] ||= content_type_with_charset
 
       if _requires_no_body?
-        @_body = nil
+        response.body = nil
         @headers.reject! {|header,_| !keep_response_header?(header) }
       end
 

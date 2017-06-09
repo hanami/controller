@@ -29,24 +29,24 @@ RSpec.describe 'Without validations' do
 
   it "has params that don't respond to .valid?" do
     action = Class.new(Hanami::Action) do
-      def call(req, *)
-        self.body = [req.params.respond_to?(:valid?), params.valid?]
+      def call(req, res)
+        res.body = [req.params.respond_to?(:valid?), params.valid?]
       end
     end
 
     _, _, body = action.new(configuration: configuration).call({})
-    expect(body).to eq([true, true])
+    expect(body).to eq(["[true, true]"])
   end
 
   it "has params that don't respond to .errors" do
     action = Class.new(Hanami::Action) do
-      def call(req, *)
-        self.body = req.params.respond_to?(:errors)
+      def call(req, res)
+        res.body = req.params.respond_to?(:errors)
       end
     end
 
     _, _, body = action.new(configuration: configuration).call({})
-    expect(body).to eq([false])
+    expect(body).to eq(["false"])
   end
 end
 
