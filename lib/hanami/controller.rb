@@ -55,24 +55,5 @@ module Hanami
     # @api private
     class_attribute :configuration
     self.configuration = Configuration.new
-
-    # Configure the framework.
-    # It yields the given block in the context of the configuration
-    #
-    # @param blk [Proc] the configuration block
-    #
-    # @since 0.2.0
-    #
-    # @see Hanami::Controller::Configuration
-    #
-    # @example
-    #   require 'hanami/controller'
-    #
-    #   Hanami::Controller.configure do
-    #     handle_exceptions false
-    #   end
-    def self.configure
-      yield configuration
-    end
   end
 end
