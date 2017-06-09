@@ -1,4 +1,3 @@
-require 'hanami/utils/class_attribute'
 require 'hanami/action'
 require 'hanami/controller/configuration'
 require 'hanami/controller/version'
@@ -46,14 +45,5 @@ module Hanami
         super("Cannot find a corresponding Mime type for '#{ format }'. Please configure it with Hanami::Controller::Configuration#format.")
       end
     end
-
-    include Utils::ClassAttribute
-
-    # Framework configuration
-    #
-    # @since 0.2.0
-    # @api private
-    class_attribute :configuration
-    self.configuration = Configuration.new
   end
 end
