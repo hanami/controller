@@ -44,63 +44,6 @@ module Hanami
         'text/html'                => :html
       }.freeze
 
-      # Return a copy of the configuration of the framework instance associated
-      # with the given class.
-      #
-      # When multiple instances of Hanami::Controller are used in the same
-      # application, we want to make sure that a controller or an action will
-      # receive the expected configuration.
-      #
-      # @param base [Class, Module] a controller or an action
-      #
-      # @return [Hanami::Controller::Configuration] the configuration associated
-      #   to the given class.
-      #
-      # @since 0.2.0
-      # @api private
-      #
-      # @example Direct usage of the framework
-      #   require 'hanami/controller'
-      #
-      #   class Show
-      #     include Hanami::Action
-      #   end
-      #
-      #   Hanami::Controller::Configuration.for(Show)
-      #     # => will duplicate from Hanami::Controller
-      #
-      # @example Multiple instances of the framework
-      #   require 'hanami/controller'
-      #
-      #   module MyApp
-      #     Controller = Hanami::Controller.duplicate(self)
-      #
-      #     module Controllers::Dashboard
-      #       class Index
-      #         include MyApp::Action
-      #
-      #         def call(params)
-      #           # ...
-      #         end
-      #       end
-      #     end
-      #   end
-      #
-      #   class Show
-      #     include Hanami::Action
-      #   end
-      #
-      #   Hanami::Controller::Configuration.for(Show)
-      #     # => will duplicate from Hanami::Controller
-      #
-      #   Hanami::Controller::Configuration.for(MyApp::Controllers::Dashboard)
-      #     # => will duplicate from MyApp::Controller
-      def self.for(base)
-        namespace = Utils::String.new(base).namespace
-        framework = Utils::Class.load_from_pattern!("(#{namespace}|Hanami)::Controller")
-        framework.configuration.duplicate
-      end
-
       # Initialize a configuration instance
       #
       # @return [Hanami::Controller::Configuration] a new configuration's
