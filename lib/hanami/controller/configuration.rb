@@ -242,18 +242,6 @@ module Hanami
                         end
       end
 
-      # Restrict the MIME types set only to the given set
-      #
-      # @param mime_types [Array] the set of MIME types
-      #
-      # @since 1.0.0
-      # @api private
-      #
-      # @see Hanami::Action::Mime::ClassMethods#accept
-      def restrict_mime_types!(mime_types)
-        @mime_types = self.mime_types & mime_types
-      end
-
       def restrict_mime_types(mime_types)
         mime_types & self.mime_types
       end
