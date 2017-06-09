@@ -1,42 +1,11 @@
 RSpec.describe Hanami::Controller do
   describe ".configuration" do
-    before do
-      Hanami::Controller.unload!
-
-      module ConfigurationAction
-        include Hanami::Action
-      end
-    end
-
-    after do
-      Object.send(:remove_const, :ConfigurationAction)
-    end
-
     it "exposes class configuration" do
       expect(Hanami::Controller.configuration).to be_kind_of(Hanami::Controller::Configuration)
-    end
-
-    it "handles exceptions by default" do
-      expect(Hanami::Controller.configuration.handle_exceptions).to be(true)
-    end
-
-    it "inheriths the configuration from the framework" do
-      expected = Hanami::Controller.configuration
-      actual   = ConfigurationAction.configuration
-
-      expect(actual).to eq(expected)
     end
   end
 
   describe ".configure" do
-    before do
-      Hanami::Controller.unload!
-    end
-
-    after do
-      Hanami::Controller.unload!
-    end
-
     it "allows to configure the framework" do
       Hanami::Controller.class_eval do
         configure do |config|
@@ -87,8 +56,6 @@ RSpec.describe Hanami::Controller do
     end
 
     after do
-      Hanami::Controller.unload!
-
       Object.send(:remove_const, :Duplicated)
       Object.send(:remove_const, :DuplicatedCustom)
       Object.send(:remove_const, :DuplicatedWithoutNamespace)

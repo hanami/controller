@@ -225,117 +225,6 @@ class ExposeReservedWordAction
   end
 end
 
-class ZMiddleware
-  def initialize(app, &message)
-    @app = app
-    @message = message
-  end
-
-  def call(env)
-    code, headers, body = @app.call(env)
-    [code, headers.merge!('Z-Middleware' => @message.call), body]
-  end
-end
-
-class YMiddleware
-  def initialize(app)
-    @app = app
-  end
-
-  def call(env)
-    code, headers, body = @app.call(env)
-    [code, headers.merge!('Y-Middleware' => 'OK'), body]
-  end
-end
-
-class XMiddleware
-  def initialize(app)
-    @app = app
-  end
-
-  def call(env)
-    code, headers, body = @app.call(env)
-    [code, headers.merge!('X-Middleware' => 'OK'), body]
-  end
-end
-
-module UseAction
-  class Index
-    include Hanami::Action
-    use XMiddleware
-
-    def call(params)
-      self.body = 'Hello from UseAction::Index'
-    end
-  end
-
-  class Show
-    include Hanami::Action
-    use YMiddleware
-
-    def call(params)
-      self.body = 'Hello from UseAction::Show'
-    end
-  end
-
-  class Edit
-    include Hanami::Action
-    use ZMiddleware do
-      'OK'
-    end
-
-    def call(params)
-      self.body = 'Hello from UseAction::Edit'
-    end
-  end
-
-  class Application
-    def initialize
-      router = Hanami::Router.new do
-        get "/", to: "use_action#index"
-        get "/show", to: "use_action#show"
-        get "/edit", to: "use_action#edit"
-      end
-
-      @app = Rack::Builder.new do
-        use Rack::Lint
-        run router
-      end.to_app
-    end
-
-    def call(env)
-      @app.call(env)
-    end
-  end
-end
-
-module NoUseAction
-  class Index
-    include Hanami::Action
-
-    def call(params)
-      self.body = 'Hello from NoUseAction::Index'
-    end
-  end
-
-  class Application
-    def initialize
-      router = Hanami::Router.new do
-        get "/", to: "no_use_action#index"
-      end
-
-      @app = Rack::Builder.new do
-        use Rack::Lint
-        run router
-      end.to_app
-    end
-
-    def call(env)
-      @app.call(env)
-    end
-  end
-end
-
 class BeforeMethodAction
   include Hanami::Action
 
@@ -403,12 +292,15 @@ class ErrorBeforeMethodAction < BeforeMethodAction
 end
 
 class HandledErrorBeforeMethodAction < BeforeMethodAction
-  configuration.handle_exceptions = true
   handle_exception RecordNotFound => 404
 
   private
   def set_article
     raise RecordNotFound.new
+  end
+
+  def handle_exceptions?
+    true
   end
 end
 
@@ -489,12 +381,15 @@ class ErrorAfterMethodAction < AfterMethodAction
 end
 
 class HandledErrorAfterMethodAction < AfterMethodAction
-  configuration.handle_exceptions = true
   handle_exception RecordNotFound => 404
 
   private
   def set_egg
     raise RecordNotFound.new
+  end
+
+  def handle_exceptions?
+    true
   end
 end
 
@@ -729,12 +624,6 @@ end
 class DomainLogicException < StandardError
 end
 
-Hanami::Controller.class_eval do
-  configure do |config|
-    config.handle_exception DomainLogicException => 400
-  end
-end
-
 class GlobalHandledExceptionAction
   include Hanami::Action
 
@@ -742,8 +631,6 @@ class GlobalHandledExceptionAction
     raise DomainLogicException.new
   end
 end
-
-Hanami::Controller.unload!
 
 class UnhandledExceptionAction
   include Hanami::Action
@@ -985,7 +872,6 @@ module Glued
   class SendFile
     include Hanami::Action
     include Hanami::Action::Glue
-    configuration.public_directory = "spec/support/fixtures"
 
     def call(params)
       send_file "test.txt"
@@ -1037,7 +923,7 @@ module App2
   module Standalone
     class Index
       include Hanami::Action
-      configuration.handle_exception App2::CustomError => 400
+      handle_exception App2::CustomError => 400
 
       def call(params)
         raise App2::CustomError
@@ -1133,8 +1019,6 @@ class VisibilityAction
   include Hanami::Action::Cookies
   include Hanami::Action::Session
 
-  configuration.handle_exceptions = false
-
   def call(params)
     self.body   = 'x'
     self.status = 201
@@ -1157,6 +1041,12 @@ class VisibilityAction
     response
     cookies
     session
+  end
+
+  private
+
+  def handle_exceptions?
+    false
   end
 end
 
@@ -1643,20 +1533,10 @@ class HandledRackExceptionSubclassAction
 end
 
 module SessionWithCookies
-  Controller = Hanami::Controller.duplicate(self) do |config|
-    config.handle_exceptions = false
-
-    config.prepare do
-      include Hanami::Action::Glue
-      include Hanami::Action::Session
-      include Hanami::Action::Cookies
-    end
-  end
-
   module Controllers
     module Home
       class Index
-        include SessionWithCookies::Action
+        include Hanami::Action
 
         def call(params)
         end
@@ -1678,20 +1558,31 @@ module SessionWithCookies
 
   class Application
     def initialize
-      resolver = Hanami::Routing::EndpointResolver.new(namespace: SessionWithCookies::Controllers)
-      routes   = Hanami::Router.new(resolver: resolver) do
-        get '/',     to: 'home#index'
+      configuration = Hanami::Controller::Configuration.new do |config|
+        config.handle_exceptions = false
+
+        config.prepare do
+          include Hanami::Action::Glue
+          include Hanami::Action::Session
+          include Hanami::Action::Cookies
+        end
       end
 
-      @renderer   = Renderer.new
-      @middleware = Rack::Builder.new do
+      resolver = EndpointResolver.new(configuration: configuration, namespace: SessionWithCookies::Controllers)
+      routes   = Hanami::Router.new(resolver: resolver) do
+        get '/', to: 'home#index'
+      end
+
+      @renderer = Renderer.new
+      @app = Rack::Builder.new do
+        use Rack::Lint
         use Rack::Session::Cookie, secret: SecureRandom.hex(16)
         run routes
-      end
+      end.to_app
     end
 
     def call(env)
-      @renderer.render(env, @middleware.call(env))
+      @renderer.render(env, @app.call(env))
     end
   end
 end
@@ -1761,11 +1652,18 @@ module Mimes
   class Configuration
     include Hanami::Action
 
-    configuration.default_request_format = :html
-    configuration.default_charset = 'ISO-8859-1'
-
     def call(_params)
       self.body = format
+    end
+
+    private
+
+    def default_request_format
+      :html
+    end
+
+    def default_charset
+      'ISO-8859-1'
     end
   end
 
@@ -1803,8 +1701,6 @@ module Mimes
 
   class CustomFromAccept
     include Hanami::Action
-
-    configuration.format custom: 'application/custom'
     accept :json, :custom
 
     def call(_params)
@@ -1814,8 +1710,6 @@ module Mimes
 
   class Restricted
     include Hanami::Action
-
-    configuration.format custom: 'application/custom'
     accept :html, :json, :custom
 
     def call(_params)
@@ -1834,27 +1728,44 @@ module Mimes
   class DefaultResponse
     include Hanami::Action
 
-    configuration.default_request_format = :html
-    configuration.default_response_format = :json
-
     def call(_params)
-      self.body = configuration.default_request_format
+      self.body = default_request_format
+    end
+
+    private
+
+    def default_request_format
+      :html
+    end
+
+    def default_response_format
+      :json
     end
   end
 
   class OverrideDefaultResponse
     include Hanami::Action
 
-    configuration.default_response_format = :json
-
     def call(_params)
       self.format = :xml
+    end
+
+    private
+
+    def default_response_format
+      :json
     end
   end
 
   class Application
     def initialize
-      @router = Hanami::Router.new do
+      configuration = Hanami::Controller::Configuration.new do |config|
+        config.format custom: 'application/custom'
+      end
+
+      resolver = EndpointResolver.new(configuration: configuration)
+
+      @router = Hanami::Router.new(resolver: resolver) do
         get '/',                   to: 'mimes#default'
         get '/custom',             to: 'mimes#custom'
         get '/configuration',      to: 'mimes#configuration'
@@ -1903,13 +1814,14 @@ module SessionIntegration
       configuration = Hanami::Controller::Configuration.new
       resolver      = EndpointResolver.new(configuration: configuration)
 
-      routes = Hanami::Router.new do
+      routes = Hanami::Router.new(resolver: resolver) do
         get    '/',       to: 'dashboard#index'
         post   '/login',  to: 'sessions#create'
         delete '/logout', to: 'sessions#destroy'
       end
 
       @app = Rack::Builder.new do
+        use Rack::Lint
         use Rack::Session::Cookie, secret: SecureRandom.hex(16)
         run routes
       end.to_app
@@ -1927,6 +1839,7 @@ module StandaloneSessionIntegration
       configuration = Hanami::Controller::Configuration.new
 
       @app = Rack::Builder.new do
+        use Rack::Lint
         use Rack::Session::Cookie, secret: SecureRandom.hex(16)
         run StandaloneSession.new(configuration: configuration)
       end

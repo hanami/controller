@@ -4,10 +4,6 @@ RSpec.describe "Framework freeze" do
       Hanami::Controller.load!
     end
 
-    after do
-      Hanami::Controller.unload!
-    end
-
     it "freezes framework configuration" do
       expect(Hanami::Controller.configuration).to be_frozen
     end

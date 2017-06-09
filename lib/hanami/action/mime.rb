@@ -522,15 +522,23 @@ module Hanami
       # @since 0.5.0
       # @api private
       def default_response_type
-        format_to_mime_type(configuration.default_response_format) if configuration.default_response_format
+        format_to_mime_type(default_response_format) if default_response_format
       end
 
       # @since 0.2.0
       # @api private
       def default_content_type
         format_to_mime_type(
-          configuration.default_request_format
-        ) if configuration.default_request_format
+          default_request_format
+        ) if default_request_format
+      end
+
+      def default_request_format
+        configuration.default_request_format
+      end
+
+      def default_response_format
+        configuration.default_response_format
       end
 
       def format_to_mime_type(format)

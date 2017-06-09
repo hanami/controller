@@ -1,10 +1,3 @@
-Hanami::Controller.class_eval do
-  def self.unload!
-    self.configuration = configuration.duplicate
-    configuration.reset!
-  end
-end
-
 Hanami::Controller::Configuration.class_eval do
   def ==(other)
     other.kind_of?(self.class) &&

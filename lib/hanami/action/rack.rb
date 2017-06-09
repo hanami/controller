@@ -1,7 +1,6 @@
 require 'securerandom'
 require 'hanami/action/request'
 require 'hanami/action/base_params'
-require 'hanami/action/rack/callable'
 require 'hanami/action/rack/file'
 
 module Hanami
@@ -100,52 +99,6 @@ module Hanami
 
       # @api private
       module ClassMethods
-        # Build rack builder
-        #
-        # @return [Rack::Builder]
-        # @api private
-        def rack_builder
-          @rack_builder ||= begin
-            extend Hanami::Action::Rack::Callable
-            rack_builder = ::Rack::Builder.new
-            rack_builder.run ->(env) { self.new.call(env) }
-            rack_builder
-          end
-        end
-
-        # Use a Rack middleware
-        #
-        # The middleware will be used as it is.
-        #
-        # At the runtime, the middleware be invoked with the raw Rack env.
-        #
-        # Multiple middlewares can be employed, just by using multiple times
-        # this method.
-        #
-        # @param middleware [#call] A Rack middleware
-        # @param args [Array] Array arguments for middleware
-        #
-        # @since 0.2.0
-        #
-        # @see Hanami::Action::Callbacks::ClassMethods#before
-        #
-        # @example Middleware
-        #   require 'hanami/controller'
-        #
-        #   module Sessions
-        #     class Create
-        #       include Hanami::Action
-        #       use OmniAuth
-        #
-        #       def call(params)
-        #         # ...
-        #       end
-        #     end
-        #   end
-        def use(middleware, *args, &block)
-          rack_builder.use middleware, *args, &block
-        end
-
         # Returns the class which defines the params
         #
         # Returns the class which has been provided to define the
@@ -349,7 +302,7 @@ module Hanami
       #     end
       #   end
       def unsafe_send_file(path)
-        directory = self.class.configuration.root_directory if Pathname.new(path).relative?
+        directory = configuration.root_directory if Pathname.new(path).relative?
 
         _send_file(
           File.new(path, directory).call(@_env)

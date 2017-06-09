@@ -1,24 +1,24 @@
 RSpec.describe Hanami::Action do
-  before do
-    Hanami::Controller.unload!
-  end
-
   describe ".handle_exception" do
     it "handle an exception with the given status" do
-      response = HandledExceptionAction.new.call({})
+      response = HandledExceptionAction.new(configuration: configuration).call({})
 
       expect(response[0]).to be(404)
     end
 
     it "returns a 500 if an action isn't handled" do
-      response = UnhandledExceptionAction.new.call({})
+      response = UnhandledExceptionAction.new(configuration: configuration).call({})
 
       expect(response[0]).to be(500)
     end
 
     describe "with global handled exceptions" do
       it "handles raised exception" do
-        response = GlobalHandledExceptionAction.new.call({})
+        configuration = Hanami::Controller::Configuration.new do |config|
+          config.handle_exception DomainLogicException => 400
+        end
+
+        response = GlobalHandledExceptionAction.new(configuration: configuration).call({})
 
         expect(response[0]).to be(400)
       end
@@ -30,7 +30,7 @@ RSpec.describe Hanami::Action do
       next if HTTP_TEST_STATUSES_WITHOUT_BODY.include?(code)
 
       it "throws an HTTP status code: #{code}" do
-        response = ThrowCodeAction.new.call(status: code)
+        response = ThrowCodeAction.new(configuration: configuration).call(status: code)
 
         expect(response[0]).to be(code)
         expect(response[2]).to eq([body])
@@ -38,42 +38,42 @@ RSpec.describe Hanami::Action do
     end
 
     it "throws an HTTP status code with given message" do
-      response = ThrowCodeAction.new.call(status: 401, message: "Secret Sauce")
+      response = ThrowCodeAction.new(configuration: configuration).call(status: 401, message: "Secret Sauce")
 
       expect(response[0]).to be(401)
       expect(response[2]).to eq(["Secret Sauce"])
     end
 
     it "throws the code as it is, when not recognized" do
-      response = ThrowCodeAction.new.call(status: 2_131_231)
+      response = ThrowCodeAction.new(configuration: configuration).call(status: 2_131_231)
 
       expect(response[0]).to be(500)
       expect(response[2]).to eq(["Internal Server Error"])
     end
 
     it "stops execution of before filters (method)" do
-      response = ThrowBeforeMethodAction.new.call({})
+      response = ThrowBeforeMethodAction.new(configuration: configuration).call({})
 
       expect(response[0]).to be(401)
       expect(response[2]).to eq(["Unauthorized"])
     end
 
     it "stops execution of before filters (block)" do
-      response = ThrowBeforeBlockAction.new.call({})
+      response = ThrowBeforeBlockAction.new(configuration: configuration).call({})
 
       expect(response[0]).to be(401)
       expect(response[2]).to eq(["Unauthorized"])
     end
 
     it "stops execution of after filters (method)" do
-      response = ThrowAfterMethodAction.new.call({})
+      response = ThrowAfterMethodAction.new(configuration: configuration).call({})
 
       expect(response[0]).to be(408)
       expect(response[2]).to eq(["Request Timeout"])
     end
 
     it "stops execution of after filters (block)" do
-      response = ThrowAfterBlockAction.new.call({})
+      response = ThrowAfterBlockAction.new(configuration: configuration).call({})
 
       expect(response[0]).to be(408)
       expect(response[2]).to eq(["Request Timeout"])
@@ -82,7 +82,7 @@ RSpec.describe Hanami::Action do
 
   describe "using Kernel#throw in an action" do
     it "should work" do
-      response = CatchAndThrowSymbolAction.new.call({})
+      response = CatchAndThrowSymbolAction.new(configuration: configuration).call({})
 
       expect(response[0]).to be(200)
     end

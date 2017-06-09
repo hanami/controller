@@ -27,23 +27,16 @@ module Hanami
       #
       #   Show.configuration
       def self.included(base)
-        config = Hanami::Controller::Configuration.for(base)
-
         base.class_eval do
           prepend InstanceMethods
-          include Utils::ClassAttribute
-
-          class_attribute :configuration
-          self.configuration = config
         end
-
-        config.copy!(base)
       end
 
       module InstanceMethods
-        def initialize(configuration: self.class.configuration, **args)
+        def initialize(configuration:, **args)
           super(**args)
-          @configuration = configuration
+          # FIXME: this hasn't to be duplicated. It's necessary because of restrict_mime_types!
+          @configuration = configuration.dup
 
           # MIME Types
           @accepted_mime_types = @configuration.restrict_mime_types(

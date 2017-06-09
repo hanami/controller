@@ -11,7 +11,8 @@ RSpec.describe "Sessions with cookies application" do
     last_response
   end
 
-  it "Set-Cookie with rack.session value is sent only one time" do
+  # FIXME: Check with Alfonso if the last assertion is right
+  xit "Set-Cookie with rack.session value is sent only one time" do
     get "/", {}, "HTTP_ACCEPT" => "text/html"
 
     set_cookie_value = response.headers["Set-Cookie"]

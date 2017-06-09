@@ -1,14 +1,5 @@
 require 'hanami/router'
 
-ErrorsRoutes = Hanami::Router.new do
-  get '/without_message',         to: 'errors#without_message'
-  get '/with_message',            to: 'errors#with_message'
-  get '/with_custom_message',     to: 'errors#with_custom_message'
-  get '/action_managed',          to: 'errors#action_managed'
-  get '/action_managed_subclass', to: 'errors#action_managed_subclass'
-  get '/framework_managed',       to: 'errors#framework_managed'
-end
-
 HandledException          = Class.new(StandardError)
 FrameworkHandledException = Class.new(StandardError)
 AuthException             = Class.new(StandardError)
@@ -19,10 +10,6 @@ CustomAuthException       = Class.new(StandardError) do
 end
 
 class HandledExceptionSubclass < HandledException; end
-
-Hanami::Controller.configure do |config|
-  config.handle_exception FrameworkHandledException => 500
-end
 
 module Errors
   class WithoutMessage
@@ -74,18 +61,33 @@ module Errors
       raise FrameworkHandledException
     end
   end
-end
 
-Hanami::Controller.unload!
+  class Application
+    def initialize
+      configuration = Hanami::Controller::Configuration.new do |config|
+        config.handle_exception FrameworkHandledException => 500
+      end
+      resolver = EndpointResolver.new(configuration: configuration)
 
-DisabledErrorsRoutes = Hanami::Router.new do
-  get '/action_managed',    to: 'disabled_errors#action_managed'
-  get '/framework_managed', to: 'disabled_errors#framework_managed'
-end
+      routes = Hanami::Router.new(resolver: resolver) do
+        get '/without_message',         to: 'errors#without_message'
+        get '/with_message',            to: 'errors#with_message'
+        get '/with_custom_message',     to: 'errors#with_custom_message'
+        get '/action_managed',          to: 'errors#action_managed'
+        get '/action_managed_subclass', to: 'errors#action_managed_subclass'
+        get '/framework_managed',       to: 'errors#framework_managed'
+      end
 
-Hanami::Controller.configure do |config|
-  config.handle_exceptions = false
-  config.handle_exception FrameworkHandledException => 500
+      @app = Rack::Builder.new do
+        use Rack::Lint
+        run routes
+      end.to_app
+    end
+
+    def call(env)
+      @app.call(env)
+    end
+  end
 end
 
 module DisabledErrors
@@ -105,12 +107,35 @@ module DisabledErrors
       raise FrameworkHandledException
     end
   end
+
+  class Application
+    def initialize
+      configuration = Hanami::Controller::Configuration.new do |config|
+        config.handle_exceptions = false
+        config.handle_exception FrameworkHandledException => 500
+      end
+
+      resolver = EndpointResolver.new(configuration: configuration)
+
+      routes = Hanami::Router.new(resolver: resolver) do
+        get '/action_managed',    to: 'disabled_errors#action_managed'
+        get '/framework_managed', to: 'disabled_errors#framework_managed'
+      end
+
+      @app = Rack::Builder.new do
+        use Rack::Lint
+        run routes
+      end.to_app
+    end
+
+    def call(env)
+      @app.call(env)
+    end
+  end
 end
 
-Hanami::Controller.unload!
-
 RSpec.describe 'Reference exception in "rack.errors"' do
-  let(:app) { Rack::MockRequest.new(ErrorsRoutes) }
+  let(:app) { Rack::MockRequest.new(Errors::Application.new) }
 
   it "adds exception to rack.errors" do
     response = app.get("/without_message")
@@ -143,7 +168,7 @@ RSpec.describe 'Reference exception in "rack.errors"' do
   end
 
   context "when exception management is disabled" do
-    let(:app) { Rack::MockRequest.new(DisabledErrorsRoutes) }
+    let(:app) { Rack::MockRequest.new(DisabledErrors::Application.new) }
 
     it "dumps the exception in rack.errors even if it's managed by the action" do
       expect do

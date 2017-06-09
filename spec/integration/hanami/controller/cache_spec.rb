@@ -61,7 +61,10 @@ module CacheControl
 
   class Application
     def initialize
-      routes = Hanami::Router.new do
+      configuration = Hanami::Controller::Configuration.new
+      resolver = EndpointResolver.new(configuration: configuration)
+
+      routes = Hanami::Router.new(resolver: resolver) do
         get '/default',            to: 'cache_control#default'
         get '/overriding',         to: 'cache_control#overriding'
         get '/symbol',             to: 'cache_control#symbol'
@@ -133,7 +136,10 @@ module Expires
 
   class Application
     def initialize
-      routes = Hanami::Router.new do
+      configuration = Hanami::Controller::Configuration.new
+      resolver = EndpointResolver.new(configuration: configuration)
+
+      routes = Hanami::Router.new(resolver: resolver) do
         get '/default',              to: 'expires#default'
         get '/overriding',           to: 'expires#overriding'
         get '/symbol',               to: 'expires#symbol'
@@ -183,7 +189,10 @@ module ConditionalGet
 
   class Application
     def initialize
-      routes = Hanami::Router.new do
+      configuration = Hanami::Controller::Configuration.new
+      resolver = EndpointResolver.new(configuration: configuration)
+
+      routes = Hanami::Router.new(resolver: resolver) do
         get '/etag',               to: 'conditional_get#etag'
         get '/last-modified',      to: 'conditional_get#last_modified'
         get '/etag-last-modified', to: 'conditional_get#etag_last_modified'

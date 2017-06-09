@@ -151,8 +151,7 @@ module Hanami
       attr_reader :handled_exceptions
 
       def handled_exception?(exception)
-        handled_exceptions &&
-          !exception_handler_for(exception).nil?
+        !exception_handler_for(exception).nil?
       end
 
       def exception_handler(exception)
@@ -165,6 +164,10 @@ module Hanami
         end
 
         nil
+      end
+
+      def handle_exceptions?
+        configuration.handle_exceptions
       end
 
       # @since 0.1.0
@@ -202,7 +205,7 @@ module Hanami
       # @since 0.1.0
       # @api private
       def _handle_exception(exception)
-        raise unless configuration.handle_exceptions
+        raise unless handle_exceptions?
 
         instance_exec(
           exception,

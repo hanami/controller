@@ -48,7 +48,7 @@ RSpec.describe Hanami::Action do
 
     describe 'on handled error' do
       it 'stops the callbacks execution and passes the control on exception handling' do
-        action   = HandledErrorAfterMethodAction.new
+        action   = HandledErrorAfterMethodAction.new(configuration: configuration)
         response = action.call({})
 
         expect(response[0]).to be(404)

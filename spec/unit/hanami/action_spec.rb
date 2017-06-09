@@ -39,42 +39,42 @@ RSpec.describe Hanami::Action do
       end
 
       it "handles inherited exception with specified method" do
-        response = ErrorCallFromInheritedErrorClass.new.call({})
+        response = ErrorCallFromInheritedErrorClass.new(configuration: configuration).call({})
 
         expect(response[0]).to eq(501)
         expect(response[2]).to eq(['An inherited exception occurred!'])
       end
 
       it "handles exception with specified method" do
-        response = ErrorCallFromInheritedErrorClassStack.new.call({})
+        response = ErrorCallFromInheritedErrorClassStack.new(configuration: configuration).call({})
 
         expect(response[0]).to eq(501)
         expect(response[2]).to eq(['MyCustomError was thrown'])
       end
 
       it "handles exception with specified method (symbol)" do
-        response = ErrorCallWithSymbolMethodNameAsHandlerAction.new.call({})
+        response = ErrorCallWithSymbolMethodNameAsHandlerAction.new(configuration: configuration).call({})
 
         expect(response[0]).to eq(501)
         expect(response[2]).to eq(['Please go away!'])
       end
 
       it "handles exception with specified method (string)" do
-        response = ErrorCallWithStringMethodNameAsHandlerAction.new.call({})
+        response = ErrorCallWithStringMethodNameAsHandlerAction.new(configuration: configuration).call({})
 
         expect(response[0]).to eq(502)
         expect(response[2]).to eq(['StandardError'])
       end
 
       it "handles exception with specified status code" do
-        response = ErrorCallWithSpecifiedStatusCodeAction.new.call({})
+        response = ErrorCallWithSpecifiedStatusCodeAction.new(configuration: configuration).call({})
 
         expect(response[0]).to eq(422)
         expect(response[2]).to eq(['Unprocessable Entity'])
       end
 
       it "returns a successful response if the code and status aren't set" do
-        response = ErrorCallWithUnsetStatusResponse.new.call({})
+        response = ErrorCallWithUnsetStatusResponse.new(configuration: configuration).call({})
 
         expect(response[0]).to eq(200)
         expect(response[2]).to eq([])
