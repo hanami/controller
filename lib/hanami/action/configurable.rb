@@ -35,8 +35,7 @@ module Hanami
       module InstanceMethods
         def initialize(configuration:, **args)
           super(**args)
-          # FIXME: this hasn't to be duplicated. It's necessary because of restrict_mime_types!
-          @configuration = configuration.dup
+          @configuration = configuration
 
           # MIME Types
           @accepted_mime_types = @configuration.restrict_mime_types(
@@ -45,9 +44,7 @@ module Hanami
               end
             )
 
-          if @accepted_mime_types.any?
-            @accepted_mime_types = @configuration.restrict_mime_types!(@accepted_mime_types)
-          end
+          @accepted_mime_types = nil if @accepted_mime_types.empty?
 
           # Exceptions
           @handled_exceptions = @configuration.handled_exceptions.merge(self.class.handled_exceptions)

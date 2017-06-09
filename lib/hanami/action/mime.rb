@@ -496,8 +496,12 @@ module Hanami
         accept != DEFAULT_ACCEPT
       end
 
+      def accepted_mime_types
+        @accepted_mime_types || configuration.mime_types
+      end
+
       def enforce_accepted_mime_types
-        return unless @accepted_mime_types.find { |mt| accept?(mt) }.nil?
+        return unless accepted_mime_types.find { |mt| accept?(mt) }.nil?
 
         halt 406
       end
@@ -516,7 +520,7 @@ module Hanami
       #
       # @api private
       def content_type_from_accept_header
-        best_q_match(accept, configuration.mime_types)
+        best_q_match(accept, accepted_mime_types)
       end
 
       # @since 0.5.0
