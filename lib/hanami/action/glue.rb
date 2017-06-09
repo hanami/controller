@@ -38,7 +38,7 @@ module Hanami
       def renderable?
         !_requires_no_body? &&
           !sending_file?    &&
-          !ADDITIONAL_HTTP_STATUSES_WITHOUT_BODY.include?(@_status)
+          !ADDITIONAL_HTTP_STATUSES_WITHOUT_BODY.include?(@response.status)
       end
 
       protected

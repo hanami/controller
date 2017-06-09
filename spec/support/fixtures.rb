@@ -95,7 +95,7 @@ end
 
 class CallAction < Hanami::Action
   def call(req, res)
-    self.status  = 201
+    res.status = 201
     self.body    = 'Hi from TestAction!'
     self.headers.merge!({ 'X-Custom' => 'OK' })
   end
@@ -948,7 +948,7 @@ class VisibilityAction < Hanami::Action
 
   def call(req, res)
     self.body   = 'x'
-    self.status = 201
+    res.status = 201
     self.format = :json
 
     self.headers.merge!('X-Custom' => 'OK')
@@ -1005,7 +1005,7 @@ module SendFileTest
             # in reality we'd render a template here, but as a test fixture, we'll simulate that answer
             # we should have also checked #accept? but w/e
             self.body = ::File.read(Pathname.new("spec/support/fixtures/#{@resource.asset_path}.html"))
-            self.status = 200
+            res.status = 200
             self.format = :html
           when 'json', nil
             self.format = :json
@@ -1132,7 +1132,7 @@ module HeadTest
           'Last-Modified'    => 'Wed, 21 Jan 2015 11:32:10 GMT'
         )
 
-        self.status = params[:code].to_i
+        res.status = params[:code].to_i
         self.body   = 'code'
       end
     end
@@ -1148,7 +1148,7 @@ module HeadTest
           'X-No-Pass'     => 'true'
         )
 
-        self.status = 204
+        res.status = 204
       end
 
       private
@@ -1253,7 +1253,7 @@ module FullStack
         def call(req, res)
           valid = params.valid?
 
-          self.status = 201
+          res.status = 201
           self.body = JSON.generate({
             symbol_access: params[:book][:author] && params[:book][:author][:name],
             valid: valid,
@@ -1605,8 +1605,8 @@ module Mimes
   end
 
   class NoContent < Hanami::Action
-    def call(*)
-      self.status = 204
+    def call(_req, res)
+      res.status = 204
     end
   end
 

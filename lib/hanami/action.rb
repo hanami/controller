@@ -55,12 +55,6 @@ module Hanami
     # @api private
     RESPONSE_BODY = 2
 
-    # The default HTTP response code
-    #
-    # @since 0.1.0
-    # @api private
-    DEFAULT_RESPONSE_CODE = 200
-
     DEFAULT_ERROR_CODE = 500
 
     # Status codes that by RFC must not include a message body
@@ -610,7 +604,6 @@ module Hanami
     end
 
     def initialize(**)
-      @_status = nil
       @_body   = nil
       @content_type = nil
       @charset      = nil
@@ -812,13 +805,12 @@ module Hanami
     # @since 0.1.0
     # @api private
     #
-    # @see Hanami::Action::Rack::DEFAULT_RESPONSE_CODE
     # @see Hanami::Action::Rack::DEFAULT_RESPONSE_BODY
     # @see Hanami::Action::Rack#status=
     # @see Hanami::Action::Rack#headers
     # @see Hanami::Action::Rack#body=
-    def response
-      [ @_status || DEFAULT_RESPONSE_CODE, headers, @_body || DEFAULT_RESPONSE_BODY.dup ]
+    def serialized_response
+      [ response.status, headers, @_body || DEFAULT_RESPONSE_BODY.dup ]
     end
 
     # Calculates an unique ID for the current request
@@ -849,6 +841,8 @@ module Hanami
     #     end
     #   end
     attr_reader :request
+
+    attr_reader :response
 
     # Return parsed request body
     def parsed_request_body
@@ -910,41 +904,19 @@ module Hanami
     # @since 0.1.0
     # @see Hanami::Http::Status:ALL
     def status(code, message)
-      self.status = code
+      response.status = code
       self.body   = message
     end
 
     # @since 0.3.2
     # @api private
     def _requires_no_body?
-      HTTP_STATUSES_WITHOUT_BODY.include?(@_status) || head?
+      HTTP_STATUSES_WITHOUT_BODY.include?(response.status) || head?
     end
 
     private
 
     attr_reader :configuration
-
-    # Sets the HTTP status code for the response
-    #
-    # @param status [Fixnum] an HTTP status code
-    # @return [void]
-    #
-    # @since 0.1.0
-    #
-    # @example
-    #   require 'hanami/controller'
-    #
-    #   class Create
-    #     include Hanami::Action
-    #
-    #     def call(params)
-    #       # ...
-    #       self.status = 201
-    #     end
-    #   end
-    def status=(status)
-      @_status = status
-    end
 
     # Sets the body of the response
     #
@@ -1549,7 +1521,7 @@ module Hanami
       end
 
       exposures
-      response
+      serialized_response
     end
   end
 end
