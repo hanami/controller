@@ -521,8 +521,8 @@ module Hanami
       def call(env)
         _rescue do
           @_env     = env
-          @params   = self.class.params_class.new(@_env)
-          @request  = Hanami::Action::Request.new(@_env, @params)
+          params    = self.class.params_class.new(@_env)
+          @request  = Hanami::Action::Request.new(@_env, params)
           @response = Hanami::Action::Response.new(header: configuration.default_headers)
           _run_before_callbacks(@request, @response)
           super @request, @response
