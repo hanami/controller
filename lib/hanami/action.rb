@@ -767,22 +767,6 @@ module Hanami
 
     protected
 
-    # Returns a serialized Rack response (Array), according to the current
-    #   status code, headers, and body.
-    #
-    # @return [Array] the serialized response
-    #
-    # @since 0.1.0
-    # @api private
-    #
-    # @see Hanami::Action::Rack::DEFAULT_RESPONSE_BODY
-    # @see Hanami::Action::Rack#status=
-    # @see Hanami::Action::Rack#headers
-    # @see Hanami::Action::Rack#body=
-    def serialized_response
-      [ response.status, response.headers, response.body ]
-    end
-
     # Calculates an unique ID for the current request
     #
     # @return [String] The unique ID
@@ -1468,7 +1452,7 @@ module Hanami
       end
 
       exposures
-      serialized_response
+      response
     end
   end
 end

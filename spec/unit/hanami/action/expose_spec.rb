@@ -4,7 +4,7 @@ RSpec.describe Hanami::Action do
       action = ExposeAction.new(configuration: configuration)
 
       response = action.call({})
-      expect(response[0]).to be(200)
+      expect(response.status).to be(200)
 
       expect(action.exposures.fetch(:film)).to eq('400 ASA')
       expect(action.exposures.fetch(:time)).to be(nil)

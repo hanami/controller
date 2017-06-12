@@ -70,8 +70,8 @@ RSpec.describe Hanami::Action::Params do
         it "returns all the params as they are" do
           # For unit tests in Hanami projects, developers may want to define
           # params with symbolized keys.
-          _, _, body = action.call(a: '1', b: '2', c: '3')
-          expect(body).to eq([%({:a=>"1", :b=>"2", :c=>"3"})])
+          response = action.call(a: '1', b: '2', c: '3')
+          expect(response.body).to eq([%({:a=>"1", :b=>"2", :c=>"3"})])
         end
       end
 
@@ -86,8 +86,8 @@ RSpec.describe Hanami::Action::Params do
       context "with Hanami::Router" do
         it "returns all the params as they are" do
           # Hanami::Router params are always symbolized
-          _, _, body = action.call('router.params' => { id: '23' })
-          expect(body).to eq([%({:id=>"23"})])
+          response = action.call('router.params' => { id: '23' })
+          expect(response.body).to eq([%({:id=>"23"})])
         end
       end
     end
@@ -100,13 +100,13 @@ RSpec.describe Hanami::Action::Params do
         # params with symbolized keys.
         context "in testing mode" do
           it "returns only the listed params" do
-            _, _, body = action.call(id: 23, unknown: 4, article: { foo: 'bar', tags: [:cool] })
-            expect(body).to eq([%({:id=>23, :article=>{:tags=>[:cool]}})])
+            response = action.call(id: 23, unknown: 4, article: { foo: 'bar', tags: [:cool] })
+            expect(response.body).to eq([%({:id=>23, :article=>{:tags=>[:cool]}})])
           end
 
           it "doesn't filter _csrf_token" do
-            _, _, body = action.call(_csrf_token: 'abc')
-            expect(body).to eq( [%({:_csrf_token=>"abc"})])
+            response = action.call(_csrf_token: 'abc')
+            expect(response.body).to eq( [%({:_csrf_token=>"abc"})])
           end
         end
 
@@ -124,8 +124,8 @@ RSpec.describe Hanami::Action::Params do
 
         context "with Hanami::Router" do
           it "returns all the params coming from the router, even if NOT whitelisted" do
-            _, _, body = action.call('router.params' => { id: 23, another: 'x' })
-            expect(body).to eq([%({:id=>23, :another=>"x"})])
+            response = action.call('router.params' => { id: 23, another: 'x' })
+            expect(response.body).to eq([%({:id=>23, :another=>"x"})])
           end
         end
       end
@@ -140,8 +140,8 @@ RSpec.describe Hanami::Action::Params do
 
         context "in testing mode" do
           it "returns only the listed params" do
-            _, _, body = action.call(username: 'jodosha', unknown: 'field')
-            expect(body).to eq([%({:username=>"jodosha"})])
+            response = action.call(username: 'jodosha', unknown: 'field')
+            expect(response.body).to eq([%({:username=>"jodosha"})])
           end
         end
 
@@ -154,8 +154,8 @@ RSpec.describe Hanami::Action::Params do
 
         context "with Hanami::Router" do
           it "returns all the router params, even if NOT whitelisted" do
-            _, _, body = action.call('router.params' => { username: 'jodosha', y: 'x' })
-            expect(body).to eq([%({:username=>"jodosha", :y=>"x"})])
+            response = action.call('router.params' => { username: 'jodosha', y: 'x' })
+            expect(response.body).to eq([%({:username=>"jodosha", :y=>"x"})])
           end
         end
       end

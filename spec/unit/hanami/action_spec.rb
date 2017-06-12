@@ -25,59 +25,59 @@ RSpec.describe Hanami::Action do
     it "calls an action" do
       response = CallAction.new(configuration: configuration).call({})
 
-      expect(response[0]).to eq(201)
-      expect(response[1]).to eq("Content-Length" => "19", "Content-Type" => "application/octet-stream; charset=utf-8", "X-Custom" => "OK")
-      expect(response[2]).to eq(['Hi from TestAction!'])
+      expect(response.status).to  eq(201)
+      expect(response.headers).to eq("Content-Length" => "19", "Content-Type" => "application/octet-stream; charset=utf-8", "X-Custom" => "OK")
+      expect(response.body).to    eq(["Hi from TestAction!"])
     end
 
     context "when exception handling code is enabled" do
       it "returns an HTTP 500 status code when an exception is raised" do
         response = ErrorCallAction.new(configuration: configuration).call({})
 
-        expect(response[0]).to eq(500)
-        expect(response[2]).to eq(['Internal Server Error'])
+        expect(response.status).to eq(500)
+        expect(response.body).to   eq(["Internal Server Error"])
       end
 
       it "handles inherited exception with specified method" do
         response = ErrorCallFromInheritedErrorClass.new(configuration: configuration).call({})
 
-        expect(response[0]).to eq(501)
-        expect(response[2]).to eq(['An inherited exception occurred!'])
+        expect(response.status).to eq(501)
+        expect(response.body).to   eq(["An inherited exception occurred!"])
       end
 
       it "handles exception with specified method" do
         response = ErrorCallFromInheritedErrorClassStack.new(configuration: configuration).call({})
 
-        expect(response[0]).to eq(501)
-        expect(response[2]).to eq(['MyCustomError was thrown'])
+        expect(response.status).to eq(501)
+        expect(response.body).to   eq(["MyCustomError was thrown"])
       end
 
       it "handles exception with specified method (symbol)" do
         response = ErrorCallWithSymbolMethodNameAsHandlerAction.new(configuration: configuration).call({})
 
-        expect(response[0]).to eq(501)
-        expect(response[2]).to eq(['Please go away!'])
+        expect(response.status).to eq(501)
+        expect(response.body).to   eq(["Please go away!"])
       end
 
       it "handles exception with specified method (string)" do
         response = ErrorCallWithStringMethodNameAsHandlerAction.new(configuration: configuration).call({})
 
-        expect(response[0]).to eq(502)
-        expect(response[2]).to eq(['StandardError'])
+        expect(response.status).to eq(502)
+        expect(response.body).to   eq(["StandardError"])
       end
 
       it "handles exception with specified status code" do
         response = ErrorCallWithSpecifiedStatusCodeAction.new(configuration: configuration).call({})
 
-        expect(response[0]).to eq(422)
-        expect(response[2]).to eq(['Unprocessable Entity'])
+        expect(response.status).to eq(422)
+        expect(response.body).to   eq(["Unprocessable Entity"])
       end
 
       it "returns a successful response if the code and status aren't set" do
         response = ErrorCallWithUnsetStatusResponse.new(configuration: configuration).call({})
 
-        expect(response[0]).to eq(200)
-        expect(response[2]).to eq([])
+        expect(response.status).to eq(200)
+        expect(response.body).to   eq([])
       end
     end
 
@@ -136,14 +136,14 @@ RSpec.describe Hanami::Action do
     let(:action) { VisibilityAction.new(configuration: configuration) }
 
     it "ensures that protected and private methods can be safely invoked by developers" do
-      status, headers, body = action.call({})
+      response = action.call({})
 
-      expect(status).to be(201)
+      expect(response.status).to be(201)
 
-      expect(headers.fetch('X-Custom')).to eq('OK')
-      expect(headers.fetch('Y-Custom')).to eq('YO')
+      expect(response.headers.fetch("X-Custom")).to eq("OK")
+      expect(response.headers.fetch("Y-Custom")).to eq("YO")
 
-      expect(body).to eq(['x'])
+      expect(response.body).to eq(["x"])
     end
 
     it "has a public errors method" do

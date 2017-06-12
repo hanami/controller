@@ -34,8 +34,8 @@ RSpec.describe 'Without validations' do
       end
     end
 
-    _, _, body = action.new(configuration: configuration).call({})
-    expect(body).to eq(["[true, true]"])
+    response = action.new(configuration: configuration).call({})
+    expect(response.body).to eq(["[true, true]"])
   end
 
   it "has params that don't respond to .errors" do
@@ -45,8 +45,8 @@ RSpec.describe 'Without validations' do
       end
     end
 
-    _, _, body = action.new(configuration: configuration).call({})
-    expect(body).to eq(["false"])
+    response = action.new(configuration: configuration).call({})
+    expect(response.body).to eq(["false"])
   end
 end
 
