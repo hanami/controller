@@ -75,7 +75,7 @@ module Hanami
       #   end
       def cache_control(*values)
         cache_control = CacheControl::Directives.new(*values)
-        headers.merge!(cache_control.headers)
+        response.headers.merge!(cache_control.headers)
       end
 
       # Set the Expires header and Cache-Control/max-age directive. Amount
@@ -114,7 +114,7 @@ module Hanami
       #   end
       def expires(amount, *values)
         expires = Expires::Directives.new(amount, *values)
-        headers.merge!(expires.headers)
+        response.headers.merge!(expires.headers)
       end
 
       # Set the etag, last_modified, or both headers on the response
@@ -158,7 +158,7 @@ module Hanami
       def fresh(options)
         conditional_get = ConditionalGet.new(@_env, options)
 
-        headers.merge!(conditional_get.headers)
+        response.headers.merge!(conditional_get.headers)
 
         conditional_get.fresh? do
           halt 304

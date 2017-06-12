@@ -26,7 +26,7 @@ RSpec.describe Hanami::Action do
       response = CallAction.new(configuration: configuration).call({})
 
       expect(response[0]).to eq(201)
-      expect(response[1]).to eq('Content-Type' => 'application/octet-stream; charset=utf-8', 'X-Custom' => 'OK')
+      expect(response[1]).to eq("Content-Length" => "19", "Content-Type" => "application/octet-stream; charset=utf-8", "X-Custom" => "OK")
       expect(response[2]).to eq(['Hi from TestAction!'])
     end
 

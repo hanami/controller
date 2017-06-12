@@ -64,7 +64,7 @@ module Hanami
       #     end
       #   end
       def cookies
-        @cookies ||= CookieJar.new(@_env.dup, headers, configuration.cookies)
+        @cookies ||= CookieJar.new(@_env.dup, response.headers, configuration.cookies)
       end
 
       private

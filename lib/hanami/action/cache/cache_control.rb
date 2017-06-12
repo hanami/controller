@@ -50,7 +50,7 @@ module Hanami
         #
         # @see Hanami::Action#finish
         def finish
-          headers.merge!(self.class.cache_control_directives.headers) unless headers.include? HEADER
+          response.headers.merge!(self.class.cache_control_directives.headers) unless response.headers.include? HEADER
           super
         end
 

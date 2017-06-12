@@ -262,7 +262,8 @@ RSpec.describe "HTTP Cache" do
 
     it "accepts a Symbol" do
       now = Time.now
-      expect(Time).to receive(:now).and_return(now)
+      # FIXME: remove `at_least`
+      expect(Time).to receive(:now).at_least(:once).and_return(now)
 
       response = app.get("/symbol")
       expect(response.headers.fetch("Expires")).to eq((now + 900).httpdate)
@@ -271,7 +272,8 @@ RSpec.describe "HTTP Cache" do
 
     it "accepts multiple Symbols" do
       now = Time.now
-      expect(Time).to receive(:now).and_return(now)
+      # FIXME: remove `at_least`
+      expect(Time).to receive(:now).at_least(:once).and_return(now)
 
       response = app.get("/symbols")
       expect(response.headers.fetch("Expires")).to eq((now + 900).httpdate)
@@ -280,7 +282,8 @@ RSpec.describe "HTTP Cache" do
 
     it "accepts a Hash" do
       now = Time.now
-      expect(Time).to receive(:now).and_return(now)
+      # FIXME: remove `at_least`
+      expect(Time).to receive(:now).at_least(:once).and_return(now)
 
       response = app.get("/hash")
       expect(response.headers.fetch("Expires")).to eq((now + 900).httpdate)

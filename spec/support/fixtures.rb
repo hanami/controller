@@ -97,7 +97,7 @@ class CallAction < Hanami::Action
   def call(req, res)
     res.status = 201
     res.body   = 'Hi from TestAction!'
-    self.headers.merge!({ 'X-Custom' => 'OK' })
+    res.headers.merge!({ 'X-Custom' => 'OK' })
   end
 end
 
@@ -628,7 +628,7 @@ end
 class Root < Hanami::Action
   def call(req, res)
     res.body = params.to_h.inspect
-    headers.merge!({'X-Test' => 'test'})
+    res.headers.merge!({'X-Test' => 'test'})
   end
 end
 
@@ -636,7 +636,7 @@ module About
   class Team < Hanami::Action
     def call(req, res)
       res.body = params.to_h.inspect
-      headers.merge!({'X-Test' => 'test'})
+      res.headers.merge!({'X-Test' => 'test'})
     end
   end
 
@@ -880,7 +880,7 @@ module MusicPlayer
 
         def call(req, res)
           res.body = 'Muzic!'
-          headers['X-Frame-Options'] = 'ALLOW FROM https://example.org'
+          res.headers['X-Frame-Options'] = 'ALLOW FROM https://example.org'
         end
       end
 
@@ -951,8 +951,8 @@ class VisibilityAction < Hanami::Action
     res.status = 201
     self.format = :json
 
-    self.headers.merge!('X-Custom' => 'OK')
-    headers.merge!('Y-Custom'      => 'YO')
+    res.headers.merge!('X-Custom' => 'OK')
+    res.headers.merge!('Y-Custom'      => 'YO')
 
     self.session[:foo] = 'bar'
 
@@ -1121,7 +1121,7 @@ module HeadTest
       def call(req, res)
         content = 'code'
 
-        headers.merge!(
+        res.headers.merge!(
           'Allow'            => 'GET, HEAD',
           'Content-Encoding' => 'identity',
           'Content-Language' => 'en',
@@ -1142,7 +1142,7 @@ module HeadTest
       include Hanami::Action::Session
 
       def call(req, res)
-        self.headers.merge!(
+        res.headers.merge!(
           'Last-Modified' => 'Fri, 27 Nov 2015 13:32:36 GMT',
           'X-Rate-Limit'  => '4000',
           'X-No-Pass'     => 'true'
@@ -1205,7 +1205,7 @@ module FullStack
         include Hanami::Action::Session
 
         def call(req, res)
-          headers['X-Renderable'] = renderable?.to_s
+          res.headers['X-Renderable'] = renderable?.to_s
           res.body = 'foo'
         end
       end
@@ -1579,10 +1579,10 @@ module Mimes
 
   class Accept < Hanami::Action
     def call(_req, res)
-      headers['X-AcceptDefault'] = accept?('application/octet-stream').to_s
-      headers['X-AcceptHtml']    = accept?('text/html').to_s
-      headers['X-AcceptXml']     = accept?('application/xml').to_s
-      headers['X-AcceptJson']    = accept?('text/json').to_s
+      res.headers['X-AcceptDefault'] = accept?('application/octet-stream').to_s
+      res.headers['X-AcceptHtml']    = accept?('text/html').to_s
+      res.headers['X-AcceptXml']     = accept?('application/xml').to_s
+      res.headers['X-AcceptJson']    = accept?('text/json').to_s
 
       res.body = format
     end

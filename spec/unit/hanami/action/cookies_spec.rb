@@ -5,7 +5,7 @@ RSpec.describe Hanami::Action do
       _, headers, body = action.call("HTTP_COOKIE" => "foo=bar")
 
       expect(action.send(:cookies)).to include(foo: "bar")
-      expect(headers).to               eq("Content-Type" => "application/octet-stream; charset=utf-8")
+      expect(headers).to               eq("Content-Length" => "3", "Content-Type" => "application/octet-stream; charset=utf-8")
       expect(body).to                  eq(["bar"])
     end
 
@@ -14,7 +14,7 @@ RSpec.describe Hanami::Action do
       _, headers, body = action.call("HTTP_COOKIE" => "foo=bar")
 
       expect(action.send(:cookies)).to include(foo: "bar")
-      expect(headers).to               eq("Content-Type" => "application/octet-stream; charset=utf-8", "Set-Cookie" => "foo=baz")
+      expect(headers).to               eq("Content-Length" => "3", "Content-Type" => "application/octet-stream; charset=utf-8", "Set-Cookie" => "foo=baz")
       expect(body).to                  eq(["bar"])
     end
 
@@ -23,7 +23,7 @@ RSpec.describe Hanami::Action do
       _, headers, body = action.call({})
 
       expect(body).to    eq(["yo"])
-      expect(headers).to eq("Content-Type" => "application/octet-stream; charset=utf-8", "Set-Cookie" => "foo=yum%21")
+      expect(headers).to eq("Content-Length" => "2", "Content-Type" => "application/octet-stream; charset=utf-8", "Set-Cookie" => "foo=yum%21")
     end
 
     it "sets cookies with options" do
@@ -52,14 +52,14 @@ RSpec.describe Hanami::Action do
         action = GetDefaultCookiesAction.new(configuration: configuration)
 
         _, headers, = action.call({})
-        expect(headers).to eq("Content-Type" => "application/octet-stream; charset=utf-8", "Set-Cookie" => "bar=foo; domain=hanamirb.org; path=/controller; secure; HttpOnly")
+        expect(headers).to eq("Content-Length" => "0", "Content-Type" => "application/octet-stream; charset=utf-8", "Set-Cookie" => "bar=foo; domain=hanamirb.org; path=/controller; secure; HttpOnly")
       end
 
       it "overwritten cookies values are respected" do
         action = GetOverwrittenCookiesAction.new(configuration: configuration)
 
         _, headers, = action.call({})
-        expect(headers).to eq("Content-Type" => "application/octet-stream; charset=utf-8", "Set-Cookie" => "bar=foo; domain=hanamirb.com; path=/action")
+        expect(headers).to eq("Content-Length" => "0", "Content-Type" => "application/octet-stream; charset=utf-8", "Set-Cookie" => "bar=foo; domain=hanamirb.com; path=/action")
       end
     end
 

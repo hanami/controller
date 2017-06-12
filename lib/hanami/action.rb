@@ -584,10 +584,9 @@ module Hanami
       def call(env)
         _rescue do
           @_env     = env
-          @headers  = ::Rack::Utils::HeaderHash.new(configuration.default_headers)
           @params   = self.class.params_class.new(@_env)
           @request  = Hanami::Action::Request.new(@_env, @params)
-          @response = Hanami::Action::Response.new
+          @response = Hanami::Action::Response.new(header: configuration.default_headers)
           _run_before_callbacks(@params)
           super @request, @response
           _run_after_callbacks(@params)
@@ -768,28 +767,6 @@ module Hanami
 
     protected
 
-    # Gets the headers from the response
-    #
-    # @return [Hash] the HTTP headers from the response
-    #
-    # @since 0.1.0
-    #
-    # @example
-    #   require 'hanami/controller'
-    #
-    #   class Show
-    #     include Hanami::Action
-    #
-    #     def call(params)
-    #       # ...
-    #       self.headers            # => { ... }
-    #       self.headers.merge!({'X-Custom' => 'OK'})
-    #     end
-    #   end
-    def headers
-      @headers
-    end
-
     # Returns a serialized Rack response (Array), according to the current
     #   status code, headers, and body.
     #
@@ -803,7 +780,7 @@ module Hanami
     # @see Hanami::Action::Rack#headers
     # @see Hanami::Action::Rack#body=
     def serialized_response
-      [ response.status, headers, response.body ]
+      [ response.status, response.headers, response.body ]
     end
 
     # Calculates an unique ID for the current request
@@ -990,15 +967,15 @@ module Hanami
 
     # @since 1.0.0
     # @api private
-    def _send_file(response)
-      headers.merge!(response[RESPONSE_HEADERS])
+    def _send_file(send_file_response)
+      response.headers.merge!(send_file_response[RESPONSE_HEADERS])
 
-      if response[RESPONSE_CODE] == NOT_FOUND
-        headers.delete(X_CASCADE)
-        headers.delete(CONTENT_LENGTH)
+      if send_file_response[RESPONSE_CODE] == NOT_FOUND
+        response.headers.delete(X_CASCADE)
+        response.headers.delete(CONTENT_LENGTH)
         halt NOT_FOUND
       else
-        halt response[RESPONSE_CODE], response[RESPONSE_BODY]
+        halt send_file_response[RESPONSE_CODE], send_file_response[RESPONSE_BODY]
       end
     end
 
@@ -1318,7 +1295,7 @@ module Hanami
     #   action = Create.new
     #   action.call({}) # => [301, {'Location' => '/articles/23'}, '']
     def redirect_to(url, status: 302)
-      headers[LOCATION] = ::String.new(url)
+      response.add_header(LOCATION, ::String.new(url))
       halt(status)
     end
 
@@ -1483,11 +1460,11 @@ module Hanami
     # @see Hanami::Action::Cache#finish
     # @see Hanami::Action::Head#finish
     def finish
-      headers[CONTENT_TYPE] ||= content_type_with_charset
+      response.headers[CONTENT_TYPE] ||= content_type_with_charset
 
       if _requires_no_body?
         response.body = nil
-        @headers.reject! {|header,_| !keep_response_header?(header) }
+        response.headers.select! { |header, _| keep_response_header?(header) }
       end
 
       exposures

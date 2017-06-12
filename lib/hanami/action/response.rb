@@ -4,6 +4,10 @@ require 'rack/response'
 module Hanami
   class Action
     class Response < ::Rack::Response
+      def initialize(body: [], status: 200, header: {})
+        super(body, status, header.dup)
+      end
+
       def body=(str)
         @length = 0
         @body   = []
