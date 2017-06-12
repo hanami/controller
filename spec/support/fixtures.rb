@@ -1542,11 +1542,11 @@ module Mimes
   end
 
   class Accept < Hanami::Action
-    def call(_req, res)
-      res.headers['X-AcceptDefault'] = accept?('application/octet-stream').to_s
-      res.headers['X-AcceptHtml']    = accept?('text/html').to_s
-      res.headers['X-AcceptXml']     = accept?('application/xml').to_s
-      res.headers['X-AcceptJson']    = accept?('text/json').to_s
+    def call(req, res)
+      res.headers['X-AcceptDefault'] = req.accept?('application/octet-stream').to_s
+      res.headers['X-AcceptHtml']    = req.accept?('text/html').to_s
+      res.headers['X-AcceptXml']     = req.accept?('application/xml').to_s
+      res.headers['X-AcceptJson']    = req.accept?('text/json').to_s
 
       res.body = format
     end

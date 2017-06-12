@@ -9,11 +9,30 @@ module Hanami
     #
     # @see http://www.rubydoc.info/gems/rack/Rack/Request
     class Request < ::Rack::Request
+      HTTP_ACCEPT = "HTTP_ACCEPT".freeze
+      DEFAULT_ACCEPT = "*/*".freeze
+
       attr_reader :params
 
       def initialize(env, params)
         super(env)
         @params = params
+      end
+
+      def accept?(mime_type)
+        !!::Rack::Utils.q_values(accept).find do |mime, _|
+          ::Rack::Mime.match?(mime_type, mime)
+        end
+      end
+
+      def accept_header?
+        accept != DEFAULT_ACCEPT
+      end
+
+      # @since 0.1.0
+      # @api private
+      def accept
+        @accept ||= @env[HTTP_ACCEPT] || DEFAULT_ACCEPT
       end
 
       # @raise [NotImplementedError]

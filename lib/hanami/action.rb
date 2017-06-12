@@ -625,7 +625,7 @@ module Hanami
     def content_type
       return @content_type unless @content_type.nil?
 
-      if accept_header?
+      if request.accept_header?
         type = content_type_from_accept_header
         return type if type
       end
@@ -1000,63 +1000,12 @@ module Hanami
       @content_type = format_to_mime_type(@format)
     end
 
-    # Match the given mime type with the Accept header
-    #
-    # @return [Boolean] true if the given mime type matches Accept
-    #
-    # @since 0.1.0
-    #
-    # @example
-    #   require 'hanami/controller'
-    #
-    #   class Show
-    #     include Hanami::Action
-    #
-    #     def call(params)
-    #       # ...
-    #       # @_env['HTTP_ACCEPT'] # => 'text/html,application/xhtml+xml,application/xml;q=0.9'
-    #
-    #       accept?('text/html')        # => true
-    #       accept?('application/xml')  # => true
-    #       accept?('application/json') # => false
-    #
-    #
-    #
-    #       # @_env['HTTP_ACCEPT'] # => '*/*'
-    #
-    #       accept?('text/html')        # => true
-    #       accept?('application/xml')  # => true
-    #       accept?('application/json') # => true
-    #     end
-    #   end
-    def accept?(mime_type)
-      !!::Rack::Utils.q_values(accept).find do |mime, _|
-        ::Rack::Mime.match?(mime_type, mime)
-      end
-    end
-
-    # @since 0.1.0
-    # @api private
-    def accept
-      @accept ||= @_env[HTTP_ACCEPT] || DEFAULT_ACCEPT
-    end
-
-    # Checks if there is an Accept header for the current request.
-    #
-    # @return [TrueClass,FalseClass] the result of the check
-    #
-    # @since 0.8.0
-    # @api private
-    def accept_header?
-      accept != DEFAULT_ACCEPT
-    end
-
     def accepted_mime_types
       @accepted_mime_types || configuration.mime_types
     end
 
-    def enforce_accepted_mime_types
-      return unless accepted_mime_types.find { |mt| accept?(mt) }.nil?
+    def enforce_accepted_mime_types(req, *)
+      return unless accepted_mime_types.find { |mt| req.accept?(mt) }.nil?
 
       halt 406
     end
@@ -1075,7 +1024,7 @@ module Hanami
     #
     # @api private
     def content_type_from_accept_header
-      best_q_match(accept, accepted_mime_types)
+      best_q_match(request.accept, accepted_mime_types)
     end
 
     # @since 0.5.0
