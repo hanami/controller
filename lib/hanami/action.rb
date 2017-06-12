@@ -587,9 +587,9 @@ module Hanami
           @params   = self.class.params_class.new(@_env)
           @request  = Hanami::Action::Request.new(@_env, @params)
           @response = Hanami::Action::Response.new(header: configuration.default_headers)
-          _run_before_callbacks(@params)
+          _run_before_callbacks(@request, @response)
           super @request, @response
-          _run_after_callbacks(@params)
+          _run_after_callbacks(@request, @response)
         end
 
         finish
@@ -1378,14 +1378,14 @@ module Hanami
 
     # @since 0.1.0
     # @api private
-    def _run_before_callbacks(params)
-      self.class.before_callbacks.run(self, params)
+    def _run_before_callbacks(*args)
+      self.class.before_callbacks.run(self, *args)
     end
 
     # @since 0.1.0
     # @api private
-    def _run_after_callbacks(params)
-      self.class.after_callbacks.run(self, params)
+    def _run_after_callbacks(*args)
+      self.class.after_callbacks.run(self, *args)
     end
 
     # According to RFC 2616, when a response MUST have an empty body, it only

@@ -206,13 +206,14 @@ class ExposeReservedWordAction < Hanami::Action
 end
 
 class BeforeMethodAction < Hanami::Action
-  expose :article, :logger
-  before :set_article, :reverse_article
+  expose :article, :logger, :arguments
+  before :set_article, :reverse_article, :log_request
   append_before :add_first_name_to_logger, :add_last_name_to_logger
   prepend_before :add_title_to_logger
 
   def initialize(*)
     @logger = []
+    @arguments = []
   end
 
   def call(req, res)
@@ -225,6 +226,11 @@ class BeforeMethodAction < Hanami::Action
 
   def reverse_article
     @article.reverse!
+  end
+
+  def log_request(req, res)
+    @arguments << req.class.name
+    @arguments << res.class.name
   end
 
   def add_first_name_to_logger
@@ -283,9 +289,10 @@ class HandledErrorBeforeMethodAction < BeforeMethodAction
 end
 
 class BeforeBlockAction < Hanami::Action
-  expose :article
+  expose :article, :arguments
   before { @article = 'Good morning!' }
   before { @article.reverse! }
+  before { |req, res| @arguments = [req.class.name, res.class.name] }
 
   def call(req, res)
   end
@@ -297,13 +304,14 @@ class YieldBeforeBlockAction < BeforeBlockAction
 end
 
 class AfterMethodAction < Hanami::Action
-  expose :egg, :logger
-  after  :set_egg, :scramble_egg
+  expose :egg, :logger, :arguments
+  after  :set_egg, :scramble_egg, :log_request
   append_after :add_first_name_to_logger, :add_last_name_to_logger
   prepend_after :add_title_to_logger
 
   def initialize(*)
     @logger = []
+    @arguments = []
   end
 
   def call(req, res)
@@ -316,6 +324,11 @@ class AfterMethodAction < Hanami::Action
 
   def scramble_egg
     @egg = 'gE!g'
+  end
+
+  def log_request(req, res)
+    @arguments << req.class.name
+    @arguments << res.class.name
   end
 
   def add_first_name_to_logger
@@ -332,9 +345,10 @@ class AfterMethodAction < Hanami::Action
 end
 
 class AfterBlockAction < Hanami::Action
-  expose :egg
+  expose :egg, :arguments
   after { @egg = 'Coque' }
   after { @egg.reverse! }
+  after { |req, res| @arguments = [req.class.name, res.class.name] }
 
   def call(req, res)
   end
