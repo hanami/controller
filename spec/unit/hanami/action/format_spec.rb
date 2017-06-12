@@ -6,8 +6,8 @@ RSpec.describe Hanami::Action do
     end
 
     class Custom < Hanami::Action
-      def call(*)
-        self.format = params[:format]
+      def call(req, *)
+        self.format = req.params[:format]
       end
 
       private

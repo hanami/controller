@@ -16,9 +16,9 @@ RSpec.describe Hanami::Action do
 
     it "exposes session" do
       action = SessionAction.new(configuration: configuration)
-      action.call("rack.session" => session = { "foo" => "bar" })
+      response = action.call("rack.session" => session = { "foo" => "bar" })
 
-      expect(action.exposures[:session]).to eq(session)
+      expect(response[:session]).to eq(session)
     end
 
     it "allows value access via symbols" do
@@ -32,12 +32,10 @@ RSpec.describe Hanami::Action do
   describe "flash" do
     it "exposes flash" do
       action = FlashAction.new(configuration: configuration)
-      action.call({})
+      response = action.call({})
 
-      flash = action.exposures[:flash]
-
-      expect(flash).to be_kind_of(Hanami::Action::Flash)
-      expect(flash[:error]).to eq("ouch")
+      expect(response[:flash]).to be_kind_of(Hanami::Action::Flash)
+      expect(response[:flash][:error]).to eq("ouch")
     end
   end
 end

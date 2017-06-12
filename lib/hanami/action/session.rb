@@ -20,16 +20,6 @@ module Hanami
       # @api private
       ERRORS_KEY  = :__errors
 
-      # Add session to default exposures
-      #
-      # @since 0.4.4
-      # @api private
-      def self.included(action)
-        action.class_eval do
-          _expose :session, :flash
-        end
-      end
-
       # Gets the session from the request and expose it as an Hash.
       #
       # @return [Hash] the HTTP session from the request
@@ -70,7 +60,7 @@ module Hanami
       # @see Hanami::Action::Validatable
       # @see Hanami::Action::Session#flash
       def errors
-        flash[ERRORS_KEY] || params.respond_to?(:errors) && params.errors
+        flash[ERRORS_KEY] || request.params.respond_to?(:errors) && request.params.errors
       end
 
       private
@@ -131,8 +121,8 @@ module Hanami
       #   # The validation errors caused by Comments::Create are available
       #   # **after the redirect** in the context of Comments::Index.
       def redirect_to(*args)
-        if params.respond_to?(:valid?)
-          flash[ERRORS_KEY] = errors.to_a unless params.valid?
+        if request.params.respond_to?(:valid?)
+          flash[ERRORS_KEY] = errors.to_a unless request.params.valid?
         end
 
         super
@@ -148,6 +138,8 @@ module Hanami
       # @see Hanami::Action#finish
       def finish
         flash.clear
+        response[:session] = session
+        response[:flash]   = flash
         super
       end
     end

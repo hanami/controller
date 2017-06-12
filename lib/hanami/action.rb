@@ -14,8 +14,6 @@ require 'rack/utils'
 require 'hanami/utils'
 require 'hanami/utils/kernel'
 
-require 'hanami/action/exposable/guard'
-
 require 'hanami/utils/class_attribute'
 require 'hanami/http/status'
 
@@ -256,11 +254,7 @@ module Hanami
         class_attribute :after_callbacks
         self.after_callbacks = Utils::Callbacks::Chain.new
 
-        include Exposable::Guard
-
         prepend InstanceMethods
-        _expose :params
-
         include Validatable if defined?(Validatable)
       end
     end
@@ -287,63 +281,6 @@ module Hanami
     # FIXME: make this thread-safe
     def self.handled_exceptions
       @handled_exceptions ||= {}
-    end
-
-    # Expose the given attributes on the outside of the object with
-    # a getter and a special method called #exposures.
-    #
-    # @param names [Array<Symbol>] the name(s) of the attribute(s) to be
-    #   exposed
-    #
-    # @return [void]
-    #
-    # @since 0.1.0
-    #
-    # @example
-    #   require 'hanami/controller'
-    #
-    #   class Show
-    #     include Hanami::Action
-    #
-    #     expose :article, :tags
-    #
-    #     def call(params)
-    #       @article = Article.find params[:id]
-    #       @tags    = Tag.for(article)
-    #     end
-    #   end
-    #
-    #   action = Show.new
-    #   action.call({id: 23})
-    #
-    #   action.article # => #<Article ...>
-    #   action.tags    # => [#<Tag ...>, #<Tag ...>]
-    #
-    #   action.exposures # => { :article => #<Article ...>, :tags => [ ... ] }
-    def self.expose(*names)
-      class_eval do
-        names.each do |name|
-          attr_reader(name) unless attr_reader?(name)
-        end
-
-        exposures.push(*names)
-      end
-    end
-
-    class << self
-      # Alias of #expose to be used in internal modules.
-      # #_expose is not watched by the Guard
-      alias _expose expose
-    end
-
-    # Set of exposures attribute names
-    #
-    # @return [Array] the exposures attribute names
-    #
-    # @since 0.1.0
-    # @api private
-    def self.exposures
-      @exposures ||= []
     end
 
     # Define a callback for an Action.
@@ -748,21 +685,6 @@ module Hanami
     #   end
     def charset
       @charset || default_charset || DEFAULT_CHARSET
-    end
-
-    # Set of exposures
-    #
-    # @return [Hash] the exposures
-    #
-    # @since 0.1.0
-    #
-    # @see Hanami::Action::Exposable::ClassMethods.expose
-    def exposures
-      @exposures ||= {}.tap do |result|
-        self.class.exposures.each do |name|
-          result[name] = send(name)
-        end
-      end
     end
 
     protected
@@ -1437,7 +1359,6 @@ module Hanami
     # @api private
     # @abstract
     #
-    # @see Hanami::Action::Exposable#finish
     # @see Hanami::Action::Callable#finish
     # @see Hanami::Action::Session#finish
     # @see Hanami::Action::Cookies#finish
@@ -1451,7 +1372,7 @@ module Hanami
         response.headers.select! { |header, _| keep_response_header?(header) }
       end
 
-      exposures
+      response[:params] = request.params
       response
     end
   end

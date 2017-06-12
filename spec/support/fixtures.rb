@@ -7,6 +7,7 @@ require 'hanami/action/cookies'
 require 'hanami/action/session'
 require 'hanami/action/cache'
 require 'hanami/action/glue'
+require_relative "./renderer"
 
 HTTP_TEST_STATUSES_WITHOUT_BODY = Set.new((100..199).to_a << 204 << 205 << 304).freeze
 HTTP_TEST_STATUSES = {
@@ -85,10 +86,8 @@ end
 
 module Test
   class Index < Hanami::Action
-    expose :xyz
-
     def call(req, res)
-      @xyz = params[:name]
+      res[:xyz] = req.params[:name]
     end
   end
 end
@@ -185,64 +184,41 @@ class ErrorCallWithSpecifiedStatusCodeAction < Hanami::Action
   end
 end
 
-class ExposeAction < Hanami::Action
-  expose :film, :time
-
-  def call(req, res)
-    @film = '400 ASA'
-  end
-end
-
-class ExposeReservedWordAction < Hanami::Action
-  include Hanami::Action::Session
-
-  def self.expose_reserved_word(using_internal_method: false)
-    if using_internal_method
-      _expose :flash
-    else
-      expose :flash
-    end
-  end
-end
-
 class BeforeMethodAction < Hanami::Action
-  expose :article, :logger, :arguments
   before :set_article, :reverse_article, :log_request
   append_before :add_first_name_to_logger, :add_last_name_to_logger
   prepend_before :add_title_to_logger
-
-  def initialize(*)
-    @logger = []
-    @arguments = []
-  end
 
   def call(req, res)
   end
 
   private
-  def set_article
-    @article = 'Bonjour!'
+
+  def set_article(*, res)
+    res[:article] = "Bonjour!"
   end
 
-  def reverse_article
-    @article.reverse!
+  def reverse_article(*, res)
+    res[:article].reverse!
   end
 
   def log_request(req, res)
-    @arguments << req.class.name
-    @arguments << res.class.name
+    res[:arguments] = []
+    res[:arguments] << req.class.name
+    res[:arguments] << res.class.name
   end
 
-  def add_first_name_to_logger
-    @logger << 'John'
+  def add_first_name_to_logger(*, res)
+    res[:logger] << "John"
   end
 
-  def add_last_name_to_logger
-    @logger << 'Doe'
+  def add_last_name_to_logger(*, res)
+    res[:logger] << "Doe"
   end
 
-  def add_title_to_logger
-    @logger << 'Mr.'
+  def add_title_to_logger(*, res)
+    res[:logger] = []
+    res[:logger] << "Mr."
   end
 end
 
@@ -256,15 +232,14 @@ class SubclassBeforeMethodAction < BeforeMethodAction
 end
 
 class ParamsBeforeMethodAction < BeforeMethodAction
-  expose :exposed_params
-
   private
+
   def upcase_article
   end
 
-  def set_article(params)
-    @exposed_params = params
-    @article = super() + params[:bang]
+  def set_article(req, res)
+    res[:exposed_params] = req.params
+    res[:article] = super(req, res) + req.params[:bang]
   end
 end
 
@@ -289,68 +264,62 @@ class HandledErrorBeforeMethodAction < BeforeMethodAction
 end
 
 class BeforeBlockAction < Hanami::Action
-  expose :article, :arguments
-  before { @article = 'Good morning!' }
-  before { @article.reverse! }
-  before { |req, res| @arguments = [req.class.name, res.class.name] }
+  before { |_, res|   res[:article] = 'Good morning!' }
+  before { |_, res|   res[:article].reverse! }
+  before { |req, res| res[:arguments] = [req.class.name, res.class.name] }
 
   def call(req, res)
   end
 end
 
 class YieldBeforeBlockAction < BeforeBlockAction
-  expose :yielded_params
-  before {|params| @yielded_params = params }
+  before { |req, res| res[:yielded_params] = req.params }
 end
 
 class AfterMethodAction < Hanami::Action
-  expose :egg, :logger, :arguments
-  after  :set_egg, :scramble_egg, :log_request
+  after :set_egg, :scramble_egg, :log_request
   append_after :add_first_name_to_logger, :add_last_name_to_logger
   prepend_after :add_title_to_logger
 
-  def initialize(*)
-    @logger = []
-    @arguments = []
-  end
-
-  def call(req, res)
+  def call(*)
   end
 
   private
-  def set_egg
-    @egg = 'Egg!'
+
+  def set_egg(*, res)
+    res[:egg] = "Egg!"
   end
 
-  def scramble_egg
-    @egg = 'gE!g'
+  def scramble_egg(*, res)
+    res[:egg] = "gE!g"
   end
 
   def log_request(req, res)
-    @arguments << req.class.name
-    @arguments << res.class.name
+    res[:arguments] = []
+    res[:arguments] << req.class.name
+    res[:arguments] << res.class.name
   end
 
-  def add_first_name_to_logger
-    @logger << 'Jane'
+  def add_first_name_to_logger(*, res)
+    res[:logger] << "Jane"
   end
 
-  def add_last_name_to_logger
-    @logger << 'Dixit'
+  def add_last_name_to_logger(*, res)
+    res[:logger] << "Dixit"
   end
 
-  def add_title_to_logger
-    @logger << 'Mrs.'
+  def add_title_to_logger(*, res)
+    res[:logger] = []
+    res[:logger] << "Mrs."
   end
 end
 
 class AfterBlockAction < Hanami::Action
-  expose :egg, :arguments
-  after { @egg = 'Coque' }
-  after { @egg.reverse! }
-  after { |req, res| @arguments = [req.class.name, res.class.name] }
+  after { |_, res| res[:egg] = 'Coque' }
+  after { |_, res| res[:egg].reverse! }
+  after { |req, res| res[:arguments] = [req.class.name, res.class.name] }
 
-  def call(req, res)
+  def call(*)
   end
 end
 
@@ -461,8 +430,8 @@ class RemoveCookiesAction < Hanami::Action
 end
 
 class ThrowCodeAction < Hanami::Action
-  def call(req, res)
-    halt params[:status].to_i, params[:message]
+  def call(req, *)
+    halt req.params[:status].to_i, req.params[:message]
   end
 end
 
@@ -554,7 +523,7 @@ end
 
 class ParamsAction < Hanami::Action
   def call(req, res)
-    res.body = params.to_h.inspect
+    res.body = req.params.to_h.inspect
   end
 end
 
@@ -571,7 +540,7 @@ class WhitelistedParamsAction < Hanami::Action
   params Params
 
   def call(req, res)
-    res.body = params.to_h.inspect
+    res.body = req.params.to_h.inspect
   end
 end
 
@@ -581,7 +550,7 @@ class WhitelistedDslAction < Hanami::Action
   end
 
   def call(req, res)
-    res.body = params.to_h.inspect
+    res.body = req.params.to_h.inspect
   end
 end
 
@@ -592,7 +561,7 @@ class WhitelistedUploadDslAction < Hanami::Action
   end
 
   def call(req, res)
-    res.body = params.to_h.inspect
+    res.body = req.params.to_h.inspect
   end
 end
 
@@ -601,8 +570,8 @@ class ParamsValidationAction < Hanami::Action
     required(:email).filled(:str?)
   end
 
-  def call(req, res)
-    halt 400 unless params.valid?
+  def call(req, *)
+    halt 400 unless req.params.valid?
   end
 end
 
@@ -641,7 +610,7 @@ end
 
 class Root < Hanami::Action
   def call(req, res)
-    res.body = params.to_h.inspect
+    res.body = req.params.to_h.inspect
     res.headers.merge!({'X-Test' => 'test'})
   end
 end
@@ -649,14 +618,14 @@ end
 module About
   class Team < Hanami::Action
     def call(req, res)
-      res.body = params.to_h.inspect
+      res.body = req.params.to_h.inspect
       res.headers.merge!({'X-Test' => 'test'})
     end
   end
 
   class Contacts < Hanami::Action
     def call(req, res)
-      res.body = params.to_h.inspect
+      res.body = req.params.to_h.inspect
     end
   end
 end
@@ -664,37 +633,37 @@ end
 module Identity
   class Show < Hanami::Action
     def call(req, res)
-      res.body = params.to_h.inspect
+      res.body = req.params.to_h.inspect
     end
   end
 
   class New < Hanami::Action
     def call(req, res)
-      res.body = params.to_h.inspect
+      res.body = req.params.to_h.inspect
     end
   end
 
   class Create < Hanami::Action
     def call(req, res)
-      res.body = params.to_h.inspect
+      res.body = req.params.to_h.inspect
     end
   end
 
   class Edit < Hanami::Action
     def call(req, res)
-      res.body = params.to_h.inspect
+      res.body = req.params.to_h.inspect
     end
   end
 
   class Update < Hanami::Action
     def call(req, res)
-      res.body = params.to_h.inspect
+      res.body = req.params.to_h.inspect
     end
   end
 
   class Destroy < Hanami::Action
     def call(req, res)
-      res.body = params.to_h.inspect
+      res.body = req.params.to_h.inspect
     end
   end
 end
@@ -702,43 +671,43 @@ end
 module Flowers
   class Index < Hanami::Action
     def call(req, res)
-      res.body = params.to_h.inspect
+      res.body = req.params.to_h.inspect
     end
   end
 
   class Show < Hanami::Action
     def call(req, res)
-      res.body = params.to_h.inspect
+      res.body = req.params.to_h.inspect
     end
   end
 
   class New < Hanami::Action
     def call(req, res)
-      res.body = params.to_h.inspect
+      res.body = req.params.to_h.inspect
     end
   end
 
   class Create < Hanami::Action
     def call(req, res)
-      res.body = params.to_h.inspect
+      res.body = req.params.to_h.inspect
     end
   end
 
   class Edit < Hanami::Action
     def call(req, res)
-      res.body = params.to_h.inspect
+      res.body = req.params.to_h.inspect
     end
   end
 
   class Update < Hanami::Action
     def call(req, res)
-      res.body = params.to_h.inspect
+      res.body = req.params.to_h.inspect
     end
   end
 
   class Destroy < Hanami::Action
     def call(req, res)
-      res.body = params.to_h.inspect
+      res.body = req.params.to_h.inspect
     end
   end
 end
@@ -760,7 +729,7 @@ module Painters
     end
 
     def call(req, res)
-      res.body = params.to_h.inspect
+      res.body = req.params.to_h.inspect
     end
   end
 end
@@ -770,7 +739,7 @@ module Dashboard
     include Hanami::Action::Session
     before :authenticate!
 
-    def call(req, res)
+    def call(_req, res)
       res.body = "User ID from session: #{session[:user_id]}"
     end
 
@@ -877,12 +846,17 @@ module MusicPlayer
   module Controllers
     module Authentication
       def self.included(action)
-        action.class_eval { expose :current_user }
+        action.class_eval do
+          before do |_, res|
+            res[:current_user] = current_user
+          end
+        end
       end
 
       private
+
       def current_user
-        'Luca'
+        "Luca"
       end
     end
 
@@ -995,7 +969,7 @@ module SendFileTest
   module Files
     class Show < Hanami::Action
       def call(req, res)
-        id = params[:id]
+        id = req.params[:id]
 
         # This if statement is only for testing purpose
         if id == "1"
@@ -1012,7 +986,7 @@ module SendFileTest
           @resource = repository_dot_find_by_id(id)
           # this is usually 406, but I want to distinguish it from the 406 below.
           halt 400 unless @resource
-          extension = params[:format]
+          extension = req.params[:format]
 
           case(extension)
           when 'html'
@@ -1146,7 +1120,7 @@ module HeadTest
           'Last-Modified'    => 'Wed, 21 Jan 2015 11:32:10 GMT'
         )
 
-        res.status = params[:code].to_i
+        res.status = req.params[:code].to_i
         res.body   = 'code'
       end
     end
@@ -1207,18 +1181,20 @@ module FullStack
       class Index < Hanami::Action
         include Hanami::Action::Glue
         include Hanami::Action::Session
-        expose :greeting
+        include Inspector
 
-        def call(req, res)
-          @greeting = 'Hello'
+        def call(_req, res)
+          res[:greeting] = "Hello"
+          res[:format]   = format
         end
       end
 
       class Head < Hanami::Action
         include Hanami::Action::Glue
         include Hanami::Action::Session
+        include Inspector
 
-        def call(req, res)
+        def call(_req, res)
           res.headers['X-Renderable'] = renderable?.to_s
           res.body = 'foo'
         end
@@ -1229,21 +1205,23 @@ module FullStack
       class Index < Hanami::Action
         include Hanami::Action::Glue
         include Hanami::Action::Session
+        include Inspector
 
-        def call(req, res)
+        def call(*)
         end
       end
 
       class Create < Hanami::Action
         include Hanami::Action::Glue
         include Hanami::Action::Session
+        include Inspector
 
         params do
           required(:title).filled(:str?)
         end
 
-        def call(req, res)
-          params.valid?
+        def call(req, *)
+          req.params.valid?
 
           redirect_to '/books'
         end
@@ -1252,6 +1230,7 @@ module FullStack
       class Update < Hanami::Action
         include Hanami::Action::Glue
         include Hanami::Action::Session
+        include Inspector
 
         params do
           required(:id).value(:int?)
@@ -1265,13 +1244,13 @@ module FullStack
         end
 
         def call(req, res)
-          valid = params.valid?
+          valid = req.params.valid?
 
           res.status = 201
           res.body = JSON.generate({
-            symbol_access: params[:book][:author] && params[:book][:author][:name],
+            symbol_access: req.params[:book][:author] && req.params[:book][:author][:name],
             valid: valid,
-            errors: params.errors.to_h
+            errors: req.params.errors.to_h
           })
         end
       end
@@ -1281,14 +1260,16 @@ module FullStack
       class Index < Hanami::Action
         include Hanami::Action::Glue
         include Hanami::Action::Session
+        include Inspector
 
-        def call(req, res)
+        def call(*)
         end
       end
 
       class Create < Hanami::Action
         include Hanami::Action::Glue
         include Hanami::Action::Session
+        include Inspector
 
         def call(req, res)
           flash[:message] = "Saved!"
@@ -1301,6 +1282,7 @@ module FullStack
       class Start < Hanami::Action
         include Hanami::Action::Glue
         include Hanami::Action::Session
+        include Inspector
 
         def call(req, res)
           redirect_to '/poll/1'
@@ -1310,6 +1292,7 @@ module FullStack
       class Step1 < Hanami::Action
         include Hanami::Action::Glue
         include Hanami::Action::Session
+        include Inspector
 
         def call(req, res)
           if @_env['REQUEST_METHOD'] == 'GET'
@@ -1324,6 +1307,7 @@ module FullStack
       class Step2 < Hanami::Action
         include Hanami::Action::Glue
         include Hanami::Action::Session
+        include Inspector
 
         def call(req, res)
           if @_env['REQUEST_METHOD'] == 'POST'
@@ -1338,6 +1322,7 @@ module FullStack
       class Show < Hanami::Action
         include Hanami::Action::Glue
         include Hanami::Action::Session
+        include Inspector
 
         before :redirect_to_root
         after :set_body
@@ -1356,18 +1341,6 @@ module FullStack
           res.body = "after callback shouldn't be called"
         end
       end
-    end
-  end
-
-  class Renderer
-    def render(env, response)
-      action = env.delete('hanami.action')
-
-      if response[0] == 200 && action.renderable?
-        response[2] = "#{ action.class.name } #{ action.exposures } params: #{ action.params.to_h } flash: #{ action.exposures[:flash].inspect }"
-      end
-
-      response
     end
   end
 
@@ -1400,15 +1373,15 @@ module FullStack
         end
       end
 
-      @renderer   = Renderer.new
-      @middleware = Rack::Builder.new do
+      @renderer = Renderer.new
+      @app      = Rack::Builder.new do
         use Rack::Session::Cookie, secret: SecureRandom.hex(16)
         run routes
-      end
+      end.to_app
     end
 
     def call(env)
-      @renderer.render(env, @middleware.call(env))
+      @renderer.render(env, @app.call(env))
     end
   end
 end
@@ -1467,18 +1440,6 @@ module SessionWithCookies
     end
   end
 
-  class Renderer
-    def render(env, response)
-      action = env.delete('hanami.action')
-
-      if response[0] == 200 && action.renderable?
-        response[2] = "#{ action.class.name } #{ action.exposures }"
-      end
-
-      response
-    end
-  end
-
   class Application
     def initialize
       configuration = Hanami::Controller::Configuration.new do |config|
@@ -1510,22 +1471,11 @@ module SessionsWithoutCookies
       class Index < Hanami::Action
         include Hanami::Action::Glue
         include Hanami::Action::Session
+        include Inspector
 
-        def call(req, res)
+        def call(*)
         end
       end
-    end
-  end
-
-  class Renderer
-    def render(env, response)
-      action = env.delete('hanami.action')
-
-      if response[0] == 200 && action.renderable?
-        response[2] = "#{ action.class.name } #{ action.exposures }"
-      end
-
-      response
     end
   end
 

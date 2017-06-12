@@ -19,17 +19,17 @@ RSpec.describe Hanami::Action::Params do
 
       it "raw gets all params" do
         File.open('spec/support/fixtures/multipart-upload.png', 'rb') do |upload|
-          action.call('id' => '1', 'unknown' => '2', 'upload' => upload, '_csrf_token' => '3')
+          response = action.call('id' => '1', 'unknown' => '2', 'upload' => upload, '_csrf_token' => '3')
 
-          expect(action.params[:id]).to eq('1')
-          expect(action.params[:unknown]).to eq('2')
-          expect(FileUtils.cmp(action.params[:upload], upload)).to be(true)
-          expect(action.params[:_csrf_token]).to eq('3')
+          expect(response[:params][:id]).to eq('1')
+          expect(response[:params][:unknown]).to eq('2')
+          expect(FileUtils.cmp(response[:params][:upload], upload)).to be(true)
+          expect(response[:params][:_csrf_token]).to eq('3')
 
-          expect(action.params.raw.fetch('id')).to eq('1')
-          expect(action.params.raw.fetch('unknown')).to eq('2')
-          expect(action.params.raw.fetch('upload')).to eq(upload)
-          expect(action.params.raw.fetch('_csrf_token')).to eq('3')
+          expect(response[:params].raw.fetch('id')).to eq('1')
+          expect(response[:params].raw.fetch('unknown')).to eq('2')
+          expect(response[:params].raw.fetch('upload')).to eq(upload)
+          expect(response[:params].raw.fetch('_csrf_token')).to eq('3')
         end
       end
     end
@@ -39,17 +39,17 @@ RSpec.describe Hanami::Action::Params do
 
       it "raw gets all params" do
         Tempfile.create('multipart-upload') do |upload|
-          action.call('id' => '1', 'unknown' => '2', 'upload' => upload, '_csrf_token' => '3')
+          response = action.call('id' => '1', 'unknown' => '2', 'upload' => upload, '_csrf_token' => '3')
 
-          expect(action.params[:id]).to          eq('1')
-          expect(action.params[:unknown]).to     be(nil)
-          expect(action.params[:upload]).to      eq(upload)
-          expect(action.params[:_csrf_token]).to eq('3')
+          expect(response[:params][:id]).to          eq('1')
+          expect(response[:params][:unknown]).to     be(nil)
+          expect(response[:params][:upload]).to      eq(upload)
+          expect(response[:params][:_csrf_token]).to eq('3')
 
-          expect(action.params.raw.fetch('id')).to          eq('1')
-          expect(action.params.raw.fetch('unknown')).to     eq('2')
-          expect(action.params.raw.fetch('upload')).to      eq(upload)
-          expect(action.params.raw.fetch('_csrf_token')).to eq('3')
+          expect(response[:params].raw.fetch('id')).to          eq('1')
+          expect(response[:params].raw.fetch('unknown')).to     eq('2')
+          expect(response[:params].raw.fetch('upload')).to      eq(upload)
+          expect(response[:params].raw.fetch('_csrf_token')).to eq('3')
         end
       end
     end

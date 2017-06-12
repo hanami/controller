@@ -4,8 +4,11 @@ require 'rack/response'
 module Hanami
   class Action
     class Response < ::Rack::Response
+      attr_reader :exposures
+
       def initialize(body: [], status: 200, header: {})
         super(body, status, header.dup)
+        @exposures = {}
       end
 
       def body=(str)
@@ -18,6 +21,14 @@ module Hanami
         else
           write(str) unless str.nil?
         end
+      end
+
+      def [](key)
+        @exposures.fetch(key)
+      end
+
+      def []=(key, value)
+        @exposures[key] = value
       end
     end
   end

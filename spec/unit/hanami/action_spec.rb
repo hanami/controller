@@ -97,38 +97,32 @@ RSpec.describe Hanami::Action do
   describe "#request" do
     it "gets a Rack-like request object" do
       action_class = Class.new(Hanami::Action) do
-        expose :req
-
-        def call(req, _res)
-          @req = req
+        def call(req, res)
+          res[:request] = req
         end
       end
 
       action = action_class.new(configuration: configuration)
       env = Rack::MockRequest.env_for('http://example.com/foo')
-      action.call(env)
+      response = action.call(env)
 
-      request = action.req
-      expect(request.path).to eq('/foo')
+      expect(response[:request].path).to eq('/foo')
     end
   end
 
   describe "#parsed_request_body" do
     it "exposes the body of the request parsed by router body parsers" do
       action_class = Class.new(Hanami::Action) do
-        expose :request_body
-
-        def call(_req, _res)
-          @request_body = parsed_request_body
+        def call(*, res)
+          res[:parsed_request_body] = parsed_request_body
         end
       end
 
       action = action_class.new(configuration: configuration)
       env = Rack::MockRequest.env_for('http://example.com/foo',
                                       'router.parsed_body' => { 'a' => 'foo' })
-      action.call(env)
-      parsed_request_body = action.request_body
-      expect(parsed_request_body).to eq('a' => 'foo')
+      response = action.call(env)
+      expect(response[:parsed_request_body]).to eq('a' => 'foo')
     end
   end
 
