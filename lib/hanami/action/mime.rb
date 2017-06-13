@@ -583,9 +583,11 @@ module Hanami
         end
 
         def <=>(other)
-          return quality <=> other.quality unless quality == other.quality
           return priority <=> other.priority unless priority == other.priority
           other.index <=> index
+          # return other.quality <=> quality unless quality == other.quality
+          # return other.priority <=> priority unless priority == other.priority
+          # other.index <=> index
         end
 
         private
