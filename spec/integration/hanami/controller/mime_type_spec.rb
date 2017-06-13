@@ -8,12 +8,6 @@ RSpec.describe 'MIME Type' do
       expect(response.body).to                    eq("all")
     end
 
-    it "fallbacks to the default format and charset, set in the configuration" do
-      response = app.get("/configuration")
-      expect(response.headers["Content-Type"]).to eq("text/html; charset=ISO-8859-1")
-      expect(response.body).to                    eq("html")
-    end
-
     it 'returns the specified "Content-Type" header' do
       response = app.get("/custom")
       expect(response.headers["Content-Type"]).to eq("application/xml; charset=utf-8")
@@ -23,12 +17,6 @@ RSpec.describe 'MIME Type' do
     it "returns the custom charser header" do
       response = app.get("/latin")
       expect(response.headers["Content-Type"]).to eq("text/html; charset=latin1")
-      expect(response.body).to                    eq("html")
-    end
-
-    it "uses default_response_format if set in the configuration regardless of request format" do
-      response = app.get("/response")
-      expect(response.headers["Content-Type"]).to eq("application/json; charset=utf-8")
       expect(response.body).to                    eq("html")
     end
 

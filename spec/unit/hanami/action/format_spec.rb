@@ -6,8 +6,8 @@ RSpec.describe Hanami::Action do
     end
 
     class Custom < Hanami::Action
-      def call(req, *)
-        self.format = req.params[:format]
+      def call(req, res)
+        res.format = req.params[:format]
       end
 
       private
@@ -19,13 +19,7 @@ RSpec.describe Hanami::Action do
 
     class Configuration < Hanami::Action
       def call(_req, res)
-        res.body = format
-      end
-
-      private
-
-      def default_request_format
-        :jpg
+        res.body = res.format
       end
     end
   end
@@ -34,57 +28,61 @@ RSpec.describe Hanami::Action do
     let(:action) { FormatController::Lookup.new(configuration: configuration) }
 
     it 'lookup to #content_type if was not explicitly set (default: application/octet-stream)' do
-      status, headers, = action.call({})
+      response = action.call({})
 
-      expect(action.format).to           eq(:all)
-      expect(headers['Content-Type']).to eq('application/octet-stream; charset=utf-8')
-      expect(status).to                  be(200)
+      expect(response.format).to                  eq(:all)
+      expect(response.headers['Content-Type']).to eq('application/octet-stream; charset=utf-8')
+      expect(response.status).to                  be(200)
     end
 
     it "accepts 'text/html' and returns :html" do
-      status, headers, = action.call('HTTP_ACCEPT' => 'text/html')
+      response = action.call('HTTP_ACCEPT' => 'text/html')
 
-      expect(action.format).to           eq(:html)
-      expect(headers['Content-Type']).to eq('text/html; charset=utf-8')
-      expect(status).to                  be(200)
+      expect(response.format).to                  eq(:html)
+      expect(response.headers['Content-Type']).to eq('text/html; charset=utf-8')
+      expect(response.status).to                  be(200)
     end
 
     it "accepts unknown mime type and returns :all" do
-      status, headers, = action.call('HTTP_ACCEPT' => 'application/unknown')
+      response = action.call('HTTP_ACCEPT' => 'application/unknown')
 
-      expect(action.format).to           eq(:all)
-      expect(headers['Content-Type']).to eq('application/octet-stream; charset=utf-8')
-      expect(status).to                  be(200)
+      expect(response.format).to                  eq(:all)
+      expect(response.headers['Content-Type']).to eq('application/octet-stream; charset=utf-8')
+      expect(response.status).to                  be(200)
     end
 
     # Bug
     # See https://github.com/hanami/controller/issues/104
     it "accepts 'text/html, application/xhtml+xml, image/jxr, */*' and returns :html" do
-      status, headers, = action.call('HTTP_ACCEPT' => 'text/html, application/xhtml+xml, image/jxr, */*')
+      response = action.call('HTTP_ACCEPT' => 'text/html, application/xhtml+xml, image/jxr, */*')
 
-      expect(action.format).to           eq(:html)
-      expect(headers['Content-Type']).to eq('text/html; charset=utf-8')
-      expect(status).to                  be(200)
+      expect(response.format).to                  eq(:html)
+      expect(response.headers['Content-Type']).to eq('text/html; charset=utf-8')
+      expect(response.status).to                  be(200)
     end
 
     # Bug
     # See https://github.com/hanami/controller/issues/167
     it "accepts '*/*' and returns configured default format" do
-      action = FormatController::Configuration.new(configuration: configuration)
-      status, headers, = action.call('HTTP_ACCEPT' => '*/*')
+      configuration = Hanami::Controller::Configuration.new do |config|
+        config.default_response_format = :jpg
+      end
 
-      expect(action.format).to           eq(:jpg)
-      expect(headers['Content-Type']).to eq('image/jpeg; charset=utf-8')
-      expect(status).to                  be(200)
+      action = FormatController::Configuration.new(configuration: configuration)
+      response = action.call('HTTP_ACCEPT' => '*/*')
+
+      expect(response.format).to                  eq(:jpg)
+      expect(response.headers['Content-Type']).to eq('image/jpeg; charset=utf-8')
+      expect(response.status).to                  be(200)
     end
 
-    Hanami::Action::MIME_TYPES.each do |format, mime_type|
+    Hanami::Action::Mime::TYPES.each do |format, mime_type|
       it "accepts '#{mime_type}' and returns :#{format}" do
-        status, headers, = action.call('HTTP_ACCEPT' => mime_type)
+        response = action.call('HTTP_ACCEPT' => mime_type)
 
-        expect(action.format).to           eq(format)
-        expect(headers['Content-Type']).to eq("#{mime_type}; charset=utf-8")
-        expect(status).to                  be(200)
+        expect(response.format).to                  eq(format)
+        expect(response.headers['Content-Type']).to eq("#{mime_type}; charset=utf-8")
+        expect(response.status).to                  be(200)
       end
     end
   end
@@ -93,11 +91,11 @@ RSpec.describe Hanami::Action do
     let(:action) { FormatController::Custom.new(configuration: configuration) }
 
     it "sets :all and returns 'application/octet-stream'" do
-      status, headers, = action.call(format: 'all')
+      response = action.call(format: 'all')
 
-      expect(action.format).to           eq(:all)
-      expect(headers['Content-Type']).to eq('application/octet-stream; charset=utf-8')
-      expect(status).to                  be(200)
+      expect(response.format).to                  eq(:all)
+      expect(response.headers['Content-Type']).to eq('application/octet-stream; charset=utf-8')
+      expect(response.status).to                  be(200)
     end
 
     it "sets nil and raises an error" do
@@ -117,12 +115,12 @@ RSpec.describe Hanami::Action do
       end
     end
 
-    Hanami::Action::MIME_TYPES.each do |format, mime_type|
+    Hanami::Action::Mime::TYPES.each do |format, mime_type|
       it "sets #{format} and returns '#{mime_type}'" do
-        _, headers, = action.call(format: format)
+        response = action.call(format: format)
 
-        expect(action.format).to           eq(format)
-        expect(headers['Content-Type']).to eq("#{mime_type}; charset=utf-8")
+        expect(response.format).to                  eq(format)
+        expect(response.headers['Content-Type']).to eq("#{mime_type}; charset=utf-8")
       end
     end
   end

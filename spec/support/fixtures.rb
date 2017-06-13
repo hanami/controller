@@ -937,7 +937,7 @@ class VisibilityAction < Hanami::Action
   def call(req, res)
     res.body   = 'x'
     res.status = 201
-    self.format = :json
+    res.format = :json
 
     res.headers.merge!('X-Custom' => 'OK')
     res.headers.merge!('Y-Custom'      => 'YO')
@@ -994,9 +994,9 @@ module SendFileTest
             # we should have also checked #accept? but w/e
             res.body = ::File.read(Pathname.new("spec/support/fixtures/#{@resource.asset_path}.html"))
             res.status = 200
-            self.format = :html
+            res.format = :html
           when 'json', nil
-            self.format = :json
+            res.format = :json
             send_file Pathname.new("#{@resource.asset_path}.json")
           else
             halt 406
@@ -1185,7 +1185,7 @@ module FullStack
 
         def call(_req, res)
           res[:greeting] = "Hello"
-          res[:format]   = format
+          res[:format]   = res.format
         end
       end
 
@@ -1506,38 +1506,22 @@ end
 module Mimes
   class Default < Hanami::Action
     def call(_req, res)
-      res.body = format
-    end
-  end
-
-  class Configuration < Hanami::Action
-    def call(_req, res)
-      res.body = format
-    end
-
-    private
-
-    def default_request_format
-      :html
-    end
-
-    def default_charset
-      'ISO-8859-1'
+      res.body = res.format
     end
   end
 
   class Custom < Hanami::Action
     def call(_req, res)
-      self.format = :xml
-      res.body    = format
+      res.format = :xml
+      res.body   = res.format
     end
   end
 
   class Latin < Hanami::Action
     def call(_req, res)
-      self.charset = 'latin1'
-      self.format  = :html
-      res.body     = format
+      res.charset = 'latin1'
+      res.format  = :html
+      res.body    = res.format
     end
   end
 
@@ -1548,7 +1532,7 @@ module Mimes
       res.headers['X-AcceptXml']     = req.accept?('application/xml').to_s
       res.headers['X-AcceptJson']    = req.accept?('text/json').to_s
 
-      res.body = format
+      res.body = res.format
     end
   end
 
@@ -1556,7 +1540,7 @@ module Mimes
     accept :json, :custom
 
     def call(_req, res)
-      res.body = format
+      res.body = res.format
     end
   end
 
@@ -1564,7 +1548,7 @@ module Mimes
     accept :html, :json, :custom
 
     def call(_req, res)
-      res.body = format.to_s
+      res.body = res.format
     end
   end
 
@@ -1574,25 +1558,9 @@ module Mimes
     end
   end
 
-  class DefaultResponse < Hanami::Action
-    def call(_req, res)
-      res.body = default_request_format
-    end
-
-    private
-
-    def default_request_format
-      :html
-    end
-
-    def default_response_format
-      :json
-    end
-  end
-
   class OverrideDefaultResponse < Hanami::Action
-    def call(*)
-      self.format = :xml
+    def call(*, res)
+      res.format = :xml
     end
 
     private
@@ -1613,12 +1581,10 @@ module Mimes
       @router = Hanami::Router.new(resolver: resolver) do
         get '/',                   to: 'mimes#default'
         get '/custom',             to: 'mimes#custom'
-        get '/configuration',      to: 'mimes#configuration'
         get '/accept',             to: 'mimes#accept'
         get '/restricted',         to: 'mimes#restricted'
         get '/latin',              to: 'mimes#latin'
         get '/nocontent',          to: 'mimes#no_content'
-        get '/response',           to: 'mimes#default_response'
         get '/overwritten_format', to: 'mimes#override_default_response'
         get '/custom_from_accept', to: 'mimes#custom_from_accept'
       end

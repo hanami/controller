@@ -177,15 +177,10 @@ module Hanami
       # @api private
       #
       # @see Hanami::Controller::Configuration#format
-      # @see Hanami::Action::Mime::MIME_TYPES
       def mime_types
         # FIXME: this isn't efficient. speed it up!
         ((@formats.keys - DEFAULT_FORMATS.keys) +
-         Hanami::Action::MIME_TYPES.values).freeze
-      end
-
-      def restrict_mime_types(mime_types)
-        mime_types & self.mime_types
+         Hanami::Action::Mime::TYPES.values).freeze
       end
 
       # Set a format as default fallback for all the requests without a strict

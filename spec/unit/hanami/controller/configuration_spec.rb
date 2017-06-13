@@ -76,7 +76,7 @@ RSpec.describe Hanami::Controller::Configuration do
 
     it 'returns all known MIME types' do
       all = ["custom/format"]
-      expect(configuration.mime_types).to eq(all + Hanami::Action::MIME_TYPES.values)
+      expect(configuration.mime_types).to eq(all + Hanami::Action::Mime::TYPES.values)
     end
 
     it 'returns correct values even after the value is cached' do
@@ -84,7 +84,7 @@ RSpec.describe Hanami::Controller::Configuration do
       configuration.format electroneering: 'custom/electroneering'
 
       all = ["custom/format", "custom/electroneering"]
-      expect(configuration.mime_types).to eq(all + Hanami::Action::MIME_TYPES.values)
+      expect(configuration.mime_types).to eq(all + Hanami::Action::Mime::TYPES.values)
     end
   end
 
