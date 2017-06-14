@@ -110,13 +110,15 @@ class MyCustomError < StandardError ; end
 class ErrorCallFromInheritedErrorClass < Hanami::Action
   handle_exception StandardError => :handler
 
-  def call(req, res)
+  def call(*)
     raise MyCustomError
   end
 
   private
-  def handler(exception)
-    status 501, 'An inherited exception occurred!'
+
+  def handler(_req, res, *)
+    res.status = 501
+    res.body   = 'An inherited exception occurred!'
   end
 end
 
@@ -124,55 +126,63 @@ class ErrorCallFromInheritedErrorClassStack < Hanami::Action
   handle_exception StandardError => :standard_handler
   handle_exception MyCustomError => :handler
 
-  def call(req, res)
+  def call(*)
     raise MyCustomError
   end
 
   private
-  def handler(exception)
-    status 501, 'MyCustomError was thrown'
+
+  def handler(_req, res, *)
+    res.status = 501
+    res.body   = "MyCustomError was thrown"
   end
 
-  def standard_handler(exception)
-    status 501, 'An unknown error was thrown'
+  def standard_handler(_req, res, *)
+    res.status = 501
+    res.body   = "An unknown error was thrown"
   end
 end
 
 class ErrorCallWithSymbolMethodNameAsHandlerAction < Hanami::Action
   handle_exception StandardError => :handler
 
-  def call(req, res)
+  def call(*)
     raise StandardError
   end
 
   private
-  def handler(exception)
-    status 501, 'Please go away!'
+
+  def handler(_req, res, *)
+    res.status = 501
+    res.body   = "Please go away!"
   end
 end
 
 class ErrorCallWithStringMethodNameAsHandlerAction < Hanami::Action
   handle_exception StandardError => 'standard_error_handler'
 
-  def call(req, res)
+  def call(*)
     raise StandardError
   end
 
   private
-  def standard_error_handler(exception)
-    status 502, exception.message
+
+  def standard_error_handler(_req, res, exception)
+    res.status = 502
+    res.body   = exception.message
   end
 end
 
 class ErrorCallWithUnsetStatusResponse < Hanami::Action
   handle_exception ArgumentError => 'arg_error_handler'
 
-  def call(req, res)
+  def call(*)
     raise ArgumentError
   end
 
   private
-  def arg_error_handler(exception)
+
+  def arg_error_handler(*)
   end
 end
 

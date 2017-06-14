@@ -136,7 +136,7 @@ module Hanami
       # @api private
       #
       # @see Hanami::Action#finish
-      def finish
+      def finish(*)
         flash.clear
         response[:session] = session
         response[:flash]   = flash

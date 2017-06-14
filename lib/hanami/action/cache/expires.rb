@@ -49,7 +49,7 @@ module Hanami
         # @api private
         #
         # @see Hanami::Action#finish
-        def finish
+        def finish(*)
           response.headers.merge!(self.class.expires_directives.headers) unless response.headers.include? HEADER
           super
         end

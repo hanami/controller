@@ -75,7 +75,7 @@ module Hanami
       # @api private
       #
       # @see Hanami::Action#finish
-      def finish
+      def finish(*)
         cookies.finish
         super
       end

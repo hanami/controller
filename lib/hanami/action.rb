@@ -431,16 +431,21 @@ module Hanami
       # @since 0.1.0
       # @api private
       def call(env)
-        _rescue do
-          params    = self.class.params_class.new(env)
-          @request  = Hanami::Action::Request.new(env, params)
-          @response = Hanami::Action::Response.new(configuration: configuration, content_type: Mime.calculate_content_type_with_charset(configuration, request, accepted_mime_types), header: configuration.default_headers)
-          _run_before_callbacks(@request, @response)
-          super @request, @response
-          _run_after_callbacks(@request, @response)
+        halted = catch :halt do
+          begin
+            params    = self.class.params_class.new(env)
+            @request  = Hanami::Action::Request.new(env, params)
+            @response = Hanami::Action::Response.new(configuration: configuration, content_type: Mime.calculate_content_type_with_charset(configuration, request, accepted_mime_types), header: configuration.default_headers)
+            _run_before_callbacks(@request, @response)
+            super @request, @response
+            _run_after_callbacks(@request, @response)
+          rescue => exception
+            _reference_in_rack_errors(@request, exception)
+            _handle_exception(@request, @response, exception)
+          end
         end
 
-        finish
+        finish(halted)
       end
     end
 
@@ -518,21 +523,7 @@ module Hanami
     #   # => [404, {}, ["This is not the droid you're looking for."]]
     def halt(code, message = nil)
       message ||= Http::Status.message_for(code)
-      status(code, message)
-
-      throw :halt
-    end
-
-    # Sets the given code and message for the response
-    #
-    # @param code [Fixnum] a valid HTTP status code
-    # @param message [String] the response body
-    #
-    # @since 0.1.0
-    # @see Hanami::Http::Status:ALL
-    def status(code, message)
-      response.status = code
-      response.body   = message
+      throw :halt, [code, message]
     end
 
     # @since 0.3.2
@@ -692,27 +683,14 @@ module Hanami
       configuration.handle_exceptions
     end
 
-    # @since 0.1.0
-    # @api private
-    def _rescue
-      catch :halt do
-        begin
-          yield
-        rescue => exception
-          _reference_in_rack_errors(exception)
-          _handle_exception(exception)
-        end
-      end
-    end
-
     # @since 0.2.0
     # @api private
-    def _reference_in_rack_errors(exception)
+    def _reference_in_rack_errors(req, exception)
       return if handled_exception?(exception)
 
-      request.env[RACK_EXCEPTION] = exception
+      req.env[RACK_EXCEPTION] = exception
 
-      if errors = request.env[RACK_ERRORS]
+      if errors = req.env[RACK_ERRORS]
         errors.write(_dump_exception(exception))
         errors.flush
       end
@@ -726,13 +704,17 @@ module Hanami
 
     # @since 0.1.0
     # @api private
-    def _handle_exception(exception)
+    def _handle_exception(req, res, exception)
       raise unless handle_exceptions?
 
       instance_exec(
+        req,
+        res,
         exception,
         &_exception_handler(exception)
       )
+
+      nil
     end
 
     # @since 0.3.0
@@ -743,7 +725,7 @@ module Hanami
       if respond_to?(handler.to_s, true)
         method(handler)
       else
-        ->(ex) { halt handler }
+        ->(*) { halt handler }
       end
     end
 
@@ -751,12 +733,14 @@ module Hanami
     # @api private
     def _run_before_callbacks(*args)
       self.class.before_callbacks.run(self, *args)
+      nil
     end
 
     # @since 0.1.0
     # @api private
     def _run_after_callbacks(*args)
       self.class.after_callbacks.run(self, *args)
+      nil
     end
 
     # According to RFC 2616, when a response MUST have an empty body, it only
@@ -829,7 +813,12 @@ module Hanami
     # @see Hanami::Action::Cookies#finish
     # @see Hanami::Action::Cache#finish
     # @see Hanami::Action::Head#finish
-    def finish
+    def finish(halted)
+      unless halted.nil?
+        response.status = halted[0]
+        response.body   = halted[1]
+      end
+
       if _requires_no_body?
         response.body = nil
         response.headers.select! { |header, _| keep_response_header?(header) }
