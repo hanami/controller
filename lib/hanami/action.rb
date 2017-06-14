@@ -539,7 +539,7 @@ module Hanami
     # @since 0.3.2
     # @api private
     def _requires_no_body?
-      HTTP_STATUSES_WITHOUT_BODY.include?(response.status) || head?
+      HTTP_STATUSES_WITHOUT_BODY.include?(response.status) || request.head?
     end
 
     private
@@ -604,15 +604,6 @@ module Hanami
       _send_file(
         Rack::File.new(path, directory).call(@_env)
       )
-    end
-
-    # Check if the current request is a HEAD
-    #
-    # @return [TrueClass,FalseClass] the result of the check
-    #
-    # @since 0.3.2
-    def head?
-      request_method == HEAD
     end
 
     # NOTE: <tt>Hanami::Action::CSRFProtection</tt> (<tt>hanamirb</tt> gem) depends on this.
