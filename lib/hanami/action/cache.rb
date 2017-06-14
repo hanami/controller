@@ -156,7 +156,7 @@ module Hanami
       #     end
       #   end
       def fresh(options)
-        conditional_get = ConditionalGet.new(@_env, options)
+        conditional_get = ConditionalGet.new(request.env, options)
 
         response.headers.merge!(conditional_get.headers)
 

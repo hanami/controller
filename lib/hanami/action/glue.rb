@@ -18,14 +18,6 @@ module Hanami
       # @since 0.3.2
       ADDITIONAL_HTTP_STATUSES_WITHOUT_BODY = Set.new([301, 302]).freeze
 
-      # Override Ruby's Module#included
-      #
-      # @api private
-      # @since 0.3.0
-      def self.included(base)
-        base.class_eval { _expose(:format) if respond_to?(:_expose) }
-      end
-
       # Check if the current HTTP request is renderable.
       #
       # It verifies if the verb isn't HEAD, if the status demands to omit
@@ -38,10 +30,11 @@ module Hanami
       def renderable?
         !_requires_no_body? &&
           !sending_file?    &&
-          !ADDITIONAL_HTTP_STATUSES_WITHOUT_BODY.include?(@response.status)
+          !ADDITIONAL_HTTP_STATUSES_WITHOUT_BODY.include?(response.status)
       end
 
       protected
+
       # Put the current instance into the Rack environment
       #
       # @api private
@@ -49,7 +42,7 @@ module Hanami
       #
       # @see Hanami::Action#finish
       def finish
-        @_env[ENV_KEY] = self
+        request.env[ENV_KEY] = self
         super
       end
 

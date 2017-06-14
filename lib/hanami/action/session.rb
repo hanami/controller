@@ -48,7 +48,7 @@ module Hanami
       #     end
       #   end
       def session
-        @_env[SESSION_KEY] ||= {}
+        request.env[SESSION_KEY] ||= {}
       end
 
       # Read errors from flash or delegate to the superclass

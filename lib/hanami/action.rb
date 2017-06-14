@@ -432,9 +432,8 @@ module Hanami
       # @api private
       def call(env)
         _rescue do
-          @_env     = env
-          params    = self.class.params_class.new(@_env)
-          @request  = Hanami::Action::Request.new(@_env, params)
+          params    = self.class.params_class.new(env)
+          @request  = Hanami::Action::Request.new(env, params)
           @response = Hanami::Action::Response.new(configuration: configuration, content_type: Mime.calculate_content_type_with_charset(configuration, request, accepted_mime_types), header: configuration.default_headers)
           _run_before_callbacks(@request, @response)
           super @request, @response
@@ -574,7 +573,7 @@ module Hanami
     #   end
     def send_file(path)
       _send_file(
-        Rack::File.new(path, configuration.public_directory).call(@_env)
+        Rack::File.new(path, configuration.public_directory).call(request.env)
       )
     end
 
@@ -602,7 +601,7 @@ module Hanami
       directory = configuration.root_directory if Pathname.new(path).relative?
 
       _send_file(
-        Rack::File.new(path, directory).call(@_env)
+        Rack::File.new(path, directory).call(request.env)
       )
     end
 
@@ -711,9 +710,9 @@ module Hanami
     def _reference_in_rack_errors(exception)
       return if handled_exception?(exception)
 
-      @_env[RACK_EXCEPTION] = exception
+      request.env[RACK_EXCEPTION] = exception
 
-      if errors = @_env[RACK_ERRORS]
+      if errors = request.env[RACK_ERRORS]
         errors.write(_dump_exception(exception))
         errors.flush
       end

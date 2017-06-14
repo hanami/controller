@@ -1295,7 +1295,7 @@ module FullStack
         include Inspector
 
         def call(req, res)
-          if @_env['REQUEST_METHOD'] == 'GET'
+          if req.env['REQUEST_METHOD'] == 'GET'
             flash[:notice] = "Start the poll"
           else
             flash[:notice] = "Step 1 completed"
@@ -1310,7 +1310,7 @@ module FullStack
         include Inspector
 
         def call(req, res)
-          if @_env['REQUEST_METHOD'] == 'POST'
+          if req.env['REQUEST_METHOD'] == 'POST'
             flash[:notice] = "Poll completed"
             redirect_to '/'
           end
