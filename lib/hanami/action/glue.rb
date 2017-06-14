@@ -14,25 +14,6 @@ module Hanami
       # @since 0.3.0
       ENV_KEY = 'hanami.action'.freeze
 
-      # @api private
-      # @since 0.3.2
-      ADDITIONAL_HTTP_STATUSES_WITHOUT_BODY = Set.new([301, 302]).freeze
-
-      # Check if the current HTTP request is renderable.
-      #
-      # It verifies if the verb isn't HEAD, if the status demands to omit
-      # the body and if it isn't sending a file.
-      #
-      # @return [TrueClass,FalseClass] the result of the check
-      #
-      # @api private
-      # @since 0.3.2
-      def renderable?
-        !_requires_no_body? &&
-          !sending_file?    &&
-          !ADDITIONAL_HTTP_STATUSES_WITHOUT_BODY.include?(response.status)
-      end
-
       protected
 
       # Put the current instance into the Rack environment

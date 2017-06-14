@@ -1205,7 +1205,6 @@ module FullStack
         include Inspector
 
         def call(_req, res)
-          res.headers['X-Renderable'] = renderable?.to_s
           res.body = 'foo'
         end
       end
