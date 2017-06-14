@@ -113,8 +113,8 @@ RSpec.describe Hanami::Action do
   describe "#parsed_request_body" do
     it "exposes the body of the request parsed by router body parsers" do
       action_class = Class.new(Hanami::Action) do
-        def call(*, res)
-          res[:parsed_request_body] = parsed_request_body
+        def call(req, res)
+          res[:parsed_request_body] = req.parsed_body
         end
       end
 

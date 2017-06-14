@@ -477,11 +477,6 @@ module Hanami
 
     attr_reader :response
 
-    # Return parsed request body
-    def parsed_request_body
-      @_env.fetch(ROUTER_PARSED_BODY, nil)
-    end
-
     # Halt the action execution with the given HTTP status code and message.
     #
     # When used, the execution of a callback or of an action is interrupted
