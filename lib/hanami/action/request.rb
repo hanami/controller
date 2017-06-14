@@ -1,4 +1,5 @@
 require 'rack/request'
+require 'securerandom'
 
 module Hanami
   class Action
@@ -11,12 +12,18 @@ module Hanami
     class Request < ::Rack::Request
       HTTP_ACCEPT = "HTTP_ACCEPT".freeze
       DEFAULT_ACCEPT = "*/*".freeze
+      DEFAULT_ID_LENGTH = 16
 
       attr_reader :params
 
       def initialize(env, params)
         super(env)
         @params = params
+      end
+
+      def id
+        # FIXME make this number configurable and document the probabilities of clashes
+        @id ||= SecureRandom.hex(DEFAULT_ID_LENGTH)
       end
 
       def accept?(mime_type)

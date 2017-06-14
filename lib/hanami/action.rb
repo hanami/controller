@@ -4,7 +4,6 @@ begin
 rescue LoadError
 end
 
-require 'securerandom'
 require 'hanami/action/request'
 require 'hanami/action/response'
 require 'hanami/action/base_params'
@@ -91,14 +90,6 @@ module Hanami
       'Last-Modified'    => true,
       'extension-header' => true
     }.freeze
-
-    # The default HTTP Request ID length
-    #
-    # @since 0.3.0
-    # @api private
-    #
-    # @see Hanami::Action::Rack#request_id
-    DEFAULT_REQUEST_ID_LENGTH = 16
 
     # The request method
     #
@@ -464,10 +455,6 @@ module Hanami
     # @return [String] The unique ID
     #
     # @since 0.3.0
-    def request_id
-      # FIXME make this number configurable and document the probabilities of clashes
-      @request_id ||= SecureRandom.hex(DEFAULT_REQUEST_ID_LENGTH)
-    end
 
     # Returns a Hanami specialized rack request
     #
