@@ -562,18 +562,14 @@ module Hanami
       # @see https://github.com/hanami/controller/issues/104
       # @see https://github.com/hanami/controller/issues/275
       def best_q_match(q_value_header, available_mimes)
-        values = []
-        ::Rack::Utils.q_values(q_value_header).each_with_index do |(req_mime, quality), index|
+        ::Rack::Utils.q_values(q_value_header).each_with_index.map do |(req_mime, quality), index|
           match = available_mimes.find { |am| ::Rack::Mime.match?(am, req_mime) }
           next unless match
-          values << Specification.new(req_mime, quality, index, match)
-        end
-
-        value = values.max
-        value.format if value
+          RequestMimeWeight.new(req_mime, quality, index, match)
+        end.compact.max&.format
       end
 
-      class Specification
+      class RequestMimeWeight
         include Comparable
 
         attr_reader :quality, :index, :mime, :format, :priority

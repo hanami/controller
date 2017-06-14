@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.describe Hanami::Action::Mime::Specification do
+RSpec.describe Hanami::Action::Mime::RequestMimeWeight do
   let(:plain_text) { described_class.new('text/plain', 0.7, 2) }
   let(:any_text) { described_class.new('text/*', 1, 0) }
   let(:anything) { described_class.new('*/*', 1, 3) }
