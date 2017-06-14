@@ -606,14 +606,6 @@ module Hanami
       )
     end
 
-    # NOTE: <tt>Hanami::Action::CSRFProtection</tt> (<tt>hanamirb</tt> gem) depends on this.
-    #
-    # @api private
-    # @since 0.4.4
-    def request_method
-      @_env[REQUEST_METHOD]
-    end
-
     # @since 1.0.0
     # @api private
     def _send_file(send_file_response)

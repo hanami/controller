@@ -1388,7 +1388,7 @@ end
 
 class MethodInspectionAction < Hanami::Action
   def call(req, res)
-    res.body = request_method
+    res.body = req.request_method
   end
 end
 
