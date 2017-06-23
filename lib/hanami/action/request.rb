@@ -58,14 +58,6 @@ module Hanami
       #
       # @since 0.3.1
       # @api private
-      def session
-        raise NotImplementedError, 'Please include Action::Session and use Action#session'
-      end
-
-      # @raise [NotImplementedError]
-      #
-      # @since 0.3.1
-      # @api private
       def cookies
         raise NotImplementedError, 'Please include Action::Cookies and use Action#cookies'
       end
