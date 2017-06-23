@@ -343,8 +343,8 @@ end
 class FlashAction < Hanami::Action
   include Hanami::Action::Session
 
-  def call(req, res)
-    flash[:error] = "ouch"
+  def call(*, res)
+    res.flash[:error] = "ouch"
   end
 end
 
@@ -1275,7 +1275,7 @@ module FullStack
         include Inspector
 
         def call(req, res)
-          flash[:message] = "Saved!"
+          res.flash[:message] = "Saved!"
           redirect_to "/settings"
         end
       end
@@ -1299,9 +1299,9 @@ module FullStack
 
         def call(req, res)
           if req.env['REQUEST_METHOD'] == 'GET'
-            flash[:notice] = "Start the poll"
+            res.flash[:notice] = "Start the poll"
           else
-            flash[:notice] = "Step 1 completed"
+            res.flash[:notice] = "Step 1 completed"
             redirect_to '/poll/2'
           end
         end
@@ -1314,7 +1314,7 @@ module FullStack
 
         def call(req, res)
           if req.env['REQUEST_METHOD'] == 'POST'
-            flash[:notice] = "Poll completed"
+            res.flash[:notice] = "Poll completed"
             redirect_to '/'
           end
         end

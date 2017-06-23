@@ -11,6 +11,7 @@ module Hanami
     # @see http://www.rubydoc.info/gems/rack/Rack/Request
     class Request < ::Rack::Request
       HTTP_ACCEPT = "HTTP_ACCEPT".freeze
+      REQUEST_ID  = "hanami.request_id".freeze
       DEFAULT_ACCEPT = "*/*".freeze
       DEFAULT_ID_LENGTH = 16
 
@@ -23,7 +24,7 @@ module Hanami
 
       def id
         # FIXME make this number configurable and document the probabilities of clashes
-        @id ||= SecureRandom.hex(DEFAULT_ID_LENGTH)
+        @id ||= @env[REQUEST_ID] = SecureRandom.hex(DEFAULT_ID_LENGTH)
       end
 
       def parsed_body

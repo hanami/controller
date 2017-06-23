@@ -1,11 +1,13 @@
 require 'rack'
 require 'rack/response'
 require 'hanami/utils/kernel'
+require 'hanami/action/flash'
 
 module Hanami
   class Action
     class Response < ::Rack::Response
       SESSION_KEY = "rack.session".freeze
+      REQUEST_ID  = "hanami.request_id".freeze
 
       attr_reader :exposures, :format, :env
       attr_accessor :charset
@@ -47,6 +49,18 @@ module Hanami
 
       def session
         env[SESSION_KEY] ||= {}
+      end
+
+      def flash
+        @flash ||= Flash.new(session, request_id)
+      end
+
+      # @api private
+      def request_id
+        env.fetch(REQUEST_ID) do
+          # FIXME: raise a meaningful error, by inviting devs to include Hanami::Action::Session
+          raise "Can't find request ID"
+        end
       end
 
       def set_format(value)
