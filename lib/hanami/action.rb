@@ -14,7 +14,6 @@ require 'hanami/utils'
 require 'hanami/utils/kernel'
 
 require 'hanami/utils/class_attribute'
-require 'hanami/http/status'
 
 require 'hanami/utils/callbacks'
 
@@ -35,6 +34,7 @@ module Hanami
   #   end
   class Action
     require "hanami/action/mime"
+    require "hanami/action/halt"
 
     # Rack SPEC response code
     #
@@ -521,9 +521,8 @@ module Hanami
     #   end
     #
     #   # => [404, {}, ["This is not the droid you're looking for."]]
-    def halt(code, message = nil)
-      message ||= Http::Status.message_for(code)
-      throw :halt, [code, message]
+    def halt(status, body = nil)
+      Halt.call(status, body)
     end
 
     # @since 0.3.2
@@ -616,49 +615,6 @@ module Hanami
 
     def enforce_accepted_mime_types(req, *)
       Mime.accepted_mime_type?(req, accepted_mime_types) or halt 406
-    end
-
-    # Redirect to the given URL and halt the request
-    #
-    # @param url [String] the destination URL
-    # @param status [Fixnum] the http code
-    #
-    # @since 0.1.0
-    #
-    # @see Hanami::Action::Throwable#halt
-    #
-    # @example With default status code (302)
-    #   require 'hanami/controller'
-    #
-    #   class Create
-    #     include Hanami::Action
-    #
-    #     def call(params)
-    #       # ...
-    #       redirect_to 'http://example.com/articles/23'
-    #     end
-    #   end
-    #
-    #   action = Create.new
-    #   action.call({}) # => [302, {'Location' => '/articles/23'}, '']
-    #
-    # @example With custom status code
-    #   require 'hanami/controller'
-    #
-    #   class Create
-    #     include Hanami::Action
-    #
-    #     def call(params)
-    #       # ...
-    #       redirect_to 'http://example.com/articles/23', status: 301
-    #     end
-    #   end
-    #
-    #   action = Create.new
-    #   action.call({}) # => [301, {'Location' => '/articles/23'}, '']
-    def redirect_to(url, status: 302)
-      response.add_header(LOCATION, ::String.new(url))
-      halt(status)
     end
 
     attr_reader :handled_exceptions

@@ -5,7 +5,7 @@ RSpec.describe Hanami::Action do
       response = action.call({})
 
       expect(response.status).to  be(302)
-      expect(response.headers).to eq("Location" => "/destination", "Content-Length" => "5", "Content-Type" => "application/octet-stream; charset=utf-8")
+      expect(response.headers).to eq("Location" => "/destination", "Content-Type" => "application/octet-stream; charset=utf-8", "Content-Length" => "5")
     end
 
     it "redirects with custom status code" do

@@ -349,21 +349,21 @@ class FlashAction < Hanami::Action
 end
 
 class RedirectAction < Hanami::Action
-  def call(req, res)
-    redirect_to '/destination'
+  def call(*, res)
+    res.redirect_to '/destination'
   end
 end
 
 class StatusRedirectAction < Hanami::Action
-  def call(req, res)
-    redirect_to '/destination', status: 301
+  def call(*, res)
+    res.redirect_to '/destination', status: 301
   end
 end
 
 class SafeStringRedirectAction < Hanami::Action
-  def call(req, res)
+  def call(*, res)
     location = Hanami::Utils::Escape::SafeString.new('/destination')
-    redirect_to location
+    res.redirect_to location
   end
 end
 
@@ -771,7 +771,7 @@ module Sessions
 
     def call(*, res)
       res.session[:user_id] = 23
-      redirect_to '/'
+      res.redirect_to '/'
     end
   end
 
@@ -1050,9 +1050,9 @@ module SendFileTest
     end
 
     class Flow < Hanami::Action
-      def call(req, res)
+      def call(*, res)
         send_file Pathname.new('test.txt')
-        redirect_to '/'
+        res.redirect_to '/'
       end
     end
 
@@ -1223,10 +1223,10 @@ module FullStack
           required(:title).filled(:str?)
         end
 
-        def call(req, *)
+        def call(req, res)
           req.params.valid?
 
-          redirect_to '/books'
+          res.redirect_to '/books'
         end
       end
 
@@ -1274,9 +1274,9 @@ module FullStack
         include Hanami::Action::Session
         include Inspector
 
-        def call(req, res)
+        def call(*, res)
           res.flash[:message] = "Saved!"
-          redirect_to "/settings"
+          res.redirect_to "/settings"
         end
       end
     end
@@ -1287,8 +1287,8 @@ module FullStack
         include Hanami::Action::Session
         include Inspector
 
-        def call(req, res)
-          redirect_to '/poll/1'
+        def call(*, res)
+          res.redirect_to '/poll/1'
         end
       end
 
@@ -1302,7 +1302,7 @@ module FullStack
             res.flash[:notice] = "Start the poll"
           else
             res.flash[:notice] = "Step 1 completed"
-            redirect_to '/poll/2'
+            res.redirect_to '/poll/2'
           end
         end
       end
@@ -1315,7 +1315,7 @@ module FullStack
         def call(req, res)
           if req.env['REQUEST_METHOD'] == 'POST'
             res.flash[:notice] = "Poll completed"
-            redirect_to '/'
+            res.redirect_to '/'
           end
         end
       end
@@ -1330,14 +1330,14 @@ module FullStack
         before :redirect_to_root
         after :set_body
 
-        def call(req, res)
+        def call(*, res)
           res.body = "call method shouldn't be called"
         end
 
         private
 
-        def redirect_to_root
-          redirect_to '/'
+        def redirect_to_root(*, res)
+          res.redirect_to '/'
         end
 
         def set_body

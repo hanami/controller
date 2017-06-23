@@ -2,12 +2,14 @@ require 'rack'
 require 'rack/response'
 require 'hanami/utils/kernel'
 require 'hanami/action/flash'
+require 'hanami/action/halt'
 
 module Hanami
   class Action
     class Response < ::Rack::Response
       SESSION_KEY = "rack.session".freeze
       REQUEST_ID  = "hanami.request_id".freeze
+      LOCATION    = "Location".freeze
 
       attr_reader :exposures, :format, :env
       attr_accessor :charset
@@ -53,6 +55,11 @@ module Hanami
 
       def flash
         @flash ||= Flash.new(session, request_id)
+      end
+
+      def redirect_to(url, status: 302)
+        redirect(::String.new(url), status)
+        Halt.call(status)
       end
 
       # @api private
