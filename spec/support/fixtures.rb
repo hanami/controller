@@ -998,15 +998,15 @@ module SendFileTest
           halt 400 unless @resource
           extension = req.params[:format]
 
-          case(extension)
+          case extension
           when 'html'
             # in reality we'd render a template here, but as a test fixture, we'll simulate that answer
             # we should have also checked #accept? but w/e
             res.body = ::File.read(Pathname.new("spec/support/fixtures/#{@resource.asset_path}.html"))
             res.status = 200
-            res.format = :html
+            res.format = format(:html)
           when 'json', nil
-            res.format = :json
+            res.format = format(:json)
             send_file Pathname.new("#{@resource.asset_path}.json")
           else
             halt 406
@@ -1193,9 +1193,8 @@ module FullStack
         include Hanami::Action::Session
         include Inspector
 
-        def call(_req, res)
+        def call(*, res)
           res[:greeting] = "Hello"
-          res[:format]   = res.format
         end
       end
 
@@ -1204,7 +1203,7 @@ module FullStack
         include Hanami::Action::Session
         include Inspector
 
-        def call(_req, res)
+        def call(*, res)
           res.body = 'foo'
         end
       end
@@ -1515,13 +1514,13 @@ end
 module Mimes
   class Default < Hanami::Action
     def call(_req, res)
-      res.body = res.format
+      res.body, = *format(res.content_type)
     end
   end
 
   class Custom < Hanami::Action
     def call(_req, res)
-      res.format = :xml
+      res.format = format(:xml)
       res.body   = res.format
     end
   end
@@ -1529,7 +1528,7 @@ module Mimes
   class Latin < Hanami::Action
     def call(_req, res)
       res.charset = 'latin1'
-      res.format  = :html
+      res.format  = format(:html)
       res.body    = res.format
     end
   end
@@ -1541,15 +1540,15 @@ module Mimes
       res.headers['X-AcceptXml']     = req.accept?('application/xml').to_s
       res.headers['X-AcceptJson']    = req.accept?('text/json').to_s
 
-      res.body = res.format
+      res.body, = *format(res.content_type)
     end
   end
 
   class CustomFromAccept < Hanami::Action
     accept :json, :custom
 
-    def call(_req, res)
-      res.body = res.format
+    def call(*, res)
+      res.body, = *format(res.content_type)
     end
   end
 
@@ -1557,7 +1556,7 @@ module Mimes
     accept :html, :json, :custom
 
     def call(_req, res)
-      res.body = res.format
+      res.body, = *format(res.content_type)
     end
   end
 
@@ -1569,7 +1568,7 @@ module Mimes
 
   class OverrideDefaultResponse < Hanami::Action
     def call(*, res)
-      res.format = :xml
+      res.format = format(:xml)
     end
 
     private

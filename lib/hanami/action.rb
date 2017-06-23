@@ -435,7 +435,7 @@ module Hanami
           begin
             params    = self.class.params_class.new(env)
             @request  = Hanami::Action::Request.new(env, params)
-            @response = Hanami::Action::Response.new(configuration: configuration, content_type: Mime.calculate_content_type_with_charset(configuration, request, accepted_mime_types), header: configuration.default_headers)
+            @response = Hanami::Action::Response.new(content_type: Mime.calculate_content_type_with_charset(configuration, request, accepted_mime_types), header: configuration.default_headers)
             _run_before_callbacks(@request, @response)
             super @request, @response
             _run_after_callbacks(@request, @response)
@@ -798,6 +798,18 @@ module Hanami
       ENTITY_HEADERS.include?(header)
     end
 
+    def format(value)
+      case value
+      when Symbol
+        format = Utils::Kernel.Symbol(value)
+        [format, Action::Mime.format_to_mime_type(format, configuration)]
+      when String
+        [Action::Mime.detect_format(value, configuration), value]
+      else
+        raise Hanami::Controller::UnknownFormatError.new(value)
+      end
+    end
+
     # Finalize the response
     #
     # This method is abstract and COULD be implemented by included modules in
@@ -822,6 +834,7 @@ module Hanami
       end
 
       res[:params] = req.params
+      res.set_format(Action::Mime.detect_format(res.content_type, configuration))
       res
     end
   end

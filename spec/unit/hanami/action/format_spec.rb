@@ -7,7 +7,10 @@ RSpec.describe Hanami::Action do
 
     class Custom < Hanami::Action
       def call(req, res)
-        res.format = req.params[:format]
+        input = req.params[:format]
+        input = input.to_sym unless input.nil?
+
+        res.format = format(input)
       end
 
       private
@@ -18,7 +21,7 @@ RSpec.describe Hanami::Action do
     end
 
     class Configuration < Hanami::Action
-      def call(_req, res)
+      def call(*, res)
         res.body = res.format
       end
     end
@@ -99,11 +102,11 @@ RSpec.describe Hanami::Action do
     end
 
     it "sets nil and raises an error" do
-      expect { action.call(format: nil) }.to raise_error(TypeError)
+      expect { action.call(format: nil) }.to raise_error(Hanami::Controller::UnknownFormatError, "Cannot find a corresponding Mime type for ''. Please configure it with Hanami::Controller::Configuration#format.")
     end
 
     it "sets '' and raises an error" do
-      expect { action.call(format: '') }.to raise_error(TypeError)
+      expect { action.call(format: '') }.to raise_error(Hanami::Controller::UnknownFormatError, "Cannot find a corresponding Mime type for ''. Please configure it with Hanami::Controller::Configuration#format.")
     end
 
     it "sets an unknown format and raises an error" do
