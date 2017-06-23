@@ -8,24 +8,6 @@ module Hanami
     #
     # @since 0.1.0
     module Session
-      # The key that is used by flash to transport errors
-      #
-      # @since 0.3.0
-      # @api private
-      ERRORS_KEY  = :__errors
-
-      # Read errors from flash or delegate to the superclass
-      #
-      # @return [Hanami::Validations::Errors] A collection of validation errors
-      #
-      # @since 0.3.0
-      #
-      # @see Hanami::Action::Validatable
-      # @see Hanami::Action::Session#flash
-      def errors
-        flash[ERRORS_KEY] || request.params.respond_to?(:errors) && request.params.errors
-      end
-
       private
 
       # Container useful to transport data with the HTTP session
@@ -37,58 +19,6 @@ module Hanami
       # @see Hanami::Action::Flash
       def flash
         @flash ||= Flash.new(response.session, request.id)
-      end
-
-      # In case of validations errors, preserve those informations after a
-      # redirect.
-      #
-      # @return [void]
-      #
-      # @since 0.3.0
-      # @api private
-      #
-      # @see Hanami::Action::Redirect#redirect_to
-      #
-      # @example
-      #   require 'hanami/controller'
-      #
-      #   module Comments
-      #     class Index
-      #       include Hanami::Action
-      #       include Hanami::Action::Session
-      #
-      #       expose :comments
-      #
-      #       def call(params)
-      #         @comments = CommentRepository.all
-      #       end
-      #     end
-      #
-      #     class Create
-      #       include Hanami::Action
-      #       include Hanami::Action::Session
-      #
-      #       params do
-      #         param :text, type: String, presence: true
-      #       end
-      #
-      #       def call(params)
-      #         comment = Comment.new(params)
-      #         CommentRepository.create(comment) if params.valid?
-      #
-      #         redirect_to '/comments'
-      #       end
-      #     end
-      #   end
-      #
-      #   # The validation errors caused by Comments::Create are available
-      #   # **after the redirect** in the context of Comments::Index.
-      def redirect_to(*args)
-        if request.params.respond_to?(:valid?)
-          flash[ERRORS_KEY] = errors.to_a unless request.params.valid?
-        end
-
-        super
       end
 
       # Finalize the response

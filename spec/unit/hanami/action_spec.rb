@@ -139,9 +139,5 @@ RSpec.describe Hanami::Action do
 
       expect(response.body).to eq(["x"])
     end
-
-    it "has a public errors method" do
-      expect(action.public_methods).to include(:errors)
-    end
   end
 end
