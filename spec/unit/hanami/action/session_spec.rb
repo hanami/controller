@@ -1,17 +1,17 @@
 RSpec.describe Hanami::Action do
   describe "#session" do
     it "captures session from Rack env" do
-      action = SessionAction.new(configuration: configuration)
-      action.call("rack.session" => session = { "user_id" => "23" })
+      action   = SessionAction.new(configuration: configuration)
+      response = action.call("rack.session" => session = { "user_id" => "23" })
 
-      expect(action.session).to eq(session)
+      expect(response.session).to eq(session)
     end
 
     it "returns empty hash when it is missing" do
-      action = SessionAction.new(configuration: configuration)
-      action.call({})
+      action   = SessionAction.new(configuration: configuration)
+      response = action.call({})
 
-      expect(action.session).to eq({})
+      expect(response.session).to eq({})
     end
 
     it "exposes session" do
@@ -22,10 +22,10 @@ RSpec.describe Hanami::Action do
     end
 
     it "allows value access via symbols" do
-      action = SessionAction.new(configuration: configuration)
-      action.call("rack.session" => { "foo" => "bar" })
+      action   = SessionAction.new(configuration: configuration)
+      response = action.call("rack.session" => { "foo" => "bar" })
 
-      expect(action.session[:foo]).to eq("bar")
+      expect(response.session[:foo]).to eq("bar")
     end
   end
 

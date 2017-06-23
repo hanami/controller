@@ -8,48 +8,11 @@ module Hanami
     #
     # @since 0.1.0
     module Session
-      # The key that returns raw session from the Rack env
-      #
-      # @since 0.1.0
-      # @api private
-      SESSION_KEY = 'rack.session'.freeze
-
       # The key that is used by flash to transport errors
       #
       # @since 0.3.0
       # @api private
       ERRORS_KEY  = :__errors
-
-      # Gets the session from the request and expose it as an Hash.
-      #
-      # @return [Hash] the HTTP session from the request
-      #
-      # @since 0.1.0
-      #
-      # @example
-      #   require 'hanami/controller'
-      #   require 'hanami/action/session'
-      #
-      #   class Show
-      #     include Hanami::Action
-      #     include Hanami::Action::Session
-      #
-      #     def call(params)
-      #       # ...
-      #
-      #       # get a value
-      #       session[:user_id] # => '23'
-      #
-      #       # set a value
-      #       session[:foo] = 'bar'
-      #
-      #       # remove a value
-      #       session[:bax] = nil
-      #     end
-      #   end
-      def session
-        request.env[SESSION_KEY] ||= {}
-      end
 
       # Read errors from flash or delegate to the superclass
       #
@@ -73,7 +36,7 @@ module Hanami
       #
       # @see Hanami::Action::Flash
       def flash
-        @flash ||= Flash.new(session, request.id)
+        @flash ||= Flash.new(response.session, request.id)
       end
 
       # In case of validations errors, preserve those informations after a
@@ -136,10 +99,10 @@ module Hanami
       # @api private
       #
       # @see Hanami::Action#finish
-      def finish(*)
+      def finish(req, res, *)
         flash.clear
-        response[:session] = session
-        response[:flash]   = flash
+        res[:session] = res.session
+        res[:flash]   = flash
         super
       end
     end

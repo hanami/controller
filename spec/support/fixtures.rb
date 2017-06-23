@@ -749,17 +749,18 @@ module Dashboard
     include Hanami::Action::Session
     before :authenticate!
 
-    def call(_req, res)
-      res.body = "User ID from session: #{session[:user_id]}"
+    def call(*, res)
+      res.body = "User ID from session: #{res.session[:user_id]}"
     end
 
     private
-    def authenticate!
-      halt 401 unless loggedin?
+
+    def authenticate!(*, res)
+      halt 401 unless loggedin?(res)
     end
 
-    def loggedin?
-      session.has_key?(:user_id)
+    def loggedin?(res)
+      res.session.key?(:user_id)
     end
   end
 end
@@ -768,8 +769,8 @@ module Sessions
   class Create < Hanami::Action
     include Hanami::Action::Session
 
-    def call(req, res)
-      session[:user_id] = 23
+    def call(*, res)
+      res.session[:user_id] = 23
       redirect_to '/'
     end
   end
@@ -777,8 +778,8 @@ module Sessions
   class Destroy < Hanami::Action
     include Hanami::Action::Session
 
-    def call(req, res)
-      session[:user_id] = nil
+    def call(*, res)
+      res.session[:user_id] = nil
     end
   end
 end
@@ -786,8 +787,8 @@ end
 class StandaloneSession < Hanami::Action
   include Hanami::Action::Session
 
-  def call(req, res)
-    session[:age] = Time.now.year - 1982
+  def call(*, res)
+    res.session[:age] = Time.now.year - 1982
   end
 end
 
@@ -949,23 +950,17 @@ class VisibilityAction < Hanami::Action
     res.status = 201
     res.format = :json
 
-    res.headers.merge!('X-Custom' => 'OK')
-    res.headers.merge!('Y-Custom'      => 'YO')
-
-    self.session[:foo] = 'bar'
+    res.headers.merge!('X-Custom' => 'OK', 'Y-Custom' => 'YO')
+    res.session[:foo] = 'bar'
 
     # PRIVATE
     # self.configuration
     # self.finish
 
     # PROTECTED
-    self.response
     self.cookies
-    self.session
 
-    response
     cookies
-    session
   end
 
   private

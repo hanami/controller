@@ -5,15 +5,18 @@ require 'hanami/utils/kernel'
 module Hanami
   class Action
     class Response < ::Rack::Response
-      attr_reader :exposures, :format
+      SESSION_KEY = "rack.session".freeze
+
+      attr_reader :exposures, :format, :env
       attr_accessor :charset
 
-      def initialize(content_type: nil, body: [], status: 200, header: {})
-        super(body, status, header.dup)
+      def initialize(content_type: nil, env: {}, header: {})
+        super([], 200, header.dup)
         set_header("Content-Type", content_type)
 
-        @charset       = ::Rack::MediaType.params(content_type).fetch('charset', nil)
-        @exposures     = {}
+        @charset   = ::Rack::MediaType.params(content_type).fetch('charset', nil)
+        @exposures = {}
+        @env       = env
       end
 
       def body=(str)
@@ -40,6 +43,10 @@ module Hanami
 
       def []=(key, value)
         @exposures[key] = value
+      end
+
+      def session
+        env[SESSION_KEY] ||= {}
       end
 
       def set_format(value)
