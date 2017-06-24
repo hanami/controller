@@ -370,52 +370,52 @@ end
 class GetCookiesAction < Hanami::Action
   include Hanami::Action::Cookies
 
-  def call(req, res)
-    res.body = cookies[:foo]
+  def call(*, res)
+    res.body = res.cookies[:foo]
   end
 end
 
 class ChangeCookiesAction < Hanami::Action
   include Hanami::Action::Cookies
 
-  def call(req, res)
-    res.body = cookies[:foo]
-    cookies[:foo] = 'baz'
+  def call(*, res)
+    res.body = res.cookies[:foo]
+    res.cookies[:foo] = 'baz'
   end
 end
 
 class GetDefaultCookiesAction < Hanami::Action
   include Hanami::Action::Cookies
 
-  def call(req, res)
-    res.body = ''
-    cookies[:bar] = 'foo'
+  def call(*, res)
+    res.body          = ''
+    res.cookies[:bar] = 'foo'
   end
 end
 
 class GetOverwrittenCookiesAction < Hanami::Action
   include Hanami::Action::Cookies
 
-  def call(req, res)
-    res.body = ''
-    cookies[:bar] = { value: 'foo', domain: 'hanamirb.com', path: '/action', secure: false, httponly: false }
+  def call(*, res)
+    res.body          = ''
+    res.cookies[:bar] = { value: 'foo', domain: 'hanamirb.com', path: '/action', secure: false, httponly: false }
   end
 end
 
 class GetAutomaticallyExpiresCookiesAction < Hanami::Action
   include Hanami::Action::Cookies
 
-  def call(req, res)
-    cookies[:bar] = { value: 'foo', max_age: 120 }
+  def call(*, res)
+    res.cookies[:bar] = { value: 'foo', max_age: 120 }
   end
 end
 
 class SetCookiesAction < Hanami::Action
   include Hanami::Action::Cookies
 
-  def call(req, res)
-    res.body = 'yo'
-    cookies[:foo] = 'yum!'
+  def call(*, res)
+    res.body          = 'yo'
+    res.cookies[:foo] = 'yum!'
   end
 end
 
@@ -426,16 +426,16 @@ class SetCookiesWithOptionsAction < Hanami::Action
     @expires = expires
   end
 
-  def call(req, res)
-    cookies[:kukki] = { value: 'yum!', domain: 'hanamirb.org', path: '/controller', expires: @expires, secure: true, httponly: true }
+  def call(*, res)
+    res.cookies[:kukki] = { value: 'yum!', domain: 'hanamirb.org', path: '/controller', expires: @expires, secure: true, httponly: true }
   end
 end
 
 class RemoveCookiesAction < Hanami::Action
   include Hanami::Action::Cookies
 
-  def call(req, res)
-    cookies[:rm] = nil
+  def call(*, res)
+    res.cookies[:rm] = nil
   end
 end
 
@@ -945,22 +945,13 @@ class VisibilityAction < Hanami::Action
   include Hanami::Action::Cookies
   include Hanami::Action::Session
 
-  def call(req, res)
+  def call(*, res)
     res.body   = 'x'
     res.status = 201
     res.format = :json
 
     res.headers.merge!('X-Custom' => 'OK', 'Y-Custom' => 'YO')
     res.session[:foo] = 'bar'
-
-    # PRIVATE
-    # self.configuration
-    # self.finish
-
-    # PROTECTED
-    self.cookies
-
-    cookies
   end
 
   private

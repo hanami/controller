@@ -3,6 +3,7 @@ require 'rack/response'
 require 'hanami/utils/kernel'
 require 'hanami/action/flash'
 require 'hanami/action/halt'
+require 'hanami/action/cookie_jar'
 
 module Hanami
   class Action
@@ -14,10 +15,11 @@ module Hanami
       attr_reader :exposures, :format, :env
       attr_accessor :charset
 
-      def initialize(content_type: nil, env: {}, header: {})
+      def initialize(configuration:, content_type: nil, env: {}, header: {})
         super([], 200, header.dup)
         set_header("Content-Type", content_type)
 
+        @configuration = configuration
         @charset   = ::Rack::MediaType.params(content_type).fetch('charset', nil)
         @exposures = {}
         @env       = env
@@ -51,6 +53,10 @@ module Hanami
 
       def session
         env[SESSION_KEY] ||= {}
+      end
+
+      def cookies
+        @cookies ||= CookieJar.new(env.dup, headers, @configuration.cookies)
       end
 
       def flash

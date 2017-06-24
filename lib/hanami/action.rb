@@ -435,7 +435,7 @@ module Hanami
           begin
             params    = self.class.params_class.new(env)
             @request  = Hanami::Action::Request.new(env, params)
-            @response = Hanami::Action::Response.new(content_type: Mime.calculate_content_type_with_charset(configuration, request, accepted_mime_types), env: env, header: configuration.default_headers)
+            @response = Hanami::Action::Response.new(configuration: configuration, content_type: Mime.calculate_content_type_with_charset(configuration, request, accepted_mime_types), env: env, header: configuration.default_headers)
             _run_before_callbacks(@request, @response)
             super @request, @response
             _run_after_callbacks(@request, @response)

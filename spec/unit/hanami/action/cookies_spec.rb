@@ -4,18 +4,18 @@ RSpec.describe Hanami::Action do
       action = GetCookiesAction.new(configuration: configuration)
       response = action.call("HTTP_COOKIE" => "foo=bar")
 
-      expect(action.send(:cookies)).to include(foo: "bar")
-      expect(response.headers).to               eq("Content-Length" => "3", "Content-Type" => "application/octet-stream; charset=utf-8")
-      expect(response.body).to                  eq(["bar"])
+      expect(response.cookies).to include(foo: "bar")
+      expect(response.headers).to eq("Content-Length" => "3", "Content-Type" => "application/octet-stream; charset=utf-8")
+      expect(response.body).to    eq(["bar"])
     end
 
     it "change cookies" do
       action = ChangeCookiesAction.new(configuration: configuration)
       response = action.call("HTTP_COOKIE" => "foo=bar")
 
-      expect(action.send(:cookies)).to include(foo: "bar")
-      expect(response.headers).to               eq("Content-Length" => "3", "Content-Type" => "application/octet-stream; charset=utf-8", "Set-Cookie" => "foo=baz")
-      expect(response.body).to                  eq(["bar"])
+      expect(response.cookies).to include(foo: "bar")
+      expect(response.headers).to eq("Content-Length" => "3", "Content-Type" => "application/octet-stream; charset=utf-8", "Set-Cookie" => "foo=baz")
+      expect(response.body).to    eq(["bar"])
     end
 
     it "sets cookies" do
