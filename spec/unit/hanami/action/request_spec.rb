@@ -143,7 +143,6 @@ RSpec.describe Hanami::Action::Request do
     it 'should reject with a NotImplementedError' do
       methods = %i(
         content_type
-        cookies
         update_param
         delete_param
         []

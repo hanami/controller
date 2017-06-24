@@ -59,14 +59,6 @@ module Hanami
       #
       # @since 0.3.1
       # @api private
-      def cookies
-        raise NotImplementedError, 'Please include Action::Cookies and use Action#cookies'
-      end
-
-      # @raise [NotImplementedError]
-      #
-      # @since 0.3.1
-      # @api private
       def update_param(*)
         raise NotImplementedError, 'Please use params passed to Action#call'
       end
