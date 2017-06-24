@@ -969,13 +969,13 @@ module SendFileTest
 
         # This if statement is only for testing purpose
         if id == "1"
-          send_file Pathname.new('test.txt')
+          res.send_file Pathname.new('test.txt')
         elsif id == "2"
-          send_file Pathname.new('hanami.png')
+          res.send_file Pathname.new('hanami.png')
         elsif id == "3"
-          send_file Pathname.new('Gemfile')
+          res.send_file Pathname.new('Gemfile')
         elsif id == "100"
-          send_file Pathname.new('unknown.txt')
+          res.send_file Pathname.new('unknown.txt')
         else
           # a more realistic example of globbing ':id(.:format)'
 
@@ -993,7 +993,7 @@ module SendFileTest
             res.format = format(:html)
           when 'json', nil
             res.format = format(:json)
-            send_file Pathname.new("#{@resource.asset_path}.json")
+            res.send_file Pathname.new("#{@resource.asset_path}.json")
           else
             halt 406
           end
@@ -1011,38 +1011,38 @@ module SendFileTest
     end
 
     class UnsafeLocal < Hanami::Action
-      def call(req, res)
-        unsafe_send_file "Gemfile"
+      def call(*, res)
+        res.unsafe_send_file "Gemfile"
       end
     end
 
     class UnsafePublic < Hanami::Action
-      def call(req, res)
-        unsafe_send_file "spec/support/fixtures/test.txt"
+      def call(*, res)
+        res.unsafe_send_file "spec/support/fixtures/test.txt"
       end
     end
 
     class UnsafeAbsolute < Hanami::Action
-      def call(req, res)
-        unsafe_send_file Pathname.new("Gemfile").realpath
+      def call(*, res)
+        res.unsafe_send_file Pathname.new("Gemfile").realpath
       end
     end
 
     class UnsafeMissingLocal < Hanami::Action
-      def call(req, res)
-        unsafe_send_file "missing"
+      def call(*, res)
+        res.unsafe_send_file "missing"
       end
     end
 
     class UnsafeMissingAbsolute < Hanami::Action
       def call(req, res)
-        unsafe_send_file Pathname.new(".").join("missing")
+        res.unsafe_send_file Pathname.new(".").join("missing")
       end
     end
 
     class Flow < Hanami::Action
       def call(*, res)
-        send_file Pathname.new('test.txt')
+        res.send_file Pathname.new('test.txt')
         res.redirect_to '/'
       end
     end

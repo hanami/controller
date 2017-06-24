@@ -12,6 +12,14 @@ module Hanami
       REQUEST_ID  = "hanami.request_id".freeze
       LOCATION    = "Location".freeze
 
+      X_CASCADE = "X-Cascade".freeze
+      CONTENT_LENGTH = "Content-Length".freeze
+      NOT_FOUND = 404
+
+      RACK_STATUS  = 0
+      RACK_HEADERS = 1
+      RACK_BODY    = 2
+
       attr_reader :exposures, :format, :env
       attr_accessor :charset
 
@@ -68,6 +76,20 @@ module Hanami
         Halt.call(status)
       end
 
+      def send_file(path)
+        _send_file(
+          Rack::File.new(path, @configuration.public_directory).call(env)
+        )
+      end
+
+      def unsafe_send_file(path)
+        directory = @configuration.root_directory if Pathname.new(path).relative?
+
+        _send_file(
+          Rack::File.new(path, directory).call(env)
+        )
+      end
+
       # @api private
       def request_id
         env.fetch(REQUEST_ID) do
@@ -78,6 +100,19 @@ module Hanami
 
       def set_format(value)
         @format = value
+      end
+
+      # @api private
+      def _send_file(send_file_response)
+        headers.merge!(send_file_response[RACK_HEADERS])
+
+        if send_file_response[RACK_STATUS] == NOT_FOUND
+          headers.delete(X_CASCADE)
+          headers.delete(CONTENT_LENGTH)
+          Halt.call(NOT_FOUND)
+        else
+          Halt.call(send_file_response[RACK_STATUS], send_file_response[RACK_BODY])
+        end
       end
     end
   end
