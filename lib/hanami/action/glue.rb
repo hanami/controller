@@ -22,8 +22,8 @@ module Hanami
       # @since 0.3.0
       #
       # @see Hanami::Action#finish
-      def finish(*)
-        request.env[ENV_KEY] = self
+      def finish(req, *)
+        req.env[ENV_KEY] = self
         super
       end
 
