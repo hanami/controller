@@ -94,32 +94,32 @@ module Expires
 
     expires 900, :public, :no_cache
 
-    def call(*)
-      expires 600, :private
+    def call(_, res)
+      res.expires 600, :private
     end
   end
 
   class Symbol < Hanami::Action
     include Hanami::Action::Cache
 
-    def call(*)
-      expires 900, :private
+    def call(_, res)
+      res.expires 900, :private
     end
   end
 
   class Symbols < Hanami::Action
     include Hanami::Action::Cache
 
-    def call(*)
-      expires 900, :private, :no_cache, :no_store
+    def call(_, res)
+      res.expires 900, :private, :no_cache, :no_store
     end
   end
 
   class Hash < Hanami::Action
     include Hanami::Action::Cache
 
-    def call(*)
-      expires 900, :public, :no_store, s_maxage: 86_400, min_fresh: 500, max_stale: 700
+    def call(_, res)
+      res.expires 900, :public, :no_store, s_maxage: 86_400, min_fresh: 500, max_stale: 700
     end
   end
 

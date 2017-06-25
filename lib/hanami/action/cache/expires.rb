@@ -49,8 +49,8 @@ module Hanami
         # @api private
         #
         # @see Hanami::Action#finish
-        def finish(*)
-          response.headers.merge!(self.class.expires_directives.headers) unless response.headers.include? HEADER
+        def finish(_, res, _)
+          res.headers.merge!(self.class.expires_directives.headers) unless res.headers.include? HEADER
           super
         end
 

@@ -98,6 +98,11 @@ module Hanami
         headers.merge!(directives.headers)
       end
 
+      def expires(amount, *values)
+        directives = Cache::Expires::Directives.new(amount, *values)
+        headers.merge!(directives.headers)
+      end
+
       # @api private
       def request_id
         env.fetch(REQUEST_ID) do

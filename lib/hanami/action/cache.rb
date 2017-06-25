@@ -29,45 +29,6 @@ module Hanami
 
       protected
 
-      # Set the Expires header and Cache-Control/max-age directive. Amount
-      # can be an integer number of seconds in the future or a Time object
-      # indicating when the response should be considered "stale". The remaining
-      # "values" arguments are passed to the #cache_control helper:
-      #
-      # @param amount [Integer,Time] number of seconds or point in time
-      # @param values [Array<Symbols>] mapped to cache_control directives
-      #
-      # @return void
-      #
-      # @since 0.3.0
-      #
-      # @example
-      #   require 'hanami/controller'
-      #   require 'hanami/action/cache'
-      #
-      #   class Show
-      #     include Hanami::Action
-      #     include Hanami::Action::Cache
-      #
-      #     def call(params)
-      #       # ...
-      #
-      #       # set Cache-Control directives and Expires
-      #       expires 900, :public
-      #
-      #       # overwrite Cache-Control directives and Expires
-      #       expires 300, :private, :no_cache, :no_store
-      #
-      #       => Expires: Thu, 26 Jun 2014 12:00:00 GMT
-      #       => Cache-Control: private, no-cache, no-store max-age=300
-      #
-      #     end
-      #   end
-      def expires(amount, *values)
-        expires = Expires::Directives.new(amount, *values)
-        response.headers.merge!(expires.headers)
-      end
-
       # Set the etag, last_modified, or both headers on the response
       # and halts a 304 Not Modified if the request is still fresh
       # respecting IfNoneMatch and IfModifiedSince request headers
