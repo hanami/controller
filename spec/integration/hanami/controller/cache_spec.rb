@@ -16,40 +16,40 @@ module CacheControl
 
     cache_control :public, max_age: 600
 
-    def call(*)
-      cache_control :private
+    def call(_, res)
+      res.cache_control :private
     end
   end
 
   class Symbol < Hanami::Action
     include Hanami::Action::Cache
 
-    def call(*)
-      cache_control :private
+    def call(_, res)
+      res.cache_control :private
     end
   end
 
   class Symbols < Hanami::Action
     include Hanami::Action::Cache
 
-    def call(*)
-      cache_control :private, :no_cache, :no_store
+    def call(_, res)
+      res.cache_control :private, :no_cache, :no_store
     end
   end
 
   class Hash < Hanami::Action
     include Hanami::Action::Cache
 
-    def call(*)
-      cache_control :public, :no_store, max_age: 900, s_maxage: 86_400, min_fresh: 500, max_stale: 700
+    def call(_, res)
+      res.cache_control :public, :no_store, max_age: 900, s_maxage: 86_400, min_fresh: 500, max_stale: 700
     end
   end
 
   class PrivatePublic < Hanami::Action
     include Hanami::Action::Cache
 
-    def call(*)
-      cache_control :private, :public
+    def call(_, res)
+      res.cache_control :private, :public
     end
   end
 

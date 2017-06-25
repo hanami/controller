@@ -29,55 +29,6 @@ module Hanami
 
       protected
 
-      # Specify response freshness policy for HTTP caches (Cache-Control header).
-      # Any number of non-value directives (:public, :private, :no_cache,
-      # :no_store, :must_revalidate, :proxy_revalidate) may be passed along with
-      # a Hash of value directives (:max_age, :min_stale, :s_max_age).
-      #
-      # See RFC 2616 / 14.9 for more on standard cache control directives:
-      # http://tools.ietf.org/html/rfc2616#section-14.9.1
-      #
-      # @param values [Array<Symbols, Hash>] mapped to cache_control directives
-      # @option values [Symbol] :public
-      # @option values [Symbol] :private
-      # @option values [Symbol] :no_cache
-      # @option values [Symbol] :no_store
-      # @option values [Symbol] :must_validate
-      # @option values [Symbol] :proxy_revalidate
-      # @option values [Hash] :max_age
-      # @option values [Hash] :min_stale
-      # @option values [Hash] :s_max_age
-      #
-      # @return void
-      #
-      # @since 0.3.0
-      #
-      # @example
-      #   require 'hanami/controller'
-      #   require 'hanami/action/cache'
-      #
-      #   class Show
-      #     include Hanami::Action
-      #     include Hanami::Action::Cache
-      #
-      #     def call(params)
-      #       # ...
-      #
-      #       # set Cache-Control directives
-      #       cache_control :public, max_age: 900, s_maxage: 86400
-      #
-      #       # overwrite previous Cache-Control directives
-      #       cache_control :private, :no_cache, :no_store
-      #
-      #       => Cache-Control: private, no-store, max-age=900
-      #
-      #     end
-      #   end
-      def cache_control(*values)
-        cache_control = CacheControl::Directives.new(*values)
-        response.headers.merge!(cache_control.headers)
-      end
-
       # Set the Expires header and Cache-Control/max-age directive. Amount
       # can be an integer number of seconds in the future or a Time object
       # indicating when the response should be considered "stale". The remaining

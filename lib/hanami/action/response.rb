@@ -4,6 +4,9 @@ require 'hanami/utils/kernel'
 require 'hanami/action/flash'
 require 'hanami/action/halt'
 require 'hanami/action/cookie_jar'
+require 'hanami/action/cache/cache_control'
+require 'hanami/action/cache/expires'
+require 'hanami/action/cache/conditional_get'
 
 module Hanami
   class Action
@@ -88,6 +91,11 @@ module Hanami
         _send_file(
           Rack::File.new(path, directory).call(env)
         )
+      end
+
+      def cache_control(*values)
+        directives = Cache::CacheControl::Directives.new(*values)
+        headers.merge!(directives.headers)
       end
 
       # @api private
