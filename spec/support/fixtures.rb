@@ -979,21 +979,21 @@ module SendFileTest
         else
           # a more realistic example of globbing ':id(.:format)'
 
-          @resource = repository_dot_find_by_id(id)
+          resource = repository_dot_find_by_id(id)
           # this is usually 406, but I want to distinguish it from the 406 below.
-          halt 400 unless @resource
+          halt 400 unless resource
           extension = req.params[:format]
 
           case extension
           when 'html'
             # in reality we'd render a template here, but as a test fixture, we'll simulate that answer
             # we should have also checked #accept? but w/e
-            res.body = ::File.read(Pathname.new("spec/support/fixtures/#{@resource.asset_path}.html"))
+            res.body = ::File.read(Pathname.new("spec/support/fixtures/#{resource.asset_path}.html"))
             res.status = 200
             res.format = format(:html)
           when 'json', nil
             res.format = format(:json)
-            res.send_file Pathname.new("#{@resource.asset_path}.json")
+            res.send_file Pathname.new("#{resource.asset_path}.json")
           else
             halt 406
           end

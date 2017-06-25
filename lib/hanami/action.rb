@@ -424,6 +424,8 @@ module Hanami
         @handled_exceptions = Hash[
           @handled_exceptions.sort{|(ex1,_),(ex2,_)| ex1.ancestors.include?(ex2) ? -1 : 1 }
         ]
+
+        freeze
       end
 
       # Implements the Rack/Hanami::Action protocol

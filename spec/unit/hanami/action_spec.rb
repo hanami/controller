@@ -1,25 +1,10 @@
 RSpec.describe Hanami::Action do
-  # FIXME: resume the "doesn't interfer" spec
-  #
-  # describe ".configuration" do
-  #   after do
-  #     CallAction.configuration.reset!
-  #   end
-
-  #   it "has the same defaults of Hanami::Controller" do
-  #     expected = Hanami::Controller.configuration
-  #     actual   = CallAction.configuration
-
-  #     expect(actual.handle_exceptions).to eq(expected.handle_exceptions)
-  #   end
-
-  #   it "doesn't interfer with other action's configurations" do
-  #     CallAction.configuration.handle_exceptions = false
-
-  #     expect(Hanami::Controller.configuration.handle_exceptions).to be(true)
-  #     expect(ErrorCallAction.configuration.handle_exceptions).to    be(true)
-  #   end
-  # end
+  describe "#initialize" do
+    it "instantiate a frozen action" do
+      action = CallAction.new(configuration: configuration)
+      expect(action).to be_frozen
+    end
+  end
 
   describe "#call" do
     it "calls an action" do
