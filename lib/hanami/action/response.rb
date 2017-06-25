@@ -103,6 +103,16 @@ module Hanami
         headers.merge!(directives.headers)
       end
 
+      def fresh(options)
+        conditional_get = Cache::ConditionalGet.new(env, options)
+
+        headers.merge!(conditional_get.headers)
+
+        conditional_get.fresh? do
+          Halt.call(304)
+        end
+      end
+
       # @api private
       def request_id
         env.fetch(REQUEST_ID) do

@@ -152,24 +152,24 @@ module ConditionalGet
   class Etag < Hanami::Action
     include Hanami::Action::Cache
 
-    def call(*)
-      fresh etag: 'updated'
+    def call(_, res)
+      res.fresh etag: 'updated'
     end
   end
 
   class LastModified < Hanami::Action
     include Hanami::Action::Cache
 
-    def call(*)
-      fresh last_modified: Time.now
+    def call(_, res)
+      res.fresh last_modified: Time.now
     end
   end
 
   class EtagLastModified < Hanami::Action
     include Hanami::Action::Cache
 
-    def call(*)
-      fresh etag: 'updated', last_modified: Time.now
+    def call(_, res)
+      res.fresh etag: 'updated', last_modified: Time.now
     end
   end
 
