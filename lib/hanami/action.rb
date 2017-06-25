@@ -431,21 +431,22 @@ module Hanami
       # @since 0.1.0
       # @api private
       def call(env)
-        halted = catch :halt do
+        response = nil
+        halted   = catch :halt do
           begin
             params    = self.class.params_class.new(env)
             @request  = Hanami::Action::Request.new(env, params)
-            @response = Hanami::Action::Response.new(configuration: configuration, content_type: Mime.calculate_content_type_with_charset(configuration, request, accepted_mime_types), env: env, header: configuration.default_headers)
-            _run_before_callbacks(@request, @response)
-            super @request, @response
-            _run_after_callbacks(@request, @response)
+            response = Hanami::Action::Response.new(configuration: configuration, content_type: Mime.calculate_content_type_with_charset(configuration, request, accepted_mime_types), env: env, header: configuration.default_headers)
+            _run_before_callbacks(@request, response)
+            super @request, response
+            _run_after_callbacks(@request, response)
           rescue => exception
             _reference_in_rack_errors(@request, exception)
-            _handle_exception(@request, @response, exception)
+            _handle_exception(@request, response, exception)
           end
         end
 
-        finish(@request, @response, halted)
+        finish(@request, response, halted)
       end
     end
 
@@ -478,8 +479,6 @@ module Hanami
     #     end
     #   end
     attr_reader :request
-
-    attr_reader :response
 
     # Halt the action execution with the given HTTP status code and message.
     #

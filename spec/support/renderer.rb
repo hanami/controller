@@ -2,7 +2,7 @@ module Inspector
   def self.included(action)
     action.class_eval do
       after do |req, res|
-        response[:params] = req.params.to_h
+        res[:params] = req.params.to_h
         req.env['hanami.response'] = res
       end
     end
