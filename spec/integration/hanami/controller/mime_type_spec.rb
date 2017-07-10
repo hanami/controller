@@ -351,7 +351,7 @@ RSpec.describe 'MIME Type' do
         # See https://github.com/hanami/controller/issues/225
         context "with an accepted format and default request format" do
           let(:accept) { "text/*,application/json,text/html,*/*" }
-          let(:response) { app.get("/restricted", "HTTP_ACCEPT" => accept) }
+          let(:response) { app.get("/default_and_accept", "HTTP_ACCEPT" => accept) }
 
           it "defaults to the accepted format" do
             expect(response.status).to be(200)
