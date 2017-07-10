@@ -6,7 +6,6 @@ unless ENV['TRAVIS']
   gem 'yard',   require: false
 end
 
-gem 'minitest',      '~> 5.8'
 gem 'hanami-utils',  '~> 1.0', require: false, git: 'https://github.com/hanami/utils.git',  branch: '1.0.x'
 gem 'hanami-router', '~> 1.0', require: false, git: 'https://github.com/hanami/router.git', branch: '1.0.x'
 

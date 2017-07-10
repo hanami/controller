@@ -1,6 +1,11 @@
 # Hanami::Controller
 Complete, fast and testable actions for Rack
 
+## v1.0.1 - 2017-07-10
+### Fixed
+- [Marcello Rocha] Ensure validation params to be symbolized in all the environments
+- [Marcello Rocha] Fix regression (`1.0.0`) about MIME type priority, during the evaluation of a weighted `Accept` HTTP header
+
 ## v1.0.0 - 2017-04-06
 
 ## v1.0.0.rc1 - 2017-03-31
