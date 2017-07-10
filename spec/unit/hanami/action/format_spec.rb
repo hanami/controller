@@ -126,6 +126,7 @@ RSpec.describe Hanami::Action do
       end
     end
 
+    # See https://github.com/hanami/controller/issues/225
     it "accepts 'application/json, text/plain, */*' and returns :json" do
       action = FormatController::JsonLookup.new
       status, headers, _ = action.call('HTTP_ACCEPT' => 'application/json,text/plain,*/*')

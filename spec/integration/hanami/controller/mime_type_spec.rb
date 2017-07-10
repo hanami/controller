@@ -346,10 +346,14 @@ RSpec.describe 'MIME Type' do
             expect(response.status).to be(200)
             expect(response.body).to   eq("html")
           end
+        end
 
-          it 'defaults to the accepted format' do
-            accept = 'text/*,application/json,text/html,*/*'
-            response = Rack::MockRequest.new(MimeRoutes).get('/default_and_accept', 'HTTP_ACCEPT' => accept)
+        # See https://github.com/hanami/controller/issues/225
+        context "with an accepted format and default request format" do
+          let(:accept) { "text/*,application/json,text/html,*/*" }
+          let(:response) { app.get("/restricted", "HTTP_ACCEPT" => accept) }
+
+          it "defaults to the accepted format" do
             expect(response.status).to be(200)
             expect(response.body).to eq('json')
           end

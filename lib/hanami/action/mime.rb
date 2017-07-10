@@ -569,15 +569,40 @@ module Hanami
         end.compact.max&.format
       end
 
+      # @since 1.0.1
+      # @api private
       class RequestMimeWeight
         include Comparable
 
-        attr_reader :quality, :index, :mime, :format, :priority
+        # @since 1.0.1
+        # @api private
+        attr_reader :quality
+
+        # @since 1.0.1
+        # @api private
+        attr_reader :index
+
+        # @since 1.0.1
+        # @api private
+        attr_reader :mime
+
+        # @since 1.0.1
+        # @api private
+        attr_reader :format
+
+        # @since 1.0.1
+        # @api private
+        attr_reader :priority
+
+        # @since 1.0.1
+        # @api private
         def initialize(mime, quality, index, format = mime)
           @quality, @index, @format = quality, index, format
           calculate_priority(mime)
         end
 
+        # @since 1.0.1
+        # @api private
         def <=>(other)
           return priority <=> other.priority unless priority == other.priority
           other.index <=> index
@@ -585,6 +610,8 @@ module Hanami
 
         private
 
+        # @since 1.0.1
+        # @api private
         def calculate_priority(mime)
           @priority ||= (mime.split('/'.freeze, 2).count('*'.freeze) * -10) + quality
         end
