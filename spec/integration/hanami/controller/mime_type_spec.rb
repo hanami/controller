@@ -11,6 +11,7 @@ MimeRoutes = Hanami::Router.new do
   get '/response',           to: 'mimes#default_response'
   get '/overwritten_format', to: 'mimes#override_default_response'
   get '/custom_from_accept', to: 'mimes#custom_from_accept'
+  get '/default_and_accept', to: 'mimes#default_and_accept'
 end
 
 module Mimes
@@ -113,6 +114,16 @@ module Mimes
 
     def call(_params)
       self.format = :xml
+    end
+  end
+
+  class DefaultAndAccept
+    include Hanami::Action
+    configuration.default_request_format :html
+    accept :json
+
+    def call(params)
+      self.body = format.to_s
     end
   end
 end
@@ -254,6 +265,18 @@ RSpec.describe 'MIME Type' do
           expect(response.body).to                       eq("html")
         end
       end
+
+      context 'applies the weighting mechanism for media ranges' do
+        let(:accept) { "text/*,application/json,text/html,*/*" }
+
+        it "accepts selected mime types" do
+          expect(response.headers["X-AcceptDefault"]).to eq("true")
+          expect(response.headers["X-AcceptHtml"]).to    eq("true")
+          expect(response.headers["X-AcceptXml"]).to     eq("true")
+          expect(response.headers["X-AcceptJson"]).to    eq("true")
+          expect(response.body).to                       eq("json")
+        end
+      end
     end
   end
 
@@ -322,6 +345,17 @@ RSpec.describe 'MIME Type' do
           it "accepts selected mime types" do
             expect(response.status).to be(200)
             expect(response.body).to   eq("html")
+          end
+        end
+
+        # See https://github.com/hanami/controller/issues/225
+        context "with an accepted format and default request format" do
+          let(:accept) { "text/*,application/json,text/html,*/*" }
+          let(:response) { app.get("/default_and_accept", "HTTP_ACCEPT" => accept) }
+
+          it "defaults to the accepted format" do
+            expect(response.status).to be(200)
+            expect(response.body).to eq('json')
           end
         end
       end

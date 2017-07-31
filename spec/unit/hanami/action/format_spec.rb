@@ -8,6 +8,17 @@ RSpec.describe Hanami::Action do
       end
     end
 
+    class JsonLookup
+      include Hanami::Action
+      configuration.handle_exceptions = false
+      configuration.default_request_format :html
+      accept :json
+
+      def call(params)
+      end
+    end
+
+
     class Custom
       include Hanami::Action
       configuration.handle_exceptions = false
@@ -113,6 +124,15 @@ RSpec.describe Hanami::Action do
         expect(exception).to         be_kind_of(Hanami::Controller::UnknownFormatError)
         expect(exception.message).to eq("Cannot find a corresponding Mime type for 'unknown'. Please configure it with Hanami::Controller::Configuration#format.")
       end
+    end
+
+    # See https://github.com/hanami/controller/issues/225
+    it "accepts 'application/json, text/plain, */*' and returns :json" do
+      action = FormatController::JsonLookup.new
+      status, headers, _ = action.call('HTTP_ACCEPT' => 'application/json,text/plain,*/*')
+      expect(action.format).to eq(:json)
+      expect(headers['Content-Type']).to eq('application/json; charset=utf-8')
+      expect(status).to eq(200)
     end
 
     Hanami::Action::Mime::MIME_TYPES.each do |format, mime_type|
