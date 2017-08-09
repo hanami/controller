@@ -107,7 +107,7 @@ module Hanami
       #     # => ["Email is missing", "Email is in invalid format", "Name is missing", "Tos is missing", "Age is missing", "Address is missing"]
       def error_messages(error_set = errors)
         error_set.each_with_object([]) do |(key, messages), result|
-          k = Utils::String.new(key).titleize
+          k = Utils::String.titleize(key)
 
           _messages = if messages.is_a?(Hash)
             error_messages(messages)
