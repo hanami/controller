@@ -16,6 +16,62 @@ module Hanami
     class Params < BaseParams
       include Hanami::Validations::Form
 
+      # Params errors
+      #
+      # @since 1.1.0
+      class Errors < SimpleDelegator
+        # @since 1.1.0
+        # @api private
+        def initialize(errors = {})
+          super(errors)
+        end
+
+        # Add an error to the param validations
+        #
+        # This has a semantic similar to `Hash#dig` where you use a set of keys
+        # to get a nested value, here you use a set of keys to set a nested
+        # value.
+        #
+        # @param args [Array<Symbol, String>] an array of arguments: the last
+        #   one is the message to add (String), while the beginning of the array
+        #   is made of keys to reach the .
+        #
+        # @since 1.1.0
+        #
+        # @example
+        #   require "hanami/controller"
+        #
+        #   class MyAction
+        #     include Hanami::Action
+        #
+        #     params do
+        #       required(:book).schema do
+        #         required(:title).filled(:str?)
+        #       end
+        #     end
+        #
+        #     def call(params)
+        #       # 1. Don't try to save the record if the params aren't valid
+        #       return unless params.valid?
+        #
+        #       BookRepository.new.create(params[:book])
+        #     rescue Hanami::Model::UniqueConstraintViolationError
+        #       # 2. Add an error in case the record wasn't unique
+        #       params.errors.add(:book, :isbn, "is not unique")
+        #     end
+        #   end
+        def add(*args)
+          *keys, key, error = args
+
+          (if keys.empty?
+             self
+           else
+             keys.inject(self) { |result, k| result[k] ||= {} }
+             dig(*keys)
+           end[key] ||= []) << error
+        end
+      end
+
       # This is a Hanami::Validations extension point
       #
       # @since 0.7.0
@@ -71,6 +127,7 @@ module Hanami
         super(_extract_params)
         @result = validate
         @params = _params
+        @errors = Errors.new(@result.messages)
         freeze
       end
 
@@ -92,9 +149,7 @@ module Hanami
       # @example
       #   params.errors
       #     # => {:email=>["is missing", "is in invalid format"], :name=>["is missing"], :tos=>["is missing"], :age=>["is missing"], :address=>["is missing"]}
-      def errors
-        @result.messages
-      end
+      attr_reader :errors
 
       # Returns flat collection of full error messages
       #
@@ -129,7 +184,7 @@ module Hanami
       # @example
       #   params.valid? # => true
       def valid?
-        @result.success?
+        errors.empty?
       end
 
       # Serialize params to Hash
