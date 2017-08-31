@@ -481,5 +481,11 @@ RSpec.describe Hanami::Action::Params do
       params.errors.add(:book, :code, "is not unique")
       expect(params.error_messages).to eq(["Code is not unique"])
     end
+
+    it "raises error when try to add an error " do
+      params = klass.new({})
+
+      expect { params.errors.add(:book, :code, "is invalid") }.to raise_error(ArgumentError, %(Can't add :book, :code "is invalid" to {:book=>["is missing"]}))
+    end
   end
 end

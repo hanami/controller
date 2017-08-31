@@ -34,11 +34,18 @@ module Hanami
         #
         # @param args [Array<Symbol, String>] an array of arguments: the last
         #   one is the message to add (String), while the beginning of the array
-        #   is made of keys to reach the .
+        #   is made of keys to reach the attribute.
+        #
+        # @raise [ArgumentError] when try to add a message for a key that is
+        #   already filled with incompatible message type.
+        #   This usually happens with nested attributes: if you have a `:book`
+        #   schema and the input doesn't include data for `:book`, the messages
+        #   will be `["is missing"]`. In that case you can't add an error for a
+        #   key nested under `:book`.
         #
         # @since 1.1.0
         #
-        # @example
+        # @example Basic usage
         #   require "hanami/controller"
         #
         #   class MyAction
@@ -46,7 +53,7 @@ module Hanami
         #
         #     params do
         #       required(:book).schema do
-        #         required(:title).filled(:str?)
+        #         required(:isbn).filled(:str?)
         #       end
         #     end
         #
@@ -60,9 +67,33 @@ module Hanami
         #       params.errors.add(:book, :isbn, "is not unique")
         #     end
         #   end
+        #
+        # @example Invalid argument
+        #   require "hanami/controller"
+        #
+        #   class MyAction
+        #     include Hanami::Action
+        #
+        #     params do
+        #       required(:book).schema do
+        #         required(:title).filled(:str?)
+        #       end
+        #     end
+        #
+        #     def call(params)
+        #       puts params.to_h   # => {}
+        #       puts params.valid? # => false
+        #       puts params.error_messages # => ["Book is missing"]
+        #       puts params.errors         # => {:book=>["is missing"]}
+        #
+        #       params.errors.add(:book, :isbn, "is not unique") # => ArgumentError
+        #     end
+        #   end
         def add(*args)
           *keys, key, error = args
           _nested_attribute(keys, key) << error
+        rescue TypeError
+          raise ArgumentError.new("Can't add #{[keys, key].flatten.map(&:inspect).join(', ')} #{error.inspect} to #{to_h}")
         end
 
         private
