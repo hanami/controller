@@ -62,13 +62,20 @@ module Hanami
         #   end
         def add(*args)
           *keys, key, error = args
+          _nested_attribute(keys, key) << error
+        end
 
-          (if keys.empty?
-             self
-           else
-             keys.inject(self) { |result, k| result[k] ||= {} }
-             dig(*keys)
-           end[key] ||= []) << error
+        private
+
+        # @since 1.1.0
+        # @api private
+        def _nested_attribute(keys, key)
+          if keys.empty?
+            self
+          else
+            keys.inject(self) { |result, k| result[k] ||= {} }
+            dig(*keys)
+          end[key] ||= []
         end
       end
 
