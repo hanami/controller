@@ -450,12 +450,14 @@ RSpec.describe Hanami::Action::Params do
     let(:klass) do
       Class.new(described_class) do
         params do
-          required(:code).filled(:str?)
+          required(:book).schema do
+            required(:code).filled(:str?)
+          end
         end
       end
     end
 
-    let(:params) { klass.new(code: "abc") }
+    let(:params) { klass.new(book: { code: "abc" }) }
 
     it "returns Hanami::Action::Params::Errors" do
       expect(params.errors).to be_kind_of(Hanami::Action::Params::Errors)
@@ -464,19 +466,19 @@ RSpec.describe Hanami::Action::Params do
     it "alters the returning value of #valid?" do
       expect(params).to be_valid
 
-      params.errors.add(:code, "is not unique")
+      params.errors.add(:book, :code, "is not unique")
       expect(params).to_not be_valid
     end
 
     it "appens message to already existing messages" do
-      params = klass.new({})
-      params.errors.add(:code, "is invalid")
+      params = klass.new(book: {})
+      params.errors.add(:book, :code, "is invalid")
 
       expect(params.error_messages).to eq(["Code is missing", "Code is invalid"])
     end
 
     it "gets listed in #error_messages" do
-      params.errors.add(:code, "is not unique")
+      params.errors.add(:book, :code, "is not unique")
       expect(params.error_messages).to eq(["Code is not unique"])
     end
   end
