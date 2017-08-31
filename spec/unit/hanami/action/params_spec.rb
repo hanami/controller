@@ -485,7 +485,7 @@ RSpec.describe Hanami::Action::Params do
     it "raises error when try to add an error " do
       params = klass.new({})
 
-      expect { params.errors.add(:book, :code, "is invalid") }.to raise_error(ArgumentError, %(Can't add :book, :code "is invalid" to {:book=>["is missing"]}))
+      expect { params.errors.add(:book, :code, "is invalid") }.to raise_error(ArgumentError, %(Can't add :book, :code, "is invalid" to {:book=>["is missing"]}))
     end
   end
 end

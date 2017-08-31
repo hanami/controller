@@ -93,7 +93,7 @@ module Hanami
           *keys, key, error = args
           _nested_attribute(keys, key) << error
         rescue TypeError
-          raise ArgumentError.new("Can't add #{[keys, key].flatten.map(&:inspect).join(', ')} #{error.inspect} to #{to_h}")
+          raise ArgumentError.new("Can't add #{args.map(&:inspect).join(', ')} to #{inspect}")
         end
 
         private
