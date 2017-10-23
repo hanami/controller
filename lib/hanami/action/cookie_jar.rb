@@ -91,6 +91,7 @@ module Hanami
       # @param key [Symbol] the key
       # @param value [#to_s,Hash] value that can be serialized as a string or
       #   expressed as a Hash
+      # @option value [String] :value - Value of the cookie
       # @option value [String] :domain - The domain
       # @option value [String] :path - The path
       # @option value [Integer] :max_age - Duration expressed in seconds
