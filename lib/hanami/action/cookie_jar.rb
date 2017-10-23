@@ -110,6 +110,31 @@ module Hanami
         @cookies[key] = value
       end
 
+      # Iterates cookies
+      #
+      # @param blk [Proc] the block to be yielded
+      # @yield [key, value] the key/value pair for each cookie
+      #
+      # @return [void]
+      #
+      # @since 1.1.0
+      #
+      # @example
+      #   require "hanami/controller"
+      #   class MyAction
+      #     include Hanami::Action
+      #     include Hanami::Action::Cookies
+      #
+      #     def call(params)
+      #       cookies.each do |key, value|
+      #         # ...
+      #       end
+      #     end
+      #   end
+      def each(&blk)
+        @cookies.each(&blk)
+      end
+
       private
 
       # Keep track of changed keys
