@@ -1,6 +1,10 @@
 # Hanami::Controller
 Complete, fast and testable actions for Rack
 
+## v1.1.0 - 2017-10-25
+### Added
+- [Luca Guidi] Introduce `Hanami::Action::CookieJar#each` to iterate through action's `cookies`
+
 ## v1.1.0.rc1 - 2017-10-16
 
 ## v1.1.0.beta3 - 2017-10-04
