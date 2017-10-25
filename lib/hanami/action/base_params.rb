@@ -52,7 +52,7 @@ module Hanami
       def initialize(env)
         @env    = env
         @raw    = _extract_params
-        @params = Utils::Hash.new(@raw).deep_dup.deep_symbolize!.to_h
+        @params = Utils::Hash.deep_symbolize(@raw)
         freeze
       end
 

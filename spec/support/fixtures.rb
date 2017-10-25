@@ -600,6 +600,20 @@ class RemoveCookiesAction
   end
 end
 
+class IterateCookiesAction
+  include Hanami::Action
+  include Hanami::Action::Cookies
+
+  def call(params)
+    result = []
+    cookies.each do |key, value|
+      result << "'#{key}' has value '#{value}'"
+    end
+
+    self.body = result.join(", ")
+  end
+end
+
 class ThrowCodeAction
   include Hanami::Action
 

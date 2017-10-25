@@ -92,7 +92,7 @@ module Hanami
             if method_defined?(name) || private_method_defined?(name)
               method_owner = instance_method(name).owner
 
-              Utils::String.new(method_owner).namespace == namespace
+              Utils::String.namespace(method_owner) == namespace
             else
               false
             end
