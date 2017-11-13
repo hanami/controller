@@ -205,4 +205,20 @@ RSpec.describe "Full stack application" do
     get "/files/flow", {}
     expect(response.status).to be(200)
   end
+
+  context 'with after callback' do
+    it 'calls the after callback after the action call' do
+      action = SendFileTest::Files::WithAfterCallback.new
+      expect(action).to receive(:after_callback)
+      action.call({})
+    end
+  end
+
+  context 'with before callback' do
+    it 'calls the before callback before the action call' do
+      action = SendFileTest::Files::WithBeforeCallback.new
+      expect(action).to receive(:before_callback)
+      action.call({})
+    end
+  end
 end
