@@ -1230,6 +1230,34 @@ module SendFileTest
         halt 202
       end
     end
+
+    class BeforeCallback
+      include SendFileTest::Action
+
+      before :before_callback
+
+      def call(params)
+        send_file Pathname.new("test.txt")
+      end
+
+      def before_callback(params)
+        headers["X-Callbacks"] = "before"
+      end
+    end
+
+    class AfterCallback
+      include SendFileTest::Action
+
+      after :after_callback
+
+      def call(params)
+        send_file Pathname.new("test.txt")
+      end
+
+      def after_callback(params)
+        headers["X-Callbacks"] = "after"
+      end
+    end
   end
 end
 
