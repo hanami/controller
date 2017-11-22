@@ -7,6 +7,8 @@ SendFileRoutes = Hanami::Router.new(namespace: SendFileTest) do
   get '/files/unsafe_absolute',         to: 'files#unsafe_absolute'
   get '/files/unsafe_missing_local',    to: 'files#unsafe_missing_local'
   get '/files/unsafe_missing_absolute', to: 'files#unsafe_missing_absolute'
+  get '/files/before_callback',         to: 'files#before_callback'
+  get '/files/after_callback',          to: 'files#after_callback'
   get '/files/:id(.:format)',           to: 'files#show'
   get '/files/(*glob)',                 to: 'files#glob'
 end
@@ -204,5 +206,21 @@ RSpec.describe "Full stack application" do
   it "interrupts the control flow" do
     get "/files/flow", {}
     expect(response.status).to be(200)
+  end
+
+  it "runs 'before' callbacks" do
+    get "/files/before_callback"
+
+    expect(response.status).to                    be(200)
+    expect(response.headers["Content-Length"]).to eq("69")
+    expect(response.headers["X-Callbacks"]).to    eq("before")
+  end
+
+  it "runs 'after' callbacks" do
+    get "/files/after_callback"
+
+    expect(response.status).to                    be(200)
+    expect(response.headers["Content-Length"]).to eq("69")
+    expect(response.headers["X-Callbacks"]).to    eq("after")
   end
 end
