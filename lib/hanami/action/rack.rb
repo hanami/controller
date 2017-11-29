@@ -383,6 +383,10 @@ module Hanami
           headers.delete(CONTENT_LENGTH)
           halt NOT_FOUND
         else
+          # FIXME: this is a fix for https://github.com/hanami/controller/issues/240
+          # It's here to maintain the backward compat with 1.1, as we can't remove `#halt`
+          # We should review the workflow for 2.0, because I don't like callbacks to be referenced from here.
+          _run_after_callbacks(params)
           halt response[RESPONSE_CODE], response[RESPONSE_BODY]
         end
       end

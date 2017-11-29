@@ -91,6 +91,7 @@ module Hanami
       # @param key [Symbol] the key
       # @param value [#to_s,Hash] value that can be serialized as a string or
       #   expressed as a Hash
+      # @option value [String] :value - Value of the cookie
       # @option value [String] :domain - The domain
       # @option value [String] :path - The path
       # @option value [Integer] :max_age - Duration expressed in seconds
@@ -108,6 +109,31 @@ module Hanami
       def []=(key, value)
         changes << key
         @cookies[key] = value
+      end
+
+      # Iterates cookies
+      #
+      # @param blk [Proc] the block to be yielded
+      # @yield [key, value] the key/value pair for each cookie
+      #
+      # @return [void]
+      #
+      # @since 1.1.0
+      #
+      # @example
+      #   require "hanami/controller"
+      #   class MyAction
+      #     include Hanami::Action
+      #     include Hanami::Action::Cookies
+      #
+      #     def call(params)
+      #       cookies.each do |key, value|
+      #         # ...
+      #       end
+      #     end
+      #   end
+      def each(&blk)
+        @cookies.each(&blk)
       end
 
       private

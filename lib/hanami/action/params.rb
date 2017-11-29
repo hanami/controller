@@ -16,6 +16,100 @@ module Hanami
     class Params < BaseParams
       include Hanami::Validations::Form
 
+      # Params errors
+      #
+      # @since 1.1.0
+      class Errors < SimpleDelegator
+        # @since 1.1.0
+        # @api private
+        def initialize(errors = {})
+          super(errors)
+        end
+
+        # Add an error to the param validations
+        #
+        # This has a semantic similar to `Hash#dig` where you use a set of keys
+        # to get a nested value, here you use a set of keys to set a nested
+        # value.
+        #
+        # @param args [Array<Symbol, String>] an array of arguments: the last
+        #   one is the message to add (String), while the beginning of the array
+        #   is made of keys to reach the attribute.
+        #
+        # @raise [ArgumentError] when try to add a message for a key that is
+        #   already filled with incompatible message type.
+        #   This usually happens with nested attributes: if you have a `:book`
+        #   schema and the input doesn't include data for `:book`, the messages
+        #   will be `["is missing"]`. In that case you can't add an error for a
+        #   key nested under `:book`.
+        #
+        # @since 1.1.0
+        #
+        # @example Basic usage
+        #   require "hanami/controller"
+        #
+        #   class MyAction
+        #     include Hanami::Action
+        #
+        #     params do
+        #       required(:book).schema do
+        #         required(:isbn).filled(:str?)
+        #       end
+        #     end
+        #
+        #     def call(params)
+        #       # 1. Don't try to save the record if the params aren't valid
+        #       return unless params.valid?
+        #
+        #       BookRepository.new.create(params[:book])
+        #     rescue Hanami::Model::UniqueConstraintViolationError
+        #       # 2. Add an error in case the record wasn't unique
+        #       params.errors.add(:book, :isbn, "is not unique")
+        #     end
+        #   end
+        #
+        # @example Invalid argument
+        #   require "hanami/controller"
+        #
+        #   class MyAction
+        #     include Hanami::Action
+        #
+        #     params do
+        #       required(:book).schema do
+        #         required(:title).filled(:str?)
+        #       end
+        #     end
+        #
+        #     def call(params)
+        #       puts params.to_h   # => {}
+        #       puts params.valid? # => false
+        #       puts params.error_messages # => ["Book is missing"]
+        #       puts params.errors         # => {:book=>["is missing"]}
+        #
+        #       params.errors.add(:book, :isbn, "is not unique") # => ArgumentError
+        #     end
+        #   end
+        def add(*args)
+          *keys, key, error = args
+          _nested_attribute(keys, key) << error
+        rescue TypeError
+          raise ArgumentError.new("Can't add #{args.map(&:inspect).join(', ')} to #{inspect}")
+        end
+
+        private
+
+        # @since 1.1.0
+        # @api private
+        def _nested_attribute(keys, key)
+          if keys.empty?
+            self
+          else
+            keys.inject(self) { |result, k| result[k] ||= {} }
+            dig(*keys)
+          end[key] ||= []
+        end
+      end
+
       # This is a Hanami::Validations extension point
       #
       # @since 0.7.0
@@ -71,6 +165,7 @@ module Hanami
         super(_extract_params)
         @result = validate
         @params = _params
+        @errors = Errors.new(@result.messages)
         freeze
       end
 
@@ -92,9 +187,7 @@ module Hanami
       # @example
       #   params.errors
       #     # => {:email=>["is missing", "is in invalid format"], :name=>["is missing"], :tos=>["is missing"], :age=>["is missing"], :address=>["is missing"]}
-      def errors
-        @result.messages
-      end
+      attr_reader :errors
 
       # Returns flat collection of full error messages
       #
@@ -107,7 +200,7 @@ module Hanami
       #     # => ["Email is missing", "Email is in invalid format", "Name is missing", "Tos is missing", "Age is missing", "Address is missing"]
       def error_messages(error_set = errors)
         error_set.each_with_object([]) do |(key, messages), result|
-          k = Utils::String.new(key).titleize
+          k = Utils::String.titleize(key)
 
           _messages = if messages.is_a?(Hash)
             error_messages(messages)
@@ -129,7 +222,7 @@ module Hanami
       # @example
       #   params.valid? # => true
       def valid?
-        @result.success?
+        errors.empty?
       end
 
       # Serialize params to Hash

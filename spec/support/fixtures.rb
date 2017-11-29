@@ -600,6 +600,20 @@ class RemoveCookiesAction
   end
 end
 
+class IterateCookiesAction
+  include Hanami::Action
+  include Hanami::Action::Cookies
+
+  def call(params)
+    result = []
+    cookies.each do |key, value|
+      result << "'#{key}' has value '#{value}'"
+    end
+
+    self.body = result.join(", ")
+  end
+end
+
 class ThrowCodeAction
   include Hanami::Action
 
@@ -1214,6 +1228,34 @@ module SendFileTest
 
       def call(params)
         halt 202
+      end
+    end
+
+    class BeforeCallback
+      include SendFileTest::Action
+
+      before :before_callback
+
+      def call(params)
+        send_file Pathname.new("test.txt")
+      end
+
+      def before_callback(params)
+        headers["X-Callbacks"] = "before"
+      end
+    end
+
+    class AfterCallback
+      include SendFileTest::Action
+
+      after :after_callback
+
+      def call(params)
+        send_file Pathname.new("test.txt")
+      end
+
+      def after_callback(params)
+        headers["X-Callbacks"] = "after"
       end
     end
   end
