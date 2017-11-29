@@ -1,6 +1,11 @@
 # Hanami::Controller
 Complete, fast and testable actions for Rack
 
+## v1.1.1 - 2017-11-22
+### Fixed
+- [Luca Guidi] Ensure `Hanami::Action#send_file` and `#unsafe_send_file` to run `after` action callbacks
+- [Luca Guidi] Ensure Rack env to have the `REQUEST_METHOD` key set to `GET` during actions unit tests
+
 ## v1.1.0 - 2017-10-25
 ### Added
 - [Luca Guidi] Introduce `Hanami::Action::CookieJar#each` to iterate through action's `cookies`

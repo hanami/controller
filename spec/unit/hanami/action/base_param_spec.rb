@@ -6,6 +6,7 @@ RSpec.describe Hanami::Action::BaseParams do
       env = { 'router.params' => { 'some' => { 'hash' => 'value' } } }
       action.call(env)
       expect(env['router.params']).to eq('some' => { 'hash' => 'value' })
+      expect(env['REQUEST_METHOD']).to eq('GET')
     end
   end
 
@@ -18,7 +19,8 @@ RSpec.describe Hanami::Action::BaseParams do
 
   describe '#each' do
     it 'iterates through params' do
-      params = described_class.new(expected = { song: 'Break The Habit' })
+      expected = { song: 'Break The Habit' }
+      params = described_class.new(expected.dup)
       actual = {}
       params.each do |key, value|
         actual[key] = value
