@@ -1,3 +1,4 @@
+require 'rack'
 require 'securerandom'
 require 'hanami/action/request'
 require 'hanami/action/base_params'

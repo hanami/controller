@@ -225,81 +225,6 @@ class ExposeReservedWordAction
   end
 end
 
-class ZMiddleware
-  def initialize(app, &message)
-    @app = app
-    @message = message
-  end
-
-  def call(env)
-    code, headers, body = @app.call(env)
-    [code, headers.merge!('Z-Middleware' => @message.call), body]
-  end
-end
-
-class YMiddleware
-  def initialize(app)
-    @app = app
-  end
-
-  def call(env)
-    code, headers, body = @app.call(env)
-    [code, headers.merge!('Y-Middleware' => 'OK'), body]
-  end
-end
-
-class XMiddleware
-  def initialize(app)
-    @app = app
-  end
-
-  def call(env)
-    code, headers, body = @app.call(env)
-    [code, headers.merge!('X-Middleware' => 'OK'), body]
-  end
-end
-
-module UseAction
-  class Index
-    include Hanami::Action
-    use XMiddleware
-
-    def call(params)
-      self.body = 'Hello from UseAction::Index'
-    end
-  end
-
-  class Show
-    include Hanami::Action
-    use YMiddleware
-
-    def call(params)
-      self.body = 'Hello from UseAction::Show'
-    end
-  end
-
-  class Edit
-    include Hanami::Action
-    use ZMiddleware do
-      'OK'
-    end
-
-    def call(params)
-      self.body = 'Hello from UseAction::Edit'
-    end
-  end
-end
-
-module NoUseAction
-  class Index
-    include Hanami::Action
-
-    def call(params)
-      self.body = 'Hello from NoUseAction::Index'
-    end
-  end
-end
-
 class BeforeMethodAction
   include Hanami::Action
 
@@ -1498,8 +1423,7 @@ module FullStack
 
   class Application
     def initialize
-      resolver = Hanami::Routing::EndpointResolver.new(namespace: FullStack::Controllers)
-      routes   = Hanami::Router.new(resolver: resolver) do
+      routes = Hanami::Router.new(namespace: FullStack::Controllers) do
         get '/',     to: 'home#index'
         get '/head', to: 'home#head'
         resources :books, only: [:index, :create, :update]
@@ -1509,14 +1433,14 @@ module FullStack
 
         get '/poll', to: 'poll#start'
 
-        namespace 'poll' do
+        prefix 'poll' do
           get  '/1', to: 'poll#step1'
           post '/1', to: 'poll#step1'
           get  '/2', to: 'poll#step2'
           post '/2', to: 'poll#step2'
         end
 
-        namespace 'users' do
+        prefix 'users' do
           get '/1', to: 'users#show'
         end
       end
@@ -1618,8 +1542,7 @@ module SessionWithCookies
 
   class Application
     def initialize
-      resolver = Hanami::Routing::EndpointResolver.new(namespace: SessionWithCookies::Controllers)
-      routes   = Hanami::Router.new(resolver: resolver) do
+      routes   = Hanami::Router.new(namespace: SessionWithCookies::Controllers) do
         get '/',     to: 'home#index'
       end
 
@@ -1671,8 +1594,7 @@ module SessionsWithoutCookies
 
   class Application
     def initialize
-      resolver = Hanami::Routing::EndpointResolver.new(namespace: SessionsWithoutCookies::Controllers)
-      routes   = Hanami::Router.new(resolver: resolver) do
+      routes   = Hanami::Router.new(namespace: SessionsWithoutCookies::Controllers) do
         get '/',     to: 'home#index'
       end
 
