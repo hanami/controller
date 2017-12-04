@@ -439,6 +439,19 @@ class RemoveCookiesAction < Hanami::Action
   end
 end
 
+class IterateCookiesAction < Hanami::Action
+  include Hanami::Action::Cookies
+
+  def call(*, res)
+    result = []
+    res.cookies.each do |key, value|
+      result << "'#{key}' has value '#{value}'"
+    end
+
+    res.body = result.join(", ")
+  end
+end
+
 class ThrowCodeAction < Hanami::Action
   def call(req, *)
     halt req.params[:status].to_i, req.params[:message]
@@ -802,26 +815,6 @@ module Glued
   end
 end
 
-class EndpointResolver < Hanami::Routing::EndpointResolver
-  def initialize(configuration:, **args)
-    super(**args)
-    @configuration = configuration
-  end
-
-  private
-
-  # @api private
-  def constantize(string)
-    klass = Hanami::Utils::Class.load!(string, @namespace)
-
-    if klass.ancestors.include?(Hanami::Action)
-      Hanami::Routing::Endpoint.new(klass.new(configuration: @configuration))
-    else
-      super
-    end
-  end
-end
-
 class ArtistNotFound < StandardError
 end
 
@@ -1048,8 +1041,36 @@ module SendFileTest
     end
 
     class Glob < Hanami::Action
-      def call(req, res)
+      def call(*)
         halt 202
+      end
+    end
+
+    class BeforeCallback < Hanami::Action
+      before :before_callback
+
+      def call(*, res)
+        res.send_file Pathname.new("test.txt")
+      end
+
+      private
+
+      def before_callback(*, res)
+        res.headers["X-Callbacks"] = "before"
+      end
+    end
+
+    class AfterCallback < Hanami::Action
+      after :after_callback
+
+      def call(*, res)
+        res.send_file Pathname.new("test.txt")
+      end
+
+      private
+
+      def after_callback(*, res)
+        res.headers["X-Callbacks"] = "after"
       end
     end
   end
@@ -1061,15 +1082,15 @@ module SendFileTest
         config.public_directory  = "spec/support/fixtures"
       end
 
-      resolver = EndpointResolver.new(configuration: configuration, namespace: SendFileTest)
-
-      router = Hanami::Router.new(resolver: resolver) do
+      router = Hanami::Router.new(configuration: configuration, namespace: SendFileTest) do
         get '/files/flow',                    to: 'files#flow'
         get '/files/unsafe_local',            to: 'files#unsafe_local'
         get '/files/unsafe_public',           to: 'files#unsafe_public'
         get '/files/unsafe_absolute',         to: 'files#unsafe_absolute'
         get '/files/unsafe_missing_local',    to: 'files#unsafe_missing_local'
         get '/files/unsafe_missing_absolute', to: 'files#unsafe_missing_absolute'
+        get '/files/before_callback',         to: 'files#before_callback'
+        get '/files/after_callback',          to: 'files#after_callback'
         get '/files/:id(.:format)',           to: 'files#show'
         get '/files/(*glob)',                 to: 'files#glob'
       end
@@ -1152,8 +1173,7 @@ module HeadTest
         )
       end
 
-      resolver = EndpointResolver.new(configuration: configuration, namespace: HeadTest)
-      router = Hanami::Router.new(resolver: resolver) do
+      router = Hanami::Router.new(namespace: HeadTest, configuration: configuration) do
         get '/',           to: 'home#index'
         get '/code/:code', to: 'home#code'
         get '/override',   to: 'home#override'
@@ -1344,8 +1364,7 @@ module FullStack
         config.handle_exceptions = false
       end
 
-      resolver = EndpointResolver.new(configuration: configuration, namespace: FullStack::Controllers)
-      routes   = Hanami::Router.new(resolver: resolver) do
+      routes   = Hanami::Router.new(namespace: FullStack::Controllers, configuration: configuration) do
         get '/',     to: 'home#index'
         get '/head', to: 'home#head'
         resources :books, only: [:index, :create, :update]
@@ -1355,14 +1374,14 @@ module FullStack
 
         get '/poll', to: 'poll#start'
 
-        namespace 'poll' do
+        prefix 'poll' do
           get  '/1', to: 'poll#step1'
           post '/1', to: 'poll#step1'
           get  '/2', to: 'poll#step2'
           post '/2', to: 'poll#step2'
         end
 
-        namespace 'users' do
+        prefix 'users' do
           get '/1', to: 'users#show'
         end
       end
@@ -1479,8 +1498,7 @@ module SessionsWithoutCookies
         config.handle_exceptions = false
       end
 
-      resolver = EndpointResolver.new(configuration: configuration, namespace: SessionsWithoutCookies::Controllers)
-      routes   = Hanami::Router.new(resolver: resolver) do
+      routes   = Hanami::Router.new(configuration: configuration, namespace: SessionsWithoutCookies::Controllers) do
         get '/', to: 'home#index'
       end
 
@@ -1564,15 +1582,27 @@ module Mimes
     end
   end
 
+  class DefaultAndAccept < Hanami::Action
+    accept :json
+
+    def call(*, res)
+      res.body, = *format(res.content_type)
+    end
+
+    private
+
+    def default_response_format
+      :html
+    end
+  end
+
   class Application
     def initialize
       configuration = Hanami::Controller::Configuration.new do |config|
         config.format custom: 'application/custom'
       end
 
-      resolver = EndpointResolver.new(configuration: configuration)
-
-      @router = Hanami::Router.new(resolver: resolver) do
+      @router = Hanami::Router.new(configuration: configuration) do
         get '/',                   to: 'mimes#default'
         get '/custom',             to: 'mimes#custom'
         get '/accept',             to: 'mimes#accept'
@@ -1581,6 +1611,7 @@ module Mimes
         get '/nocontent',          to: 'mimes#no_content'
         get '/overwritten_format', to: 'mimes#override_default_response'
         get '/custom_from_accept', to: 'mimes#custom_from_accept'
+        get '/default_and_accept', to: 'mimes#default_and_accept'
       end
     end
 
@@ -1594,9 +1625,8 @@ module RouterIntegration
   class Application
     def initialize
       configuration = Hanami::Controller::Configuration.new
-      resolver      = EndpointResolver.new(configuration: configuration)
 
-      routes = Hanami::Router.new(resolver: resolver, parsers: :json) do
+      routes = Hanami::Router.new(configuration: configuration, parsers: :json) do
         get '/',         to: 'root'
         get '/team',     to: 'about#team'
         get '/contacts', to: 'about#contacts'

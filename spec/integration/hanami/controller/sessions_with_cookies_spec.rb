@@ -3,9 +3,7 @@ require 'rack/test'
 RSpec.describe "Sessions with cookies application" do
   include Rack::Test::Methods
 
-  def app
-    SessionWithCookies::Application.new
-  end
+  let(:app) { SessionWithCookies::Application.new }
 
   def response
     last_response

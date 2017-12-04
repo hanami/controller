@@ -57,9 +57,8 @@ module Errors
       configuration = Hanami::Controller::Configuration.new do |config|
         config.handle_exception FrameworkHandledException => 500
       end
-      resolver = EndpointResolver.new(configuration: configuration)
 
-      routes = Hanami::Router.new(resolver: resolver) do
+      routes = Hanami::Router.new(configuration: configuration) do
         get '/without_message',         to: 'errors#without_message'
         get '/with_message',            to: 'errors#with_message'
         get '/with_custom_message',     to: 'errors#with_custom_message'
@@ -102,9 +101,7 @@ module DisabledErrors
         config.handle_exception FrameworkHandledException => 500
       end
 
-      resolver = EndpointResolver.new(configuration: configuration)
-
-      routes = Hanami::Router.new(resolver: resolver) do
+      routes = Hanami::Router.new(configuration: configuration) do
         get '/action_managed',    to: 'disabled_errors#action_managed'
         get '/framework_managed', to: 'disabled_errors#framework_managed'
       end

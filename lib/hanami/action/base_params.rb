@@ -29,6 +29,18 @@ module Hanami
       #   action.session[:foo] # => "bar"
       RACK_SESSION = 'rack.session'.freeze
 
+      # HTTP request method for Rack env
+      #
+      # @since 1.1.1
+      # @api private
+      REQUEST_METHOD = 'REQUEST_METHOD'.freeze
+
+      # Default HTTP request method for Rack env
+      #
+      # @since 1.1.1
+      # @api private
+      DEFAULT_REQUEST_METHOD = 'GET'.freeze
+
       # @attr_reader env [Hash] the Rack env
       #
       # @since 0.7.0
@@ -52,7 +64,7 @@ module Hanami
       def initialize(env)
         @env    = env
         @raw    = _extract_params
-        @params = Utils::Hash.new(@raw).deep_dup.deep_symbolize!.to_h
+        @params = Utils::Hash.deep_symbolize(@raw)
         freeze
       end
 
@@ -150,6 +162,7 @@ module Hanami
           result.merge! _router_params
         else
           result.merge! _router_params(env)
+          env[REQUEST_METHOD] ||= DEFAULT_REQUEST_METHOD
         end
 
         result

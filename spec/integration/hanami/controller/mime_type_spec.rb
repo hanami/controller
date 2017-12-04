@@ -123,6 +123,18 @@ RSpec.describe 'MIME Type' do
           expect(response.body).to                       eq("html")
         end
       end
+
+      context 'applies the weighting mechanism for media ranges' do
+        let(:accept) { "text/*,application/json,text/html,*/*" }
+
+        it "accepts selected mime types" do
+          expect(response.headers["X-AcceptDefault"]).to eq("true")
+          expect(response.headers["X-AcceptHtml"]).to    eq("true")
+          expect(response.headers["X-AcceptXml"]).to     eq("true")
+          expect(response.headers["X-AcceptJson"]).to    eq("true")
+          expect(response.body).to                       eq("json")
+        end
+      end
     end
   end
 
@@ -191,6 +203,17 @@ RSpec.describe 'MIME Type' do
           it "accepts selected mime types" do
             expect(response.status).to be(200)
             expect(response.body).to   eq("html")
+          end
+        end
+
+        # See https://github.com/hanami/controller/issues/225
+        context "with an accepted format and default request format" do
+          let(:accept) { "text/*,application/json,text/html,*/*" }
+          let(:response) { app.get("/default_and_accept", "HTTP_ACCEPT" => accept) }
+
+          it "defaults to the accepted format" do
+            expect(response.status).to be(200)
+            expect(response.body).to eq('json')
           end
         end
       end

@@ -445,4 +445,47 @@ RSpec.describe Hanami::Action::Params do
       end
     end
   end
+
+  describe "#errors" do
+    let(:klass) do
+      Class.new(described_class) do
+        params do
+          required(:book).schema do
+            required(:code).filled(:str?)
+          end
+        end
+      end
+    end
+
+    let(:params) { klass.new(book: { code: "abc" }) }
+
+    it "returns Hanami::Action::Params::Errors" do
+      expect(params.errors).to be_kind_of(Hanami::Action::Params::Errors)
+    end
+
+    it "alters the returning value of #valid?" do
+      expect(params).to be_valid
+
+      params.errors.add(:book, :code, "is not unique")
+      expect(params).to_not be_valid
+    end
+
+    it "appens message to already existing messages" do
+      params = klass.new(book: {})
+      params.errors.add(:book, :code, "is invalid")
+
+      expect(params.error_messages).to eq(["Code is missing", "Code is invalid"])
+    end
+
+    it "gets listed in #error_messages" do
+      params.errors.add(:book, :code, "is not unique")
+      expect(params.error_messages).to eq(["Code is not unique"])
+    end
+
+    it "raises error when try to add an error " do
+      params = klass.new({})
+
+      expect { params.errors.add(:book, :code, "is invalid") }.to raise_error(ArgumentError, %(Can't add :book, :code, "is invalid" to {:book=>["is missing"]}))
+    end
+  end
 end

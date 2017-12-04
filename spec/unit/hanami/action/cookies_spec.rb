@@ -41,6 +41,13 @@ RSpec.describe Hanami::Action do
       expect(response.headers).to eq("Content-Type" => "application/octet-stream; charset=utf-8", "Set-Cookie" => "rm=; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 -0000")
     end
 
+    it "iterates cookies" do
+      action = IterateCookiesAction.new(configuration: configuration)
+      response = action.call("HTTP_COOKIE" => "foo=bar;hello=world")
+
+      expect(response.body).to eq(["'foo' has value 'bar', 'hello' has value 'world'"])
+    end
+
     describe "with default cookies" do
       let(:configuration) do
         Hanami::Controller::Configuration.new do |config|

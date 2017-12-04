@@ -23,6 +23,8 @@ module Hanami
       RACK_HEADERS = 1
       RACK_BODY    = 2
 
+      EMPTY_BODY = [].freeze
+
       attr_reader :exposures, :format, :env
       attr_accessor :charset
 
@@ -34,17 +36,18 @@ module Hanami
         @charset   = ::Rack::MediaType.params(content_type).fetch('charset', nil)
         @exposures = {}
         @env       = env
+        @sending_file = false
       end
 
       def body=(str)
         @length = 0
-        @body   = []
+        @body   = EMPTY_BODY.dup
 
         # FIXME: there could be a bug that prevents Content-Length to be sent for files
         if str.is_a?(::Rack::File::Iterator)
           @body = str
         else
-          write(str) unless str.nil?
+          write(str) unless str.nil? || str == EMPTY_BODY
         end
       end
 
@@ -75,6 +78,8 @@ module Hanami
       end
 
       def redirect_to(url, status: 302)
+        return if sending_file?
+
         redirect(::String.new(url), status)
         Halt.call(status)
       end
@@ -125,6 +130,10 @@ module Hanami
         @format = value
       end
 
+      def sending_file?
+        @sending_file
+      end
+
       # @api private
       def _send_file(send_file_response)
         headers.merge!(send_file_response[RACK_HEADERS])
@@ -134,7 +143,9 @@ module Hanami
           headers.delete(CONTENT_LENGTH)
           Halt.call(NOT_FOUND)
         else
-          Halt.call(send_file_response[RACK_STATUS], send_file_response[RACK_BODY])
+          self.status = send_file_response[RACK_STATUS]
+          self.body = send_file_response[RACK_BODY]
+          @sending_file = true
         end
       end
     end

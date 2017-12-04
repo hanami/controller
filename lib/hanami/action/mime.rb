@@ -130,33 +130,70 @@ module Hanami
 
       # private
 
-      def self.best_q_match(q_value_header, available_mimes, default_content_type)
-        values = ::Rack::Utils.q_values(q_value_header)
-        values = values.map do |req_mime, quality|
-          if req_mime == DEFAULT_ACCEPT
-            # See https://github.com/hanami/controller/issues/167
-            match = default_content_type
-          else
-            match = available_mimes.find { |am| ::Rack::Mime.match?(am, req_mime) }
-          end
+      # Patched version of <tt>Rack::Utils.best_q_match</tt>.
+      #
+      # @since x.x.x
+      # @api private
+      #
+      # @see http://www.rubydoc.info/gems/rack/Rack/Utils#best_q_match-class_method
+      # @see https://github.com/rack/rack/pull/659
+      # @see https://github.com/hanami/controller/issues/59
+      # @see https://github.com/hanami/controller/issues/104
+      # @see https://github.com/hanami/controller/issues/275
+      def self.best_q_match(q_value_header, available_mimes, default_content_type = nil)
+        ::Rack::Utils.q_values(q_value_header).each_with_index.map do |(req_mime, quality), index|
+          match = available_mimes.find { |am| ::Rack::Mime.match?(am, req_mime) }
           next unless match
-          [match, quality]
-        end.compact
+          RequestMimeWeight.new(req_mime, quality, index, match)
+        end.compact.max&.format
+      end
 
-        if Hanami::Utils.jruby?
-          # See https://github.com/hanami/controller/issues/59
-          # See https://github.com/hanami/controller/issues/104
-          values.reverse!
-        else
-          # See https://github.com/jruby/jruby/issues/3004
-          values.sort!
+      # @since 1.0.1
+      # @api private
+      class RequestMimeWeight
+        include Comparable
+
+        # @since 1.0.1
+        # @api private
+        attr_reader :quality
+
+        # @since 1.0.1
+        # @api private
+        attr_reader :index
+
+        # @since 1.0.1
+        # @api private
+        attr_reader :mime
+
+        # @since 1.0.1
+        # @api private
+        attr_reader :format
+
+        # @since 1.0.1
+        # @api private
+        attr_reader :priority
+
+        # @since 1.0.1
+        # @api private
+        def initialize(mime, quality, index, format = mime)
+          @quality, @index, @format = quality, index, format
+          calculate_priority(mime)
         end
 
-        value = values.sort_by do |match, quality|
-          (match.split('/'.freeze, 2).count('*'.freeze) * -10) + quality
-        end.last
+        # @since 1.0.1
+        # @api private
+        def <=>(other)
+          return priority <=> other.priority unless priority == other.priority
+          other.index <=> index
+        end
 
-        value.first if value
+        private
+
+        # @since 1.0.1
+        # @api private
+        def calculate_priority(mime)
+          @priority ||= (mime.split('/'.freeze, 2).count('*'.freeze) * -10) + quality
+        end
       end
     end
   end

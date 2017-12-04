@@ -1,10 +1,24 @@
 require 'rack/test'
+require 'hanami/router'
 
 RSpec.describe "HTTP sessions" do
   include Rack::Test::Methods
 
-  def app
-    SessionIntegration::Application.new
+  let(:router) do
+    configuration = Hanami::Controller::Configuration.new
+    Hanami::Router.new(configuration: configuration) do
+      get    '/',       to: 'dashboard#index'
+      post   '/login',  to: 'sessions#create'
+      delete '/logout', to: 'sessions#destroy'
+    end
+  end
+
+  let(:app) do
+    r = router
+    Rack::Builder.new do
+      use Rack::Session::Cookie, secret: SecureRandom.hex(16)
+      run r
+    end.to_app
   end
 
   def response
@@ -41,8 +55,12 @@ end
 RSpec.describe "HTTP Standalone Sessions" do
   include Rack::Test::Methods
 
-  def app
-    StandaloneSessionIntegration::Application.new
+  let(:app) do
+    configuration = Hanami::Controller::Configuration.new
+    Rack::Builder.new do
+      use Rack::Session::Cookie, secret: SecureRandom.hex(16)
+      run StandaloneSession.new(configuration: configuration)
+    end.to_app
   end
 
   def response

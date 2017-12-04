@@ -189,4 +189,20 @@ RSpec.describe "Full stack application" do
     get "/files/flow", {}
     expect(response.status).to be(200)
   end
+
+  it "runs 'before' callbacks" do
+    get "/files/before_callback"
+
+    expect(response.status).to                    be(200)
+    expect(response.headers["Content-Length"]).to eq("69")
+    expect(response.headers["X-Callbacks"]).to    eq("before")
+  end
+
+  it "runs 'after' callbacks" do
+    get "/files/after_callback"
+
+    expect(response.status).to                    be(200)
+    expect(response.headers["Content-Length"]).to eq("69")
+    expect(response.headers["X-Callbacks"]).to    eq("after")
+  end
 end
