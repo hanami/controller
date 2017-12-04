@@ -1,6 +1,49 @@
 # Hanami::Controller
 Complete, fast and testable actions for Rack
 
+## v2.0.0.alpha1 (unreleased)
+### Added
+- [Luca Guidi] `Hanami::Action::Request#session` to access the HTTP session as it was originally sent
+- [Luca Guidi] `Hanami::Action::Request#cookies` to access the HTTP cookies as they were originally sent
+
+### Changed
+- [Luca Guidi] `Hanami::Action` is a superclass
+- [Luca Guidi] `Hanami::Action#initialize` requires a `configuration:` keyword argument
+- [Luca Guidi] `Hanami::Action#initialize` returns a frozen action instance
+- [Luca Guidi] `Hanami::Action#call` accepts `Hanami::Action::Request` and `Hanami::Action::Response`
+- [Luca Guidi] `Hanami::Action#call` returns `Hanami::Action::Response`
+- [Luca Guidi] Removed `Hanami::Controller.configure`, `.configuration`, `.duplicate`, and `.load!`
+- [Luca Guidi] Removed `Hanami::Action.use` to mount Rack middleware at the action level
+- [Luca Guidi] `Hanami::Controller::Configuration` changed syntax from DSL style to setters (eg. `Hanami::Controller::Configuration.new { |c| c.default_request_format = :html }`)
+- [Luca Guidi] `Hanami::Controller::Configuration#initialize` returns a frozen configuration instance
+- [Luca Guidi] Removed `Hanami::Controller::Configuration#prepare`
+- [Luca Guidi] Removed `Hanami::Action.configuration`
+- [Luca Guidi] Removed `Hanami::Action.configuration.handle_exceptions` in favor of `#handle_exceptions?`
+- [Luca Guidi] Removed `Hanami::Action.configuration.default_request_format` in favor of `#default_request_format`
+- [Luca Guidi] Removed `Hanami::Action.configuration.default_charset` in favor of `#default_charset`
+- [Luca Guidi] Removed `Hanami::Action.configuration.format` to register a MIME Type for a single action. Please use the configuration.
+- [Luca Guidi] Removed `Hanami::Action.expose` in favor of `Hanami::Action::Response#[]=` and `#[]`
+- [Luca Guidi] Removed `Hanami::Action#status=` in favor of `Hanami::Action::Response#status=`
+- [Luca Guidi] Removed `Hanami::Action#body=` in favor of `Hanami::Action::Response#body=`
+- [Luca Guidi] Removed `Hanami::Action#headers` in favor of `Hanami::Action::Response#headers`
+- [Luca Guidi] Removed `Hanami::Action#accept?` in favor of `Hanami::Action::Request#accept?`
+- [Luca Guidi] Removed `Hanami::Action#format` in favor of `Hanami::Action::Response#format`
+- [Luca Guidi] Introduced `Hanami::Action#format` as factory to assign response format: `res.format = format(:json)` or `res.format = format("application/json")`
+- [Luca Guidi] Removed `Hanami::Action#format=` in favor of `Hanami::Action::Response#format=`
+- [Luca Guidi] Removed `Hanami::Action#request_id` in favor of `Hanami::Action::Request#id`
+- [Luca Guidi] Removed `Hanami::Action#parsed_request_body` in favor of `Hanami::Action::Request#parsed_body`
+- [Luca Guidi] Removed `Hanami::Action#head?` in favor of `Hanami::Action::Request#head?`
+- [Luca Guidi] Removed `Hanami::Action#status` in favor of `Hanami::Action::Response#status=` and `#body=`
+- [Luca Guidi] Removed `Hanami::Action#session` in favor of `Hanami::Action::Response#session`
+- [Luca Guidi] Removed `Hanami::Action#cookies` in favor of `Hanami::Action::Response#cookies`
+- [Luca Guidi] Removed `Hanami::Action#flash` in favor of `Hanami::Action::Response#flash`
+- [Luca Guidi] Removed `Hanami::Action#redirect_to` in favor of `Hanami::Action::Response#redirect_to`
+- [Luca Guidi] Removed `Hanami::Action#cache_control`, `#expires`, and `#fresh` in favor of `Hanami::Action::Response#cache_control`, `#expires`, and `#fresh`, respectively
+- [Luca Guidi] Removed `Hanami::Action#send_file` and `#unsafe_send_file` in favor of `Hanami::Action::Response#send_file` and `#unsafe_send_file`, respectively
+- [Luca Guidi] Removed `Hanami::Action#errors`
+- [Luca Guidi] `Hanami::Action` callback hooks now accept `Hanami::Action::Request` and `Hanami::Action::Response` arguments
+- [Luca Guidi] `Hanami::Action` exception handlers now accept `Hanami::Action::Request`, `Hanami::Action::Response`, and exception arguments
+
 ## v1.1.1 - 2017-11-22
 ### Fixed
 - [Luca Guidi] Ensure `Hanami::Action#send_file` and `#unsafe_send_file` to run `after` action callbacks
