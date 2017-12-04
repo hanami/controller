@@ -76,8 +76,8 @@ Imagine how **fast** the unit test could be.
 ```ruby
 class Show < Hanami::Action
   def initialize(configuration:, repository: ArticleRepository.new)
-    super(configuration: configuration)
     @repository = repository
+    super(configuration: configuration)
   end
 
   def call(req, res)
@@ -90,7 +90,7 @@ class Show < Hanami::Action
 end
 
 configuration = Hanami::Controller::Configuration.new
-action = Show.new(configuration: configuration, repository: MemoryArticleRepository.new)
+action = Show.new(configuration: configuration, repository: ArticleRepository.new)
 action.call(id: 23)
 ```
 
@@ -128,7 +128,7 @@ Unit Testing:
 class Show < Hanami::Action
   def call(req, *)
     # ...
-    puts params.params # => { id: 23, key: "value" } passed as it is from testing
+    puts req.params # => { id: 23, key: "value" } passed as it is from testing
   end
 end
 
@@ -923,7 +923,6 @@ router = Hanami::Router.new(configuration: configuration, namespace: Web::Contro
   get "/books/:id", "books#show"
 end
 ```
-
 
 ### Rack integration
 
