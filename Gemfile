@@ -7,7 +7,7 @@ unless ENV['TRAVIS']
 end
 
 gem 'hanami-utils',  '2.0.0.alpha1', require: false, git: 'https://github.com/hanami/utils.git',  branch: 'unstable'
-gem 'hanami-router', '2.0.0.alpha1', require: false, git: 'https://github.com/hanami/router.git', branch: 'feature/scope-configuration'
+gem 'hanami-router', '2.0.0.alpha1', require: false, git: 'https://github.com/hanami/router.git', branch: 'unstable'
 
 group :validations do
   gem 'hanami-validations', '2.0.0.alpha1', require: false, git: 'https://github.com/hanami/validations.git', branch: 'unstable'
