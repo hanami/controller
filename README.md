@@ -106,7 +106,7 @@ With `Hanami::Router`:
 class Show < Hanami::Action
   def call(req, *)
     # ...
-    puts rew.params # => { id: 23 } extracted from Rack env
+    puts req.params # => { id: 23 } extracted from Rack env
   end
 end
 ```
