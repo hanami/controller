@@ -692,8 +692,9 @@ module Hanami
         res.headers.select! { |header, _| keep_response_header?(header) }
       end
 
-      res[:params] = req.params
       res.set_format(Action::Mime.detect_format(res.content_type, configuration))
+      res[:params] = req.params
+      res[:format] = res.format
       res
     end
   end
