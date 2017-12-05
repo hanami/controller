@@ -79,7 +79,7 @@ module Hanami
       end
 
       def redirect_to(url, status: 302)
-        return if sending_file?
+        return unless renderable?
 
         redirect(::String.new(url), status)
         Halt.call(status)
@@ -131,8 +131,8 @@ module Hanami
         @format = value
       end
 
-      def sending_file?
-        @sending_file
+      def renderable?
+        !@sending_file && body.empty?
       end
 
       # @api private
