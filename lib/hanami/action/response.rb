@@ -25,13 +25,14 @@ module Hanami
 
       EMPTY_BODY = [].freeze
 
-      attr_reader :exposures, :format, :env
+      attr_reader :action, :exposures, :format, :env
       attr_accessor :charset
 
-      def initialize(configuration:, content_type: nil, env: {}, header: {})
+      def initialize(action:, configuration:, content_type: nil, env: {}, header: {})
         super([], 200, header.dup)
         set_header("Content-Type", content_type)
 
+        @action        = action
         @configuration = configuration
         @charset   = ::Rack::MediaType.params(content_type).fetch('charset', nil)
         @exposures = {}
