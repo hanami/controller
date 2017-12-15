@@ -15,41 +15,41 @@ RSpec.describe Hanami::Action::Params do
     let(:params) { Class.new(Hanami::Action::Params) }
 
     context "when this feature isn't enabled" do
-      let(:action) { ParamsAction.new }
+      let(:action) { ParamsAction.new(configuration: configuration) }
 
       it "raw gets all params" do
         File.open('spec/support/fixtures/multipart-upload.png', 'rb') do |upload|
-          action.call('id' => '1', 'unknown' => '2', 'upload' => upload, '_csrf_token' => '3')
+          response = action.call('id' => '1', 'unknown' => '2', 'upload' => upload, '_csrf_token' => '3')
 
-          expect(action.params[:id]).to eq('1')
-          expect(action.params[:unknown]).to eq('2')
-          expect(FileUtils.cmp(action.params[:upload], upload)).to be(true)
-          expect(action.params[:_csrf_token]).to eq('3')
+          expect(response[:params][:id]).to eq('1')
+          expect(response[:params][:unknown]).to eq('2')
+          expect(FileUtils.cmp(response[:params][:upload], upload)).to be(true)
+          expect(response[:params][:_csrf_token]).to eq('3')
 
-          expect(action.params.raw.fetch('id')).to eq('1')
-          expect(action.params.raw.fetch('unknown')).to eq('2')
-          expect(action.params.raw.fetch('upload')).to eq(upload)
-          expect(action.params.raw.fetch('_csrf_token')).to eq('3')
+          expect(response[:params].raw.fetch('id')).to eq('1')
+          expect(response[:params].raw.fetch('unknown')).to eq('2')
+          expect(response[:params].raw.fetch('upload')).to eq(upload)
+          expect(response[:params].raw.fetch('_csrf_token')).to eq('3')
         end
       end
     end
 
     context "when this feature is enabled" do
-      let(:action) { WhitelistedUploadDslAction.new }
+      let(:action) { WhitelistedUploadDslAction.new(configuration: configuration) }
 
       it "raw gets all params" do
         Tempfile.create('multipart-upload') do |upload|
-          action.call('id' => '1', 'unknown' => '2', 'upload' => upload, '_csrf_token' => '3')
+          response = action.call('id' => '1', 'unknown' => '2', 'upload' => upload, '_csrf_token' => '3')
 
-          expect(action.params[:id]).to          eq('1')
-          expect(action.params[:unknown]).to     be(nil)
-          expect(action.params[:upload]).to      eq(upload)
-          expect(action.params[:_csrf_token]).to eq('3')
+          expect(response[:params][:id]).to          eq('1')
+          expect(response[:params][:unknown]).to     be(nil)
+          expect(response[:params][:upload]).to      eq(upload)
+          expect(response[:params][:_csrf_token]).to eq('3')
 
-          expect(action.params.raw.fetch('id')).to          eq('1')
-          expect(action.params.raw.fetch('unknown')).to     eq('2')
-          expect(action.params.raw.fetch('upload')).to      eq(upload)
-          expect(action.params.raw.fetch('_csrf_token')).to eq('3')
+          expect(response[:params].raw.fetch('id')).to          eq('1')
+          expect(response[:params].raw.fetch('unknown')).to     eq('2')
+          expect(response[:params].raw.fetch('upload')).to      eq(upload)
+          expect(response[:params].raw.fetch('_csrf_token')).to eq('3')
         end
       end
     end
@@ -59,7 +59,7 @@ RSpec.describe Hanami::Action::Params do
     let(:params) { Class.new(Hanami::Action::Params) }
 
     context "when this feature isn't enabled" do
-      let(:action) { ParamsAction.new }
+      let(:action) { ParamsAction.new(configuration: configuration) }
 
       it "creates a Params innerclass" do
         expect(defined?(ParamsAction::Params)).to eq('constant')
@@ -70,8 +70,8 @@ RSpec.describe Hanami::Action::Params do
         it "returns all the params as they are" do
           # For unit tests in Hanami projects, developers may want to define
           # params with symbolized keys.
-          _, _, body = action.call(a: '1', b: '2', c: '3')
-          expect(body).to eq([%({:a=>"1", :b=>"2", :c=>"3"})])
+          response = action.call(a: '1', b: '2', c: '3')
+          expect(response.body).to eq([%({:a=>"1", :b=>"2", :c=>"3"})])
         end
       end
 
@@ -86,27 +86,27 @@ RSpec.describe Hanami::Action::Params do
       context "with Hanami::Router" do
         it "returns all the params as they are" do
           # Hanami::Router params are always symbolized
-          _, _, body = action.call('router.params' => { id: '23' })
-          expect(body).to eq([%({:id=>"23"})])
+          response = action.call('router.params' => { id: '23' })
+          expect(response.body).to eq([%({:id=>"23"})])
         end
       end
     end
 
     context "when this feature is enabled" do
       context "with an explicit class" do
-        let(:action) { WhitelistedParamsAction.new }
+        let(:action) { WhitelistedParamsAction.new(configuration: configuration) }
 
         # For unit tests in Hanami projects, developers may want to define
         # params with symbolized keys.
         context "in testing mode" do
           it "returns only the listed params" do
-            _, _, body = action.call(id: 23, unknown: 4, article: { foo: 'bar', tags: [:cool] })
-            expect(body).to eq([%({:id=>23, :article=>{:tags=>[:cool]}})])
+            response = action.call(id: 23, unknown: 4, article: { foo: 'bar', tags: [:cool] })
+            expect(response.body).to eq([%({:id=>23, :article=>{:tags=>[:cool]}})])
           end
 
           it "doesn't filter _csrf_token" do
-            _, _, body = action.call(_csrf_token: 'abc')
-            expect(body).to eq( [%({:_csrf_token=>"abc"})])
+            response = action.call(_csrf_token: 'abc')
+            expect(response.body).to eq( [%({:_csrf_token=>"abc"})])
           end
         end
 
@@ -124,14 +124,14 @@ RSpec.describe Hanami::Action::Params do
 
         context "with Hanami::Router" do
           it "returns all the params coming from the router, even if NOT whitelisted" do
-            _, _, body = action.call('router.params' => { id: 23, another: 'x' })
-            expect(body).to eq([%({:id=>23, :another=>"x"})])
+            response = action.call('router.params' => { id: 23, another: 'x' })
+            expect(response.body).to eq([%({:id=>23, :another=>"x"})])
           end
         end
       end
 
       context "with an anoymous class" do
-        let(:action) { WhitelistedDslAction.new }
+        let(:action) { WhitelistedDslAction.new(configuration: configuration) }
 
         it "creates a Params innerclass" do
           expect(defined?(WhitelistedDslAction::Params)).to eq('constant')
@@ -140,8 +140,8 @@ RSpec.describe Hanami::Action::Params do
 
         context "in testing mode" do
           it "returns only the listed params" do
-            _, _, body = action.call(username: 'jodosha', unknown: 'field')
-            expect(body).to eq([%({:username=>"jodosha"})])
+            response = action.call(username: 'jodosha', unknown: 'field')
+            expect(response.body).to eq([%({:username=>"jodosha"})])
           end
         end
 
@@ -154,8 +154,8 @@ RSpec.describe Hanami::Action::Params do
 
         context "with Hanami::Router" do
           it "returns all the router params, even if NOT whitelisted" do
-            _, _, body = action.call('router.params' => { username: 'jodosha', y: 'x' })
-            expect(body).to eq([%({:username=>"jodosha", :y=>"x"})])
+            response = action.call('router.params' => { username: 'jodosha', y: 'x' })
+            expect(response.body).to eq([%({:username=>"jodosha", :y=>"x"})])
           end
         end
       end

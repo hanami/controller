@@ -1,7 +1,7 @@
 require 'rack/file'
 
 module Hanami
-  module Action
+  class Action
     module Rack
       # File to be sent
       #

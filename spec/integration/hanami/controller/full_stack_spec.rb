@@ -12,7 +12,6 @@ RSpec.describe "Full stack application" do
 
     expect(last_response.body).to include("FullStack::Controllers::Home::Index")
     expect(last_response.body).to include(':greeting=>"Hello"')
-    expect(last_response.body).to include(":format=>:html")
   end
 
   it "omits the body if the request is HEAD" do

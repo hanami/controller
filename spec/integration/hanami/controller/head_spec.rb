@@ -1,21 +1,10 @@
 require 'rack/test'
 
-HeadRoutes = Hanami::Router.new(namespace: HeadTest) do
-  get '/',           to: 'home#index'
-  get '/code/:code', to: 'home#code'
-  get '/override',   to: 'home#override'
-end
-
-HeadApplication = Rack::Builder.new do
-  use Rack::Session::Cookie, secret: SecureRandom.hex(16)
-  run HeadRoutes
-end.to_app
-
 RSpec.describe "HTTP HEAD" do
   include Rack::Test::Methods
 
   def app
-    HeadApplication
+    HeadTest::Application.new
   end
 
   def response

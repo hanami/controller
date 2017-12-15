@@ -1,170 +1,224 @@
 require 'hanami/router'
 require 'hanami/action/cache'
 
-CacheControlRoutes = Hanami::Router.new do
-  get '/default',              to: 'cache_control#default'
-  get '/overriding',           to: 'cache_control#overriding'
-  get '/symbol',               to: 'cache_control#symbol'
-  get '/symbols',              to: 'cache_control#symbols'
-  get '/hash',                 to: 'cache_control#hash'
-  get '/private-and-public',   to: 'cache_control#private_public'
-end
-
-ExpiresRoutes = Hanami::Router.new do
-  get '/default',              to: 'expires#default'
-  get '/overriding',           to: 'expires#overriding'
-  get '/symbol',               to: 'expires#symbol'
-  get '/symbols',              to: 'expires#symbols'
-  get '/hash',                 to: 'expires#hash'
-end
-
-ConditionalGetRoutes = Hanami::Router.new do
-  get '/etag',               to: 'conditional_get#etag'
-  get '/last-modified',      to: 'conditional_get#last_modified'
-  get '/etag-last-modified', to: 'conditional_get#etag_last_modified'
-end
-
 module CacheControl
-  class Default
-    include Hanami::Action
+  class Default < Hanami::Action
     include Hanami::Action::Cache
 
     cache_control :public, max_age: 600
 
-    def call(params)
+    def call(*)
     end
   end
 
-  class Overriding
-    include Hanami::Action
+  class Overriding < Hanami::Action
     include Hanami::Action::Cache
 
     cache_control :public, max_age: 600
 
-    def call(_params)
-      cache_control :private
+    def call(_, res)
+      res.cache_control :private
     end
   end
 
-  class Symbol
-    include Hanami::Action
+  class Symbol < Hanami::Action
     include Hanami::Action::Cache
 
-    def call(_params)
-      cache_control :private
+    def call(_, res)
+      res.cache_control :private
     end
   end
 
-  class Symbols
-    include Hanami::Action
+  class Symbols < Hanami::Action
     include Hanami::Action::Cache
 
-    def call(_params)
-      cache_control :private, :no_cache, :no_store
+    def call(_, res)
+      res.cache_control :private, :no_cache, :no_store
     end
   end
 
-  class Hash
-    include Hanami::Action
+  class Hash < Hanami::Action
     include Hanami::Action::Cache
 
-    def call(_params)
-      cache_control :public, :no_store, max_age: 900, s_maxage: 86_400, min_fresh: 500, max_stale: 700
+    def call(_, res)
+      res.cache_control :public, :no_store, max_age: 900, s_maxage: 86_400, min_fresh: 500, max_stale: 700
     end
   end
 
-  class PrivatePublic
-    include Hanami::Action
+  class PrivatePublic < Hanami::Action
     include Hanami::Action::Cache
 
-    def call(_params)
-      cache_control :private, :public
+    def call(_, res)
+      res.cache_control :private, :public
+    end
+  end
+
+  class Application
+    def initialize
+      configuration = Hanami::Controller::Configuration.new
+      routes = Hanami::Router.new(configuration: configuration) do
+        get '/default',            to: 'cache_control#default'
+        get '/overriding',         to: 'cache_control#overriding'
+        get '/symbol',             to: 'cache_control#symbol'
+        get '/symbols',            to: 'cache_control#symbols'
+        get '/hash',               to: 'cache_control#hash'
+        get '/private-and-public', to: 'cache_control#private_public'
+      end
+
+      @app = Rack::Builder.new do
+        use Rack::Lint
+        run routes
+      end.to_app
+    end
+
+    def call(env)
+      @app.call(env)
+    end
+  end
+end
+
+module Web
+  module Controllers
+    module Home
+      class Index < Hanami::Action
+        def call(*)
+        end
+      end
+    end
+  end
+end
+
+module Admin
+  module Controllers
+    module Home
+      class Index < Hanami::Action
+        def call(*)
+        end
+      end
     end
   end
 end
 
 module Expires
-  class Default
-    include Hanami::Action
+  class Default < Hanami::Action
     include Hanami::Action::Cache
 
     expires 900, :public, :no_cache
 
-    def call(params)
+    def call(*)
     end
   end
 
-  class Overriding
-    include Hanami::Action
+  class Overriding < Hanami::Action
     include Hanami::Action::Cache
 
     expires 900, :public, :no_cache
 
-    def call(_params)
-      expires 600, :private
+    def call(_, res)
+      res.expires 600, :private
     end
   end
 
-  class Symbol
-    include Hanami::Action
+  class Symbol < Hanami::Action
     include Hanami::Action::Cache
 
-    def call(_params)
-      expires 900, :private
+    def call(_, res)
+      res.expires 900, :private
     end
   end
 
-  class Symbols
-    include Hanami::Action
+  class Symbols < Hanami::Action
     include Hanami::Action::Cache
 
-    def call(_params)
-      expires 900, :private, :no_cache, :no_store
+    def call(_, res)
+      res.expires 900, :private, :no_cache, :no_store
     end
   end
 
-  class Hash
-    include Hanami::Action
+  class Hash < Hanami::Action
     include Hanami::Action::Cache
 
-    def call(_params)
-      expires 900, :public, :no_store, s_maxage: 86_400, min_fresh: 500, max_stale: 700
+    def call(_, res)
+      res.expires 900, :public, :no_store, s_maxage: 86_400, min_fresh: 500, max_stale: 700
+    end
+  end
+
+  class Application
+    def initialize
+      configuration = Hanami::Controller::Configuration.new
+      routes = Hanami::Router.new(configuration: configuration) do
+        get '/default',              to: 'expires#default'
+        get '/overriding',           to: 'expires#overriding'
+        get '/symbol',               to: 'expires#symbol'
+        get '/symbols',              to: 'expires#symbols'
+        get '/hash',                 to: 'expires#hash'
+      end
+
+      @app = Rack::Builder.new do
+        use Rack::Lint
+        run routes
+      end.to_app
+    end
+
+    def call(env)
+      @app.call(env)
     end
   end
 end
 
 module ConditionalGet
-  class Etag
-    include Hanami::Action
+  class Etag < Hanami::Action
     include Hanami::Action::Cache
 
-    def call(_params)
-      fresh etag: 'updated'
+    def call(_, res)
+      res.fresh etag: 'updated'
     end
   end
 
-  class LastModified
-    include Hanami::Action
+  class LastModified < Hanami::Action
     include Hanami::Action::Cache
 
-    def call(_params)
-      fresh last_modified: Time.now
+    def call(_, res)
+      res.fresh last_modified: Time.now
     end
   end
 
-  class EtagLastModified
-    include Hanami::Action
+  class EtagLastModified < Hanami::Action
     include Hanami::Action::Cache
 
-    def call(_params)
-      fresh etag: 'updated', last_modified: Time.now
+    def call(_, res)
+      res.fresh etag: 'updated', last_modified: Time.now
+    end
+  end
+
+  class Application
+    def initialize
+      configuration = Hanami::Controller::Configuration.new
+      routes = Hanami::Router.new(configuration: configuration) do
+        get '/etag',               to: 'conditional_get#etag'
+        get '/last-modified',      to: 'conditional_get#last_modified'
+        get '/etag-last-modified', to: 'conditional_get#etag_last_modified'
+      end
+
+      @app = Rack::Builder.new do
+        # FIXME: enable again Rack::Lint. It looks like there was some problems
+        # with the headers that we never discovered, because this is the first
+        # time we add Lint to these tests.
+        #
+        # use Rack::Lint
+        run routes
+      end
+    end
+
+    def call(env)
+      @app.call(env)
     end
   end
 end
 
 RSpec.describe "HTTP Cache" do
   describe "Cache control" do
-    let(:app) { Rack::MockRequest.new(CacheControlRoutes) }
+    let(:app) { Rack::MockRequest.new(CacheControl::Application.new) }
 
     context "default cache control" do
       it "returns default Cache-Control headers" do
@@ -204,7 +258,7 @@ RSpec.describe "HTTP Cache" do
   end
 
   describe "Expires" do
-    let(:app) { Rack::MockRequest.new(ExpiresRoutes) }
+    let(:app) { Rack::MockRequest.new(Expires::Application.new) }
 
     context "default cache control" do
       it "returns default Cache-Control headers" do
@@ -224,7 +278,8 @@ RSpec.describe "HTTP Cache" do
 
     it "accepts a Symbol" do
       now = Time.now
-      expect(Time).to receive(:now).and_return(now)
+      # FIXME: remove `at_least`
+      expect(Time).to receive(:now).at_least(:once).and_return(now)
 
       response = app.get("/symbol")
       expect(response.headers.fetch("Expires")).to eq((now + 900).httpdate)
@@ -233,7 +288,8 @@ RSpec.describe "HTTP Cache" do
 
     it "accepts multiple Symbols" do
       now = Time.now
-      expect(Time).to receive(:now).and_return(now)
+      # FIXME: remove `at_least`
+      expect(Time).to receive(:now).at_least(:once).and_return(now)
 
       response = app.get("/symbols")
       expect(response.headers.fetch("Expires")).to eq((now + 900).httpdate)
@@ -242,7 +298,8 @@ RSpec.describe "HTTP Cache" do
 
     it "accepts a Hash" do
       now = Time.now
-      expect(Time).to receive(:now).and_return(now)
+      # FIXME: remove `at_least`
+      expect(Time).to receive(:now).at_least(:once).and_return(now)
 
       response = app.get("/hash")
       expect(response.headers.fetch("Expires")).to eq((now + 900).httpdate)
@@ -251,7 +308,7 @@ RSpec.describe "HTTP Cache" do
   end
 
   describe "Fresh" do
-    let(:app) { Rack::MockRequest.new(ConditionalGetRoutes) }
+    let(:app) { Rack::MockRequest.new(ConditionalGet::Application.new) }
 
     describe "#etag" do
       context "when etag matches HTTP_IF_NONE_MATCH header" do

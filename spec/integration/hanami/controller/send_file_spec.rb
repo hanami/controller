@@ -1,28 +1,10 @@
 require 'rack/test'
 
-SendFileRoutes = Hanami::Router.new(namespace: SendFileTest) do
-  get '/files/flow',                    to: 'files#flow'
-  get '/files/unsafe_local',            to: 'files#unsafe_local'
-  get '/files/unsafe_public',           to: 'files#unsafe_public'
-  get '/files/unsafe_absolute',         to: 'files#unsafe_absolute'
-  get '/files/unsafe_missing_local',    to: 'files#unsafe_missing_local'
-  get '/files/unsafe_missing_absolute', to: 'files#unsafe_missing_absolute'
-  get '/files/before_callback',         to: 'files#before_callback'
-  get '/files/after_callback',          to: 'files#after_callback'
-  get '/files/:id(.:format)',           to: 'files#show'
-  get '/files/(*glob)',                 to: 'files#glob'
-end
-
-SendFileApplication = Rack::Builder.new do
-  use Rack::Lint
-  run SendFileRoutes
-end.to_app
-
 RSpec.describe "Full stack application" do
   include Rack::Test::Methods
 
   def app
-    SendFileApplication
+    SendFileTest::Application.new
   end
 
   def response

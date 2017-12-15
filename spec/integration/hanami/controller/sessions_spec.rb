@@ -5,7 +5,8 @@ RSpec.describe "HTTP sessions" do
   include Rack::Test::Methods
 
   let(:router) do
-    Hanami::Router.new do
+    configuration = Hanami::Controller::Configuration.new
+    Hanami::Router.new(configuration: configuration) do
       get    '/',       to: 'dashboard#index'
       post   '/login',  to: 'sessions#create'
       delete '/logout', to: 'sessions#destroy'
@@ -55,9 +56,10 @@ RSpec.describe "HTTP Standalone Sessions" do
   include Rack::Test::Methods
 
   let(:app) do
+    configuration = Hanami::Controller::Configuration.new
     Rack::Builder.new do
       use Rack::Session::Cookie, secret: SecureRandom.hex(16)
-      run StandaloneSession.new
+      run StandaloneSession.new(configuration: configuration)
     end.to_app
   end
 

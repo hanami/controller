@@ -1,147 +1,11 @@
-require 'hanami/router'
-
-MimeRoutes = Hanami::Router.new do
-  get '/',                   to: 'mimes#default'
-  get '/custom',             to: 'mimes#custom'
-  get '/configuration',      to: 'mimes#configuration'
-  get '/accept',             to: 'mimes#accept'
-  get '/restricted',         to: 'mimes#restricted'
-  get '/latin',              to: 'mimes#latin'
-  get '/nocontent',          to: 'mimes#no_content'
-  get '/response',           to: 'mimes#default_response'
-  get '/overwritten_format', to: 'mimes#override_default_response'
-  get '/custom_from_accept', to: 'mimes#custom_from_accept'
-  get '/default_and_accept', to: 'mimes#default_and_accept'
-end
-
-module Mimes
-  class Default
-    include Hanami::Action
-
-    def call(_params)
-      self.body = format
-    end
-  end
-
-  class Configuration
-    include Hanami::Action
-
-    configuration.default_request_format :html
-    configuration.default_charset 'ISO-8859-1'
-
-    def call(_params)
-      self.body = format
-    end
-  end
-
-  class Custom
-    include Hanami::Action
-
-    def call(_params)
-      self.format = :xml
-      self.body   = format
-    end
-  end
-
-  class Latin
-    include Hanami::Action
-
-    def call(_params)
-      self.charset = 'latin1'
-      self.format  = :html
-      self.body    = format
-    end
-  end
-
-  class Accept
-    include Hanami::Action
-
-    def call(_params)
-      headers['X-AcceptDefault'] = accept?('application/octet-stream').to_s
-      headers['X-AcceptHtml']    = accept?('text/html').to_s
-      headers['X-AcceptXml']     = accept?('application/xml').to_s
-      headers['X-AcceptJson']    = accept?('text/json').to_s
-
-      self.body = format
-    end
-  end
-
-  class CustomFromAccept
-    include Hanami::Action
-
-    configuration.format custom: 'application/custom'
-    accept :json, :custom
-
-    def call(_params)
-      self.body = format
-    end
-  end
-
-  class Restricted
-    include Hanami::Action
-
-    configuration.format custom: 'application/custom'
-    accept :html, :json, :custom
-
-    def call(_params)
-      self.body = format.to_s
-    end
-  end
-
-  class NoContent
-    include Hanami::Action
-
-    def call(_params)
-      self.status = 204
-    end
-  end
-
-  class DefaultResponse
-    include Hanami::Action
-
-    configuration.default_request_format :html
-    configuration.default_response_format :json
-
-    def call(_params)
-      self.body = configuration.default_request_format
-    end
-  end
-
-  class OverrideDefaultResponse
-    include Hanami::Action
-
-    configuration.default_response_format :json
-
-    def call(_params)
-      self.format = :xml
-    end
-  end
-
-  class DefaultAndAccept
-    include Hanami::Action
-    configuration.default_request_format :html
-    accept :json
-
-    def call(params)
-      self.body = format.to_s
-    end
-  end
-end
-
 RSpec.describe 'MIME Type' do
   describe "Content type" do
-    let(:app) { Rack::MockRequest.new(MimeRoutes) }
+    let(:app) { Rack::MockRequest.new(Mimes::Application.new) }
 
     it 'fallbacks to the default "Content-Type" header when the request is lacking of this information' do
       response = app.get("/")
       expect(response.headers["Content-Type"]).to eq("application/octet-stream; charset=utf-8")
       expect(response.body).to                    eq("all")
-    end
-
-    it "fallbacks to the default format and charset, set in the configuration" do
-      response = app.get("/configuration")
-      expect(response.headers["Content-Type"]).to eq("text/html; charset=ISO-8859-1")
-      expect(response.body).to                    eq("html")
     end
 
     it 'returns the specified "Content-Type" header' do
@@ -153,12 +17,6 @@ RSpec.describe 'MIME Type' do
     it "returns the custom charser header" do
       response = app.get("/latin")
       expect(response.headers["Content-Type"]).to eq("text/html; charset=latin1")
-      expect(response.body).to                    eq("html")
-    end
-
-    it "uses default_response_format if set in the configuration regardless of request format" do
-      response = app.get("/response")
-      expect(response.headers["Content-Type"]).to eq("application/json; charset=utf-8")
       expect(response.body).to                    eq("html")
     end
 
@@ -214,7 +72,7 @@ RSpec.describe 'MIME Type' do
   end
 
   describe "Accept" do
-    let(:app)      { Rack::MockRequest.new(MimeRoutes) }
+    let(:app)      { Rack::MockRequest.new(Mimes::Application.new) }
     let(:response) { app.get("/accept", "HTTP_ACCEPT" => accept) }
 
     context "when Accept is missing" do
@@ -281,7 +139,7 @@ RSpec.describe 'MIME Type' do
   end
 
   describe "Restricted Accept" do
-    let(:app)      { Rack::MockRequest.new(MimeRoutes) }
+    let(:app)      { Rack::MockRequest.new(Mimes::Application.new) }
     let(:response) { app.get("/restricted", "HTTP_ACCEPT" => accept) }
 
     context "when Accept is missing" do
