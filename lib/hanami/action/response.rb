@@ -11,6 +11,7 @@ require 'hanami/action/cache/conditional_get'
 module Hanami
   class Action
     class Response < ::Rack::Response
+      REQUEST_METHOD = "REQUEST_METHOD".freeze
       SESSION_KEY = "rack.session".freeze
       REQUEST_ID  = "hanami.request_id".freeze
       LOCATION    = "Location".freeze
@@ -22,6 +23,8 @@ module Hanami
       RACK_STATUS  = 0
       RACK_HEADERS = 1
       RACK_BODY    = 2
+
+      HEAD = "HEAD".freeze
 
       EMPTY_BODY = [].freeze
 
@@ -132,7 +135,11 @@ module Hanami
       end
 
       def renderable?
-        !@sending_file && body.empty?
+        !@sending_file && body.empty? && !head?
+      end
+
+      def head?
+        env[REQUEST_METHOD] == HEAD
       end
 
       # @api private
