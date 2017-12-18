@@ -15,7 +15,13 @@ RSpec.describe Hanami::Action do
       expect(response.body).to    eq(["Hi from TestAction!"])
     end
 
-    context "when exception handling code is enabled" do
+    context "when an exception isn't handled" do
+      it "should raise an actual exception" do
+        expect { UncheckedErrorCallAction.new(configuration: configuration).call({}) }.to raise_error(RuntimeError)
+      end
+    end
+
+    context "when an exception is handled" do
       it "returns an HTTP 500 status code when an exception is raised" do
         response = ErrorCallAction.new(configuration: configuration).call({})
 
@@ -63,18 +69,6 @@ RSpec.describe Hanami::Action do
 
         expect(response.status).to eq(200)
         expect(response.body).to   eq([])
-      end
-    end
-
-    context "when exception handling code is disabled" do
-      let(:configuration) do
-        Hanami::Controller::Configuration.new do |config|
-          config.handle_exceptions = false
-        end
-      end
-
-      it "should raise an actual exception" do
-        expect { ErrorCallAction.new(configuration: configuration).call({}) }.to raise_error(RuntimeError)
       end
     end
   end

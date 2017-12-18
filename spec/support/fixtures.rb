@@ -100,7 +100,15 @@ class CallAction < Hanami::Action
   end
 end
 
+class UncheckedErrorCallAction < Hanami::Action
+  def call(req, res)
+    raise
+  end
+end
+
 class ErrorCallAction < Hanami::Action
+  handle_exception RuntimeError => 500
+
   def call(req, res)
     raise
   end
@@ -266,10 +274,6 @@ class HandledErrorBeforeMethodAction < BeforeMethodAction
   private
   def set_article
     raise RecordNotFound.new
-  end
-
-  def handle_exceptions?
-    true
   end
 end
 
@@ -946,12 +950,6 @@ class VisibilityAction < Hanami::Action
     res.headers.merge!('X-Custom' => 'OK', 'Y-Custom' => 'YO')
     res.session[:foo] = 'bar'
   end
-
-  private
-
-  def handle_exceptions?
-    false
-  end
 end
 
 module SendFileTest
@@ -1078,8 +1076,7 @@ module SendFileTest
   class Application
     def initialize
       configuration = Hanami::Controller::Configuration.new do|config|
-        config.handle_exceptions = false
-        config.public_directory  = "spec/support/fixtures"
+        config.public_directory = "spec/support/fixtures"
       end
 
       router = Hanami::Router.new(configuration: configuration, namespace: SendFileTest) do
@@ -1167,7 +1164,6 @@ module HeadTest
   class Application
     def initialize
       configuration = Hanami::Controller::Configuration.new do |config|
-        config.handle_exceptions = false
         config.default_headers(
           "X-Frame-Options" => "DENY"
         )
@@ -1360,9 +1356,7 @@ module FullStack
 
   class Application
     def initialize
-      configuration = Hanami::Controller::Configuration.new do |config|
-        config.handle_exceptions = false
-      end
+      configuration = Hanami::Controller::Configuration.new
 
       routes   = Hanami::Router.new(namespace: FullStack::Controllers, configuration: configuration) do
         get '/',     to: 'home#index'
@@ -1455,9 +1449,7 @@ module SessionWithCookies
 
   class Application
     def initialize
-      configuration = Hanami::Controller::Configuration.new do |config|
-        config.handle_exceptions = false
-      end
+      configuration = Hanami::Controller::Configuration.new
 
       resolver = EndpointResolver.new(configuration: configuration, namespace: SessionWithCookies::Controllers)
       routes   = Hanami::Router.new(resolver: resolver) do
@@ -1494,9 +1486,7 @@ module SessionsWithoutCookies
 
   class Application
     def initialize
-      configuration = Hanami::Controller::Configuration.new do |config|
-        config.handle_exceptions = false
-      end
+      configuration = Hanami::Controller::Configuration.new
 
       routes   = Hanami::Router.new(configuration: configuration, namespace: SessionsWithoutCookies::Controllers) do
         get '/', to: 'home#index'

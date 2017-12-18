@@ -297,10 +297,15 @@ end
 
 ### Exceptions management
 
-When an exception is raised, it automatically sets the HTTP status to [500](http://httpstatus.es/500):
+When the app raises an exception, `hanami-controller`, does **NOT** manage it.
+You can write custom exception handling on per action or configuration basis.
+
+An exception handler can be a valid HTTP status code (eg. `500`, `401`), or a `Symbol` that represents an action method.
 
 ```ruby
 class Show < Hanami::Action
+  handle_exception StandardError => 500
+
   def call(*)
     raise
   end
@@ -362,34 +367,6 @@ end
 
 action = Show.new(configuration: configuration)
 action.call({}) # => [404, {}, ["Not Found"]]
-```
-
-Exception handling can be toggled with via a setting in configuration.
-Single actions can specify a different behavior via method override.
-
-```ruby
-configuration = Hanami::Controller::Configuration.new do |config|
-  config.handle_exceptions = true
-end
-
-# or
-
-module Articles
-  class Show < Hanami::Action
-    def call(*)
-      raise RecordNotFound
-    end
-
-    private
-
-    def handle_exceptions?
-      false
-    end
-  end
-end
-
-action = Articles::Show.new(configuration: configuration)
-action.call({}) # => raises RecordNotFound
 ```
 
 #### Inherited Exceptions
@@ -937,11 +914,6 @@ It supports a few options:
 require "hanami/controller"
 
 configuration = Hanami::Controller::Configuration.new do |config|
-  # Handle exceptions with HTTP statuses (true) or don't catch them (false)
-  # Argument: boolean, defaults to `true`
-  #
-  config.handle_exceptions = true
-
   # If the given exception is raised, return that HTTP status
   # It can be used multiple times
   # Argument: hash, empty by default
@@ -972,43 +944,6 @@ configuration = Hanami::Controller::Configuration.new do |config|
   #
   config.default_charset = "koi8-r"
 end
-```
-
-All of the global settings can be overwritten at the action level.
-
-```ruby
-require "hanami/controller"
-
-configuration = Hanami::Controller::Configuration.new do |config|
-  config.handle_exception ArgumentError => 400
-end
-
-module Articles
-  class Create < Hanami::Action
-    def call(*)
-      raise ArgumentError
-    end
-
-    private
-
-    def handle_exceptions?
-      false
-    end
-  end
-end
-
-module Users
-  class Create < Hanami::Action
-    def call(*)
-      raise ArgumentError
-    end
-  end
-end
-
-Users::Create.new(configuration: configuration).call({}) # => HTTP 400
-
-Articles::Create.new(configuration: configuration).call({})
-  # => raises ArgumentError because handle_exceptions? returns false
 ```
 
 ### Thread safety

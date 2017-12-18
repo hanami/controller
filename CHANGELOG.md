@@ -18,7 +18,7 @@ Complete, fast and testable actions for Rack
 - [Luca Guidi] `Hanami::Controller::Configuration#initialize` returns a frozen configuration instance
 - [Luca Guidi] Removed `Hanami::Controller::Configuration#prepare`
 - [Luca Guidi] Removed `Hanami::Action.configuration`
-- [Luca Guidi] Removed `Hanami::Action.configuration.handle_exceptions` in favor of `#handle_exceptions?`
+- [Luca Guidi] Removed `Hanami::Action.configuration.handle_exceptions`
 - [Luca Guidi] Removed `Hanami::Action.configuration.default_request_format` in favor of `#default_request_format`
 - [Luca Guidi] Removed `Hanami::Action.configuration.default_charset` in favor of `#default_charset`
 - [Luca Guidi] Removed `Hanami::Action.configuration.format` to register a MIME Type for a single action. Please use the configuration.
@@ -42,6 +42,7 @@ Complete, fast and testable actions for Rack
 - [Luca Guidi] Removed `Hanami::Action#send_file` and `#unsafe_send_file` in favor of `Hanami::Action::Response#send_file` and `#unsafe_send_file`, respectively
 - [Luca Guidi] Removed `Hanami::Action#errors`
 - [Luca Guidi] `Hanami::Action` callback hooks now accept `Hanami::Action::Request` and `Hanami::Action::Response` arguments
+- [Luca Guidi] When an exception is raised, it won't be caught, unless it's handled
 - [Luca Guidi] `Hanami::Action` exception handlers now accept `Hanami::Action::Request`, `Hanami::Action::Response`, and exception arguments
 
 ## v1.1.1 - 2017-11-22

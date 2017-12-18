@@ -7,20 +7,6 @@ RSpec.describe Hanami::Controller::Configuration do
     end
   end
 
-  describe 'handle exceptions' do
-    it 'returns true by default' do
-      expect(configuration.handle_exceptions).to be(true)
-    end
-
-    it 'allows to set the value with a writer' do
-      configuration = described_class.new do |config|
-        config.handle_exceptions = false
-      end
-
-      expect(configuration.handle_exceptions).to be(false)
-    end
-  end
-
   describe 'handled exceptions' do
     it 'returns an empty hash by default' do
       expect(configuration.handled_exceptions).to eq({})

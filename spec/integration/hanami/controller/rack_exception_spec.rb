@@ -2,8 +2,7 @@ RSpec.describe "Exception notifiers integration" do
   let(:env) { Hash[] }
 
   it 'reference error in rack.exception' do
-    action = RackExceptionAction.new(configuration: configuration)
-    action.call(env)
+    expect { RackExceptionAction.new(configuration: configuration).call(env) }.to raise_error(RackExceptionAction::TestException)
 
     expect(env['rack.exception']).to be_kind_of(RackExceptionAction::TestException)
   end
