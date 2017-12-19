@@ -29,7 +29,7 @@ module Hanami
       EMPTY_BODY = [].freeze
 
       attr_reader :action, :exposures, :format, :env
-      attr_accessor :charset
+      attr_accessor :charset, :halted
 
       def initialize(action:, configuration:, content_type: nil, env: {}, header: {})
         super([], 200, header.dup)
@@ -40,6 +40,8 @@ module Hanami
         @charset   = ::Rack::MediaType.params(content_type).fetch('charset', nil)
         @exposures = {}
         @env       = env
+
+        @halted       = false
         @sending_file = false
       end
 
@@ -135,7 +137,7 @@ module Hanami
       end
 
       def renderable?
-        !@sending_file && body.empty? && !head?
+        !@sending_file && (body.empty? || halted) && !head?
       end
 
       def head?

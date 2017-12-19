@@ -558,6 +558,8 @@ module Hanami
         raise exception
       end
 
+      res.halted = true
+
       instance_exec(
         req,
         res,
