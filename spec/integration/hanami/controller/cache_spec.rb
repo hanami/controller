@@ -254,6 +254,18 @@ RSpec.describe "HTTP Cache" do
     let(:app) { Rack::MockRequest.new(ConditionalGetRoutes) }
 
     describe "#etag" do
+      context "when HTTP_IF_NONE_MATCH header is not defined" do
+        it "completes request" do
+          response = app.get("/etag")
+          expect(response.status).to be(200)
+        end
+
+        it "returns etag header" do
+          response = app.get("/etag")
+          expect(response.headers.fetch("ETag")).to eq("updated")
+        end
+      end
+
       context "when etag matches HTTP_IF_NONE_MATCH header" do
         it "halts 304 not modified" do
           response = app.get("/etag", "HTTP_IF_NONE_MATCH" => "updated")
@@ -282,6 +294,22 @@ RSpec.describe "HTTP Cache" do
     describe "#last_modified" do
       let(:modified_since) { Time.new(2014, 1, 8, 0, 0, 0) }
       let(:last_modified)  { Time.new(2014, 2, 8, 0, 0, 0) }
+
+      context "when HTTP_IF_MODIFIED_SINCE header is not defined" do
+        before do
+          expect(Time).to receive(:now).at_least(:once).and_return(modified_since)
+        end
+
+        it "completes request" do
+          response = app.get("/last-modified")
+          expect(response.status).to be(200)
+        end
+
+        it "returns Last-Modified header" do
+          response = app.get("/last-modified")
+          expect(response.headers.fetch("Last-Modified")).to eq(modified_since.httpdate)
+        end
+      end
 
       context "when last modified is less than or equal to HTTP_IF_MODIFIED_SINCE header" do
         before do
@@ -350,11 +378,11 @@ RSpec.describe "HTTP Cache" do
             expect(response.status).to be(200)
           end
 
-          it "doesn't send Last-Modified" do
+          it "returns Last-Modified header" do
             expect(Time).to receive(:now).and_return(modified_since)
 
             response = app.get("/last-modified", "HTTP_IF_NONE_MATCH" => "")
-            expect(response.headers).to_not have_key("Last-Modified")
+            expect(response.headers).to have_key("Last-Modified")
           end
         end
 
@@ -364,11 +392,11 @@ RSpec.describe "HTTP Cache" do
             expect(response.status).to be(200)
           end
 
-          it "doesn't send Last-Modified" do
+          it "returns Last-Modified header" do
             expect(Time).to receive(:now).and_return(modified_since)
 
             response = app.get("/last-modified", "HTTP_IF_NONE_MATCH" => " ")
-            expect(response.headers).to_not have_key("Last-Modified")
+            expect(response.headers).to have_key("Last-Modified")
           end
         end
       end
