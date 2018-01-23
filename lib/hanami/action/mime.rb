@@ -198,7 +198,7 @@ module Hanami
           before do
             mime_type = @_env[HTTP_CONTENT_TYPE] || default_content_type || DEFAULT_CONTENT_TYPE
 
-            unless mime_types.find {|mt| ::Rack::Mime.match?(mime_type, mt) }
+            if mime_types.none? {|mt| ::Rack::Mime.match?(mime_type, mt) }
               halt 415
             end
           end

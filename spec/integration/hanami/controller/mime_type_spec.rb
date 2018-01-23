@@ -418,8 +418,16 @@ RSpec.describe 'MIME Type' do
     let(:app) { Rack::MockRequest.new(MimeRoutes) }
     let(:response) { app.post("/default_and_content_type", "CONTENT_TYPE" => content_type) }
 
-    context "when media type is supported" do
+    context "when media type is a first from the supported" do
       let(:content_type) { "application/json" }
+
+      it "accepts payload" do
+        expect(response.status).to be(200)
+      end
+    end
+
+    context "when media type is a second from the supported" do
+      let(:content_type) { "text/plain" }
 
       it "accepts payload" do
         expect(response.status).to be(200)
