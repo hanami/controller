@@ -6,10 +6,8 @@ RSpec.describe Hanami::Action do
       expect(response.status).to be(404)
     end
 
-    it "returns a 500 if an action isn't handled" do
-      response = UnhandledExceptionAction.new(configuration: configuration).call({})
-
-      expect(response.status).to be(500)
+    it "raises the exception, if not handled" do
+      expect { UnhandledExceptionAction.new(configuration: configuration).call({}) }.to raise_error(RecordNotFound)
     end
 
     describe "with global handled exceptions" do
@@ -44,11 +42,8 @@ RSpec.describe Hanami::Action do
       expect(response.body).to eq(["Secret Sauce"])
     end
 
-    it "throws the code as it is, when not recognized" do
-      response = ThrowCodeAction.new(configuration: configuration).call(status: 2_131_231)
-
-      expect(response.status).to be(500)
-      expect(response.body).to eq(["Internal Server Error"])
+    it "raises an exception when the code isn't valid" do
+      expect { ThrowCodeAction.new(configuration: configuration).call(status: 2_131_231) }.to raise_error(StandardError)
     end
 
     it "stops execution of before filters (method)" do

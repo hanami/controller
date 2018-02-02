@@ -73,7 +73,7 @@ module Hanami
 
       def self.content_type(configuration, request, accepted_mime_types)
         if request.accept_header?
-          type = best_q_match(request.accept, accepted_mime_types, default_content_type(configuration))
+          type = best_q_match(request.accept, accepted_mime_types)
           return type if type
         end
 
@@ -102,7 +102,11 @@ module Hanami
       def self.detect_format(content_type, configuration)
         return if content_type.nil?
         ct = content_type.split(";").first
-        configuration.format_for(ct) || TYPES.key(ct)
+        configuration.format_for(ct) || format_for(ct)
+      end
+
+      def self.format_for(content_type)
+        TYPES.key(content_type)
       end
 
       def self.restrict_mime_types(configuration, accepted_formats)
@@ -140,7 +144,7 @@ module Hanami
       # @see https://github.com/hanami/controller/issues/59
       # @see https://github.com/hanami/controller/issues/104
       # @see https://github.com/hanami/controller/issues/275
-      def self.best_q_match(q_value_header, available_mimes, default_content_type = nil)
+      def self.best_q_match(q_value_header, available_mimes = TYPES.values)
         ::Rack::Utils.q_values(q_value_header).each_with_index.map do |(req_mime, quality), index|
           match = available_mimes.find { |am| ::Rack::Mime.match?(am, req_mime) }
           next unless match

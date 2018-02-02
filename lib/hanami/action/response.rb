@@ -12,6 +12,7 @@ module Hanami
   class Action
     class Response < ::Rack::Response
       REQUEST_METHOD = "REQUEST_METHOD".freeze
+      HTTP_ACCEPT = "HTTP_ACCEPT".freeze
       SESSION_KEY = "rack.session".freeze
       REQUEST_ID  = "hanami.request_id".freeze
       LOCATION    = "Location".freeze
@@ -31,6 +32,14 @@ module Hanami
       attr_reader :action, :exposures, :format, :env
       attr_accessor :charset
 
+      def self.build(response, env)
+        new(action: "", configuration: nil, content_type: Mime.best_q_match(env[HTTP_ACCEPT]), env: env, header: response[RACK_HEADERS]).tap do |r|
+          r.status = response[RACK_STATUS]
+          r.body   = response[RACK_BODY].first
+          r.set_format(Mime.format_for(r.content_type))
+        end
+      end
+
       def initialize(action:, configuration:, content_type: nil, env: {}, header: {})
         super([], 200, header.dup)
         set_header("Content-Type", content_type)
@@ -40,6 +49,7 @@ module Hanami
         @charset   = ::Rack::MediaType.params(content_type).fetch('charset', nil)
         @exposures = {}
         @env       = env
+
         @sending_file = false
       end
 
@@ -135,7 +145,7 @@ module Hanami
       end
 
       def renderable?
-        !@sending_file && body.empty? && !head?
+        !@sending_file && !head?
       end
 
       def head?

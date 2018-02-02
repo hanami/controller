@@ -51,7 +51,6 @@ module Hanami
       #
       # @since 0.2.0
       def initialize(&blk)
-        @handle_exceptions       = true
         @handled_exceptions      = {}
         @formats                 = DEFAULT_FORMATS.dup
         @mime_types              = nil
@@ -66,29 +65,6 @@ module Hanami
         freeze
       end
 
-      # Handle exceptions with an HTTP status or let them uncaught
-      #
-      # If this value is set to `true`, the configured exceptions will return
-      # the specified HTTP status, the rest of them with `500`.
-      #
-      # If this value is set to `false`, the exceptions won't be caught.
-      #
-      # @attr_writer handle_exceptions [TrueClass,FalseClass] Handle exceptions
-      #   with an HTTP status or leave them uncaught
-      #
-      # @attr_reader handle_exceptions [TrueClass,FalseClass] The result of the
-      #   check
-      #
-      # @since 0.2.0
-      #
-      # @see Hanami::Controller::Configuration#handle_exception
-      # @see Hanami::Controller#configure
-      # @see Hanami::Action::Throwable
-      # @see http://httpstatus.es/500
-      #
-      # FIXME: new API docs
-      attr_accessor :handle_exceptions
-
       # Specify how to handle an exception with an HTTP status
       #
       # Raised exceptions will return the configured HTTP status, only if
@@ -99,7 +75,6 @@ module Hanami
       #
       # @since 0.2.0
       #
-      # @see Hanami::Controller::Configuration#handle_exceptions
       # @see Hanami::Controller#configure
       # @see Hanami::Action::Throwable
       #

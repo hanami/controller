@@ -12,12 +12,6 @@ RSpec.describe Hanami::Action do
 
         res.format = format(input)
       end
-
-      private
-
-      def handle_exceptions?
-        false
-      end
     end
 
     class Configuration < Hanami::Action

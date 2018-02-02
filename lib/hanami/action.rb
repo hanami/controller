@@ -444,7 +444,6 @@ module Hanami
             super(request, response)
             _run_after_callbacks(request, response)
           rescue => exception
-            _reference_in_rack_errors(request, exception)
             _handle_exception(request, response, exception)
           end
         end
@@ -470,6 +469,8 @@ module Hanami
     #
     # @param code [Fixnum] a valid HTTP status code
     # @param message [String] the response body
+    #
+    # @raises [StandardError] if the code isn't valid
     #
     # @since 0.2.0
     #
@@ -522,15 +523,7 @@ module Hanami
 
     attr_reader :handled_exceptions
 
-    def handled_exception?(exception)
-      !exception_handler_for(exception).nil?
-    end
-
     def exception_handler(exception)
-      exception_handler_for(exception) || DEFAULT_ERROR_CODE
-    end
-
-    def exception_handler_for(exception)
       handled_exceptions.each do |exception_class, handler|
         return handler if exception.kind_of?(exception_class)
       end
@@ -538,15 +531,9 @@ module Hanami
       nil
     end
 
-    def handle_exceptions?
-      configuration.handle_exceptions
-    end
-
     # @since 0.2.0
     # @api private
     def _reference_in_rack_errors(req, exception)
-      return if handled_exception?(exception)
-
       req.env[RACK_EXCEPTION] = exception
 
       if errors = req.env[RACK_ERRORS]
@@ -564,13 +551,18 @@ module Hanami
     # @since 0.1.0
     # @api private
     def _handle_exception(req, res, exception)
-      raise unless handle_exceptions?
+      handler = exception_handler(exception)
+
+      if handler.nil?
+        _reference_in_rack_errors(req, exception)
+        raise exception
+      end
 
       instance_exec(
         req,
         res,
         exception,
-        &_exception_handler(exception)
+        &_exception_handler(handler)
       )
 
       nil
@@ -578,9 +570,7 @@ module Hanami
 
     # @since 0.3.0
     # @api private
-    def _exception_handler(exception)
-      handler = exception_handler(exception)
-
+    def _exception_handler(handler)
       if respond_to?(handler.to_s, true)
         method(handler)
       else
