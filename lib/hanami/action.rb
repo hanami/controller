@@ -64,6 +64,18 @@ module Hanami
       end
     end
 
+    # Override method_missing.
+    #
+    # Provide more detailed information when Hanami::Action::Session has not
+    # been included in a given class.
+    def method_missing(meth_id, *args)
+      if meth_id == :session || meth_id == :flash
+        raise Hanami::Controller::MissingSessionError.new(meth_id)
+      else
+        super
+      end
+    end
+
     private
 
     # Finalize the response

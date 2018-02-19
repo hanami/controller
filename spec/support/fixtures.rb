@@ -478,6 +478,22 @@ class YieldAfterBlockAction < AfterBlockAction
   before {|params| @meaning_of_life_params = params }
 end
 
+class MissingSessionAction
+  include Hanami::Action
+
+  def call(params)
+    session
+  end
+end
+
+class MissingFlashAction
+  include Hanami::Action
+
+  def call(params)
+    flash
+  end
+end
+
 class SessionAction
   include Hanami::Action
   include Hanami::Action::Session
