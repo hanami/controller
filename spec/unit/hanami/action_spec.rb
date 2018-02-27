@@ -99,7 +99,7 @@ RSpec.describe Hanami::Action do
 
       it "raises an informative exception" do
         expected = Hanami::Controller::MissingSessionError
-        expect { MissingSessionAction.new.call({}) }.to raise_error(expected)
+        expect { MissingSessionAction.new.call({}) }.to raise_error(expected, "To use `session', add `include Hanami::Action::Session`.")
       end
     end
 
@@ -109,7 +109,7 @@ RSpec.describe Hanami::Action do
 
       it "raises an informative exception" do
         expected = Hanami::Controller::MissingSessionError
-        expect { MissingFlashAction.new.call({}) }.to raise_error(expected)
+        expect { MissingFlashAction.new.call({}) }.to raise_error(expected, "To use `flash', add `include Hanami::Action::Session`.")
       end
     end
   end
