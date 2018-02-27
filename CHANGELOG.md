@@ -1,6 +1,14 @@
 # Hanami::Controller
 Complete, fast and testable actions for Rack
 
+## v1.2.0.beta1 - 2018-02-28
+### Added
+- [Luca Guidi] Official support for Ruby: MRI 2.5
+- [Sergey Fedorov] Introduce `Hanami::Action.content_type` to accept/reject requests according to their `Content-Type` header.
+
+### Fixed
+- [wheresmyjetpack] Raise meaningful exception when trying to access `session` or `flash` and `Hanami::Action::Session` wasn't included.
+
 ## v1.1.1 - 2017-11-22
 ### Fixed
 - [Luca Guidi] Ensure `Hanami::Action#send_file` and `#unsafe_send_file` to run `after` action callbacks

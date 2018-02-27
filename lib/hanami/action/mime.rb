@@ -18,7 +18,7 @@ module Hanami
 
       # The key that returns content mime type from the Rack env
       #
-      # @since x.x.x
+      # @since 1.2.0
       # @api private
       HTTP_CONTENT_TYPE    = 'CONTENT_TYPE'.freeze
 
@@ -176,7 +176,7 @@ module Hanami
         #
         # @param formats[Array<Symbol>] one or more symbols representing mime type(s)
         #
-        # @since x.x.x
+        # @since 1.2.0
         #
         # @example
         #   require 'hanami/controller'
