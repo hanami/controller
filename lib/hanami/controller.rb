@@ -47,6 +47,18 @@ module Hanami
       end
     end
 
+    # Missing session error
+    #
+    # This error is raised when an action sends either session or flash to
+    # itself and it does not include Hanami::Action::Session.
+    #
+    # @see Hanami::Action::Session
+    class MissingSessionError < Hanami::Controller::Error
+      def initialize(session_method)
+        super("To use `#{ session_method }`, add `include Hanami::Action::Session`. For more information see [DOCS LINK]")
+      end
+    end
+
     include Utils::ClassAttribute
 
     # Framework configuration
