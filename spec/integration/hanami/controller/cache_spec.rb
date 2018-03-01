@@ -22,6 +22,7 @@ ConditionalGetRoutes = Hanami::Router.new do
   get '/etag',               to: 'conditional_get#etag'
   get '/last-modified',      to: 'conditional_get#last_modified'
   get '/etag-last-modified', to: 'conditional_get#etag_last_modified'
+  get '/nil-value',          to: 'conditional_get#nil_value'
 end
 
 module CacheControl
@@ -160,6 +161,15 @@ module ConditionalGet
       fresh etag: 'updated', last_modified: Time.now
     end
   end
+
+  class NilValue
+    include Hanami::Action
+    include Hanami::Action::Cache
+
+    def call(_params)
+      fresh etag: nil, last_modified: nil
+    end
+  end
 end
 
 RSpec.describe "HTTP Cache" do
@@ -289,6 +299,18 @@ RSpec.describe "HTTP Cache" do
           expect(response.headers.fetch("ETag")).to eq("updated")
         end
       end
+
+      context "when etag has nil value" do
+        it "completes request" do
+          response = app.get("/nil-value", "HTTP_IF_NONE_MATCH" => "outdated")
+          expect(response.status).to be(200)
+        end
+
+        it "does not return ETag header" do
+          response = app.get("/nil-value", "HTTP_IF_NONE_MATCH" => "outdated")
+          expect(response.headers).not_to have_key("ETag")
+        end
+      end
     end
 
     describe "#last_modified" do
@@ -398,6 +420,18 @@ RSpec.describe "HTTP Cache" do
             response = app.get("/last-modified", "HTTP_IF_NONE_MATCH" => " ")
             expect(response.headers).to have_key("Last-Modified")
           end
+        end
+      end
+
+      context "when last_modified has nil value" do
+        it "completes request" do
+          response = app.get("/nil-value", "HTTP_IF_NONE_MATCH" => "outdated")
+          expect(response.status).to be(200)
+        end
+
+        it "does not return Last-Modified header" do
+          response = app.get("/nil-value", "HTTP_IF_NONE_MATCH" => "outdated")
+          expect(response.headers).not_to have_key("Last-Modified")
         end
       end
     end
