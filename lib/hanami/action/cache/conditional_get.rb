@@ -67,7 +67,7 @@ module Hanami
         # @since 0.3.0
         # @api private
         def fresh?
-          !Hanami::Utils::Blank.blank?(modified_since) && Time.httpdate(modified_since).to_i >= @value.to_i
+          !Hanami::Utils::Blank.blank?(modified_since) && Time.httpdate(modified_since).to_i >= @value.to_time.to_i
         end
 
         # @since 0.3.0
