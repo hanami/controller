@@ -337,6 +337,25 @@ class AfterBlockAction < Hanami::Action
   end
 end
 
+class YieldAfterBlockAction < AfterBlockAction
+  after { |req, res| res[:meaning_of_life_params] = req.params }
+
+  def call(*)
+  end
+end
+
+class MissingSessionAction < Hanami::Action
+  def call(*)
+    session
+  end
+end
+
+class MissingFlashAction < Hanami::Action
+  def call(*)
+    flash
+  end
+end
+
 class SessionAction < Hanami::Action
   include Hanami::Action::Session
 

@@ -7,6 +7,11 @@ module Hanami
     module Mime
       DEFAULT_CONTENT_TYPE = 'application/octet-stream'.freeze
       DEFAULT_CHARSET      = 'utf-8'.freeze
+      # The header key to set the mime type of the response
+      #
+      # @since 0.1.0
+      # @api private
+      CONTENT_TYPE         = 'Content-Type'.freeze
 
       # Most commom MIME Types used for responses
       #
