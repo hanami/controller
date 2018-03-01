@@ -41,7 +41,7 @@ module Hanami
         # @since 0.3.0
         # @api private
         def header
-          { ETAG => @value }
+          { ETAG => @value } if @value
         end
 
         private
@@ -73,7 +73,7 @@ module Hanami
         # @since 0.3.0
         # @api private
         def header
-          { LAST_MODIFIED => @value.httpdate } if @value.respond_to?(:httpdate)
+          { LAST_MODIFIED => @value.httpdate } if @value && @value.respond_to?(:httpdate)
         end
 
         private
