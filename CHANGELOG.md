@@ -1,6 +1,8 @@
 # Hanami::Controller
 Complete, fast and testable actions for Rack
 
+## v1.2.0.rc1 - 2018-03-30
+
 ## v1.2.0.beta2 - 2018-03-23
 
 ## v1.2.0.beta1 - 2018-02-28
