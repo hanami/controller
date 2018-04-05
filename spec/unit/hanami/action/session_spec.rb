@@ -47,7 +47,7 @@ RSpec.describe Hanami::Action do
 
         flash = action.exposures[:flash]
         result = []
-        flash.map do |type, message|
+        flash.each do |type, message|
           result << [type, message]
         end
         expect(result).to eq([[:error, "ouch"]])
