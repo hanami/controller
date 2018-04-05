@@ -60,6 +60,25 @@ module Hanami
         end
       end
 
+      # Iterates through data
+      #
+      # @param blk [Proc]
+      #
+      # @since 1.2.0
+      def each(&blk)
+        @merged.each(&blk)
+      end
+
+      # Iterates through data
+      #
+      # @param blk [Proc]
+      # @return [Array]
+      #
+      # @since 1.2.0
+      def map(&blk)
+        @merged.map(&blk)
+      end
+
       # Removes entirely the flash from the session if it has stale contents
       # or if empty.
       #
