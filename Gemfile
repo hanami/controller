@@ -6,11 +6,11 @@ unless ENV['TRAVIS']
   gem 'yard',   require: false
 end
 
-gem 'hanami-utils',  '1.2.0.rc2', require: false, git: 'https://github.com/hanami/utils.git',  branch: 'develop'
-gem 'hanami-router', '1.2.0.rc2', require: false, git: 'https://github.com/hanami/router.git', branch: 'develop'
+gem 'hanami-utils',  '~> 1.2', require: false, git: 'https://github.com/hanami/utils.git',  branch: 'develop'
+gem 'hanami-router', '~> 1.2', require: false, git: 'https://github.com/hanami/router.git', branch: 'develop'
 
 group :validations do
-  gem 'hanami-validations', '1.2.0.rc2', require: false, git: 'https://github.com/hanami/validations.git', branch: 'develop'
+  gem 'hanami-validations', '~> 1.2', require: false, git: 'https://github.com/hanami/validations.git', branch: 'develop'
 end
 
 gem 'coveralls', require: false
