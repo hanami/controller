@@ -92,6 +92,26 @@ RSpec.describe Hanami::Action do
         expect { ErrorCallAction.new.call({}) }.to raise_error(RuntimeError)
       end
     end
+
+    context "when invoking the session method with sessions disabled" do
+      before { MissingSessionAction.configuration.handle_exceptions = false }
+      after { MissingSessionAction.configuration.reset! }
+
+      it "raises an informative exception" do
+        expected = Hanami::Controller::MissingSessionError
+        expect { MissingSessionAction.new.call({}) }.to raise_error(expected, "To use `session', add `include Hanami::Action::Session`.")
+      end
+    end
+
+    context "when invoking the flash method with sessions disabled" do
+      before { MissingFlashAction.configuration.handle_exceptions = false }
+      after { MissingFlashAction.configuration.reset! }
+
+      it "raises an informative exception" do
+        expected = Hanami::Controller::MissingSessionError
+        expect { MissingFlashAction.new.call({}) }.to raise_error(expected, "To use `flash', add `include Hanami::Action::Session`.")
+      end
+    end
   end
 
   describe "#request" do

@@ -1,17 +1,19 @@
 require 'hanami/router'
 
 MimeRoutes = Hanami::Router.new do
-  get '/',                   to: 'mimes#default'
-  get '/custom',             to: 'mimes#custom'
-  get '/configuration',      to: 'mimes#configuration'
-  get '/accept',             to: 'mimes#accept'
-  get '/restricted',         to: 'mimes#restricted'
-  get '/latin',              to: 'mimes#latin'
-  get '/nocontent',          to: 'mimes#no_content'
-  get '/response',           to: 'mimes#default_response'
-  get '/overwritten_format', to: 'mimes#override_default_response'
-  get '/custom_from_accept', to: 'mimes#custom_from_accept'
-  get '/default_and_accept', to: 'mimes#default_and_accept'
+  get '/',                          to: 'mimes#default'
+  get '/custom',                    to: 'mimes#custom'
+  get '/configuration',             to: 'mimes#configuration'
+  get '/accept',                    to: 'mimes#accept'
+  get '/restricted',                to: 'mimes#restricted'
+  get '/latin',                     to: 'mimes#latin'
+  get '/nocontent',                 to: 'mimes#no_content'
+  get '/response',                  to: 'mimes#default_response'
+  get '/overwritten_format',        to: 'mimes#override_default_response'
+  get '/custom_from_accept',        to: 'mimes#custom_from_accept'
+  get '/default_and_accept',        to: 'mimes#default_and_accept'
+  post '/content_type',             to: 'mimes#content_type'
+  post '/default_and_content_type', to: 'mimes#default_and_content_type'
 end
 
 module Mimes
@@ -124,6 +126,27 @@ module Mimes
 
     def call(params)
       self.body = format.to_s
+    end
+  end
+
+  class ContentType
+    include Hanami::Action
+    content_type :json
+
+    def call(_params)
+      self.format = :json
+      self.body   = format
+    end
+  end
+
+  class DefaultAndContentType
+    include Hanami::Action
+    configuration.default_request_format :txt
+    content_type :json, :txt
+
+    def call(_params)
+      self.format = :json
+      self.body   = format
     end
   end
 end
@@ -358,6 +381,72 @@ RSpec.describe 'MIME Type' do
             expect(response.body).to eq('json')
           end
         end
+      end
+    end
+  end
+
+  describe "Content-Type" do
+    let(:app) { Rack::MockRequest.new(MimeRoutes) }
+    let(:response) { app.post("/content_type", "CONTENT_TYPE" => content_type) }
+
+    context "when media type is supported" do
+      let(:content_type) { "application/json" }
+
+      it "accepts payload" do
+        expect(response.status).to be(200)
+      end
+    end
+
+    context "when media type is unsupported" do
+      let(:content_type) { "text/html" }
+
+      it "rejects payload" do
+        expect(response.status).to be(415)
+      end
+    end
+
+    context "when media type is missing" do
+      let(:response) { app.post("/content_type") }
+
+      it "fallbacks to the default hardcoded application/octet-stream content type and rejects payload" do
+        expect(response.status).to be(415)
+      end
+    end
+  end
+
+  describe "Content-Type with defaults" do
+    let(:app) { Rack::MockRequest.new(MimeRoutes) }
+    let(:response) { app.post("/default_and_content_type", "CONTENT_TYPE" => content_type) }
+
+    context "when media type is a first from the supported" do
+      let(:content_type) { "application/json" }
+
+      it "accepts payload" do
+        expect(response.status).to be(200)
+      end
+    end
+
+    context "when media type is a second from the supported" do
+      let(:content_type) { "text/plain" }
+
+      it "accepts payload" do
+        expect(response.status).to be(200)
+      end
+    end
+
+    context "when media type is unsupported" do
+      let(:content_type) { "text/html" }
+
+      it "rejects payload" do
+        expect(response.status).to be(415)
+      end
+    end
+
+    context "when media type is missing" do
+      let(:response) { app.post("/default_and_content_type") }
+
+      it "fallbacks to the configured text/plain content type and accepts payload" do
+        expect(response.status).to be(200)
       end
     end
   end

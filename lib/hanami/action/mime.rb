@@ -16,6 +16,12 @@ module Hanami
       # @api private
       HTTP_ACCEPT          = 'HTTP_ACCEPT'.freeze
 
+      # The key that returns content mime type from the Rack env
+      #
+      # @since 1.2.0
+      # @api private
+      HTTP_CONTENT_TYPE    = 'CONTENT_TYPE'.freeze
+
       # The header key to set the mime type of the response
       #
       # @since 0.1.0
@@ -162,6 +168,38 @@ module Hanami
           before do
             unless mime_types.find {|mt| accept?(mt) }
               halt 406
+            end
+          end
+        end
+
+        # Restrict the payload type to the specified mime type symbols.
+        #
+        # @param formats[Array<Symbol>] one or more symbols representing mime type(s)
+        #
+        # @since 1.2.0
+        #
+        # @example
+        #   require 'hanami/controller'
+        #
+        #   class Upload
+        #     include Hanami::Action
+        #     content_type :json
+        #
+        #     def call(params)
+        #       # ...
+        #     end
+        #   end
+        #
+        #   # When called with "text/html"        => 415
+        #   # When called with "application/json" => 200
+        def content_type(*formats)
+          mime_types = formats.map { |format| format_to_mime_type(format) }
+
+          before do
+            mime_type = @_env[HTTP_CONTENT_TYPE] || default_content_type || DEFAULT_CONTENT_TYPE
+
+            if mime_types.none? {|mt| ::Rack::Mime.match?(mime_type, mt) }
+              halt 415
             end
           end
         end

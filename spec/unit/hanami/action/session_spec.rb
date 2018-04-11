@@ -39,5 +39,32 @@ RSpec.describe Hanami::Action do
       expect(flash).to be_kind_of(Hanami::Action::Flash)
       expect(flash[:error]).to eq("ouch")
     end
+
+    describe "#each" do
+      it "iterates through data" do
+        action = FlashAction.new
+        action.call({})
+
+        flash = action.exposures[:flash]
+        result = []
+        flash.each do |type, message|
+          result << [type, message]
+        end
+        expect(result).to eq([[:error, "ouch"]])
+      end
+    end
+
+    describe "#map" do
+      it "iterates through data" do
+        action = FlashAction.new
+        action.call({})
+
+        flash = action.exposures[:flash]
+        result = flash.map do |type, message|
+          [type, message]
+        end
+        expect(result).to eq([[:error, "ouch"]])
+      end
+    end
   end
 end
