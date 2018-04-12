@@ -45,6 +45,18 @@ Complete, fast and testable actions for Rack
 - [Luca Guidi] When an exception is raised, it won't be caught, unless it's handled
 - [Luca Guidi] `Hanami::Action` exception handlers now accept `Hanami::Action::Request`, `Hanami::Action::Response`, and exception arguments
 
+## v1.3.0.beta1 (unreleased)
+
+## v1.2.0 - 2018-04-11
+
+## v1.2.0.rc2 - 2018-04-06
+### Added
+- [Gustavo Caso] Introduce `Hanami::Action::Flash#each` and `#map`
+
+## v1.2.0.rc1 - 2018-03-30
+
+## v1.2.0.beta2 - 2018-03-23
+
 ## v1.2.0.beta1 - 2018-02-28
 ### Added
 - [Luca Guidi] Official support for Ruby: MRI 2.5
