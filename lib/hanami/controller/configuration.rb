@@ -96,8 +96,8 @@ module Hanami
       #   Hanami::Controller::Configuration.for(MyApp::Controllers::Dashboard)
       #     # => will duplicate from MyApp::Controller
       def self.for(base)
-        namespace = Utils::String.namespace(base)
-        framework = Utils::Class.load_from_pattern!("(#{namespace}|Hanami)::Controller")
+        namespace = Utils::String.namespace(base.name)
+        framework = Utils::Class.load("#{namespace}::Controller") || Utils::Class.load!('Hanami::Controller')
         framework.configuration.duplicate
       end
 
