@@ -19,10 +19,11 @@ ExpiresRoutes = Hanami::Router.new do
 end
 
 ConditionalGetRoutes = Hanami::Router.new do
-  get '/etag',               to: 'conditional_get#etag'
-  get '/last-modified',      to: 'conditional_get#last_modified'
-  get '/etag-last-modified', to: 'conditional_get#etag_last_modified'
-  get '/nil-value',          to: 'conditional_get#nil_value'
+  get '/etag',                    to: 'conditional_get#etag'
+  get '/last-modified',           to: 'conditional_get#last_modified'
+  get '/etag-last-modified',      to: 'conditional_get#etag_last_modified'
+  get '/last-modified-nil-value', to: 'conditional_get#last_modified_nil_value'
+  get '/etag-nil-value',          to: 'conditional_get#etag_nil_value'
 end
 
 module CacheControl
@@ -162,12 +163,21 @@ module ConditionalGet
     end
   end
 
-  class NilValue
+  class LastModifiedNilValue
     include Hanami::Action
     include Hanami::Action::Cache
 
     def call(_params)
-      fresh etag: nil, last_modified: nil
+      fresh last_modified: nil
+    end
+  end
+
+  class EtagNilValue
+    include Hanami::Action
+    include Hanami::Action::Cache
+
+    def call(_params)
+      fresh etag: nil
     end
   end
 end
@@ -302,12 +312,12 @@ RSpec.describe "HTTP Cache" do
 
       context "when etag has nil value" do
         it "completes request" do
-          response = app.get("/nil-value", "HTTP_IF_NONE_MATCH" => "outdated")
+          response = app.get("/etag-nil-value", "HTTP_IF_NONE_MATCH" => "outdated")
           expect(response.status).to be(200)
         end
 
         it "does not return ETag header" do
-          response = app.get("/nil-value", "HTTP_IF_NONE_MATCH" => "outdated")
+          response = app.get("/etag-nil-value", "HTTP_IF_NONE_MATCH" => "outdated")
           expect(response.headers).not_to have_key("ETag")
         end
       end
@@ -425,12 +435,12 @@ RSpec.describe "HTTP Cache" do
 
       context "when last_modified has nil value" do
         it "completes request" do
-          response = app.get("/nil-value", "HTTP_IF_NONE_MATCH" => "outdated")
+          response = app.get("/last-modified-nil-value", "HTTP_IF_NONE_MATCH" => "outdated")
           expect(response.status).to be(200)
         end
 
         it "does not return Last-Modified header" do
-          response = app.get("/nil-value", "HTTP_IF_NONE_MATCH" => "outdated")
+          response = app.get("/last-modified-nil-value", "HTTP_IF_NONE_MATCH" => "outdated")
           expect(response.headers).not_to have_key("Last-Modified")
         end
       end
