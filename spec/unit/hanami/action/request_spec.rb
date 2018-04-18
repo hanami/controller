@@ -142,7 +142,6 @@ RSpec.describe Hanami::Action::Request do
   describe 'request methods that are implemented elsewhere' do
     it 'should reject with a NotImplementedError' do
       methods = %i(
-        content_type
         update_param
         delete_param
         []

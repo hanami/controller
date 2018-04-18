@@ -51,14 +51,6 @@ module Hanami
       #
       # @since 0.3.1
       # @api private
-      def content_type
-        raise NotImplementedError, 'Please use Action#content_type'
-      end
-
-      # @raise [NotImplementedError]
-      #
-      # @since 0.3.1
-      # @api private
       def update_param(*)
         raise NotImplementedError, 'Please use params passed to Action#call'
       end
