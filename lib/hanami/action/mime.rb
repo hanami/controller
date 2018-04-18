@@ -76,7 +76,7 @@ module Hanami
         "#{content_type}; charset=#{charset}"
       end
 
-      def self.accept(configuration, request, accepted_mime_types)
+      def self.content_type(configuration, request, accepted_mime_types)
         if request.accept_header?
           type = best_q_match(request.accept, accepted_mime_types)
           return type if type
@@ -133,7 +133,7 @@ module Hanami
 
       def self.calculate_content_type_with_charset(configuration, request, accepted_mime_types)
         charset      = self.charset(configuration.default_charset)
-        content_type = self.accept(configuration, request, accepted_mime_types)
+        content_type = self.content_type(configuration, request, accepted_mime_types)
         content_type_with_charset(content_type, charset)
       end
 
