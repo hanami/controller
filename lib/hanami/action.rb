@@ -372,6 +372,7 @@ module Hanami
     #   # When called with "application/json" => 200
     #   # When called with "application/xml"  => 406
     def self.accept(*formats)
+
       @accepted_formats = *formats
       before :enforce_accepted_mime_types
     end
@@ -518,7 +519,8 @@ module Hanami
     end
 
     def enforce_accepted_mime_types(req, *)
-      Mime.accepted_mime_type?(req, accepted_mime_types) or halt 406
+
+      Mime.accepted_mime_type?(req, self.class.accepted_formats, configuration) or halt 415
     end
 
     attr_reader :handled_exceptions
@@ -648,6 +650,7 @@ module Hanami
     end
 
     def format(value)
+
       case value
       when Symbol
         format = Utils::Kernel.Symbol(value)

@@ -77,11 +77,6 @@ module Hanami
       end
 
       def self.content_type(configuration, request, accepted_mime_types)
-        if request.accept_header?
-          type = best_q_match(request.accept, accepted_mime_types)
-          return type if type
-        end
-
         default_response_type(configuration) || default_content_type(configuration) || DEFAULT_CONTENT_TYPE
       end
 
@@ -127,8 +122,11 @@ module Hanami
         accepted_mime_types
       end
 
-      def self.accepted_mime_type?(request, accepted_mime_types)
-        !accepted_mime_types.find { |mt| request.accept?(mt) }.nil?
+      def self.accepted_mime_type?(request, accepted_mime_types, configuration)
+        mime_types = accepted_mime_types.map { |format| format_to_mime_type(format, configuration) }
+
+        mime_type = request.env[CONTENT_TYPE] || self.content_type(configuration, request, accepted_mime_types)
+        mime_types.any? {|mt| ::Rack::Mime.match?(mime_type, mt) }
       end
 
       def self.calculate_content_type_with_charset(configuration, request, accepted_mime_types)
