@@ -3,6 +3,7 @@ require 'hanami/action/request'
 require 'hanami/action/base_params'
 require 'hanami/action/rack/callable'
 require 'hanami/action/rack/file'
+require 'hanami/utils/deprecation'
 
 module Hanami
   module Action
@@ -246,6 +247,7 @@ module Hanami
 
       # Return parsed request body
       def parsed_request_body
+        Hanami::Utils::Deprecation.new('parsed_request_body will be deprecated in the future release please use `params`')
         @_env.fetch(ROUTER_PARSED_BODY, nil)
       end
 
