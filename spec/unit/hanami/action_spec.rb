@@ -103,22 +103,6 @@ RSpec.describe Hanami::Action do
     end
   end
 
-  describe "#parsed_request_body" do
-    it "exposes the body of the request parsed by router body parsers" do
-      action_class = Class.new(Hanami::Action) do
-        def call(req, res)
-          res[:parsed_request_body] = req.parsed_body
-        end
-      end
-
-      action = action_class.new(configuration: configuration)
-      env = Rack::MockRequest.env_for('http://example.com/foo',
-                                      'router.parsed_body' => { 'a' => 'foo' })
-      response = action.call(env)
-      expect(response[:parsed_request_body]).to eq('a' => 'foo')
-    end
-  end
-
   describe "Method visibility" do
     let(:action) { VisibilityAction.new(configuration: configuration) }
 
