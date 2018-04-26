@@ -505,12 +505,12 @@ module Hanami
 
     # @since 0.3.2
     # @api private
-    def _requires_no_body?(req, res)
+    def _requires_no_body?(res)
       HTTP_STATUSES_WITHOUT_BODY.include?(res.status)
     end
 
-    def _requires_empty_headers?(req, res)
-      _requires_no_body?(req, res) || res.head?
+    def _requires_empty_headers?(res)
+      _requires_no_body?(res) || res.head?
     end
 
     private
@@ -707,8 +707,8 @@ module Hanami
     def finish(req, res, halted)
       res.status, res.body = *halted unless halted.nil?
 
-      res.body = nil if _requires_no_body?(req, res)
-      _empty_headers(res) if _requires_empty_headers?(req, res)
+      res.body = nil if _requires_no_body?(res)
+      _empty_headers(res) if _requires_empty_headers?(res)
 
       res.set_format(Action::Mime.detect_format(res.content_type, configuration))
       res[:params] = req.params
