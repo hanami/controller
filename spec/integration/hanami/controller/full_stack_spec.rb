@@ -14,6 +14,12 @@ RSpec.describe "Full stack application" do
     expect(last_response.body).to include(':greeting=>"Hello"')
   end
 
+  it "only allows entity headers if the request is HEAD" do
+    head "/head", {}, "HTTP_ACCEPT" => "text/html"
+
+    expect(last_response.headers).to_not have_key("X-Renderable")
+  end
+
   it "in case of redirect and invalid params, it passes errors in session and then deletes them" do
     post "/books", title: ""
     follow_redirect!
