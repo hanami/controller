@@ -247,7 +247,7 @@ module Hanami
 
       # Return parsed request body
       def parsed_request_body
-        Hanami::Utils::Deprecation.new('parsed_request_body will be deprecated in the future release please use `params`')
+        Hanami::Utils::Deprecation.new('parsed_request_body is deprecated and it will be removed in future versions')
         @_env.fetch(ROUTER_PARSED_BODY, nil)
       end
 
