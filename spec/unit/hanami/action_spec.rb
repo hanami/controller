@@ -136,6 +136,16 @@ RSpec.describe Hanami::Action do
   end
 
   describe "#parsed_request_body" do
+    before do
+      @original_stderr = $stderr
+      $stderr = File.open(File::NULL, "w")
+    end
+
+    after do
+      $stderr = @original_stderr
+      @original_stderr = nil
+    end
+
     it "exposes the body of the request parsed by router body parsers" do
       action_class = Class.new do
         include Hanami::Action
@@ -153,6 +163,24 @@ RSpec.describe Hanami::Action do
       action.call(env)
       parsed_request_body = action.request_body
       expect(parsed_request_body).to eq('a' => 'foo')
+    end
+
+    it "shows deprecation message" do
+      action_class = Class.new do
+        include Hanami::Action
+
+        expose :request_body
+
+        def call(_)
+          @request_body = parsed_request_body
+        end
+      end
+
+      action = action_class.new
+      env = Rack::MockRequest.env_for('http://example.com/foo',
+                                      'router.parsed_body' => { 'a' => 'foo' })
+
+      expect { action.call(env) }.to output(/parsed_request_body is deprecated and it will be removed in future versions/).to_stderr
     end
   end
 
