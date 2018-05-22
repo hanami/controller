@@ -127,8 +127,11 @@ module Hanami
         accepted_mime_types
       end
 
-      def self.accepted_mime_type?(request, accepted_mime_types)
-        !accepted_mime_types.find { |mt| request.accept?(mt) }.nil?
+      def self.accepted_mime_type?(request, accepted_mime_types, configuration)
+        mime_types = accepted_mime_types.map { |format| format_to_mime_type(format, configuration) }
+
+        mime_type = request.env[CONTENT_TYPE] || self.content_type(configuration, request, accepted_mime_types)
+        mime_types.any? {|mt| ::Rack::Mime.match?(mime_type, mt) }
       end
 
       def self.calculate_content_type_with_charset(configuration, request, accepted_mime_types)

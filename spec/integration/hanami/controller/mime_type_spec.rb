@@ -183,7 +183,7 @@ RSpec.describe 'MIME Type' do
         let(:accept) { "application/xml" }
 
         it "accepts selected MIME Types" do
-          expect(response.status).to be(406)
+          expect(response.status).to be(415)
         end
       end
 
