@@ -518,7 +518,7 @@ module Hanami
     end
 
     def enforce_accepted_mime_types(req, *)
-      Mime.accepted_mime_type?(req, accepted_mime_types) or halt 406
+      Mime.accepted_mime_type?(req, accepted_mime_types, configuration) or halt 406
     end
 
     attr_reader :handled_exceptions

@@ -1591,20 +1591,6 @@ module Mimes
     end
   end
 
-  class DefaultAndAccept < Hanami::Action
-    accept :json
-
-    def call(*, res)
-      res.body, = *format(res.content_type)
-    end
-
-    private
-
-    def default_response_format
-      :html
-    end
-  end
-
   class Application
     def initialize
       configuration = Hanami::Controller::Configuration.new do |config|
@@ -1620,7 +1606,32 @@ module Mimes
         get '/nocontent',          to: 'mimes#no_content'
         get '/overwritten_format', to: 'mimes#override_default_response'
         get '/custom_from_accept', to: 'mimes#custom_from_accept'
-        get '/default_and_accept', to: 'mimes#default_and_accept'
+      end
+    end
+
+    def call(env)
+      @router.call(env)
+    end
+  end
+end
+
+module MimesWithDefault
+  class Default < Hanami::Action
+    accept :json
+
+    def call(*, res)
+      res.body, = *format(res.content_type)
+    end
+  end
+
+  class Application
+    def initialize
+      configuration = Hanami::Controller::Configuration.new do |config|
+        config.default_response_format= :html
+      end
+
+      @router = Hanami::Router.new(configuration: configuration) do
+        get '/default_and_accept', to: 'mimes_with_default#default'
       end
     end
 
