@@ -41,7 +41,7 @@ module Hanami
         # @since 0.3.0
         # @api private
         def header
-          { ETAG => @value } if none_match
+          { ETAG => @value } if @value
         end
 
         private
@@ -67,13 +67,13 @@ module Hanami
         # @since 0.3.0
         # @api private
         def fresh?
-          !Hanami::Utils::Blank.blank?(modified_since) && Time.httpdate(modified_since).to_i >= @value.to_i
+          !Hanami::Utils::Blank.blank?(modified_since) && Time.httpdate(modified_since).to_i >= @value.to_time.to_i
         end
 
         # @since 0.3.0
         # @api private
         def header
-          { LAST_MODIFIED => @value.httpdate } if modified_since
+          { LAST_MODIFIED => @value.httpdate } if @value && @value.respond_to?(:httpdate)
         end
 
         private
