@@ -118,7 +118,7 @@ RSpec.describe Hanami::Action::Params do
 
           it "doesn't filter _csrf_token" do
             response = Rack::MockRequest.new(action).request('PATCH', "?id=1", params: { _csrf_token: 'def', x: { foo: 'bar' } })
-            expect(response.body).to match(%(:id=>"1", :_csrf_token=>"def"))
+            expect(response.body).to match(%(:_csrf_token=>"def", :id=>"1"))
           end
         end
 
