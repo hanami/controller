@@ -11,11 +11,11 @@ RSpec.describe "HTTP HEAD" do
     last_response
   end
 
-  it "doesn't send body and default headers" do
+  it "doesn't cleanup body, but only default headers" do
     head "/"
 
     expect(response.status).to be(200)
-    expect(response.body).to   eq("")
+    expect(response.body).to   eq("index")
     expect(response.headers.to_a).to_not include(["X-Frame-Options", "DENY"])
   end
 
