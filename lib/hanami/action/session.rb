@@ -83,7 +83,7 @@ module Hanami
       #
       # @see Hanami::Action::Flash
       def flash
-        @flash ||= Flash.new(session, request_id)
+        @flash ||= Flash.new(session)
       end
 
       # In case of validations errors, preserve those informations after a
@@ -134,7 +134,7 @@ module Hanami
         if params.respond_to?(:valid?)
           flash[ERRORS_KEY] = errors.to_a unless params.valid?
         end
-
+        flash.keep!
         super
       end
 
