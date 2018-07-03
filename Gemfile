@@ -13,4 +13,5 @@ group :validations do
   gem 'hanami-validations', '~> 1.3.beta', require: false, git: 'https://github.com/hanami/validations.git', branch: 'develop'
 end
 
+gem 'hanami-devtools', require: false, git: 'https://github.com/hanami/devtools.git'
 gem 'coveralls', require: false
