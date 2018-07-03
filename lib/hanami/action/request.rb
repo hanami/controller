@@ -27,10 +27,6 @@ module Hanami
         @id ||= @env[REQUEST_ID] = SecureRandom.hex(DEFAULT_ID_LENGTH)
       end
 
-      def parsed_body
-        @env.fetch(ROUTER_PARSED_BODY, nil)
-      end
-
       def accept?(mime_type)
         !!::Rack::Utils.q_values(accept).find do |mime, _|
           ::Rack::Mime.match?(mime_type, mime)

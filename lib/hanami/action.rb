@@ -116,9 +116,6 @@ module Hanami
     # @api private
     HEAD = 'HEAD'.freeze
 
-    # The key that returns router parsed body from the Rack env
-    ROUTER_PARSED_BODY = 'router.parsed_body'.freeze
-
     # The key that returns accepted mime types from the Rack env
     #
     # @since 0.1.0
