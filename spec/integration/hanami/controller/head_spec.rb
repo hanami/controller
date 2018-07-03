@@ -35,11 +35,11 @@ RSpec.describe "HTTP HEAD" do
 
   HTTP_TEST_STATUSES_WITHOUT_BODY.each do |code|
     describe "with: #{code}" do
-      it "doesn't send body and default headers" do
+      it "does send body and default headers" do
         get "/code/#{code}"
 
         expect(response.status).to           be(code)
-        expect(response.body).to             eq("")
+        expect(response.body).to_not         be_empty
         expect(response.headers.to_a).to_not include(["X-Frame-Options", "DENY"])
       end
 
@@ -64,11 +64,11 @@ RSpec.describe "HTTP HEAD" do
         expect(response.headers["Content-Language"]).to eq("en")
       end
 
-      it "doesn't send Content-Length header" do
+      it "does send Content-Length header" do
         get "/code/#{code}"
 
         expect(response.status).to      be(code)
-        expect(response.headers).to_not have_key("Content-Length")
+        expect(response.headers).to     have_key("Content-Length")
       end
 
       it "doesn't send Content-Type header" do

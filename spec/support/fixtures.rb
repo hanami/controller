@@ -9,7 +9,7 @@ require 'hanami/action/cache'
 require 'hanami/action/glue'
 require_relative "./renderer"
 
-HTTP_TEST_STATUSES_WITHOUT_BODY = Set.new((100..199).to_a << 204 << 205 << 304).freeze
+HTTP_TEST_STATUSES_WITHOUT_BODY = Set.new((100..199).to_a << 205).freeze
 HTTP_TEST_STATUSES = {
   100 => 'Continue',
   101 => 'Switching Protocols',

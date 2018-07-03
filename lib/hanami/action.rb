@@ -707,7 +707,6 @@ module Hanami
     def finish(req, res, halted)
       res.status, res.body = *halted unless halted.nil?
 
-      res.body = nil if _requires_no_body?(res)
       _empty_headers(res) if _requires_empty_headers?(res)
 
       res.set_format(Action::Mime.detect_format(res.content_type, configuration))
