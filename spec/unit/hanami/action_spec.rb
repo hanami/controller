@@ -1,3 +1,5 @@
+require "hanami/devtools/unit"
+
 RSpec.describe Hanami::Action do
   describe ".configuration" do
     after do
@@ -136,17 +138,7 @@ RSpec.describe Hanami::Action do
   end
 
   describe "#parsed_request_body" do
-    before do
-      @original_stderr = $stderr
-      $stderr = File.open(File::NULL, "w")
-    end
-
-    after do
-      $stderr = @original_stderr
-      @original_stderr = nil
-    end
-
-    it "exposes the body of the request parsed by router body parsers" do
+    it "exposes the body of the request parsed by router body parsers", silence_deprecations: true do
       action_class = Class.new do
         include Hanami::Action
 
@@ -180,7 +172,7 @@ RSpec.describe Hanami::Action do
       env = Rack::MockRequest.env_for('http://example.com/foo',
                                       'router.parsed_body' => { 'a' => 'foo' })
 
-      expect { action.call(env) }.to output(/parsed_request_body is deprecated and it will be removed in future versions/).to_stderr
+      expect { action.call(env) }.to output(/#parsed_request_body is deprecated and it will be removed in future versions/).to_stderr
     end
   end
 
