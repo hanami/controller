@@ -14,10 +14,10 @@ RSpec.describe "Full stack application" do
     expect(last_response.body).to include(':greeting=>"Hello"')
   end
 
-  it "omits the body if the request is HEAD" do
+  it "only allows entity headers if the request is HEAD" do
     head "/head", {}, "HTTP_ACCEPT" => "text/html"
 
-    expect(last_response.body).to        be_empty
+    expect(last_response.body).to_not be_empty
     expect(last_response.headers).to_not have_key("X-Renderable")
   end
 

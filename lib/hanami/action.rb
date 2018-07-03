@@ -502,8 +502,14 @@ module Hanami
 
     # @since 0.3.2
     # @api private
-    def _requires_no_body?(req, res)
-      HTTP_STATUSES_WITHOUT_BODY.include?(res.status) || req.head?
+    def _requires_no_body?(res)
+      HTTP_STATUSES_WITHOUT_BODY.include?(res.status)
+    end
+
+    # @since x.x.x
+    # @api private
+    def _requires_empty_headers?(res)
+      _requires_no_body?(res) || res.head?
     end
 
     private
@@ -595,7 +601,7 @@ module Hanami
     # For instance, a <tt>204</tt> doesn't allow <tt>Content-Type</tt> or any
     # other custom header.
     #
-    # This restriction is enforced by <tt>Hanami::Action::Head#finish</tt>.
+    # This restriction is enforced by <tt>Hanami::Action#_requires_no_body?</tt>.
     #
     # However, there are cases that demand to bypass this rule to set meta
     # informations via headers.
@@ -606,7 +612,7 @@ module Hanami
     #
     # @since 0.5.0
     #
-    # @see Hanami::Action::HEAD#finish
+    # @see Hanami::Action#_requires_no_body?
     #
     # @example
     #   require 'hanami/controller'
@@ -642,6 +648,12 @@ module Hanami
     #   # Both Content-Type and X-No-Pass are removed because they're not allowed
     def keep_response_header?(header)
       ENTITY_HEADERS.include?(header)
+    end
+
+    # @since x.x.x
+    # @api private
+    def _empty_headers(res)
+      res.headers.select! { |header, _| keep_response_header?(header) }
     end
 
     def format(value)
@@ -692,14 +704,11 @@ module Hanami
     # @see Hanami::Action::Session#finish
     # @see Hanami::Action::Cookies#finish
     # @see Hanami::Action::Cache#finish
-    # @see Hanami::Action::Head#finish
     def finish(req, res, halted)
       res.status, res.body = *halted unless halted.nil?
 
-      if _requires_no_body?(req, res)
-        res.body = nil
-        res.headers.select! { |header, _| keep_response_header?(header) }
-      end
+      res.body = nil if _requires_no_body?(res)
+      _empty_headers(res) if _requires_empty_headers?(res)
 
       res.set_format(Action::Mime.detect_format(res.content_type, configuration))
       res[:params] = req.params
