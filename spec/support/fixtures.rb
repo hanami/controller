@@ -1704,3 +1704,108 @@ module SessionsWithoutCookies
     end
   end
 end
+
+module Flash
+  Controller = Hanami::Controller.duplicate(self) do
+    handle_exceptions false
+
+    prepare do
+      include Hanami::Action::Glue
+      include Hanami::Action::Session
+    end
+  end
+
+  module Controllers
+    module Home
+      class Index
+        include Flash::Action
+
+        def call(_params)
+          flash[:hello] = 'world'
+          if @_env['REQUEST_METHOD'] == 'GET'
+            redirect_to '/books'
+          else
+            redirect_to '/print'
+          end
+        end
+      end
+
+      class Books
+        include Flash::Action
+
+        def call(_params)
+          self.body = "flash_empty: #{flash.empty?} flash: #{flash.inspect}"
+        end
+      end
+
+      class Print
+        include Flash::Action
+
+        def call(_params)
+          self.body = flash[:hello]
+        end
+      end
+
+      class EachRedirect
+        include Flash::Action
+
+        def call(_params)
+          flash[:hello] = 'world'
+          redirect_to '/each'
+        end
+      end
+
+      class Each
+        include Flash::Action
+
+        def call(_params)
+          each_result = []
+          flash.each { |type, message| each_result << [type, message] }
+          self.body = "flash_each: #{ each_result }"
+        end
+      end
+
+      class MapRedirect
+        include Flash::Action
+
+        def call(_params)
+          flash[:hello] = 'world'
+          redirect_to '/map'
+        end
+      end
+
+      class Map
+        include Flash::Action
+
+        def call(_params)
+          self.body = "flash_map: #{flash.map { |type, message| [type, message] }}"
+        end
+      end
+    end
+  end
+
+  class Application
+    def initialize
+      resolver = Hanami::Routing::EndpointResolver.new(namespace: Flash::Controllers)
+      routes   = Hanami::Router.new(resolver: resolver) do
+        get '/',      to: 'home#index'
+        post '/',     to: 'home#index'
+        get '/print', to: 'home#print'
+        get '/books', to: 'home#books'
+        get '/map_redirect',   to: 'home#map_redirect'
+        get '/each_redirect',  to: 'home#each_redirect'
+        get '/map',            to: 'home#map'
+        get '/each',           to: 'home#each'
+      end
+
+      @middleware = Rack::Builder.new do
+        use Rack::Session::Cookie, secret: SecureRandom.hex(16)
+        run routes
+      end
+    end
+
+    def call(env)
+      @middleware.call(env)
+    end
+  end
+end
