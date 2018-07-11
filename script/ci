@@ -59,7 +59,7 @@ run_isolation_test() {
   local hash="$(shasum "$test" | cut -b 1-40)"
 
   printf "\n\n\nRunning: $test\n"
-  CI=true SIMPLECOV_COMMAND_NAME=$hash ruby $test --options spec/isolation/.rspec
+  SIMPLECOV_COMMAND_NAME=$hash ruby $test --options spec/isolation/.rspec
 }
 
 run_test() {
@@ -67,7 +67,7 @@ run_test() {
   local hash="$(shasum "$test" | cut -b 1-40)"
 
   printf "\n\n\nRunning: $test\n"
-  CI=true SIMPLECOV_COMMAND_NAME=$hash bundle exec rspec $test
+  SIMPLECOV_COMMAND_NAME=$hash bundle exec rspec $test
 }
 
 upload_code_coverage() {
