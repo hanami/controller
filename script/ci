@@ -2,8 +2,24 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+prepare_build() {
+  if [ -d coverage ]; then
+    rm -rf coverage
+  fi
+}
+
+print_ruby_version() {
+  echo "Using $(ruby -v)"
+  echo
+}
+
+run_code_quality_checks() {
+  # bundle exec rubocop .
+  true
+}
+
 run_unit_tests() {
-  bundle exec rake spec:coverage
+  bundle exec rake spec:unit
 }
 
 run_isolation_tests() {
@@ -40,22 +56,32 @@ run_integration_tests() {
 
 run_isolation_test() {
   local test=$1
+  local hash="$(shasum "$test" | cut -b 1-40)"
 
   printf "\n\n\nRunning: $test\n"
-  ruby $test --options spec/isolation/.rspec
+  CI=true SIMPLECOV_COMMAND_NAME=$hash ruby $test --options spec/isolation/.rspec
 }
 
 run_test() {
   local test=$1
+  local hash="$(shasum "$test" | cut -b 1-40)"
 
   printf "\n\n\nRunning: $test\n"
-  COVERAGE=true bundle exec rspec $test
+  CI=true SIMPLECOV_COMMAND_NAME=$hash bundle exec rspec $test
+}
+
+upload_code_coverage() {
+  bundle exec rake codecov:upload
 }
 
 main() {
-  run_unit_tests &&
+  prepare_build &&
+    print_ruby_version &&
+    run_code_quality_checks &&
+    run_unit_tests &&
     run_isolation_tests &&
-    run_integration_tests
+    run_integration_tests &&
+    upload_code_coverage
 }
 
 main
