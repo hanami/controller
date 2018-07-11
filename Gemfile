@@ -1,7 +1,7 @@
 source 'http://rubygems.org'
 gemspec
 
-unless ENV['TRAVIS']
+unless ENV['CI']
   gem 'byebug', require: false, platforms: :mri
   gem 'yard',   require: false
 end
@@ -14,4 +14,3 @@ group :validations do
 end
 
 gem 'hanami-devtools', require: false, git: 'https://github.com/hanami/devtools.git'
-gem 'coveralls', require: false
