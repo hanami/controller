@@ -46,15 +46,23 @@ RSpec.describe "Full stack application" do
     expect(last_response.body).to include("Step 1 completed")
   end
 
-  it "doesn't return stale informations" do
+  it "doesn't return stale informations when using redirect" do
     post "/settings", {}
     follow_redirect!
 
-    expect(last_response.body).to match(/Hanami::Action::Flash:0x[\d\w]* {:message=>"Saved!"}/)
+    expect(last_response.body).to match(/Hanami::Action::Flash:0x[\d\w]* {:data=>{}, :kept=>{"message"=>"Saved!"}}/)
 
     get "/settings"
 
-    expect(last_response.body).to match(/Hanami::Action::Flash:0x[\d\w]* {}/)
+    expect(last_response.body).to match(/Hanami::Action::Flash:0x[\d\w]* {:data=>{}, :kept=>{}}/)
+  end
+
+  it "doesn't return stale informations when not using redirect" do
+    get "/poll/1"
+    expect(last_response.body).to match(/Hanami::Action::Flash:0x[\d\w]* {:data=>{:notice=>"Start the poll"}, :kept=>{}}/)
+
+    get "/settings"
+    expect(last_response.body).to match(/Hanami::Action::Flash:0x[\d\w]* {:data=>{}, :kept=>{}}/)
   end
 
   it "can access params with string symbols or methods" do

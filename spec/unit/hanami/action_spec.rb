@@ -1,3 +1,7 @@
+# frozen_string_literal: true
+
+require "hanami/devtools/unit"
+
 RSpec.describe Hanami::Action do
   describe "#initialize" do
     it "instantiate a frozen action" do
@@ -96,10 +100,10 @@ RSpec.describe Hanami::Action do
       end
 
       action = action_class.new(configuration: configuration)
-      env = Rack::MockRequest.env_for('http://example.com/foo')
+      env = Rack::MockRequest.env_for("http://example.com/foo")
       response = action.call(env)
 
-      expect(response[:request].path).to eq('/foo')
+      expect(response[:request].path).to eq("/foo")
     end
   end
 

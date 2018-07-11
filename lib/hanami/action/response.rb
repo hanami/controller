@@ -88,11 +88,14 @@ module Hanami
       end
 
       def flash
-        @flash ||= Flash.new(session, request_id)
+        @flash ||= Flash.new(session)
       end
 
       def redirect_to(url, status: 302)
         return unless renderable?
+
+        # This trick avoids to instantiate `flash` if it wasn't already.
+        flash.keep! if defined?(@flash)
 
         redirect(::String.new(url), status)
         Halt.call(status)

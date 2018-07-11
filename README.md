@@ -4,12 +4,12 @@ Complete, fast and testable actions for Rack and [Hanami](http://hanamirb.org)
 
 ## Status
 
-[![Gem Version](https://badge.fury.io/rb/hanami-controller.png)](http://badge.fury.io/rb/hanami-controller)
-[![Build Status](https://secure.travis-ci.org/hanami/controller.png?branch=master)](http://travis-ci.org/hanami/controller?branch=master)
-[![Coverage](https://coveralls.io/repos/hanami/controller/badge.png?branch=master)](https://coveralls.io/r/hanami/controller)
-[![Code Climate](https://codeclimate.com/github/hanami/controller.png)](https://codeclimate.com/github/hanami/controller)
-[![Dependencies](https://gemnasium.com/hanami/controller.png)](https://gemnasium.com/hanami/controller)
-[![Inline docs](http://inch-ci.org/github/hanami/controller.png)](http://inch-ci.org/github/hanami/controller)
+[![Gem Version](https://badge.fury.io/rb/hanami-controller.svg)](https://badge.fury.io/rb/hanami-controller)
+[![TravisCI](https://travis-ci.org/hanami/controller.svg?branch=master)](https://travis-ci.org/hanami/controller)
+[![CircleCI](https://circleci.com/gh/hanami/controller/tree/master.svg?style=svg)](https://circleci.com/gh/hanami/controller/tree/master)
+[![Test Coverage](https://codecov.io/gh/hanami/controller/branch/master/graph/badge.svg)](https://codecov.io/gh/hanami/controller)
+[![Depfu](https://badges.depfu.com/badges/7cd17419fba78b726be1353118fb01de/overview.svg)](https://depfu.com/github/hanami/controller?project=Bundler)
+[![Inline Docs](http://inch-ci.org/github/hanami/controller.svg)](http://inch-ci.org/github/hanami/controller)
 
 ## Contact
 

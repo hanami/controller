@@ -16,6 +16,17 @@ module Hanami
 
       private
 
+      # Container useful to transport data with the HTTP session
+      #
+      # @return [Hanami::Action::Flash] a Flash instance
+      #
+      # @since 0.3.0
+      #
+      # @see Hanami::Action::Flash
+      def flash
+        @flash ||= Flash.new(session)
+      end
+
       # Finalize the response
       #
       # @return [void]
