@@ -44,6 +44,8 @@ module Hanami
         'text/html'                => :html
       }.freeze
 
+      attr_reader :accepted_formats
+
       # Initialize a configuration instance
       #
       # @return [Hanami::Controller::Configuration] a new configuration's
@@ -57,6 +59,7 @@ module Hanami
         @default_request_format  = nil
         @default_response_format = nil
         @default_charset         = nil
+        @accepted_formats        = []
         @default_headers         = {}
         @cookies                 = {}
         @root_directory          = ::Pathname.new(Dir.pwd).realpath
@@ -238,6 +241,16 @@ module Hanami
         end
       end
 
+      def accept=(*formats)
+        # FIXME: speed up
+        known_formats = DEFAULT_FORMATS.values | @formats.values | Hanami::Action::Mime::TYPES.keys
+
+        @accepted_formats = Utils::Kernel.Array(formats).map do |format|
+          known_formats.include?(format) or raise UnknownFormatError.new(format)
+          format
+        end
+      end
+
       # Set default cookies options for all responses
       #
       # By default this value is an empty hash.
@@ -281,7 +294,11 @@ module Hanami
       # @since 0.2.0
       # @api private
       def format_for(mime_type)
-        @formats[mime_type]
+        content_type = Action::Mime.content_type_without_charset(mime_type)
+
+        @formats.fetch(content_type) do
+          Action::Mime::TYPES.key(content_type)
+        end
       end
 
       # Returns a mime type for the given format

@@ -225,6 +225,26 @@ RSpec.describe Hanami::Controller::Configuration do
     end
   end
 
+  describe "#accept=" do
+    it "sets accepted formats" do
+      configuration = described_class.new do |config|
+        config.format jsonapi: "application/vnd.api+json"
+        config.accept = :json, :jsonapi
+      end
+
+      expect(configuration.accepted_formats).to match_array([:json, :jsonapi])
+    end
+
+    it "raises error if unknown format is given" do
+      expect do
+        described_class.new do |config|
+          config.accept = :json, :foo
+        end
+      end.to raise_error(Hanami::Controller::UnknownFormatError,
+                         "Cannot find a corresponding Mime type for 'foo'. Please configure it with Hanami::Controller::Configuration#format.")
+    end
+  end
+
   describe "#public_directory" do
     describe "when not previously set" do
       it "returns default value" do

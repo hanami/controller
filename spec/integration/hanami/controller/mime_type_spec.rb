@@ -43,7 +43,8 @@ RSpec.describe 'MIME Type' do
     context "when no ACCEPT or Content-Type are sent but there is a restriction using the accept macro" do
       it 'sets the status to 406' do
         response = app.get("/custom_from_accept")
-        expect(response.status).to eq 406
+        expect(response.headers["Content-Type"]).to eq("application/octet-stream; charset=utf-8")
+        expect(response.body).to                    eq("all")
       end
     end
 
@@ -170,6 +171,68 @@ RSpec.describe 'MIME Type' do
           expect(response.headers["X-AcceptJson"]).to    eq("true")
           expect(response.body).to                       eq("json")
         end
+      end
+    end
+  end
+
+  describe "Accepted Mime Types" do
+    let(:app) { Rack::MockRequest.new(AcceptedMimeTypes::Application.new) }
+
+    context "without 'accept' DSL" do
+      it "accepts request without Accept header" do
+        response = app.get("/")
+        expect(response.headers["Content-Type"]).to eq("application/json; charset=utf-8")
+        expect(response.body).to                    eq(%({"status":"OK"}))
+      end
+
+      it "accepts request with Accept header that indicates whitelisted MIME Type" do
+        response = app.get("/", "HTTP_ACCEPT" => "application/vnd.api+json")
+        expect(response.headers["Content-Type"]).to eq("application/vnd.api+json; charset=utf-8")
+        expect(response.body).to                    eq(%({"status":"OK"}))
+      end
+
+      it "accepts request with weighted Accept header that includes allowed" do
+        response = app.get("/", "HTTP_ACCEPT" => "text/*,application/json,text/html,*/*")
+        expect(response.headers["Content-Type"]).to eq("application/json; charset=utf-8")
+        expect(response.body).to                    eq(%({"status":"OK"}))
+      end
+
+      it "rejects request with non-whitelisted MIME Types" do
+        response = app.get("/", "HTTP_ACCEPT" => "application/xml")
+        expect(response.status).to be(406)
+        expect(response.body).to   eq("Not Acceptable")
+      end
+    end
+
+    context "with 'accept' DSL" do
+      it "accepts request without Accept header" do
+        response = app.get("/override")
+        expect(response.headers["Content-Type"]).to eq("application/json; charset=utf-8")
+        expect(response.body).to                    eq(%({"status":"OK"}))
+      end
+
+      it "accepts request with Accept header that indicates whitelisted MIME Type" do
+        response = app.get("/override", "HTTP_ACCEPT" => "application/vnd.api+json")
+        expect(response.headers["Content-Type"]).to eq("application/vnd.api+json; charset=utf-8")
+        expect(response.body).to                    eq(%({"status":"OK"}))
+      end
+
+      it "accepts request with weighted Accept header that includes allowed" do
+        response = app.get("/override", "HTTP_ACCEPT" => "text/*,application/json,text/html,*/*")
+        expect(response.headers["Content-Type"]).to eq("application/json; charset=utf-8")
+        expect(response.body).to                    eq(%({"status":"OK"}))
+      end
+
+      it "accepts request with weighted Accept header that includes allowed" do
+        response = app.get("/override", "HTTP_ACCEPT" => "text/plain")
+        expect(response.headers["Content-Type"]).to eq("text/plain; charset=utf-8")
+        expect(response.body).to                    eq("OK")
+      end
+
+      it "rejects request with non-whitelisted MIME Types" do
+        response = app.get("/", "HTTP_ACCEPT" => "application/xml")
+        expect(response.status).to be(406)
+        expect(response.body).to   eq("Not Acceptable")
       end
     end
   end

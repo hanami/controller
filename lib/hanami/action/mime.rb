@@ -76,6 +76,10 @@ module Hanami
         "#{content_type}; charset=#{charset}"
       end
 
+      def self.content_type_without_charset(content_type)
+        content_type.split(";").first
+      end
+
       # Use for setting Content-Type
       # If the request has the ACCEPT header it will try to return the best Content-Type based
       # on the content of the ACCEPT header taking in consideration the weights
@@ -122,7 +126,7 @@ module Hanami
       # @return [Symbol, nil]
       def self.detect_format(content_type, configuration)
         return if content_type.nil?
-        ct = content_type.split(";").first
+        ct = content_type_without_charset(content_type)
         configuration.format_for(ct) || format_for(ct)
       end
 
@@ -138,8 +142,9 @@ module Hanami
       #
       # @raise [Hanami::Controller::UnknownFormatError] if the format is invalid
       def self.restrict_mime_types(configuration, accepted_formats)
-        return if accepted_formats.empty?
+        return if accepted_formats.empty? && configuration.accepted_formats.empty?
 
+        accepted_formats |= configuration.accepted_formats
         mime_types = accepted_formats.map do |format|
           format_to_mime_type(format, configuration)
         end
@@ -157,9 +162,10 @@ module Hanami
       #
       # @return [TrueClass, FalseClass]
       def self.accepted_mime_type?(request, accepted_mime_types, configuration)
-        mime_type = request.env[CONTENT_TYPE] || default_content_type(configuration) || DEFAULT_CONTENT_TYPE
+        mime_type = request.env[CONTENT_TYPE] || request.accept || default_content_type(configuration) || DEFAULT_CONTENT_TYPE
 
-        !accepted_mime_types.find { |mt| ::Rack::Mime.match?(mt, mime_type) }.nil?
+        # !accepted_mime_types.find { |mt| ::Rack::Mime.match?(mt, mime_type) }.nil?
+        !best_q_match(mime_type, accepted_mime_types).nil?
       end
 
       # Use for setting the content_type and charset if the response

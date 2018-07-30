@@ -40,12 +40,9 @@ RSpec.describe Hanami::Action do
       expect(response.status).to                  be(200)
     end
 
-    it "accepts unknown mime type and returns :all" do
+    it "rejects unknown mime type" do
       response = action.call('HTTP_ACCEPT' => 'application/unknown')
-
-      expect(response.format).to                  eq(:all)
-      expect(response.headers['Content-Type']).to eq('application/octet-stream; charset=utf-8')
-      expect(response.status).to                  be(200)
+      expect(response.status).to                  be(406)
     end
 
     # Bug

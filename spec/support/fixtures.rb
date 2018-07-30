@@ -1570,14 +1570,6 @@ module Mimes
     end
   end
 
-  class Restricted < Hanami::Action
-    accept :html, :json, :custom
-
-    def call(_req, res)
-      res.body, = *format(res.content_type)
-    end
-  end
-
   class NoContent < Hanami::Action
     def call(_req, res)
       res.status = 204
@@ -1606,7 +1598,6 @@ module Mimes
         get "/",                   to: "mimes#default"
         get "/custom",             to: "mimes#custom"
         get "/accept",             to: "mimes#accept"
-        get "/restricted",         to: "mimes#restricted"
         get "/latin",              to: "mimes#latin"
         get "/nocontent",          to: "mimes#no_content"
         get "/overwritten_format", to: "mimes#override_default_response"
@@ -1637,6 +1628,46 @@ module MimesWithDefault
 
       @router = Hanami::Router.new(configuration: configuration) do
         get "/default_and_accept", to: "mimes_with_default#default"
+      end
+    end
+
+    def call(env)
+      @router.call(env)
+    end
+  end
+end
+
+module AcceptedMimeTypes
+  class Default < Hanami::Action
+    def call(*, res)
+      res.body = JSON.generate(status: "OK")
+    end
+  end
+
+  class Override < Hanami::Action
+    accept :txt
+
+    def call(*, res)
+      res.body = case res.format
+                 when :txt
+                   "OK"
+                 when :json, :jsonapi
+                   JSON.generate(status: "OK")
+                 end
+    end
+  end
+
+  class Application
+    def initialize
+      configuration = Hanami::Controller::Configuration.new do |config|
+        config.format jsonapi: "application/vnd.api+json"
+        config.accept = :json, :jsonapi
+        config.default_response_format = :json
+      end
+
+      @router = Hanami::Router.new(configuration: configuration) do
+        get "/",         to: "accepted_mime_types#default"
+        get "/override", to: "accepted_mime_types#override"
       end
     end
 

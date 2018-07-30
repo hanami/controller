@@ -181,6 +181,8 @@ module Hanami
 
         prepend InstanceMethods
         include Validatable if defined?(Validatable)
+
+        before :enforce_accepted_mime_types
       end
     end
 
@@ -370,7 +372,6 @@ module Hanami
     #   # When called with "application/xml"  => 406
     def self.accept(*formats)
       @accepted_formats = *formats
-      before :enforce_accepted_mime_types
     end
 
     # Handle the given exception with an HTTP status code.

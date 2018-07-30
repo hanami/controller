@@ -36,6 +36,8 @@ module Hanami
         new(action: "", configuration: nil, content_type: Mime.best_q_match(env[HTTP_ACCEPT]), env: env, header: response[RACK_HEADERS]).tap do |r|
           r.status = response[RACK_STATUS]
           r.body   = response[RACK_BODY].first
+          require "byebug"
+          byebug
           r.set_format(Mime.format_for(r.content_type))
         end
       end
@@ -43,6 +45,7 @@ module Hanami
       def initialize(action:, configuration:, content_type: nil, env: {}, header: {})
         super([], 200, header.dup)
         set_header("Content-Type", content_type)
+        set_format(configuration.format_for(content_type))
 
         @action        = action
         @configuration = configuration
