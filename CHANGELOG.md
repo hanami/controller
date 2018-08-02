@@ -45,7 +45,17 @@ Complete, fast and testable actions for Rack
 - [Luca Guidi] When an exception is raised, it won't be caught, unless it's handled
 - [Luca Guidi] `Hanami::Action` exception handlers now accept `Hanami::Action::Request`, `Hanami::Action::Response`, and exception arguments
 
-## v1.3.0.beta1 (unreleased)
+## v1.3.0.beta1 - 2018-08-08
+### Added
+- [Luca Guidi] Official support for JRuby 9.2.0.0
+
+### Fixed
+- [Yuji Ueki] Ensure that if `If-None-Match` or `If-Modified-Since` response HTTP headers are missing, `Etag` or `Last-Modified` headers will be in response HTTP headers.
+- [Gustavo Caso] Don't show flash message for the request after a HTTP redirect.
+- [Gustavo Caso] Ensure `Hanami::Action::Flash#each`, `#map`, and `#empty?` to not reference stale flash data.
+
+### Deprecated
+- [Gustavo Caso] Deprecate `Hanami::Action#parsed_request_body`
 
 ## v1.2.0 - 2018-04-11
 
