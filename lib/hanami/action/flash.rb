@@ -14,7 +14,7 @@ module Hanami
 
       # Session key where keep data is store for redirect
       #
-      # @since x.x.x
+      # @since 1.3.0
       # @api private
       KEPT_KEY = :__kept_key
 
@@ -115,7 +115,7 @@ module Hanami
       # Set @keep to true, is use when triggering a redirect, and the content of _data is not empty.
       # @return [TrueClass, NilClass]
       #
-      # @since x.x.x
+      # @since 1.3.0
       # @api private
       #
       # @see Hanami::Action::Flash#empty?
@@ -165,7 +165,7 @@ module Hanami
       #
       # @return [Array]
       #
-      # @since x.x.x
+      # @since 1.3.0
       # @api private
       def kept
         @session[KEPT_KEY] || []
@@ -175,7 +175,7 @@ module Hanami
       #
       # @return [Hash] the current value of KEPT_KEY
       #
-      # @since x.x.x
+      # @since 1.3.0
       # @api private
       def keep_data
         new_kept_data = kept << JSON.generate({ count: 0, data: _data })
@@ -187,7 +187,7 @@ module Hanami
       #
       # @return [Hash] the current value of KEPT_KEY
       #
-      # @since x.x.x
+      # @since 1.3.0
       # @api private
       def expire_kept
         new_kept_data = kept.reject do |kept_data|
@@ -202,7 +202,7 @@ module Hanami
       #
       # @return [Hash] the current value of KEPT_KEY
       #
-      # @since x.x.x
+      # @since 1.3.0
       # @api private
       def update_kept_request_count
         new_kept_data = kept.map do |kept_data|
@@ -219,7 +219,7 @@ module Hanami
       # @param key [#to_s] the key
       # @return [Object, NilClass]
       #
-      # @since x.x.x
+      # @since 1.3.0
       # @api private
       def search_in_kept_data(key)
         string_key = key.to_s
@@ -237,7 +237,7 @@ module Hanami
       # @param new_kept_data
       # @return [Hash] the current value of KEPT_KEY
       #
-      # @since x.x.x
+      # @since 1.3.0
       # @api private
       def update_kept(new_kept_data)
         @session[KEPT_KEY] = new_kept_data
@@ -247,7 +247,7 @@ module Hanami
       #
       # @return [Hash]
       #
-      # @since x.x.x
+      # @since 1.3.0
       # @api private
       def kept_data
         kept.each_with_object({}) { |kept_data, result| result.merge!(JSON.parse(kept_data)['data']) }
@@ -255,10 +255,10 @@ module Hanami
 
       # Check if data is a hash
       #
-      # @param new_kept_data
+      # @param data
       # @return [TrueClass, FalseClass]
       #
-      # @since x.x.x
+      # @since 1.3.0
       # @api private
       def is_hash?(data)
         data && data.is_a?(Hash)
