@@ -1,17 +1,19 @@
-require 'hanami/action/configurable'
-require 'hanami/action/rack'
-require 'hanami/action/mime'
-require 'hanami/action/redirect'
-require 'hanami/action/exposable'
-require 'hanami/action/throwable'
-require 'hanami/action/callbacks'
+# frozen_string_literal: true
+
+require "hanami/action/configurable"
+require "hanami/action/rack"
+require "hanami/action/mime"
+require "hanami/action/redirect"
+require "hanami/action/exposable"
+require "hanami/action/throwable"
+require "hanami/action/callbacks"
 begin
-  require 'hanami/validations'
-  require 'hanami/action/validatable'
-rescue LoadError
+  require "hanami/validations"
+  require "hanami/action/validatable"
+rescue LoadError # rubocop:disable Lint/HandleExceptions
 end
-require 'hanami/action/head'
-require 'hanami/action/callable'
+require "hanami/action/head"
+require "hanami/action/callable"
 
 module Hanami
   # An HTTP endpoint
@@ -49,7 +51,7 @@ module Hanami
     # @see Hanami::Action::Validatable
     # @see Hanami::Action::Configurable
     # @see Hanami::Action::Callable
-    def self.included(base)
+    def self.included(base) # rubocop:disable Metrics/MethodLength
       base.class_eval do
         include Rack
         include Mime

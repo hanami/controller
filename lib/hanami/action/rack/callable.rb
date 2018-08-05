@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 module Hanami
   module Action
     module Rack
-      module Callable
+      module Callable # rubocop:disable Style/Documentation
         # Callable module for actions. With this module, actions with middlewares
         # will be able to work with rack builder.
         #

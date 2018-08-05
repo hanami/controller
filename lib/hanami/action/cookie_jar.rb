@@ -1,4 +1,6 @@
-require 'hanami/utils/hash'
+# frozen_string_literal: true
+
+require "hanami/utils/hash"
 
 module Hanami
   module Action
@@ -14,7 +16,7 @@ module Hanami
       #
       # @since 0.1.0
       # @api private
-      HTTP_HEADER       = 'HTTP_COOKIE'.freeze
+      HTTP_HEADER = "HTTP_COOKIE"
 
       # The key used by Rack to set the session cookie
       #
@@ -27,23 +29,23 @@ module Hanami
       # @api private
       #
       # @see https://github.com/hanami/controller/issues/138
-      RACK_SESSION_KEY   = :'rack.session'
+      RACK_SESSION_KEY = :'rack.session'
 
       # The key used by Rack to set the cookies as an Hash in the env
       #
       # @since 0.1.0
       # @api private
-      COOKIE_HASH_KEY   = 'rack.request.cookie_hash'.freeze
+      COOKIE_HASH_KEY   = "rack.request.cookie_hash"
 
       # The key used by Rack to set the cookies as a String in the env
       #
       # @since 0.1.0
       # @api private
-      COOKIE_STRING_KEY = 'rack.request.cookie_string'.freeze
+      COOKIE_STRING_KEY = "rack.request.cookie_string"
 
       # @since 0.4.5
       # @api private
-      COOKIE_SEPARATOR = ';,'.freeze
+      COOKIE_SEPARATOR = ";,"
 
       # Initialize the CookieJar
       #
@@ -69,10 +71,12 @@ module Hanami
       # @see Hanami::Action::Cookies#finish
       def finish
         @cookies.delete(RACK_SESSION_KEY)
-        @cookies.each do |k,v|
+        return unless changed?
+
+        @cookies.each do |k, v|
           next unless changed?(k)
           v.nil? ? delete_cookie(k) : set_cookie(k, _merge_default_values(v))
-        end if changed?
+        end
       end
 
       # Returns the object associated with the given key
@@ -167,10 +171,10 @@ module Hanami
       # @api private
       def _merge_default_values(value)
         cookies_options = if value.is_a? Hash
-          value.merge! _add_expires_option(value)
-        else
-          { value: value }
-        end
+                            value.merge! _add_expires_option(value)
+                          else
+                            { value: value }
+                          end
         @default_options.merge cookies_options
       end
 
@@ -179,7 +183,7 @@ module Hanami
       # @since 0.4.3
       # @api private
       def _add_expires_option(value)
-        if value.has_key?(:max_age) && !value.has_key?(:expires)
+        if value.key?(:max_age) && !value.key?(:expires)
           { expires: (Time.now + value[:max_age]) }
         else
           {}
@@ -192,12 +196,12 @@ module Hanami
       #
       # @since 0.1.0
       # @api private
-      def extract(env)
+      def extract(env) # rubocop:disable Metrics/MethodLength
         hash   = env[COOKIE_HASH_KEY] ||= {}
         string = env[HTTP_HEADER]
 
         return hash if string == env[COOKIE_STRING_KEY]
-        # TODO Next Rack 1.7.x ?? version will have ::Rack::Utils.parse_cookies
+        # TODO: Next Rack 1.7.x ?? version will have ::Rack::Utils.parse_cookies
         # We can then replace the following lines.
         hash.clear
 
@@ -206,8 +210,14 @@ module Hanami
         #   the Cookie header such that those with more specific Path attributes
         #   precede those with less specific.  Ordering with respect to other
         #   attributes (e.g., Domain) is unspecified.
-        cookies = ::Rack::Utils.parse_query(string, COOKIE_SEPARATOR) { |s| ::Rack::Utils.unescape(s) rescue s }
-        cookies.each { |k,v| hash[k] = Array === v ? v.first : v }
+        cookies = ::Rack::Utils.parse_query(string, COOKIE_SEPARATOR) do |s|
+          begin
+            ::Rack::Utils.unescape(s)
+          rescue StandardError
+            s
+          end
+        end
+        cookies.each { |k, v| hash[k] = Array === v ? v.first : v } # rubocop:disable Style/CaseEquality
         env[COOKIE_STRING_KEY] = string
         hash
       end

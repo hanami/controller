@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Hanami::Action do
   describe ".configuration" do
     after do
@@ -24,8 +26,8 @@ RSpec.describe Hanami::Action do
       response = CallAction.new.call({})
 
       expect(response[0]).to eq(201)
-      expect(response[1]).to eq('Content-Type' => 'application/octet-stream; charset=utf-8', 'X-Custom' => 'OK')
-      expect(response[2]).to eq(['Hi from TestAction!'])
+      expect(response[1]).to eq("Content-Type" => "application/octet-stream; charset=utf-8", "X-Custom" => "OK")
+      expect(response[2]).to eq(["Hi from TestAction!"])
     end
 
     context "when exception handling code is enabled" do
@@ -33,42 +35,42 @@ RSpec.describe Hanami::Action do
         response = ErrorCallAction.new.call({})
 
         expect(response[0]).to eq(500)
-        expect(response[2]).to eq(['Internal Server Error'])
+        expect(response[2]).to eq(["Internal Server Error"])
       end
 
       it "handles inherited exception with specified method" do
         response = ErrorCallFromInheritedErrorClass.new.call({})
 
         expect(response[0]).to eq(501)
-        expect(response[2]).to eq(['An inherited exception occurred!'])
+        expect(response[2]).to eq(["An inherited exception occurred!"])
       end
 
       it "handles exception with specified method" do
         response = ErrorCallFromInheritedErrorClassStack.new.call({})
 
         expect(response[0]).to eq(501)
-        expect(response[2]).to eq(['MyCustomError was thrown'])
+        expect(response[2]).to eq(["MyCustomError was thrown"])
       end
 
       it "handles exception with specified method (symbol)" do
         response = ErrorCallWithSymbolMethodNameAsHandlerAction.new.call({})
 
         expect(response[0]).to eq(501)
-        expect(response[2]).to eq(['Please go away!'])
+        expect(response[2]).to eq(["Please go away!"])
       end
 
       it "handles exception with specified method (string)" do
         response = ErrorCallWithStringMethodNameAsHandlerAction.new.call({})
 
         expect(response[0]).to eq(502)
-        expect(response[2]).to eq(['StandardError'])
+        expect(response[2]).to eq(["StandardError"])
       end
 
       it "handles exception with specified status code" do
         response = ErrorCallWithSpecifiedStatusCodeAction.new.call({})
 
         expect(response[0]).to eq(422)
-        expect(response[2]).to eq(['Unprocessable Entity'])
+        expect(response[2]).to eq(["Unprocessable Entity"])
       end
 
       it "returns a successful response if the code and status aren't set" do
@@ -121,17 +123,17 @@ RSpec.describe Hanami::Action do
 
         expose :req
 
-        def call(_)
+        def call(_params)
           @req = request
         end
       end
 
       action = action_class.new
-      env = Rack::MockRequest.env_for('http://example.com/foo')
+      env = Rack::MockRequest.env_for("http://example.com/foo")
       action.call(env)
 
       request = action.req
-      expect(request.path).to eq('/foo')
+      expect(request.path).to eq("/foo")
     end
   end
 
@@ -142,17 +144,17 @@ RSpec.describe Hanami::Action do
 
         expose :request_body
 
-        def call(_)
+        def call(_params)
           @request_body = parsed_request_body
         end
       end
 
       action = action_class.new
-      env = Rack::MockRequest.env_for('http://example.com/foo',
-                                      'router.parsed_body' => { 'a' => 'foo' })
+      env = Rack::MockRequest.env_for("http://example.com/foo",
+                                      "router.parsed_body" => { "a" => "foo" })
       action.call(env)
       parsed_request_body = action.request_body
-      expect(parsed_request_body).to eq('a' => 'foo')
+      expect(parsed_request_body).to eq("a" => "foo")
     end
   end
 
@@ -164,10 +166,10 @@ RSpec.describe Hanami::Action do
 
       expect(status).to be(201)
 
-      expect(headers.fetch('X-Custom')).to eq('OK')
-      expect(headers.fetch('Y-Custom')).to eq('YO')
+      expect(headers.fetch("X-Custom")).to eq("OK")
+      expect(headers.fetch("Y-Custom")).to eq("YO")
 
-      expect(body).to eq(['x'])
+      expect(body).to eq(["x"])
     end
 
     it "has a public errors method" do

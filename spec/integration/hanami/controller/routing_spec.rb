@@ -1,16 +1,18 @@
-require 'hanami/router'
+# frozen_string_literal: true
+
+require "hanami/router"
 
 Routes = Hanami::Router.new(parsers: :json) do
-  get '/',         to: 'root'
-  get '/team',     to: 'about#team'
-  get '/contacts', to: 'about#contacts'
+  get "/",         to: "root"
+  get "/team",     to: "about#team"
+  get "/contacts", to: "about#contacts"
 
   resource  :identity
   resources :flowers
   resources :painters, only: [:update]
 end
 
-RSpec.describe 'Hanami::Router integration' do
+RSpec.describe "Hanami::Router integration" do
   let(:app) { Rack::MockRequest.new(Routes) }
 
   it "calls simple action" do
@@ -145,8 +147,8 @@ RSpec.describe 'Hanami::Router integration' do
       end
 
       it "doesn't replace parsed params with router params" do
-        json     = { painter: { first_name: 'Gustav', last_name: 'Klimt', paintings: [{ name: "The Kiss" }, { name: "The Maiden" }] } }.to_json
-        response = app.request('PATCH', '/painters/23', 'CONTENT_TYPE' => 'application/json', input: json)
+        json     = { painter: { first_name: "Gustav", last_name: "Klimt", paintings: [{ name: "The Kiss" }, { name: "The Maiden" }] } }.to_json
+        response = app.request("PATCH", "/painters/23", "CONTENT_TYPE" => "application/json", input: json)
 
         expect(response.status).to be(200)
         expect(response.body).to   eq(%({:painter=>{:first_name=>"Gustav", :last_name=>"Klimt", :paintings=>[{:name=>"The Kiss"}, {:name=>"The Maiden"}]}, :id=>"23"}))

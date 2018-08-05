@@ -1,25 +1,27 @@
+# frozen_string_literal: true
+
 module Hanami
   module Action
     module Cache
       # @since 0.3.0
       # @api private
-      IF_NONE_MATCH = 'HTTP_IF_NONE_MATCH'.freeze
+      IF_NONE_MATCH = "HTTP_IF_NONE_MATCH"
 
       # The HTTP header for ETag
       #
       # @since 0.3.0
       # @api private
-      ETAG          = 'ETag'.freeze
+      ETAG          = "ETag"
 
       # @since 0.3.0
       # @api private
-      IF_MODIFIED_SINCE = 'HTTP_IF_MODIFIED_SINCE'.freeze
+      IF_MODIFIED_SINCE = "HTTP_IF_MODIFIED_SINCE"
 
       # The HTTP header for Last-Modified
       #
       # @since 0.3.0
       # @api private
-      LAST_MODIFIED = 'Last-Modified'.freeze
+      LAST_MODIFIED = "Last-Modified"
 
       # ETag value object
       #
@@ -29,7 +31,8 @@ module Hanami
         # @since 0.3.0
         # @api private
         def initialize(env, value)
-          @env, @value = env, value
+          @env = env
+          @value = value
         end
 
         # @since 0.3.0
@@ -61,7 +64,8 @@ module Hanami
         # @since 0.3.0
         # @api private
         def initialize(env, value)
-          @env, @value = env, value
+          @env = env
+          @value = value
         end
 
         # @since 0.3.0
@@ -73,7 +77,7 @@ module Hanami
         # @since 0.3.0
         # @api private
         def header
-          { LAST_MODIFIED => @value.httpdate } if @value && @value.respond_to?(:httpdate)
+          { LAST_MODIFIED => @value.httpdate } if @value&.respond_to?(:httpdate)
         end
 
         private
@@ -94,7 +98,7 @@ module Hanami
         # @since 0.3.0
         # @api private
         def initialize(env, options)
-          @validations = [ ETag.new(env, options[:etag]), LastModified.new(env, options[:last_modified]) ]
+          @validations = [ETag.new(env, options[:etag]), LastModified.new(env, options[:last_modified])]
         end
 
         # @since 0.3.0
@@ -106,7 +110,7 @@ module Hanami
         # @since 0.3.0
         # @api private
         def headers
-          @validations.map(&:header).compact.reduce Hash.new, :merge
+          @validations.map(&:header).compact.reduce({}, :merge)
         end
       end
     end

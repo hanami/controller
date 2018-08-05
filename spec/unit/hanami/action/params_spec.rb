@@ -1,7 +1,9 @@
-require 'rack'
+# frozen_string_literal: true
+
+require "rack"
 
 RSpec.describe Hanami::Action::Params do
-  xit 'is frozen'
+  xit "is frozen"
 
   # This is temporary suspended.
   # We need to get the dependency Hanami::Validations, more stable before to enable this back.
@@ -18,18 +20,18 @@ RSpec.describe Hanami::Action::Params do
       let(:action) { ParamsAction.new }
 
       it "raw gets all params" do
-        File.open('spec/support/fixtures/multipart-upload.png', 'rb') do |upload|
-          action.call('id' => '1', 'unknown' => '2', 'upload' => upload, '_csrf_token' => '3')
+        File.open("spec/support/fixtures/multipart-upload.png", "rb") do |upload|
+          action.call("id" => "1", "unknown" => "2", "upload" => upload, "_csrf_token" => "3")
 
-          expect(action.params[:id]).to eq('1')
-          expect(action.params[:unknown]).to eq('2')
+          expect(action.params[:id]).to eq("1")
+          expect(action.params[:unknown]).to eq("2")
           expect(FileUtils.cmp(action.params[:upload], upload)).to be(true)
-          expect(action.params[:_csrf_token]).to eq('3')
+          expect(action.params[:_csrf_token]).to eq("3")
 
-          expect(action.params.raw.fetch('id')).to eq('1')
-          expect(action.params.raw.fetch('unknown')).to eq('2')
-          expect(action.params.raw.fetch('upload')).to eq(upload)
-          expect(action.params.raw.fetch('_csrf_token')).to eq('3')
+          expect(action.params.raw.fetch("id")).to eq("1")
+          expect(action.params.raw.fetch("unknown")).to eq("2")
+          expect(action.params.raw.fetch("upload")).to eq(upload)
+          expect(action.params.raw.fetch("_csrf_token")).to eq("3")
         end
       end
     end
@@ -38,18 +40,18 @@ RSpec.describe Hanami::Action::Params do
       let(:action) { WhitelistedUploadDslAction.new }
 
       it "raw gets all params" do
-        Tempfile.create('multipart-upload') do |upload|
-          action.call('id' => '1', 'unknown' => '2', 'upload' => upload, '_csrf_token' => '3')
+        Tempfile.create("multipart-upload") do |upload|
+          action.call("id" => "1", "unknown" => "2", "upload" => upload, "_csrf_token" => "3")
 
-          expect(action.params[:id]).to          eq('1')
+          expect(action.params[:id]).to          eq("1")
           expect(action.params[:unknown]).to     be(nil)
           expect(action.params[:upload]).to      eq(upload)
-          expect(action.params[:_csrf_token]).to eq('3')
+          expect(action.params[:_csrf_token]).to eq("3")
 
-          expect(action.params.raw.fetch('id')).to          eq('1')
-          expect(action.params.raw.fetch('unknown')).to     eq('2')
-          expect(action.params.raw.fetch('upload')).to      eq(upload)
-          expect(action.params.raw.fetch('_csrf_token')).to eq('3')
+          expect(action.params.raw.fetch("id")).to          eq("1")
+          expect(action.params.raw.fetch("unknown")).to     eq("2")
+          expect(action.params.raw.fetch("upload")).to      eq(upload)
+          expect(action.params.raw.fetch("_csrf_token")).to eq("3")
         end
       end
     end
@@ -62,7 +64,7 @@ RSpec.describe Hanami::Action::Params do
       let(:action) { ParamsAction.new }
 
       it "creates a Params innerclass" do
-        expect(defined?(ParamsAction::Params)).to eq('constant')
+        expect(defined?(ParamsAction::Params)).to eq("constant")
         expect(ParamsAction::Params.ancestors).to include(Hanami::Action::Params)
       end
 
@@ -70,7 +72,7 @@ RSpec.describe Hanami::Action::Params do
         it "returns all the params as they are" do
           # For unit tests in Hanami projects, developers may want to define
           # params with symbolized keys.
-          _, _, body = action.call(a: '1', b: '2', c: '3')
+          _, _, body = action.call(a: "1", b: "2", c: "3")
           expect(body).to eq([%({:a=>"1", :b=>"2", :c=>"3"})])
         end
       end
@@ -78,7 +80,7 @@ RSpec.describe Hanami::Action::Params do
       context "in a Rack context" do
         it "returns all the params as they are" do
           # Rack params are always stringified
-          response = Rack::MockRequest.new(action).request('PATCH', '?id=23', params: { 'x' => { 'foo' => 'bar' } })
+          response = Rack::MockRequest.new(action).request("PATCH", "?id=23", params: { "x" => { "foo" => "bar" } })
           expect(response.body).to match(%({:id=>"23", :x=>{:foo=>"bar"}}))
         end
       end
@@ -86,7 +88,7 @@ RSpec.describe Hanami::Action::Params do
       context "with Hanami::Router" do
         it "returns all the params as they are" do
           # Hanami::Router params are always symbolized
-          _, _, body = action.call('router.params' => { id: '23' })
+          _, _, body = action.call("router.params" => { id: "23" })
           expect(body).to eq([%({:id=>"23"})])
         end
       end
@@ -100,31 +102,31 @@ RSpec.describe Hanami::Action::Params do
         # params with symbolized keys.
         context "in testing mode" do
           it "returns only the listed params" do
-            _, _, body = action.call(id: 23, unknown: 4, article: { foo: 'bar', tags: [:cool] })
+            _, _, body = action.call(id: 23, unknown: 4, article: { foo: "bar", tags: [:cool] })
             expect(body).to eq([%({:id=>23, :article=>{:tags=>[:cool]}})])
           end
 
           it "doesn't filter _csrf_token" do
-            _, _, body = action.call(_csrf_token: 'abc')
-            expect(body).to eq( [%({:_csrf_token=>"abc"})])
+            _, _, body = action.call(_csrf_token: "abc")
+            expect(body).to eq([%({:_csrf_token=>"abc"})])
           end
         end
 
         context "in a Rack context" do
           it "returns only the listed params" do
-            response = Rack::MockRequest.new(action).request('PATCH', "?id=23", params: { x: { foo: 'bar' } })
+            response = Rack::MockRequest.new(action).request("PATCH", "?id=23", params: { x: { foo: "bar" } })
             expect(response.body).to match(%({:id=>"23"}))
           end
 
           it "doesn't filter _csrf_token" do
-            response = Rack::MockRequest.new(action).request('PATCH', "?id=1", params: { _csrf_token: 'def', x: { foo: 'bar' } })
+            response = Rack::MockRequest.new(action).request("PATCH", "?id=1", params: { _csrf_token: "def", x: { foo: "bar" } })
             expect(response.body).to match(%(:_csrf_token=>"def", :id=>"1"))
           end
         end
 
         context "with Hanami::Router" do
           it "returns all the params coming from the router, even if NOT whitelisted" do
-            _, _, body = action.call('router.params' => { id: 23, another: 'x' })
+            _, _, body = action.call("router.params" => { id: 23, another: "x" })
             expect(body).to eq([%({:id=>23, :another=>"x"})])
           end
         end
@@ -134,27 +136,27 @@ RSpec.describe Hanami::Action::Params do
         let(:action) { WhitelistedDslAction.new }
 
         it "creates a Params innerclass" do
-          expect(defined?(WhitelistedDslAction::Params)).to eq('constant')
+          expect(defined?(WhitelistedDslAction::Params)).to eq("constant")
           expect(WhitelistedDslAction::Params.ancestors).to include(Hanami::Action::Params)
         end
 
         context "in testing mode" do
           it "returns only the listed params" do
-            _, _, body = action.call(username: 'jodosha', unknown: 'field')
+            _, _, body = action.call(username: "jodosha", unknown: "field")
             expect(body).to eq([%({:username=>"jodosha"})])
           end
         end
 
         context "in a Rack context" do
           it "returns only the listed params" do
-            response = Rack::MockRequest.new(action).request('PATCH', "?username=jodosha", params: { x: { foo: 'bar' } })
+            response = Rack::MockRequest.new(action).request("PATCH", "?username=jodosha", params: { x: { foo: "bar" } })
             expect(response.body).to match(%({:username=>"jodosha"}))
           end
         end
 
         context "with Hanami::Router" do
           it "returns all the router params, even if NOT whitelisted" do
-            _, _, body = action.call('router.params' => { username: 'jodosha', y: 'x' })
+            _, _, body = action.call("router.params" => { username: "jodosha", y: "x" })
             expect(body).to eq([%({:username=>"jodosha", :y=>"x"})])
           end
         end
@@ -162,18 +164,18 @@ RSpec.describe Hanami::Action::Params do
     end
   end
 
-  describe 'validations' do
+  describe "validations" do
     it "isn't valid with empty params" do
       params = TestParams.new({})
 
       expect(params.valid?).to be(false)
 
-      expect(params.errors.fetch(:email)).to   eq(['is missing'])
-      expect(params.errors.fetch(:name)).to    eq(['is missing'])
-      expect(params.errors.fetch(:tos)).to     eq(['is missing'])
-      expect(params.errors.fetch(:address)).to eq(['is missing'])
+      expect(params.errors.fetch(:email)).to   eq(["is missing"])
+      expect(params.errors.fetch(:name)).to    eq(["is missing"])
+      expect(params.errors.fetch(:tos)).to     eq(["is missing"])
+      expect(params.errors.fetch(:address)).to eq(["is missing"])
 
-      expect(params.error_messages).to eq(['Email is missing', 'Name is missing', 'Tos is missing', 'Age is missing', 'Address is missing'])
+      expect(params.error_messages).to eq(["Email is missing", "Name is missing", "Tos is missing", "Age is missing", "Address is missing"])
     end
 
     it "isn't valid with empty nested params" do
@@ -181,21 +183,21 @@ RSpec.describe Hanami::Action::Params do
 
       expect(params.valid?).to be(false)
 
-      expect(params.errors.fetch(:signup).fetch(:name)).to eq(['is missing'])
-      expect(params.error_messages).to                     eq(['Name is missing', 'Age is missing', 'Age must be greater than or equal to 18'])
+      expect(params.errors.fetch(:signup).fetch(:name)).to eq(["is missing"])
+      expect(params.error_messages).to                     eq(["Name is missing", "Age is missing", "Age must be greater than or equal to 18"])
     end
 
     it "is it valid when all the validation criteria are met" do
-      params = TestParams.new(email: 'test@hanamirb.org',
-                              password: '123456',
-                              password_confirmation: '123456',
-                              name: 'Luca',
-                              tos: '1',
-                              age: '34',
+      params = TestParams.new(email: "test@hanamirb.org",
+                              password: "123456",
+                              password_confirmation: "123456",
+                              name: "Luca",
+                              tos: "1",
+                              age: "34",
                               address: {
-                                line_one: '10 High Street',
+                                line_one: "10 High Street",
                                 deep: {
-                                  deep_attr: 'blue'
+                                  deep_attr: "blue"
                                 }
                               })
 
@@ -205,17 +207,17 @@ RSpec.describe Hanami::Action::Params do
     end
 
     it "has input available through the hash accessor" do
-      params = TestParams.new(name: 'John', age: '1', address: { line_one: '10 High Street' })
+      params = TestParams.new(name: "John", age: "1", address: { line_one: "10 High Street" })
 
-      expect(params[:name]).to               eq('John')
+      expect(params[:name]).to               eq("John")
       expect(params[:age]).to                be(1)
-      expect(params[:address][:line_one]).to eq('10 High Street')
+      expect(params[:address][:line_one]).to eq("10 High Street")
     end
 
     it "allows nested hash access via symbols" do
-      params = TestParams.new(name: 'John', address: { line_one: '10 High Street', deep: { deep_attr: 1 } })
-      expect(params[:name]).to                       eq('John')
-      expect(params[:address][:line_one]).to         eq('10 High Street')
+      params = TestParams.new(name: "John", address: { line_one: "10 High Street", deep: { deep_attr: 1 } })
+      expect(params[:name]).to                       eq("John")
+      expect(params[:address][:line_one]).to         eq("10 High Street")
       expect(params[:address][:deep][:deep_attr]).to be(1)
     end
   end
@@ -224,9 +226,9 @@ RSpec.describe Hanami::Action::Params do
     context "with data" do
       let(:params) do
         TestParams.new(
-          name: 'John',
-          address: { line_one: '10 High Street', deep: { deep_attr: 1 } },
-          array: [{ name: 'Lennon' }, { name: 'Wayne' }]
+          name: "John",
+          address: { line_one: "10 High Street", deep: { deep_attr: 1 } },
+          array: [{ name: "Lennon" }, { name: "Wayne" }]
         )
       end
 
@@ -239,11 +241,11 @@ RSpec.describe Hanami::Action::Params do
       end
 
       it "allows to read top level param" do
-        expect(params.get(:name)).to eq('John')
+        expect(params.get(:name)).to eq("John")
       end
 
       it "allows to read nested param" do
-        expect(params.get(:address, :line_one)).to eq('10 High Street')
+        expect(params.get(:address, :line_one)).to eq("10 High Street")
       end
 
       it "returns nil for uknown nested param" do
@@ -251,8 +253,8 @@ RSpec.describe Hanami::Action::Params do
       end
 
       it "allows to read datas under arrays" do
-        expect(params.get(:array, 0, :name)).to eq('Lennon')
-        expect(params.get(:array, 1, :name)).to eq('Wayne')
+        expect(params.get(:array, 0, :name)).to eq("Lennon")
+        expect(params.get(:array, 1, :name)).to eq("Wayne")
       end
     end
 
@@ -282,7 +284,7 @@ RSpec.describe Hanami::Action::Params do
   end
 
   describe "#to_h" do
-    let(:params) { TestParams.new(name: 'Jane') }
+    let(:params) { TestParams.new(name: "Jane") }
 
     it "returns a ::Hash" do
       expect(params.to_h).to be_kind_of(::Hash)
@@ -302,9 +304,9 @@ RSpec.describe Hanami::Action::Params do
 
     it "handles nested params" do
       input = {
-        'address' => {
-          'deep' => {
-            'deep_attr' => 'foo'
+        "address" => {
+          "deep" => {
+            "deep_attr" => "foo"
           }
         }
       }
@@ -312,7 +314,7 @@ RSpec.describe Hanami::Action::Params do
       expected = {
         address: {
           deep: {
-            deep_attr: 'foo'
+            deep_attr: "foo"
           }
         }
       }
@@ -329,23 +331,23 @@ RSpec.describe Hanami::Action::Params do
       # This is bug 113.
       it "handles nested params" do
         input = {
-          'name' => 'John',
-          'age' => 1,
-          'address' => {
-            'line_one' => '10 High Street',
-            'deep' => {
-              'deep_attr' => 'hello'
+          "name" => "John",
+          "age" => 1,
+          "address" => {
+            "line_one" => "10 High Street",
+            "deep" => {
+              "deep_attr" => "hello"
             }
           }
         }
 
         expected = {
-          name: 'John',
+          name: "John",
           age: 1,
           address: {
-            line_one: '10 High Street',
+            line_one: "10 High Street",
             deep: {
-              deep_attr: 'hello'
+              deep_attr: "hello"
             }
           }
         }
@@ -361,7 +363,7 @@ RSpec.describe Hanami::Action::Params do
   end
 
   describe "#to_hash" do
-    let(:params) { TestParams.new(name: 'Jane') }
+    let(:params) { TestParams.new(name: "Jane") }
 
     it "returns a ::Hash" do
       expect(params.to_hash).to be_kind_of(::Hash)
@@ -381,9 +383,9 @@ RSpec.describe Hanami::Action::Params do
 
     it "handles nested params" do
       input = {
-        'address' => {
-          'deep' => {
-            'deep_attr' => 'foo'
+        "address" => {
+          "deep" => {
+            "deep_attr" => "foo"
           }
         }
       }
@@ -391,7 +393,7 @@ RSpec.describe Hanami::Action::Params do
       expected = {
         address: {
           deep: {
-            deep_attr: 'foo'
+            deep_attr: "foo"
           }
         }
       }
@@ -408,23 +410,23 @@ RSpec.describe Hanami::Action::Params do
       # This is bug 113.
       it "handles nested params" do
         input = {
-          'name' => 'John',
-          'age' => 1,
-          'address' => {
-            'line_one' => '10 High Street',
-            'deep' => {
-              'deep_attr' => 'hello'
+          "name" => "John",
+          "age" => 1,
+          "address" => {
+            "line_one" => "10 High Street",
+            "deep" => {
+              "deep_attr" => "hello"
             }
           }
         }
 
         expected = {
-          name: 'John',
+          name: "John",
           age: 1,
           address: {
-            line_one: '10 High Street',
+            line_one: "10 High Street",
             deep: {
-              deep_attr: 'hello'
+              deep_attr: "hello"
             }
           }
         }
@@ -437,8 +439,8 @@ RSpec.describe Hanami::Action::Params do
         expect(actual[:address][:deep]).to be_kind_of(::Hash)
       end
 
-      it 'does not stringify values' do
-        input  = { 'name' => 123 }
+      it "does not stringify values" do
+        input  = { "name" => 123 }
         params = TestParams.new(input)
 
         expect(params[:name]).to be(123)

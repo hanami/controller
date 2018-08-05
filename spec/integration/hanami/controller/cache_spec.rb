@@ -1,29 +1,31 @@
-require 'hanami/router'
-require 'hanami/action/cache'
+# frozen_string_literal: true
+
+require "hanami/router"
+require "hanami/action/cache"
 
 CacheControlRoutes = Hanami::Router.new do
-  get '/default',              to: 'cache_control#default'
-  get '/overriding',           to: 'cache_control#overriding'
-  get '/symbol',               to: 'cache_control#symbol'
-  get '/symbols',              to: 'cache_control#symbols'
-  get '/hash',                 to: 'cache_control#hash'
-  get '/private-and-public',   to: 'cache_control#private_public'
+  get "/default",              to: "cache_control#default"
+  get "/overriding",           to: "cache_control#overriding"
+  get "/symbol",               to: "cache_control#symbol"
+  get "/symbols",              to: "cache_control#symbols"
+  get "/hash",                 to: "cache_control#hash"
+  get "/private-and-public",   to: "cache_control#private_public"
 end
 
 ExpiresRoutes = Hanami::Router.new do
-  get '/default',              to: 'expires#default'
-  get '/overriding',           to: 'expires#overriding'
-  get '/symbol',               to: 'expires#symbol'
-  get '/symbols',              to: 'expires#symbols'
-  get '/hash',                 to: 'expires#hash'
+  get "/default",              to: "expires#default"
+  get "/overriding",           to: "expires#overriding"
+  get "/symbol",               to: "expires#symbol"
+  get "/symbols",              to: "expires#symbols"
+  get "/hash",                 to: "expires#hash"
 end
 
 ConditionalGetRoutes = Hanami::Router.new do
-  get '/etag',                    to: 'conditional_get#etag'
-  get '/last-modified',           to: 'conditional_get#last_modified'
-  get '/etag-last-modified',      to: 'conditional_get#etag_last_modified'
-  get '/last-modified-nil-value', to: 'conditional_get#last_modified_nil_value'
-  get '/etag-nil-value',          to: 'conditional_get#etag_nil_value'
+  get "/etag",                    to: "conditional_get#etag"
+  get "/last-modified",           to: "conditional_get#last_modified"
+  get "/etag-last-modified",      to: "conditional_get#etag_last_modified"
+  get "/last-modified-nil-value", to: "conditional_get#last_modified_nil_value"
+  get "/etag-nil-value",          to: "conditional_get#etag_nil_value"
 end
 
 module CacheControl
@@ -141,7 +143,7 @@ module ConditionalGet
     include Hanami::Action::Cache
 
     def call(_params)
-      fresh etag: 'updated'
+      fresh etag: "updated"
     end
   end
 
@@ -159,7 +161,7 @@ module ConditionalGet
     include Hanami::Action::Cache
 
     def call(_params)
-      fresh etag: 'updated', last_modified: Time.now
+      fresh etag: "updated", last_modified: Time.now
     end
   end
 

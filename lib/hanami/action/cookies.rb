@@ -1,4 +1,6 @@
-require 'hanami/action/cookie_jar'
+# frozen_string_literal: true
+
+require "hanami/action/cookie_jar"
 
 module Hanami
   module Action

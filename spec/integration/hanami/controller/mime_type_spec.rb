@@ -1,19 +1,21 @@
-require 'hanami/router'
+# frozen_string_literal: true
+
+require "hanami/router"
 
 MimeRoutes = Hanami::Router.new do
-  get '/',                          to: 'mimes#default'
-  get '/custom',                    to: 'mimes#custom'
-  get '/configuration',             to: 'mimes#configuration'
-  get '/accept',                    to: 'mimes#accept'
-  get '/restricted',                to: 'mimes#restricted'
-  get '/latin',                     to: 'mimes#latin'
-  get '/nocontent',                 to: 'mimes#no_content'
-  get '/response',                  to: 'mimes#default_response'
-  get '/overwritten_format',        to: 'mimes#override_default_response'
-  get '/custom_from_accept',        to: 'mimes#custom_from_accept'
-  get '/default_and_accept',        to: 'mimes#default_and_accept'
-  post '/content_type',             to: 'mimes#content_type'
-  post '/default_and_content_type', to: 'mimes#default_and_content_type'
+  get "/",                          to: "mimes#default"
+  get "/custom",                    to: "mimes#custom"
+  get "/configuration",             to: "mimes#configuration"
+  get "/accept",                    to: "mimes#accept"
+  get "/restricted",                to: "mimes#restricted"
+  get "/latin",                     to: "mimes#latin"
+  get "/nocontent",                 to: "mimes#no_content"
+  get "/response",                  to: "mimes#default_response"
+  get "/overwritten_format",        to: "mimes#override_default_response"
+  get "/custom_from_accept",        to: "mimes#custom_from_accept"
+  get "/default_and_accept",        to: "mimes#default_and_accept"
+  post "/content_type",             to: "mimes#content_type"
+  post "/default_and_content_type", to: "mimes#default_and_content_type"
 end
 
 module Mimes
@@ -29,7 +31,7 @@ module Mimes
     include Hanami::Action
 
     configuration.default_request_format :html
-    configuration.default_charset 'ISO-8859-1'
+    configuration.default_charset "ISO-8859-1"
 
     def call(_params)
       self.body = format
@@ -49,7 +51,7 @@ module Mimes
     include Hanami::Action
 
     def call(_params)
-      self.charset = 'latin1'
+      self.charset = "latin1"
       self.format  = :html
       self.body    = format
     end
@@ -59,10 +61,10 @@ module Mimes
     include Hanami::Action
 
     def call(_params)
-      headers['X-AcceptDefault'] = accept?('application/octet-stream').to_s
-      headers['X-AcceptHtml']    = accept?('text/html').to_s
-      headers['X-AcceptXml']     = accept?('application/xml').to_s
-      headers['X-AcceptJson']    = accept?('text/json').to_s
+      headers["X-AcceptDefault"] = accept?("application/octet-stream").to_s
+      headers["X-AcceptHtml"]    = accept?("text/html").to_s
+      headers["X-AcceptXml"]     = accept?("application/xml").to_s
+      headers["X-AcceptJson"]    = accept?("text/json").to_s
 
       self.body = format
     end
@@ -71,7 +73,7 @@ module Mimes
   class CustomFromAccept
     include Hanami::Action
 
-    configuration.format custom: 'application/custom'
+    configuration.format custom: "application/custom"
     accept :json, :custom
 
     def call(_params)
@@ -82,7 +84,7 @@ module Mimes
   class Restricted
     include Hanami::Action
 
-    configuration.format custom: 'application/custom'
+    configuration.format custom: "application/custom"
     accept :html, :json, :custom
 
     def call(_params)
@@ -124,7 +126,7 @@ module Mimes
     configuration.default_request_format :html
     accept :json
 
-    def call(params)
+    def call(_params)
       self.body = format.to_s
     end
   end
@@ -151,7 +153,7 @@ module Mimes
   end
 end
 
-RSpec.describe 'MIME Type' do
+RSpec.describe "MIME Type" do
   describe "Content type" do
     let(:app) { Rack::MockRequest.new(MimeRoutes) }
 
@@ -289,7 +291,7 @@ RSpec.describe 'MIME Type' do
         end
       end
 
-      context 'applies the weighting mechanism for media ranges' do
+      context "applies the weighting mechanism for media ranges" do
         let(:accept) { "text/*,application/json,text/html,*/*" }
 
         it "accepts selected mime types" do
@@ -378,7 +380,7 @@ RSpec.describe 'MIME Type' do
 
           it "defaults to the accepted format" do
             expect(response.status).to be(200)
-            expect(response.body).to eq('json')
+            expect(response.body).to eq("json")
           end
         end
       end

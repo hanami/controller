@@ -1,5 +1,7 @@
-require 'hanami/utils/class_attribute'
-require 'hanami/http/status'
+# frozen_string_literal: true
+
+require "hanami/utils/class_attribute"
+require "hanami/http/status"
 
 module Hanami
   module Action
@@ -13,7 +15,7 @@ module Hanami
     module Throwable
       # @since 0.2.0
       # @api private
-      RACK_ERRORS = 'rack.errors'.freeze
+      RACK_ERRORS = "rack.errors"
 
       # This isn't part of Rack SPEC
       #
@@ -26,7 +28,7 @@ module Hanami
       # @see Hanami::Action::Throwable::RACK_ERRORS
       # @see http://www.rubydoc.info/github/rack/rack/file/SPEC#The_Error_Stream
       # @see https://github.com/hanami/controller/issues/133
-      RACK_EXCEPTION = 'rack.exception'.freeze
+      RACK_EXCEPTION = "rack.exception"
 
       # @since 0.1.0
       # @api private
@@ -137,13 +139,14 @@ module Hanami
       end
 
       private
+
       # @since 0.1.0
       # @api private
       def _rescue
         catch :halt do
           begin
             yield
-          rescue => exception
+          rescue StandardError => exception
             _reference_in_rack_errors(exception)
             _handle_exception(exception)
           end
@@ -157,10 +160,11 @@ module Hanami
 
         @_env[RACK_EXCEPTION] = exception
 
-        if errors = @_env[RACK_ERRORS]
-          errors.write(_dump_exception(exception))
-          errors.flush
-        end
+        errors = @_env[RACK_ERRORS]
+        return unless errors
+
+        errors.write(_dump_exception(exception))
+        errors.flush
       end
 
       # @since 0.2.0
@@ -188,7 +192,7 @@ module Hanami
         if respond_to?(handler.to_s, true)
           method(handler)
         else
-          ->(ex) { halt handler }
+          ->(_ex) { halt handler }
         end
       end
     end

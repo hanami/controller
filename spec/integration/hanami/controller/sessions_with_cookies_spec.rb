@@ -1,4 +1,6 @@
-require 'rack/test'
+# frozen_string_literal: true
+
+require "rack/test"
 
 RSpec.describe "Sessions with cookies application" do
   include Rack::Test::Methods

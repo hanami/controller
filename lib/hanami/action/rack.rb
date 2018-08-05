@@ -1,8 +1,10 @@
-require 'securerandom'
-require 'hanami/action/request'
-require 'hanami/action/base_params'
-require 'hanami/action/rack/callable'
-require 'hanami/action/rack/file'
+# frozen_string_literal: true
+
+require "securerandom"
+require "hanami/action/request"
+require "hanami/action/base_params"
+require "hanami/action/rack/callable"
+require "hanami/action/rack/file"
 
 module Hanami
   module Action
@@ -44,7 +46,7 @@ module Hanami
       #
       # @since 0.1.0
       # @api private
-      DEFAULT_RESPONSE_BODY = []
+      DEFAULT_RESPONSE_BODY = [].freeze
 
       # The default HTTP Request ID length
       #
@@ -58,29 +60,29 @@ module Hanami
       #
       # @since 0.3.2
       # @api private
-      REQUEST_METHOD = 'REQUEST_METHOD'.freeze
+      REQUEST_METHOD = "REQUEST_METHOD"
 
       # The Content-Length HTTP header
       #
       # @since 1.0.0
       # @api private
-      CONTENT_LENGTH = 'Content-Length'.freeze
+      CONTENT_LENGTH = "Content-Length"
 
       # The non-standard HTTP header to pass the control over when a resource
       # cannot be found by the current endpoint
       #
       # @since 1.0.0
       # @api private
-      X_CASCADE = 'X-Cascade'.freeze
+      X_CASCADE = "X-Cascade"
 
       # HEAD request
       #
       # @since 0.3.2
       # @api private
-      HEAD = 'HEAD'.freeze
+      HEAD = "HEAD"
 
       # The key that returns router parsed body from the Rack env
-      ROUTER_PARSED_BODY = 'router.parsed_body'.freeze
+      ROUTER_PARSED_BODY = "router.parsed_body"
 
       # Override Ruby's hook for modules.
       # It includes basic Hanami::Action modules to the given class.
@@ -108,7 +110,7 @@ module Hanami
           @rack_builder ||= begin
             extend Hanami::Action::Rack::Callable
             rack_builder = ::Rack::Builder.new
-            rack_builder.run ->(env) { self.new.call(env) }
+            rack_builder.run ->(env) { new.call(env) }
             rack_builder
           end
         end
@@ -174,6 +176,7 @@ module Hanami
       end
 
       protected
+
       # Gets the headers from the response
       #
       # @return [Hash] the HTTP headers from the response
@@ -210,7 +213,7 @@ module Hanami
       # @see Hanami::Action::Rack#headers
       # @see Hanami::Action::Rack#body=
       def response
-        [ @_status || DEFAULT_RESPONSE_CODE, headers, @_body || DEFAULT_RESPONSE_BODY.dup ]
+        [@_status || DEFAULT_RESPONSE_CODE, headers, @_body || DEFAULT_RESPONSE_BODY.dup]
       end
 
       # Calculates an unique ID for the current request
@@ -219,7 +222,7 @@ module Hanami
       #
       # @since 0.3.0
       def request_id
-        # FIXME make this number configurable and document the probabilities of clashes
+        # FIXME: make this number configurable and document the probabilities of clashes
         @request_id ||= SecureRandom.hex(DEFAULT_REQUEST_ID_LENGTH)
       end
 
@@ -375,7 +378,7 @@ module Hanami
 
       # @since 1.0.0
       # @api private
-      def _send_file(response)
+      def _send_file(response) # rubocop:disable Metrics/AbcSize
         headers.merge!(response[RESPONSE_HEADERS])
 
         if response[RESPONSE_CODE] == NOT_FOUND

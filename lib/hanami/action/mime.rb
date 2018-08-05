@@ -1,6 +1,8 @@
-require 'rack/utils'
-require 'hanami/utils'
-require 'hanami/utils/kernel'
+# frozen_string_literal: true
+
+require "rack/utils"
+require "hanami/utils"
+require "hanami/utils/kernel"
 
 module Hanami
   module Action
@@ -9,100 +11,101 @@ module Hanami
     # @since 0.1.0
     #
     # @see Hanami::Action::Mime::ClassMethods#accept
-    module Mime
+    module Mime # rubocop:disable Metrics/ModuleLength
       # The key that returns accepted mime types from the Rack env
       #
       # @since 0.1.0
       # @api private
-      HTTP_ACCEPT          = 'HTTP_ACCEPT'.freeze
+      HTTP_ACCEPT          = "HTTP_ACCEPT"
 
       # The key that returns content mime type from the Rack env
       #
       # @since 1.2.0
       # @api private
-      HTTP_CONTENT_TYPE    = 'CONTENT_TYPE'.freeze
+      HTTP_CONTENT_TYPE    = "CONTENT_TYPE"
 
       # The header key to set the mime type of the response
       #
       # @since 0.1.0
       # @api private
-      CONTENT_TYPE         = 'Content-Type'.freeze
+      CONTENT_TYPE         = "Content-Type"
 
       # The default mime type for an incoming HTTP request
       #
       # @since 0.1.0
       # @api private
-      DEFAULT_ACCEPT       = '*/*'.freeze
+      DEFAULT_ACCEPT       = "*/*"
 
       # The default mime type that is returned in the response
       #
       # @since 0.1.0
       # @api private
-      DEFAULT_CONTENT_TYPE = 'application/octet-stream'.freeze
+      DEFAULT_CONTENT_TYPE = "application/octet-stream"
 
       # The default charset that is returned in the response
       #
       # @since 0.3.0
       # @api private
-      DEFAULT_CHARSET = 'utf-8'.freeze
+      DEFAULT_CHARSET = "utf-8"
 
       # Most commom MIME Types used for responses
       #
       # @since 1.0.0
       # @api private
       MIME_TYPES = {
-        txt: 'text/plain',
-        html: 'text/html',
-        json: 'application/json',
-        manifest: 'text/cache-manifest',
-        atom: 'application/atom+xml',
-        avi: 'video/x-msvideo',
-        bmp: 'image/bmp',
-        bz: 'application/x-bzip',
-        bz2: 'application/x-bzip2',
-        chm: 'application/vnd.ms-htmlhelp',
-        css: 'text/css',
-        csv: 'text/csv',
-        flv: 'video/x-flv',
-        gif: 'image/gif',
-        gz: 'application/x-gzip',
-        h264: 'video/h264',
-        ico: 'image/vnd.microsoft.icon',
-        ics: 'text/calendar',
-        jpg: 'image/jpeg',
-        js: 'application/javascript',
-        mp4: 'video/mp4',
-        mov: 'video/quicktime',
-        mp3: 'audio/mpeg',
-        mp4a: 'audio/mp4',
-        mpg: 'video/mpeg',
-        oga: 'audio/ogg',
-        ogg: 'application/ogg',
-        ogv: 'video/ogg',
-        pdf: 'application/pdf',
-        pgp: 'application/pgp-encrypted',
-        png: 'image/png',
-        psd: 'image/vnd.adobe.photoshop',
-        rtf: 'application/rtf',
-        sh: 'application/x-sh',
-        svg: 'image/svg+xml',
-        swf: 'application/x-shockwave-flash',
-        tar: 'application/x-tar',
-        torrent: 'application/x-bittorrent',
-        tsv: 'text/tab-separated-values',
-        uri: 'text/uri-list',
-        vcs: 'text/x-vcalendar',
-        wav: 'audio/x-wav',
-        webm: 'video/webm',
-        wmv: 'video/x-ms-wmv',
-        woff: 'application/font-woff',
-        woff2: 'application/font-woff2',
-        wsdl: 'application/wsdl+xml',
-        xhtml: 'application/xhtml+xml',
-        xml: 'application/xml',
-        xslt: 'application/xslt+xml',
-        yml: 'text/yaml',
-        zip: 'application/zip' }.freeze
+        txt: "text/plain",
+        html: "text/html",
+        json: "application/json",
+        manifest: "text/cache-manifest",
+        atom: "application/atom+xml",
+        avi: "video/x-msvideo",
+        bmp: "image/bmp",
+        bz: "application/x-bzip",
+        bz2: "application/x-bzip2",
+        chm: "application/vnd.ms-htmlhelp",
+        css: "text/css",
+        csv: "text/csv",
+        flv: "video/x-flv",
+        gif: "image/gif",
+        gz: "application/x-gzip",
+        h264: "video/h264",
+        ico: "image/vnd.microsoft.icon",
+        ics: "text/calendar",
+        jpg: "image/jpeg",
+        js: "application/javascript",
+        mp4: "video/mp4",
+        mov: "video/quicktime",
+        mp3: "audio/mpeg",
+        mp4a: "audio/mp4",
+        mpg: "video/mpeg",
+        oga: "audio/ogg",
+        ogg: "application/ogg",
+        ogv: "video/ogg",
+        pdf: "application/pdf",
+        pgp: "application/pgp-encrypted",
+        png: "image/png",
+        psd: "image/vnd.adobe.photoshop",
+        rtf: "application/rtf",
+        sh: "application/x-sh",
+        svg: "image/svg+xml",
+        swf: "application/x-shockwave-flash",
+        tar: "application/x-tar",
+        torrent: "application/x-bittorrent",
+        tsv: "text/tab-separated-values",
+        uri: "text/uri-list",
+        vcs: "text/x-vcalendar",
+        wav: "audio/x-wav",
+        webm: "video/webm",
+        wmv: "video/x-ms-wmv",
+        woff: "application/font-woff",
+        woff2: "application/font-woff2",
+        wsdl: "application/wsdl+xml",
+        xhtml: "application/xhtml+xml",
+        xml: "application/xml",
+        xslt: "application/xslt+xml",
+        yml: "text/yaml",
+        zip: "application/zip"
+      }.freeze
 
       # Override Ruby's hook for modules.
       # It includes Mime types logic
@@ -120,7 +123,7 @@ module Hanami
         end
       end
 
-      module ClassMethods
+      module ClassMethods # rubocop:disable Style/Documentation
         # @since 0.2.0
         # @api private
         def format_to_mime_type(format)
@@ -166,9 +169,7 @@ module Hanami
           configuration.restrict_mime_types!(mime_types)
 
           before do
-            unless mime_types.find {|mt| accept?(mt) }
-              halt 406
-            end
+            halt 406 unless mime_types.find { |mt| accept?(mt) }
           end
         end
 
@@ -198,7 +199,7 @@ module Hanami
           before do
             mime_type = @_env[HTTP_CONTENT_TYPE] || default_content_type || DEFAULT_CONTENT_TYPE
 
-            if mime_types.none? {|mt| ::Rack::Mime.match?(mime_type, mt) }
+            if mime_types.none? { |mt| ::Rack::Mime.match?(mime_type, mt) }
               halt 415
             end
           end
@@ -519,9 +520,10 @@ module Hanami
       #     end
       #   end
       def accept?(mime_type)
-        !!::Rack::Utils.q_values(accept).find do |mime, _|
+        found_q_value = ::Rack::Utils.q_values(accept).find do |mime, _|
           ::Rack::Mime.match?(mime_type, mime)
         end
+        !found_q_value.nil?
       end
 
       # @since 0.1.0
@@ -566,9 +568,11 @@ module Hanami
       # @since 0.2.0
       # @api private
       def default_content_type
+        return unless configuration.default_request_format
+
         self.class.format_to_mime_type(
           configuration.default_request_format
-        ) if configuration.default_request_format
+        )
       end
 
       # @since 0.2.0
@@ -635,7 +639,9 @@ module Hanami
         # @since 1.0.1
         # @api private
         def initialize(mime, quality, index, format = mime)
-          @quality, @index, @format = quality, index, format
+          @quality = quality
+          @index = index
+          @format = format
           calculate_priority(mime)
         end
 
@@ -650,9 +656,12 @@ module Hanami
 
         # @since 1.0.1
         # @api private
+        #
+        # rubocop:disable Naming/MemoizedInstanceVariableName
         def calculate_priority(mime)
-          @priority ||= (mime.split('/'.freeze, 2).count('*'.freeze) * -10) + quality
+          @priority ||= (mime.split("/", 2).count("*") * -10) + quality
         end
+        # rubocop:enable Naming/MemoizedInstanceVariableName
       end
     end
   end

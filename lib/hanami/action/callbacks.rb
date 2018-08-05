@@ -1,5 +1,7 @@
-require 'hanami/utils/class_attribute'
-require 'hanami/utils/callbacks'
+# frozen_string_literal: true
+
+require "hanami/utils/class_attribute"
+require "hanami/utils/callbacks"
 
 module Hanami
   module Action
@@ -118,7 +120,7 @@ module Hanami
         end
 
         # @since 0.1.0
-        alias_method :before, :append_before
+        alias before append_before
 
         # Define a callback for an Action.
         # The callback will be executed **after** the action is called, in the
@@ -140,7 +142,7 @@ module Hanami
         end
 
         # @since 0.1.0
-        alias_method :after, :append_after
+        alias after append_after
 
         # Define a callback for an Action.
         # The callback will be executed **before** the action is called.
@@ -197,6 +199,7 @@ module Hanami
         end
 
         private
+
         # @since 0.1.0
         # @api private
         def _run_before_callbacks(params)

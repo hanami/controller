@@ -1,4 +1,6 @@
-require 'hanami/controller/error'
+# frozen_string_literal: true
+
+require "hanami/controller/error"
 
 module Hanami
   module Controller
@@ -88,7 +90,7 @@ module Hanami
           #
           # @since 0.7.1
           # @api private
-          def reserved_word?(name, namespace = 'Hanami')
+          def reserved_word?(name, namespace = "Hanami")
             if method_defined?(name) || private_method_defined?(name)
               method_owner = instance_method(name).owner
 

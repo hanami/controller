@@ -1,84 +1,86 @@
-require 'json'
-require 'digest/md5'
-require 'hanami/router'
-require 'hanami/utils/escape'
-require 'hanami/action/params'
-require 'hanami/action/cookies'
-require 'hanami/action/session'
-require 'hanami/action/cache'
-require 'hanami/action/glue'
+# frozen_string_literal: true
+
+require "json"
+require "digest/md5"
+require "hanami/router"
+require "hanami/utils/escape"
+require "hanami/action/params"
+require "hanami/action/cookies"
+require "hanami/action/session"
+require "hanami/action/cache"
+require "hanami/action/glue"
 
 HTTP_TEST_STATUSES_WITHOUT_BODY = Set.new((100..199).to_a << 204 << 205 << 304).freeze
 HTTP_TEST_STATUSES = {
-  100 => 'Continue',
-  101 => 'Switching Protocols',
-  102 => 'Processing',
-  103 => 'Checkpoint',
-  122 => 'Request-URI too long',
-  200 => 'OK',
-  201 => 'Created',
-  202 => 'Accepted',
-  203 => 'Non-Authoritative Information',
-  204 => 'No Content',
-  205 => 'Reset Content',
-  206 => 'Partial Content',
-  207 => 'Multi-Status',
-  208 => 'Already Reported',
-  226 => 'IM Used',
-  300 => 'Multiple Choices',
-  301 => 'Moved Permanently',
-  302 => 'Found',
-  303 => 'See Other',
-  304 => 'Not Modified',
-  305 => 'Use Proxy',
-  307 => 'Temporary Redirect',
-  308 => 'Permanent Redirect',
-  400 => 'Bad Request',
-  401 => 'Unauthorized',
-  402 => 'Payment Required',
-  403 => 'Forbidden',
-  404 => 'Not Found',
-  405 => 'Method Not Allowed',
-  406 => 'Not Acceptable',
-  407 => 'Proxy Authentication Required',
-  408 => 'Request Timeout',
-  409 => 'Conflict',
-  410 => 'Gone',
-  411 => 'Length Required',
-  412 => 'Precondition Failed',
-  413 => 'Payload Too Large',
-  414 => 'URI Too Long',
-  415 => 'Unsupported Media Type',
-  416 => 'Range Not Satisfiable',
-  417 => 'Expectation Failed',
-  418 => 'I\'m a teapot',
-  420 => 'Enhance Your Calm',
-  422 => 'Unprocessable Entity',
-  423 => 'Locked',
-  424 => 'Failed Dependency',
-  426 => 'Upgrade Required',
-  428 => 'Precondition Required',
-  429 => 'Too Many Requests',
-  431 => 'Request Header Fields Too Large',
-  444 => 'No Response',
-  449 => 'Retry With',
-  450 => 'Blocked by Windows Parental Controls',
-  451 => 'Wrong Exchange server',
-  499 => 'Client Closed Request',
-  500 => 'Internal Server Error',
-  501 => 'Not Implemented',
-  502 => 'Bad Gateway',
-  503 => 'Service Unavailable',
-  504 => 'Gateway Timeout',
-  505 => 'HTTP Version Not Supported',
-  506 => 'Variant Also Negotiates',
-  507 => 'Insufficient Storage',
-  508 => 'Loop Detected',
-  510 => 'Not Extended',
-  511 => 'Network Authentication Required',
-  598 => 'Network read timeout error',
-  599 => 'Network connect timeout error'
-}
+  100 => "Continue",
+  101 => "Switching Protocols",
+  102 => "Processing",
+  103 => "Checkpoint",
+  122 => "Request-URI too long",
+  200 => "OK",
+  201 => "Created",
+  202 => "Accepted",
+  203 => "Non-Authoritative Information",
+  204 => "No Content",
+  205 => "Reset Content",
+  206 => "Partial Content",
+  207 => "Multi-Status",
+  208 => "Already Reported",
+  226 => "IM Used",
+  300 => "Multiple Choices",
+  301 => "Moved Permanently",
+  302 => "Found",
+  303 => "See Other",
+  304 => "Not Modified",
+  305 => "Use Proxy",
+  307 => "Temporary Redirect",
+  308 => "Permanent Redirect",
+  400 => "Bad Request",
+  401 => "Unauthorized",
+  402 => "Payment Required",
+  403 => "Forbidden",
+  404 => "Not Found",
+  405 => "Method Not Allowed",
+  406 => "Not Acceptable",
+  407 => "Proxy Authentication Required",
+  408 => "Request Timeout",
+  409 => "Conflict",
+  410 => "Gone",
+  411 => "Length Required",
+  412 => "Precondition Failed",
+  413 => "Payload Too Large",
+  414 => "URI Too Long",
+  415 => "Unsupported Media Type",
+  416 => "Range Not Satisfiable",
+  417 => "Expectation Failed",
+  418 => "I'm a teapot",
+  420 => "Enhance Your Calm",
+  422 => "Unprocessable Entity",
+  423 => "Locked",
+  424 => "Failed Dependency",
+  426 => "Upgrade Required",
+  428 => "Precondition Required",
+  429 => "Too Many Requests",
+  431 => "Request Header Fields Too Large",
+  444 => "No Response",
+  449 => "Retry With",
+  450 => "Blocked by Windows Parental Controls",
+  451 => "Wrong Exchange server",
+  499 => "Client Closed Request",
+  500 => "Internal Server Error",
+  501 => "Not Implemented",
+  502 => "Bad Gateway",
+  503 => "Service Unavailable",
+  504 => "Gateway Timeout",
+  505 => "HTTP Version Not Supported",
+  506 => "Variant Also Negotiates",
+  507 => "Insufficient Storage",
+  508 => "Loop Detected",
+  510 => "Not Extended",
+  511 => "Network Authentication Required",
+  598 => "Network read timeout error",
+  599 => "Network connect timeout error"
+}.freeze
 
 class RecordNotFound < StandardError
 end
@@ -97,34 +99,35 @@ end
 class CallAction
   include Hanami::Action
 
-  def call(params)
+  def call(_params)
     self.status  = 201
-    self.body    = 'Hi from TestAction!'
-    self.headers.merge!({ 'X-Custom' => 'OK' })
+    self.body    = "Hi from TestAction!"
+    headers.merge!("X-Custom" => "OK")
   end
 end
 
 class ErrorCallAction
   include Hanami::Action
 
-  def call(params)
+  def call(_params)
     raise
   end
 end
 
-class MyCustomError < StandardError ; end
+class MyCustomError < StandardError; end
 class ErrorCallFromInheritedErrorClass
   include Hanami::Action
 
   handle_exception StandardError => :handler
 
-  def call(params)
+  def call(_params)
     raise MyCustomError
   end
 
   private
-  def handler(exception)
-    status 501, 'An inherited exception occurred!'
+
+  def handler(_exception)
+    status 501, "An inherited exception occurred!"
   end
 end
 
@@ -134,17 +137,18 @@ class ErrorCallFromInheritedErrorClassStack
   handle_exception StandardError => :standard_handler
   handle_exception MyCustomError => :handler
 
-  def call(params)
+  def call(_params)
     raise MyCustomError
   end
 
   private
-  def handler(exception)
-    status 501, 'MyCustomError was thrown'
+
+  def handler(_exception)
+    status 501, "MyCustomError was thrown"
   end
 
-  def standard_handler(exception)
-    status 501, 'An unknown error was thrown'
+  def standard_handler(_exception)
+    status 501, "An unknown error was thrown"
   end
 end
 
@@ -153,26 +157,28 @@ class ErrorCallWithSymbolMethodNameAsHandlerAction
 
   handle_exception StandardError => :handler
 
-  def call(params)
+  def call(_params)
     raise StandardError
   end
 
   private
-  def handler(exception)
-    status 501, 'Please go away!'
+
+  def handler(_exception)
+    status 501, "Please go away!"
   end
 end
 
 class ErrorCallWithStringMethodNameAsHandlerAction
   include Hanami::Action
 
-  handle_exception StandardError => 'standard_error_handler'
+  handle_exception StandardError => "standard_error_handler"
 
-  def call(params)
+  def call(_params)
     raise StandardError
   end
 
   private
+
   def standard_error_handler(exception)
     status 502, exception.message
   end
@@ -181,13 +187,14 @@ end
 class ErrorCallWithUnsetStatusResponse
   include Hanami::Action
 
-  handle_exception ArgumentError => 'arg_error_handler'
+  handle_exception ArgumentError => "arg_error_handler"
 
-  def call(params)
+  def call(_params)
     raise ArgumentError
   end
 
   private
+
   def arg_error_handler(exception)
   end
 end
@@ -197,7 +204,7 @@ class ErrorCallWithSpecifiedStatusCodeAction
 
   handle_exception StandardError => 422
 
-  def call(params)
+  def call(_params)
     raise StandardError
   end
 end
@@ -207,8 +214,8 @@ class ExposeAction
 
   expose :film, :time
 
-  def call(params)
-    @film = '400 ASA'
+  def call(_params)
+    @film = "400 ASA"
   end
 end
 
@@ -233,7 +240,7 @@ class ZMiddleware
 
   def call(env)
     code, headers, body = @app.call(env)
-    [code, headers.merge!('Z-Middleware' => @message.call), body]
+    [code, headers.merge!("Z-Middleware" => @message.call), body]
   end
 end
 
@@ -244,7 +251,7 @@ class YMiddleware
 
   def call(env)
     code, headers, body = @app.call(env)
-    [code, headers.merge!('Y-Middleware' => 'OK'), body]
+    [code, headers.merge!("Y-Middleware" => "OK"), body]
   end
 end
 
@@ -255,7 +262,7 @@ class XMiddleware
 
   def call(env)
     code, headers, body = @app.call(env)
-    [code, headers.merge!('X-Middleware' => 'OK'), body]
+    [code, headers.merge!("X-Middleware" => "OK"), body]
   end
 end
 
@@ -264,8 +271,8 @@ module UseAction
     include Hanami::Action
     use XMiddleware
 
-    def call(params)
-      self.body = 'Hello from UseAction::Index'
+    def call(_params)
+      self.body = "Hello from UseAction::Index"
     end
   end
 
@@ -273,19 +280,19 @@ module UseAction
     include Hanami::Action
     use YMiddleware
 
-    def call(params)
-      self.body = 'Hello from UseAction::Show'
+    def call(_params)
+      self.body = "Hello from UseAction::Show"
     end
   end
 
   class Edit
     include Hanami::Action
     use ZMiddleware do
-      'OK'
+      "OK"
     end
 
-    def call(params)
-      self.body = 'Hello from UseAction::Edit'
+    def call(_params)
+      self.body = "Hello from UseAction::Edit"
     end
   end
 end
@@ -294,8 +301,8 @@ module NoUseAction
   class Index
     include Hanami::Action
 
-    def call(params)
-      self.body = 'Hello from NoUseAction::Index'
+    def call(_params)
+      self.body = "Hello from NoUseAction::Index"
     end
   end
 end
@@ -304,7 +311,7 @@ class BeforeMethodAction
   include Hanami::Action
 
   expose :article, :logger
-  before :set_article, :reverse_article
+  before :load_article, :reverse_article
   append_before :add_first_name_to_logger, :add_last_name_to_logger
   prepend_before :add_title_to_logger
 
@@ -316,24 +323,25 @@ class BeforeMethodAction
   end
 
   private
-  def set_article
-    @article = 'Bonjour!'
+
+  def load_article
+    @article = "Bonjour!"
   end
 
   def reverse_article
-    @article.reverse!
+    @article = @article.reverse
   end
 
   def add_first_name_to_logger
-    @logger << 'John'
+    @logger << "John"
   end
 
   def add_last_name_to_logger
-    @logger << 'Doe'
+    @logger << "Doe"
   end
 
   def add_title_to_logger
-    @logger << 'Mr.'
+    @logger << "Mr."
   end
 end
 
@@ -341,8 +349,9 @@ class SubclassBeforeMethodAction < BeforeMethodAction
   before :upcase_article
 
   private
+
   def upcase_article
-    @article.upcase!
+    @article = @article.upcase
   end
 end
 
@@ -350,10 +359,11 @@ class ParamsBeforeMethodAction < BeforeMethodAction
   expose :exposed_params
 
   private
+
   def upcase_article
   end
 
-  def set_article(params)
+  def load_article(params)
     @exposed_params = params
     @article = super() + params[:bang]
   end
@@ -361,7 +371,8 @@ end
 
 class ErrorBeforeMethodAction < BeforeMethodAction
   private
-  def set_article
+
+  def load_article
     raise
   end
 end
@@ -371,7 +382,8 @@ class HandledErrorBeforeMethodAction < BeforeMethodAction
   handle_exception RecordNotFound => 404
 
   private
-  def set_article
+
+  def load_article
     raise RecordNotFound.new
   end
 end
@@ -380,8 +392,8 @@ class BeforeBlockAction
   include Hanami::Action
 
   expose :article
-  before { @article = 'Good morning!' }
-  before { @article.reverse! }
+  before { @article = "Good morning!" }
+  before { @article = @article.reverse }
 
   def call(params)
   end
@@ -389,7 +401,7 @@ end
 
 class YieldBeforeBlockAction < BeforeBlockAction
   expose :yielded_params
-  before {|params| @yielded_params = params }
+  before { |params| @yielded_params = params }
 end
 
 class AfterMethodAction
@@ -408,24 +420,25 @@ class AfterMethodAction
   end
 
   private
+
   def set_egg
-    @egg = 'Egg!'
+    @egg = "Egg!"
   end
 
   def scramble_egg
-    @egg = 'gE!g'
+    @egg = "gE!g"
   end
 
   def add_first_name_to_logger
-    @logger << 'Jane'
+    @logger << "Jane"
   end
 
   def add_last_name_to_logger
-    @logger << 'Dixit'
+    @logger << "Dixit"
   end
 
   def add_title_to_logger
-    @logger << 'Mrs.'
+    @logger << "Mrs."
   end
 end
 
@@ -433,13 +446,15 @@ class SubclassAfterMethodAction < AfterMethodAction
   after :upcase_egg
 
   private
+
   def upcase_egg
-    @egg.upcase!
+    @egg = @egg.upcase
   end
 end
 
 class ParamsAfterMethodAction < AfterMethodAction
   private
+
   def scramble_egg(params)
     @egg = super() + params[:question]
   end
@@ -447,6 +462,7 @@ end
 
 class ErrorAfterMethodAction < AfterMethodAction
   private
+
   def set_egg
     raise
   end
@@ -457,6 +473,7 @@ class HandledErrorAfterMethodAction < AfterMethodAction
   handle_exception RecordNotFound => 404
 
   private
+
   def set_egg
     raise RecordNotFound.new
   end
@@ -466,8 +483,8 @@ class AfterBlockAction
   include Hanami::Action
 
   expose :egg
-  after { @egg = 'Coque' }
-  after { @egg.reverse! }
+  after { @egg = "Coque" }
+  after { @egg = @egg.reverse }
 
   def call(params)
   end
@@ -475,13 +492,13 @@ end
 
 class YieldAfterBlockAction < AfterBlockAction
   expose :meaning_of_life_params
-  before {|params| @meaning_of_life_params = params }
+  before { |params| @meaning_of_life_params = params }
 end
 
 class MissingSessionAction
   include Hanami::Action
 
-  def call(params)
+  def call(_params)
     session
   end
 end
@@ -489,7 +506,7 @@ end
 class MissingFlashAction
   include Hanami::Action
 
-  def call(params)
+  def call(_params)
     flash
   end
 end
@@ -506,7 +523,7 @@ class FlashAction
   include Hanami::Action
   include Hanami::Action::Session
 
-  def call(params)
+  def call(_params)
     flash[:error] = "ouch"
   end
 end
@@ -514,24 +531,24 @@ end
 class RedirectAction
   include Hanami::Action
 
-  def call(params)
-    redirect_to '/destination'
+  def call(_params)
+    redirect_to "/destination"
   end
 end
 
 class StatusRedirectAction
   include Hanami::Action
 
-  def call(params)
-    redirect_to '/destination', status: 301
+  def call(_params)
+    redirect_to "/destination", status: 301
   end
 end
 
 class SafeStringRedirectAction
   include Hanami::Action
 
-  def call(params)
-    location = Hanami::Utils::Escape::SafeString.new('/destination')
+  def call(_params)
+    location = Hanami::Utils::Escape::SafeString.new("/destination")
     redirect_to location
   end
 end
@@ -540,7 +557,7 @@ class GetCookiesAction
   include Hanami::Action
   include Hanami::Action::Cookies
 
-  def call(params)
+  def call(_params)
     self.body = cookies[:foo]
   end
 end
@@ -549,9 +566,9 @@ class ChangeCookiesAction
   include Hanami::Action
   include Hanami::Action::Cookies
 
-  def call(params)
+  def call(_params)
     self.body = cookies[:foo]
-    cookies[:foo] = 'baz'
+    cookies[:foo] = "baz"
   end
 end
 
@@ -559,9 +576,9 @@ class GetDefaultCookiesAction
   include Hanami::Action
   include Hanami::Action::Cookies
 
-  def call(params)
-    self.body = ''
-    cookies[:bar] = 'foo'
+  def call(_params)
+    self.body = ""
+    cookies[:bar] = "foo"
   end
 end
 
@@ -569,9 +586,9 @@ class GetOverwrittenCookiesAction
   include Hanami::Action
   include Hanami::Action::Cookies
 
-  def call(params)
-    self.body = ''
-    cookies[:bar] = { value: 'foo', domain: 'hanamirb.com', path: '/action', secure: false, httponly: false }
+  def call(_params)
+    self.body = ""
+    cookies[:bar] = { value: "foo", domain: "hanamirb.com", path: "/action", secure: false, httponly: false }
   end
 end
 
@@ -579,8 +596,8 @@ class GetAutomaticallyExpiresCookiesAction
   include Hanami::Action
   include Hanami::Action::Cookies
 
-  def call(params)
-    cookies[:bar] = { value: 'foo', max_age: 120 }
+  def call(_params)
+    cookies[:bar] = { value: "foo", max_age: 120 }
   end
 end
 
@@ -588,9 +605,9 @@ class SetCookiesAction
   include Hanami::Action
   include Hanami::Action::Cookies
 
-  def call(params)
-    self.body = 'yo'
-    cookies[:foo] = 'yum!'
+  def call(_params)
+    self.body = "yo"
+    cookies[:foo] = "yum!"
   end
 end
 
@@ -602,8 +619,8 @@ class SetCookiesWithOptionsAction
     @expires = expires
   end
 
-  def call(params)
-    cookies[:kukki] = { value: 'yum!', domain: 'hanamirb.org', path: '/controller', expires: @expires, secure: true, httponly: true }
+  def call(_params)
+    cookies[:kukki] = { value: "yum!", domain: "hanamirb.org", path: "/controller", expires: @expires, secure: true, httponly: true }
   end
 end
 
@@ -611,7 +628,7 @@ class RemoveCookiesAction
   include Hanami::Action
   include Hanami::Action::Cookies
 
-  def call(params)
+  def call(_params)
     cookies[:rm] = nil
   end
 end
@@ -620,7 +637,7 @@ class IterateCookiesAction
   include Hanami::Action
   include Hanami::Action::Cookies
 
-  def call(params)
+  def call(_params)
     result = []
     cookies.each do |key, value|
       result << "'#{key}' has value '#{value}'"
@@ -641,10 +658,10 @@ end
 class CatchAndThrowSymbolAction
   include Hanami::Action
 
-  def call(params)
+  def call(_params)
     catch :done do
       throw :done, 1
-      raise "This code shouldn't be reachable"
+      raise "This code shouldn't be reachable" # rubocop:disable Lint/UnreachableCode
     end
   end
 end
@@ -655,17 +672,18 @@ class ThrowBeforeMethodAction
   before :authorize!
   before :set_body
 
-  def call(params)
-    self.body = 'Hello!'
+  def call(_params)
+    self.body = "Hello!"
   end
 
   private
+
   def authorize!
     halt 401
   end
 
   def set_body
-    self.body = 'Hi!'
+    self.body = "Hi!"
   end
 end
 
@@ -673,10 +691,10 @@ class ThrowBeforeBlockAction
   include Hanami::Action
 
   before { halt 401 }
-  before { self.body = 'Hi!' }
+  before { self.body = "Hi!" }
 
-  def call(params)
-    self.body = 'Hello!'
+  def call(_params)
+    self.body = "Hello!"
   end
 end
 
@@ -686,17 +704,18 @@ class ThrowAfterMethodAction
   after :raise_timeout!
   after :set_body
 
-  def call(params)
-    self.body = 'Hello!'
+  def call(_params)
+    self.body = "Hello!"
   end
 
   private
+
   def raise_timeout!
     halt 408
   end
 
   def set_body
-    self.body = 'Later!'
+    self.body = "Later!"
   end
 end
 
@@ -704,10 +723,10 @@ class ThrowAfterBlockAction
   include Hanami::Action
 
   after { halt 408 }
-  after { self.body = 'Later!' }
+  after { self.body = "Later!" }
 
-  def call(params)
-    self.body = 'Hello!'
+  def call(_params)
+    self.body = "Hello!"
   end
 end
 
@@ -715,7 +734,7 @@ class HandledExceptionAction
   include Hanami::Action
   handle_exception RecordNotFound => 404
 
-  def call(params)
+  def call(_params)
     raise RecordNotFound.new
   end
 end
@@ -732,7 +751,7 @@ end
 class GlobalHandledExceptionAction
   include Hanami::Action
 
-  def call(params)
+  def call(_params)
     raise DomainLogicException.new
   end
 end
@@ -742,7 +761,7 @@ Hanami::Controller.unload!
 class UnhandledExceptionAction
   include Hanami::Action
 
-  def call(params)
+  def call(_params)
     raise RecordNotFound.new
   end
 end
@@ -848,7 +867,7 @@ class Root
 
   def call(params)
     self.body = params.to_h.inspect
-    headers.merge!({'X-Test' => 'test'})
+    headers.merge!("X-Test" => "test")
   end
 end
 
@@ -930,17 +949,18 @@ module Dashboard
     include Hanami::Action::Session
     before :authenticate!
 
-    def call(params)
+    def call(_params)
       self.body = "User ID from session: #{session[:user_id]}"
     end
 
     private
+
     def authenticate!
       halt 401 unless loggedin?
     end
 
     def loggedin?
-      session.has_key?(:user_id)
+      session.key?(:user_id)
     end
   end
 end
@@ -950,9 +970,9 @@ module Sessions
     include Hanami::Action
     include Hanami::Action::Session
 
-    def call(params)
+    def call(_params)
       session[:user_id] = 23
-      redirect_to '/'
+      redirect_to "/"
     end
   end
 
@@ -960,7 +980,7 @@ module Sessions
     include Hanami::Action
     include Hanami::Action::Session
 
-    def call(params)
+    def call(_params)
       session[:user_id] = nil
     end
   end
@@ -970,7 +990,7 @@ class StandaloneSession
   include Hanami::Action
   include Hanami::Action::Session
 
-  def call(params)
+  def call(_params)
     session[:age] = Time.now.year - 1982
   end
 end
@@ -981,7 +1001,7 @@ module Glued
     include Hanami::Action::Glue
     configuration.public_directory "spec/support/fixtures"
 
-    def call(params)
+    def call(_params)
       send_file "test.txt"
     end
   end
@@ -998,7 +1018,7 @@ module App
     include Hanami::Action
     handle_exception App::CustomError => 400
 
-    def call(params)
+    def call(_params)
       raise App::CustomError
     end
   end
@@ -1013,7 +1033,7 @@ module App2
       include Hanami::Action
       configuration.handle_exception App2::CustomError => 400
 
-      def call(params)
+      def call(_params)
         raise App2::CustomError
       end
     end
@@ -1029,9 +1049,9 @@ module MusicPlayer
     configure do
       handle_exception ArgumentError => 400
       action_module    MusicPlayer::Action
-      default_headers({
+      default_headers(
         "X-Frame-Options" => "DENY"
-      })
+                      )
 
       prepare do
         include Hanami::Action::Cookies
@@ -1048,8 +1068,9 @@ module MusicPlayer
       end
 
       private
+
       def current_user
-        'Luca'
+        "Luca"
       end
     end
 
@@ -1057,16 +1078,16 @@ module MusicPlayer
       class Index
         include MusicPlayer::Action
 
-        def call(params)
-          self.body = 'Muzic!'
-          headers['X-Frame-Options'] = 'ALLOW FROM https://example.org'
+        def call(_params)
+          self.body = "Muzic!"
+          headers["X-Frame-Options"] = "ALLOW FROM https://example.org"
         end
       end
 
       class Show
         include MusicPlayer::Action
 
-        def call(params)
+        def call(_params)
           raise ArgumentError
         end
       end
@@ -1076,7 +1097,7 @@ module MusicPlayer
       class Index
         include MusicPlayer::Action
 
-        def call(params)
+        def call(_params)
           self.body = current_user
         end
       end
@@ -1086,7 +1107,7 @@ module MusicPlayer
 
         handle_exception ArtistNotFound => 404
 
-        def call(params)
+        def call(_params)
           raise ArtistNotFound
         end
       end
@@ -1096,7 +1117,7 @@ module MusicPlayer
   class StandaloneAction
     include MusicPlayer::Action
 
-    def call(params)
+    def call(_params)
       raise ArgumentError
     end
   end
@@ -1107,26 +1128,26 @@ class VisibilityAction
   include Hanami::Action::Cookies
   include Hanami::Action::Session
 
-  self.configuration.handle_exceptions false
+  configuration.handle_exceptions false
 
-  def call(params)
-    self.body   = 'x'
+  def call(_params) # rubocop:disable Metrics/MethodLength
+    self.body   = "x"
     self.status = 201
     self.format = :json
 
-    self.headers.merge!('X-Custom' => 'OK')
-    headers.merge!('Y-Custom'      => 'YO')
+    headers["X-Custom"] = "OK"
+    headers["Y-Custom"] = "YO"
 
-    self.session[:foo] = 'bar'
+    session[:foo] = "bar"
 
     # PRIVATE
     # self.configuration
     # self.finish
 
     # PROTECTED
-    self.response
-    self.cookies
-    self.session
+    response
+    cookies
+    session
 
     response
     cookies
@@ -1144,18 +1165,22 @@ module SendFileTest
     class Show
       include SendFileTest::Action
 
+      # rubocop:disable Metrics/AbcSize
+      # rubocop:disable Metrics/CyclomaticComplexity
+      # rubocop:disable Metrics/MethodLength
+      # rubocop:disable Metrics/PerceivedComplexity
       def call(params)
         id = params[:id]
 
         # This if statement is only for testing purpose
         if id == "1"
-          send_file Pathname.new('test.txt')
+          send_file Pathname.new("test.txt")
         elsif id == "2"
-          send_file Pathname.new('hanami.png')
+          send_file Pathname.new("hanami.png")
         elsif id == "3"
-          send_file Pathname.new('Gemfile')
+          send_file Pathname.new("Gemfile")
         elsif id == "100"
-          send_file Pathname.new('unknown.txt')
+          send_file Pathname.new("unknown.txt")
         else
           # a more realistic example of globbing ':id(.:format)'
 
@@ -1164,14 +1189,14 @@ module SendFileTest
           halt 400 unless @resource
           extension = params[:format]
 
-          case(extension)
-          when 'html'
+          case extension
+          when "html"
             # in reality we'd render a template here, but as a test fixture, we'll simulate that answer
             # we should have also checked #accept? but w/e
             self.body = ::File.read(Pathname.new("spec/support/fixtures/#{@resource.asset_path}.html"))
             self.status = 200
             self.format = :html
-          when 'json', nil
+          when "json", nil
             self.format = :json
             send_file Pathname.new("#{@resource.asset_path}.json")
           else
@@ -1179,6 +1204,10 @@ module SendFileTest
           end
         end
       end
+      # rubocop:enable Metrics/AbcSize
+      # rubocop:enable Metrics/CyclomaticComplexity
+      # rubocop:enable Metrics/MethodLength
+      # rubocop:enable Metrics/PerceivedComplexity
 
       private
 
@@ -1186,14 +1215,14 @@ module SendFileTest
 
       def repository_dot_find_by_id(id)
         return nil unless id =~ /^\d+$/
-        return Model.new(id.to_i, "resource-#{id}")
+        Model.new(id.to_i, "resource-#{id}")
       end
     end
 
     class UnsafeLocal
       include SendFileTest::Action
 
-      def call(params)
+      def call(_params)
         unsafe_send_file "Gemfile"
       end
     end
@@ -1201,7 +1230,7 @@ module SendFileTest
     class UnsafePublic
       include SendFileTest::Action
 
-      def call(params)
+      def call(_params)
         unsafe_send_file "spec/support/fixtures/test.txt"
       end
     end
@@ -1209,7 +1238,7 @@ module SendFileTest
     class UnsafeAbsolute
       include SendFileTest::Action
 
-      def call(params)
+      def call(_params)
         unsafe_send_file Pathname.new("Gemfile").realpath
       end
     end
@@ -1217,7 +1246,7 @@ module SendFileTest
     class UnsafeMissingLocal
       include SendFileTest::Action
 
-      def call(params)
+      def call(_params)
         unsafe_send_file "missing"
       end
     end
@@ -1225,7 +1254,7 @@ module SendFileTest
     class UnsafeMissingAbsolute
       include SendFileTest::Action
 
-      def call(params)
+      def call(_params)
         unsafe_send_file Pathname.new(".").join("missing")
       end
     end
@@ -1233,16 +1262,16 @@ module SendFileTest
     class Flow
       include SendFileTest::Action
 
-      def call(params)
-        send_file Pathname.new('test.txt')
-        redirect_to '/'
+      def call(_params)
+        send_file Pathname.new("test.txt")
+        redirect_to "/"
       end
     end
 
     class Glob
       include Hanami::Action
 
-      def call(params)
+      def call(_params)
         halt 202
       end
     end
@@ -1252,11 +1281,11 @@ module SendFileTest
 
       before :before_callback
 
-      def call(params)
+      def call(_params)
         send_file Pathname.new("test.txt")
       end
 
-      def before_callback(params)
+      def before_callback(_params)
         headers["X-Callbacks"] = "before"
       end
     end
@@ -1266,11 +1295,11 @@ module SendFileTest
 
       after :after_callback
 
-      def call(params)
+      def call(_params)
         send_file Pathname.new("test.txt")
       end
 
-      def after_callback(params)
+      def after_callback(_params)
         headers["X-Callbacks"] = "after"
       end
     end
@@ -1280,9 +1309,9 @@ end
 module HeadTest
   Controller = Hanami::Controller.duplicate(self) do
     handle_exceptions false
-    default_headers({
+    default_headers(
       "X-Frame-Options" => "DENY"
-    })
+                    )
 
     prepare do
       include Hanami::Action::Glue
@@ -1294,42 +1323,41 @@ module HeadTest
     class Index
       include HeadTest::Action
 
-      def call(params)
-        self.body = 'index'
+      def call(_params)
+        self.body = "index"
       end
     end
 
     class Code
       include HeadTest::Action
       include HeadTest::Action::Cache
-
-      def call(params)
-        content = 'code'
+      def call(params) # rubocop:disable Metrics/MethodLength
+        content = "code"
 
         headers.merge!(
-          'Allow'            => 'GET, HEAD',
-          'Content-Encoding' => 'identity',
-          'Content-Language' => 'en',
-          'Content-Length'   => content.length,
-          'Content-Location' => 'relativeURI',
-          'Content-MD5'      => Digest::MD5.hexdigest(content),
-          'Expires'          => 'Thu, 01 Dec 1994 16:00:00 GMT',
-          'Last-Modified'    => 'Wed, 21 Jan 2015 11:32:10 GMT'
+          "Allow"            => "GET, HEAD",
+          "Content-Encoding" => "identity",
+          "Content-Language" => "en",
+          "Content-Length"   => content.length,
+          "Content-Location" => "relativeURI",
+          "Content-MD5"      => Digest::MD5.hexdigest(content),
+          "Expires"          => "Thu, 01 Dec 1994 16:00:00 GMT",
+          "Last-Modified"    => "Wed, 21 Jan 2015 11:32:10 GMT"
         )
 
         self.status = params[:code].to_i
-        self.body   = 'code'
+        self.body   = "code"
       end
     end
 
     class Override
       include HeadTest::Action
 
-      def call(params)
-        self.headers.merge!(
-          'Last-Modified' => 'Fri, 27 Nov 2015 13:32:36 GMT',
-          'X-Rate-Limit'  => '4000',
-          'X-No-Pass'     => 'true'
+      def call(_params)
+        headers.merge!(
+          "Last-Modified" => "Fri, 27 Nov 2015 13:32:36 GMT",
+          "X-Rate-Limit"  => "4000",
+          "X-No-Pass"     => "true"
         )
 
         self.status = 204
@@ -1338,7 +1366,7 @@ module HeadTest
       private
 
       def keep_response_header?(header)
-        super || 'X-Rate-Limit' == header
+        super || header == "X-Rate-Limit"
       end
     end
   end
@@ -1360,17 +1388,17 @@ module FullStack
         include FullStack::Action
         expose :greeting
 
-        def call(params)
-          @greeting = 'Hello'
+        def call(_params)
+          @greeting = "Hello"
         end
       end
 
       class Head
         include FullStack::Action
 
-        def call(params)
-          headers['X-Renderable'] = renderable?.to_s
-          self.body = 'foo'
+        def call(_params)
+          headers["X-Renderable"] = renderable?.to_s
+          self.body = "foo"
         end
       end
     end
@@ -1393,7 +1421,7 @@ module FullStack
         def call(params)
           params.valid?
 
-          redirect_to '/books'
+          redirect_to "/books"
         end
       end
 
@@ -1415,11 +1443,11 @@ module FullStack
           valid = params.valid?
 
           self.status = 201
-          self.body = JSON.generate({
+          self.body = JSON.generate(
             symbol_access: params[:book][:author] && params[:book][:author][:name],
             valid: valid,
             errors: params.errors.to_h
-          })
+                                    )
         end
       end
     end
@@ -1435,7 +1463,7 @@ module FullStack
       class Create
         include FullStack::Action
 
-        def call(params)
+        def call(_params)
           flash[:message] = "Saved!"
           redirect_to "/settings"
         end
@@ -1446,20 +1474,20 @@ module FullStack
       class Start
         include FullStack::Action
 
-        def call(params)
-          redirect_to '/poll/1'
+        def call(_params)
+          redirect_to "/poll/1"
         end
       end
 
       class Step1
         include FullStack::Action
 
-        def call(params)
-          if @_env['REQUEST_METHOD'] == 'GET'
+        def call(_params)
+          if @_env["REQUEST_METHOD"] == "GET"
             flash[:notice] = "Start the poll"
           else
             flash[:notice] = "Step 1 completed"
-            redirect_to '/poll/2'
+            redirect_to "/poll/2"
           end
         end
       end
@@ -1467,11 +1495,11 @@ module FullStack
       class Step2
         include FullStack::Action
 
-        def call(params)
-          if @_env['REQUEST_METHOD'] == 'POST'
-            flash[:notice] = "Poll completed"
-            redirect_to '/'
-          end
+        def call(_params)
+          return unless @_env["REQUEST_METHOD"] == "POST"
+
+          flash[:notice] = "Poll completed"
+          redirect_to "/"
         end
       end
     end
@@ -1483,14 +1511,14 @@ module FullStack
         before :redirect_to_root
         after :set_body
 
-        def call(params)
+        def call(_params)
           self.body = "call method shouldn't be called"
         end
 
         private
 
         def redirect_to_root
-          redirect_to '/'
+          redirect_to "/"
         end
 
         def set_body
@@ -1502,10 +1530,10 @@ module FullStack
 
   class Renderer
     def render(env, response)
-      action = env.delete('hanami.action')
+      action = env.delete("hanami.action")
 
       if response[0] == 200 && action.renderable?
-        response[2] = "#{ action.class.name } #{ action.exposures } params: #{ action.params.to_h } flash: #{ action.exposures[:flash].inspect }"
+        response[2] = "#{action.class.name} #{action.exposures} params: #{action.params.to_h} flash: #{action.exposures[:flash].inspect}"
       end
 
       response
@@ -1513,27 +1541,29 @@ module FullStack
   end
 
   class Application
+    # rubocop:disable Metrics/MethodLength
+    # rubocop:disable Metrics/AbcSize
     def initialize
       resolver = Hanami::Routing::EndpointResolver.new(namespace: FullStack::Controllers)
       routes   = Hanami::Router.new(resolver: resolver) do
-        get '/',     to: 'home#index'
-        get '/head', to: 'home#head'
-        resources :books, only: [:index, :create, :update]
+        get "/",     to: "home#index"
+        get "/head", to: "home#head"
+        resources :books, only: %i[index create update]
 
-        get  '/settings', to: 'settings#index'
-        post '/settings', to: 'settings#create'
+        get  "/settings", to: "settings#index"
+        post "/settings", to: "settings#create"
 
-        get '/poll', to: 'poll#start'
+        get "/poll", to: "poll#start"
 
-        namespace 'poll' do
-          get  '/1', to: 'poll#step1'
-          post '/1', to: 'poll#step1'
-          get  '/2', to: 'poll#step2'
-          post '/2', to: 'poll#step2'
+        namespace "poll" do
+          get  "/1", to: "poll#step1"
+          post "/1", to: "poll#step1"
+          get  "/2", to: "poll#step2"
+          post "/2", to: "poll#step2"
         end
 
-        namespace 'users' do
-          get '/1', to: 'users#show'
+        namespace "users" do
+          get "/1", to: "users#show"
         end
       end
 
@@ -1543,6 +1573,8 @@ module FullStack
         run routes
       end
     end
+    # rubocop:enable Metrics/MethodLength
+    # rubocop:enable Metrics/AbcSize
 
     def call(env)
       @renderer.render(env, @middleware.call(env))
@@ -1553,7 +1585,7 @@ end
 class MethodInspectionAction
   include Hanami::Action
 
-  def call(params)
+  def call(_params)
     self.body = request_method
   end
 end
@@ -1564,7 +1596,7 @@ class RackExceptionAction
   class TestException < ::StandardError
   end
 
-  def call(params)
+  def call(_params)
     raise TestException.new
   end
 end
@@ -1577,7 +1609,7 @@ class HandledRackExceptionAction
 
   handle_exception TestException => 500
 
-  def call(params)
+  def call(_params)
     raise TestException.new
   end
 end
@@ -1593,7 +1625,7 @@ class HandledRackExceptionSubclassAction
 
   handle_exception TestException => 500
 
-  def call(params)
+  def call(_params)
     raise TestSubclassException.new
   end
 end
@@ -1622,10 +1654,10 @@ module SessionWithCookies
 
   class Renderer
     def render(env, response)
-      action = env.delete('hanami.action')
+      action = env.delete("hanami.action")
 
       if response[0] == 200 && action.renderable?
-        response[2] = "#{ action.class.name } #{ action.exposures }"
+        response[2] = "#{action.class.name} #{action.exposures}"
       end
 
       response
@@ -1636,7 +1668,7 @@ module SessionWithCookies
     def initialize
       resolver = Hanami::Routing::EndpointResolver.new(namespace: SessionWithCookies::Controllers)
       routes   = Hanami::Router.new(resolver: resolver) do
-        get '/',     to: 'home#index'
+        get "/", to: "home#index"
       end
 
       @renderer   = Renderer.new
@@ -1675,10 +1707,10 @@ module SessionsWithoutCookies
 
   class Renderer
     def render(env, response)
-      action = env.delete('hanami.action')
+      action = env.delete("hanami.action")
 
       if response[0] == 200 && action.renderable?
-        response[2] = "#{ action.class.name } #{ action.exposures }"
+        response[2] = "#{action.class.name} #{action.exposures}"
       end
 
       response
@@ -1689,7 +1721,7 @@ module SessionsWithoutCookies
     def initialize
       resolver = Hanami::Routing::EndpointResolver.new(namespace: SessionsWithoutCookies::Controllers)
       routes   = Hanami::Router.new(resolver: resolver) do
-        get '/',     to: 'home#index'
+        get "/", to: "home#index"
       end
 
       @renderer   = Renderer.new

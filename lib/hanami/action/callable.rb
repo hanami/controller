@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 module Hanami
   module Action
-    module Callable
+    module Callable # rubocop:disable Style/Documentation
       # Execute application logic.
       # It implements the Rack protocol.
       #

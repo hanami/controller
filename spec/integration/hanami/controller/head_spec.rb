@@ -1,9 +1,11 @@
-require 'rack/test'
+# frozen_string_literal: true
+
+require "rack/test"
 
 HeadRoutes = Hanami::Router.new(namespace: HeadTest) do
-  get '/',           to: 'home#index'
-  get '/code/:code', to: 'home#code'
-  get '/override',   to: 'home#override'
+  get "/",           to: "home#index"
+  get "/code/:code", to: "home#code"
+  get "/override",   to: "home#override"
 end
 
 HeadApplication = Rack::Builder.new do

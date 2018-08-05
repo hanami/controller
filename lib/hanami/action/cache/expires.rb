@@ -1,4 +1,6 @@
-require 'hanami/action/cache/cache_control'
+# frozen_string_literal: true
+
+require "hanami/action/cache/cache_control"
 
 module Hanami
   module Action
@@ -12,7 +14,7 @@ module Hanami
         #
         # @since 0.3.0
         # @api private
-        HEADER = 'Expires'.freeze
+        HEADER = "Expires"
 
         # @since 0.3.0
         # @api private
@@ -28,16 +30,19 @@ module Hanami
         module ClassMethods
           # @since 0.3.0
           # @api private
+          #
+          # rubocop:disable Naming/MemoizedInstanceVariableName
           def expires(amount, *values)
             @expires_directives ||= Directives.new(amount, *values)
           end
+          # rubocop:enable Naming/MemoizedInstanceVariableName
 
           # @since 0.3.0
           # @api private
           def expires_directives
             @expires_directives || Object.new.tap do |null_object|
               def null_object.headers
-                Hash.new
+                {}
               end
             end
           end

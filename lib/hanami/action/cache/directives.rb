@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Hanami
   module Action
     module Cache
@@ -5,13 +7,13 @@ module Hanami
       #
       # @since 0.3.0
       # @api private
-      VALUE_DIRECTIVES      = %i(max_age s_maxage min_fresh max_stale).freeze
+      VALUE_DIRECTIVES      = %i[max_age s_maxage min_fresh max_stale].freeze
 
       # Cache-Control directives which are implicitly true
       #
       # @since 0.3.0
       # @api private
-      NON_VALUE_DIRECTIVES  = %i(public private no_cache no_store no_transform must_revalidate proxy_revalidate).freeze
+      NON_VALUE_DIRECTIVES  = %i[public private no_cache no_store no_transform must_revalidate proxy_revalidate].freeze
 
       # Class representing value directives
       #
@@ -27,7 +29,8 @@ module Hanami
         # @since 0.3.0
         # @api private
         def initialize(name, value)
-          @name, @value = name, value
+          @name = name
+          @value = value
         end
 
         # @since 0.3.0
@@ -63,7 +66,7 @@ module Hanami
         # @since 0.3.0
         # @api private
         def to_str
-          @name.to_s.tr('_', '-')
+          @name.to_s.tr("_", "-")
         end
 
         # @since 0.3.0
@@ -85,7 +88,7 @@ module Hanami
         def initialize(*values)
           @directives = []
           values.each do |directive_key|
-            if directive_key.kind_of? Hash
+            if directive_key.is_a? Hash
               directive_key.each { |name, value| self.<< ValueDirective.new(name, value) }
             else
               self.<< NonValueDirective.new(directive_key)

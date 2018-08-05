@@ -1,4 +1,6 @@
-require 'hanami/utils/class_attribute'
+# frozen_string_literal: true
+
+require "hanami/utils/class_attribute"
 
 module Hanami
   module Action
