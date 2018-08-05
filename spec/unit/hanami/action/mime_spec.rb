@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Hanami::Action do
   describe "#content_type" do
     it "exposes MIME type" do

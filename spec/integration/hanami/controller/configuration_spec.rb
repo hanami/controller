@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe "Framework configuration" do
   it "keeps separated copies of the configuration" do
     hanami_configuration = Hanami::Controller.configuration

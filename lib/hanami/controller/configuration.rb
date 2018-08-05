@@ -1,6 +1,8 @@
-require 'hanami/utils/class'
-require 'hanami/utils/kernel'
-require 'hanami/utils/string'
+# frozen_string_literal: true
+
+require "hanami/utils/class"
+require "hanami/utils/kernel"
+require "hanami/utils/string"
 
 module Hanami
   module Controller
@@ -19,7 +21,7 @@ module Hanami
     # actions to specify exceptions.
     #
     # @since 0.2.0
-    class Configuration
+    class Configuration # rubocop:disable Metrics/ClassLength
       # Default HTTP code for server side errors
       #
       # @since 0.2.0
@@ -32,16 +34,16 @@ module Hanami
       #
       # @since 1.0.0
       # @api private
-      DEFAULT_PUBLIC_DIRECTORY = 'public'.freeze
+      DEFAULT_PUBLIC_DIRECTORY = "public"
 
       # Default Mime type to format mapping
       #
       # @since 0.2.0
       # @api private
       DEFAULT_FORMATS = {
-        'application/octet-stream' => :all,
-        '*/*'                      => :all,
-        'text/html'                => :html
+        "application/octet-stream" => :all,
+        "*/*"                      => :all,
+        "text/html"                => :html
       }.freeze
 
       # Return a copy of the configuration of the framework instance associated
@@ -226,7 +228,7 @@ module Hanami
       # @see Hanami::Controller::Configuration#handle_exception
       def exception_handler_for(exception)
         @handled_exceptions.each do |exception_class, handler|
-          return handler if exception.kind_of?(exception_class)
+          return handler if exception.is_a?(exception_class)
         end
 
         nil
@@ -355,11 +357,9 @@ module Hanami
       #     end
       #   end
       def prepare(&blk)
-        if block_given?
-          @modules.push(blk)
-        else
-          raise ArgumentError.new('Please provide a block')
-        end
+        raise ArgumentError.new("Please provide a block") unless block_given?
+
+        @modules.push(blk)
       end
 
       # Register a format
@@ -586,7 +586,7 @@ module Hanami
       def default_headers(headers = nil)
         if headers
           @default_headers.merge!(
-            headers.reject {|_,v| v.nil? }
+            headers.reject { |_, v| v.nil? }
           )
         else
           @default_headers
@@ -669,6 +669,9 @@ module Hanami
       #
       # @since 0.2.0
       # @api private
+      #
+      # rubocop:disable Metrics/AbcSize
+      # rubocop:disable Metrics/MethodLength
       def duplicate
         Configuration.new.tap do |c|
           c.handle_exceptions       = handle_exceptions
@@ -684,6 +687,8 @@ module Hanami
           c.cookies = cookies.dup
         end
       end
+      # rubocop:enable Metrics/AbcSize
+      # rubocop:enable Metrics/MethodLength
 
       # Return included modules
       #
@@ -699,7 +704,7 @@ module Hanami
       #
       # @since 0.2.0
       # @api private
-      def reset!
+      def reset! # rubocop:disable Metrics/MethodLength
         @handle_exceptions       = true
         @handled_exceptions      = {}
         @modules                 = []
@@ -740,11 +745,12 @@ module Hanami
       end
 
       protected
+
       # @since 0.5.0
       # @api private
       def _sort_handled_exceptions!
         @handled_exceptions = Hash[
-          @handled_exceptions.sort{|(ex1,_),(ex2,_)| ex1.ancestors.include?(ex2) ? -1 : 1 }
+          @handled_exceptions.sort { |(ex1, _), (ex2, _)| ex1.ancestors.include?(ex2) ? -1 : 1 }
         ]
       end
 

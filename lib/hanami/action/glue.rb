@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Hanami
   module Action
     # Glue code for full stack Hanami applications
@@ -12,7 +14,7 @@ module Hanami
       #
       # @api private
       # @since 0.3.0
-      ENV_KEY = 'hanami.action'.freeze
+      ENV_KEY = "hanami.action"
 
       # @api private
       # @since 0.3.2
@@ -42,6 +44,7 @@ module Hanami
       end
 
       protected
+
       # Put the current instance into the Rack environment
       #
       # @api private

@@ -1,6 +1,8 @@
-require 'rack/test'
+# frozen_string_literal: true
 
-RSpec.describe 'Rack middleware integration' do
+require "rack/test"
+
+RSpec.describe "Rack middleware integration" do
   include Rack::Test::Methods
 
   def response

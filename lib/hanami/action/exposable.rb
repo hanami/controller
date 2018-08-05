@@ -1,4 +1,6 @@
-require 'hanami/action/exposable/guard'
+# frozen_string_literal: true
+
+require "hanami/action/exposable/guard"
 
 module Hanami
   module Action
@@ -87,6 +89,7 @@ module Hanami
         end
 
         private
+
         # Check if the attr_reader is already defined
         #
         # @since 0.3.0

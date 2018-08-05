@@ -1,4 +1,6 @@
-require 'rack/file'
+# frozen_string_literal: true
+
+require "rack/file"
 
 module Hanami
   module Action
@@ -14,7 +16,7 @@ module Hanami
         #
         # @since 1.0.0
         # @api private
-        PATH_INFO = "PATH_INFO".freeze
+        PATH_INFO = "PATH_INFO"
 
         # @param path [String,Pathname] file path
         #

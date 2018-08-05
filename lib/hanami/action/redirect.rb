@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Hanami
   module Action
     # HTTP redirect API
@@ -8,7 +10,7 @@ module Hanami
       #
       # @since 0.2.0
       # @api private
-      LOCATION = 'Location'.freeze
+      LOCATION = "Location"
 
       private
 

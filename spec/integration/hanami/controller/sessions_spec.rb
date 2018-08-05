@@ -1,10 +1,12 @@
-require 'rack/test'
-require 'hanami/router'
+# frozen_string_literal: true
+
+require "rack/test"
+require "hanami/router"
 
 SessionRoutes = Hanami::Router.new do
-  get    '/',       to: 'dashboard#index'
-  post   '/login',  to: 'sessions#create'
-  delete '/logout', to: 'sessions#destroy'
+  get    "/",       to: "dashboard#index"
+  post   "/login",  to: "sessions#create"
+  delete "/logout", to: "sessions#destroy"
 end
 
 SessionApplication = Rack::Builder.new do

@@ -1,12 +1,14 @@
-require 'hanami/router'
+# frozen_string_literal: true
+
+require "hanami/router"
 
 ErrorsRoutes = Hanami::Router.new do
-  get '/without_message',         to: 'errors#without_message'
-  get '/with_message',            to: 'errors#with_message'
-  get '/with_custom_message',     to: 'errors#with_custom_message'
-  get '/action_managed',          to: 'errors#action_managed'
-  get '/action_managed_subclass', to: 'errors#action_managed_subclass'
-  get '/framework_managed',       to: 'errors#framework_managed'
+  get "/without_message",         to: "errors#without_message"
+  get "/with_message",            to: "errors#with_message"
+  get "/with_custom_message",     to: "errors#with_custom_message"
+  get "/action_managed",          to: "errors#action_managed"
+  get "/action_managed_subclass", to: "errors#action_managed_subclass"
+  get "/framework_managed",       to: "errors#framework_managed"
 end
 
 HandledException          = Class.new(StandardError)
@@ -45,7 +47,7 @@ module Errors
     include Hanami::Action
 
     def call(_params)
-      raise CustomAuthException, 'plz go away!!'
+      raise CustomAuthException, "plz go away!!"
     end
   end
 
@@ -79,8 +81,8 @@ end
 Hanami::Controller.unload!
 
 DisabledErrorsRoutes = Hanami::Router.new do
-  get '/action_managed',    to: 'disabled_errors#action_managed'
-  get '/framework_managed', to: 'disabled_errors#framework_managed'
+  get "/action_managed",    to: "disabled_errors#action_managed"
+  get "/framework_managed", to: "disabled_errors#framework_managed"
 end
 
 Hanami::Controller.configure do

@@ -1,8 +1,10 @@
-require 'hanami/utils/class_attribute'
-require 'hanami/action'
-require 'hanami/controller/configuration'
-require 'hanami/controller/version'
-require 'hanami/controller/error'
+# frozen_string_literal: true
+
+require "hanami/utils/class_attribute"
+require "hanami/action"
+require "hanami/controller/configuration"
+require "hanami/controller/version"
+require "hanami/controller/error"
 
 # Hanami
 #
@@ -43,7 +45,7 @@ module Hanami
       # @since 0.2.0
       # @api private
       def initialize(format)
-        super("Cannot find a corresponding Mime type for '#{ format }'. Please configure it with Hanami::Controller::Configuration#format.")
+        super("Cannot find a corresponding Mime type for '#{format}'. Please configure it with Hanami::Controller::Configuration#format.")
       end
     end
 
@@ -248,16 +250,16 @@ module Hanami
     #
     #   Hanami::Controller.configuration.handle_exceptions # => true
     #   MyApp::Controller.configuration.handle_exceptions # => false
-    def self.duplicate(mod, controllers = 'Controllers', &blk)
+    def self.duplicate(mod, controllers = "Controllers", &blk)
       dupe.tap do |duplicated|
-        mod.module_eval %{ module #{ controllers }; end } if controllers
-        mod.module_eval %{ Action = Hanami::Action.dup }
+        mod.module_eval %( module #{controllers}; end ), __FILE__, __LINE__ if controllers
+        mod.module_eval %( Action = Hanami::Action.dup ), __FILE__, __LINE__
 
-        duplicated.module_eval %{
+        duplicated.module_eval %(
           configure do
-            action_module #{ mod }::Action
+            action_module #{mod}::Action
           end
-        }
+        ), __FILE__, __LINE__ - 4
 
         duplicated.configure(&blk) if block_given?
       end

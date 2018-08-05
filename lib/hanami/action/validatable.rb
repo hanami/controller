@@ -1,13 +1,15 @@
-require 'hanami/action/params'
+# frozen_string_literal: true
+
+require "hanami/action/params"
 
 module Hanami
   module Action
-    module Validatable
+    module Validatable # rubocop:disable Style/Documentation
       # Defines the class name for anonymous params
       #
       # @api private
       # @since 0.3.0
-      PARAMS_CLASS_NAME = 'Params'.freeze
+      PARAMS_CLASS_NAME = "Params"
 
       # @api private
       # @since 0.1.0

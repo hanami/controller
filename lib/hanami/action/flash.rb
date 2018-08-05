@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Hanami
   module Action
     # Container useful to transport data with the HTTP session
@@ -56,7 +58,7 @@ module Hanami
       # @api private
       def [](key)
         @merged.fetch(key) do
-          _values.find {|data| !data[key].nil? }
+          _values.find { |data| !data[key].nil? }
         end
       end
 
@@ -87,16 +89,16 @@ module Hanami
       # @since 0.3.0
       # @api private
       def clear
-        # FIXME we're just before a release and I can't find a proper way to reproduce
+        # FIXME: we're just before a release and I can't find a proper way to reproduce
         # this bug that I've found via a browser.
         #
         # It may happen that `#flash` is nil, and those two methods will fail
-        unless flash.nil?
-          expire_stale!
-          remove!
-          merge!
-          set_last_request_id!
-        end
+        return if flash.nil?
+
+        expire_stale!
+        remove!
+        merge!
+        set_last_request_id!
       end
 
       # Check if there are contents stored in the flash from the current or the
@@ -114,7 +116,7 @@ module Hanami
       #
       # @since 1.0.0
       def inspect
-        "#<#{self.class}:#{'0x%x' % (__id__ << 1)} #{@merged.inspect}>"
+        "#<#{self.class}:#{format('0x%<id>x', id: (__id__ << 1))} #{@merged.inspect}>"
       end
 
       private
@@ -178,7 +180,7 @@ module Hanami
       # @since 0.3.0
       # @api private
       def _values
-        flash.select { |session_id, _| !delete?(session_id) }.values
+        flash.reject { |session_id, _| delete?(session_id) }.values
       end
 
       # Determine if delete data from flash for the given Request ID
@@ -210,9 +212,8 @@ module Hanami
       # @since 0.4.0
       # @api private
       def set_last_request_id!
-        @session[LAST_REQUEST_KEY] = @request_id if !empty?
+        @session[LAST_REQUEST_KEY] = @request_id unless empty?
       end
-
     end
   end
 end

@@ -1,4 +1,6 @@
-require 'hanami/action/flash'
+# frozen_string_literal: true
+
+require "hanami/action/flash"
 
 module Hanami
   module Action
@@ -12,7 +14,7 @@ module Hanami
       #
       # @since 0.1.0
       # @api private
-      SESSION_KEY = 'rack.session'.freeze
+      SESSION_KEY = "rack.session"
 
       # The key that is used by flash to transport errors
       #

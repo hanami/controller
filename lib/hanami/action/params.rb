@@ -1,5 +1,7 @@
-require 'hanami/action/base_params'
-require 'hanami/validations/form'
+# frozen_string_literal: true
+
+require "hanami/action/base_params"
+require "hanami/validations/form"
 
 module Hanami
   module Action
@@ -149,7 +151,7 @@ module Hanami
       #     end
       #   end
       def self.params(&blk)
-        validations(&blk || ->() {})
+        validations(&blk || -> {})
       end
 
       # Initialize the params and freeze them.
@@ -202,13 +204,13 @@ module Hanami
         error_set.each_with_object([]) do |(key, messages), result|
           k = Utils::String.titleize(key)
 
-          _messages = if messages.is_a?(Hash)
-            error_messages(messages)
-          else
-            messages.map { |message| "#{k} #{message}" }
-          end
+          messages = if messages.is_a?(Hash)
+                       error_messages(messages)
+                     else
+                       messages.map { |message| "#{k} #{message}" }
+                     end
 
-          result.concat(_messages)
+          result.concat(messages)
         end
       end
 
@@ -233,7 +235,7 @@ module Hanami
       def to_h
         @params
       end
-      alias_method :to_hash, :to_h
+      alias to_hash to_h
 
       private
 

@@ -1,4 +1,6 @@
-require 'rack/request'
+# frozen_string_literal: true
+
+require "rack/request"
 
 module Hanami
   module Action
@@ -14,7 +16,7 @@ module Hanami
       # @since 0.3.1
       # @api private
       def content_type
-        raise NotImplementedError, 'Please use Action#content_type'
+        raise NotImplementedError, "Please use Action#content_type"
       end
 
       # @raise [NotImplementedError]
@@ -22,7 +24,7 @@ module Hanami
       # @since 0.3.1
       # @api private
       def session
-        raise NotImplementedError, 'Please include Action::Session and use Action#session'
+        raise NotImplementedError, "Please include Action::Session and use Action#session"
       end
 
       # @raise [NotImplementedError]
@@ -30,7 +32,7 @@ module Hanami
       # @since 0.3.1
       # @api private
       def cookies
-        raise NotImplementedError, 'Please include Action::Cookies and use Action#cookies'
+        raise NotImplementedError, "Please include Action::Cookies and use Action#cookies"
       end
 
       # @raise [NotImplementedError]
@@ -38,7 +40,7 @@ module Hanami
       # @since 0.3.1
       # @api private
       def params
-        raise NotImplementedError, 'Please use params passed to Action#call'
+        raise NotImplementedError, "Please use params passed to Action#call"
       end
 
       # @raise [NotImplementedError]
@@ -46,7 +48,7 @@ module Hanami
       # @since 0.3.1
       # @api private
       def update_param(*)
-        raise NotImplementedError, 'Please use params passed to Action#call'
+        raise NotImplementedError, "Please use params passed to Action#call"
       end
 
       # @raise [NotImplementedError]
@@ -54,7 +56,7 @@ module Hanami
       # @since 0.3.1
       # @api private
       def delete_param(*)
-        raise NotImplementedError, 'Please use params passed to Action#call'
+        raise NotImplementedError, "Please use params passed to Action#call"
       end
 
       # @raise [NotImplementedError]
@@ -62,7 +64,7 @@ module Hanami
       # @since 0.3.1
       # @api private
       def [](*)
-        raise NotImplementedError, 'Please use params passed to Action#call'
+        raise NotImplementedError, "Please use params passed to Action#call"
       end
 
       # @raise [NotImplementedError]
@@ -70,7 +72,7 @@ module Hanami
       # @since 0.3.1
       # @api private
       def []=(*)
-        raise NotImplementedError, 'Please use params passed to Action#call'
+        raise NotImplementedError, "Please use params passed to Action#call"
       end
 
       # @raise [NotImplementedError]
@@ -78,7 +80,7 @@ module Hanami
       # @since 0.3.1
       # @api private
       def values_at(*)
-        raise NotImplementedError, 'Please use params passed to Action#call'
+        raise NotImplementedError, "Please use params passed to Action#call"
       end
     end
   end
