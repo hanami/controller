@@ -1,6 +1,7 @@
 require "json"
 require "digest/md5"
 require "hanami/router"
+require "hanami/middleware/body_parser"
 require "hanami/utils/escape"
 require "hanami/action/params"
 require "hanami/action/cookies"
@@ -1651,7 +1652,7 @@ module RouterIntegration
     def initialize
       configuration = Hanami::Controller::Configuration.new
 
-      routes = Hanami::Router.new(configuration: configuration, parsers: :json) do
+      routes = Hanami::Router.new(configuration: configuration) do
         get "/",         to: "root"
         get "/team",     to: "about#team"
         get "/contacts", to: "about#contacts"
@@ -1663,6 +1664,7 @@ module RouterIntegration
 
       @app = Rack::Builder.new do
         use Rack::Lint
+        use Hanami::Middleware::BodyParser, :json
         run routes
       end.to_app
     end
