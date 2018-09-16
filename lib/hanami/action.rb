@@ -406,25 +406,30 @@ module Hanami
       handled_exceptions.merge!(exception)
     end
 
+    def self.new(configuration:, **args)
+      allocate.tap do |obj|
+        obj.instance_variable_set(:@configuration, configuration)
+        obj.instance_variable_set(:@accepted_mime_types, Mime.restrict_mime_types(configuration, accepted_formats))
+        obj.instance_variable_set(
+          :@handled_exceptions,
+          Hash[
+            configuration
+              .handled_exceptions
+              .merge(handled_exceptions)
+              .sort{ |(ex1,_),(ex2,_)| ex1.ancestors.include?(ex2) ? -1 : 1 }
+          ]
+        )
+
+        obj.send(:initialize, **args)
+        obj.freeze
+      end
+    end
+
     # Callbacks API instance methods
     #
     # @since 0.1.0
     # @api private
     module InstanceMethods
-      def initialize(configuration:, **args)
-        super(**args)
-        @configuration       = configuration
-        @accepted_mime_types = Mime.restrict_mime_types(configuration, self.class.accepted_formats)
-
-        # Exceptions
-        @handled_exceptions = @configuration.handled_exceptions.merge(self.class.handled_exceptions)
-        @handled_exceptions = Hash[
-          @handled_exceptions.sort{|(ex1,_),(ex2,_)| ex1.ancestors.include?(ex2) ? -1 : 1 }
-        ]
-
-        freeze
-      end
-
       # Implements the Rack/Hanami::Action protocol
       #
       # @since 0.1.0
