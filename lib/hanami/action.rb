@@ -179,7 +179,6 @@ module Hanami
         class_attribute :after_callbacks
         self.after_callbacks = Utils::Callbacks::Chain.new
 
-        prepend InstanceMethods
         include Validatable if defined?(Validatable)
       end
     end
@@ -425,39 +424,38 @@ module Hanami
       end
     end
 
-    # Callbacks API instance methods
+    # Implements the Rack/Hanami::Action protocol
     #
     # @since 0.1.0
     # @api private
-    module InstanceMethods
-      # Implements the Rack/Hanami::Action protocol
-      #
-      # @since 0.1.0
-      # @api private
-      def call(env)
-        request  = nil
-        response = nil
-        halted   = catch :halt do
-          begin
-            params   = self.class.params_class.new(env)
-            request  = Hanami::Action::Request.new(env, params)
-            response = Hanami::Action::Response.new(action: self.class.name, configuration: configuration, content_type: Mime.calculate_content_type_with_charset(configuration, request, accepted_mime_types), env: env, header: configuration.default_headers)
-            _run_before_callbacks(request, response)
-            super(request, response)
-            _run_after_callbacks(request, response)
-          rescue => exception
-            _handle_exception(request, response, exception)
-          end
-        end
+    def call(env)
+      request  = nil
+      response = nil
 
-        finish(request, response, halted)
+      halted = catch :halt do
+        begin
+          params   = self.class.params_class.new(env)
+          request  = Hanami::Action::Request.new(env, params)
+          response = Hanami::Action::Response.new(action: self.class.name, configuration: configuration, content_type: Mime.calculate_content_type_with_charset(configuration, request, accepted_mime_types), env: env, header: configuration.default_headers)
+          _run_before_callbacks(request, response)
+          handle(request, response)
+          _run_after_callbacks(request, response)
+        rescue => exception
+          _handle_exception(request, response, exception)
+        end
       end
+
+      finish(request, response, halted)
     end
 
     def initialize(**)
     end
 
     protected
+
+    def handle(request, response)
+      raise NotImplementedError, "Hanami::Action subclasses must implement #handle(request, response)"
+    end
 
     # Halt the action execution with the given HTTP status code and message.
     #

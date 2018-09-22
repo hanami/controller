@@ -1,12 +1,12 @@
 RSpec.describe Hanami::Action do
   class FormatController
     class Lookup < Hanami::Action
-      def call(*)
+      def handle(*)
       end
     end
 
     class Custom < Hanami::Action
-      def call(req, res)
+      def handle(req, res)
         input = req.params[:format]
         input = input.to_sym unless input.nil?
 
@@ -15,7 +15,7 @@ RSpec.describe Hanami::Action do
     end
 
     class Configuration < Hanami::Action
-      def call(*, res)
+      def handle(*, res)
         res.body = res.format
       end
     end
