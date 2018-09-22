@@ -1,3 +1,5 @@
+require 'json'
+
 module Hanami
   module Action
     # Container useful to transport data with the HTTP session
