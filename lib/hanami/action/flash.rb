@@ -252,7 +252,7 @@ module Hanami
       # @since 1.3.0
       # @api private
       def kept_data
-        kept.each_with_object({}) { |kept_data, result| result.merge!(JSON.parse(kept_data)['data']) }
+        kept.each_with_object({}) { |kept_data, result| result.merge!(Hanami::Utils::Json.parse(kept_data)['data']) }
       end
 
       # Check if data is a hash
