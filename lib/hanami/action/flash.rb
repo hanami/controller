@@ -1,3 +1,5 @@
+require 'hanami/utils/json'
+
 module Hanami
   module Action
     # Container useful to transport data with the HTTP session
@@ -178,7 +180,7 @@ module Hanami
       # @since 1.3.0
       # @api private
       def keep_data
-        new_kept_data = kept << JSON.generate({ count: 0, data: _data })
+        new_kept_data = kept << Hanami::Utils::Json.generate({ count: 0, data: _data })
 
         update_kept(new_kept_data)
       end
@@ -191,7 +193,7 @@ module Hanami
       # @api private
       def expire_kept
         new_kept_data = kept.reject do |kept_data|
-          parsed = JSON.parse(kept_data)
+          parsed = Hanami::Utils::Json.parse(kept_data)
           parsed['count'] >= 2 if is_hash?(parsed) && parsed['count'].is_a?(Integer)
         end
 
@@ -206,9 +208,9 @@ module Hanami
       # @api private
       def update_kept_request_count
         new_kept_data = kept.map do |kept_data|
-          parsed = JSON.parse(kept_data)
+          parsed = Hanami::Utils::Json.parse(kept_data)
           parsed['count'] += 1 if is_hash?(parsed) && parsed['count'].is_a?(Integer)
-          JSON.generate(parsed)
+          Hanami::Utils::Json.generate(parsed)
         end
 
         update_kept(new_kept_data)
@@ -225,11 +227,11 @@ module Hanami
         string_key = key.to_s
 
         data = kept.find do |kept_data|
-          parsed = JSON.parse(kept_data)
+          parsed = Hanami::Utils::Json.parse(kept_data)
           parsed['data'].fetch(string_key, nil) if is_hash?(parsed['data'])
         end
 
-        JSON.parse(data)['data'][string_key] if data
+        Hanami::Utils::Json.parse(data)['data'][string_key] if data
       end
 
       # Set the given new_kept_data to KEPT_KEY
