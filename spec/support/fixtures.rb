@@ -1812,3 +1812,69 @@ module Flash
     end
   end
 end
+
+module Inheritance
+  class Action < Hanami::Action
+    before :log_base_action
+
+    private
+
+    def log_base_action(*, res)
+      res[:base_action] = true
+    end
+  end
+
+  class AuthenticatedAction < Action
+    before :authenticate!
+
+    private
+
+    def authenticate!(*, res)
+      res[:authenticated] = true
+    end
+  end
+
+  module Controllers
+    module Books
+      class RestfulAction < AuthenticatedAction
+        before :find_book
+        after :render
+
+        private
+
+        def find_book(req, res)
+          res[:book] = "book #{req.params[:id]}"
+        end
+
+        def render(*, res)
+          res.body = res.exposures.keys
+        end
+      end
+
+      class Show < RestfulAction
+        def call(*, res)
+          res[:found] = true
+        end
+      end
+
+      class Destroy < Show
+        def call(*, res)
+          res[:destroyed] = true
+        end
+      end
+    end
+  end
+
+  class Application
+    def initialize
+      configuration = Hanami::Controller::Configuration.new
+      @routes = Hanami::Router.new(configuration: configuration, namespace: Inheritance::Controllers) do
+        resources :books, only: %i[show destroy]
+      end
+    end
+
+    def call(env)
+      @routes.call(env)
+    end
+  end
+end
