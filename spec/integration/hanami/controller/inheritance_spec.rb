@@ -13,5 +13,11 @@ RSpec.describe Hanami::Action do
 
       expect(last_response.body).to eq("[:base_action, :authenticated, :book, :found]")
     end
+
+    it "supports 'super' inside #call method" do
+      delete "/books/23"
+
+      expect(last_response.body).to eq("[:base_action, :authenticated, :book, :found, :destroyed]")
+    end
   end
 end
