@@ -1,6 +1,18 @@
 # Hanami::Controller
 Complete, fast and testable actions for Rack
 
+## v1.3.0.beta1 - 2018-08-08
+### Added
+- [Luca Guidi] Official support for JRuby 9.2.0.0
+
+### Fixed
+- [Yuji Ueki] Ensure that if `If-None-Match` or `If-Modified-Since` response HTTP headers are missing, `Etag` or `Last-Modified` headers will be in response HTTP headers.
+- [Gustavo Caso] Don't show flash message for the request after a HTTP redirect.
+- [Gustavo Caso] Ensure `Hanami::Action::Flash#each`, `#map`, and `#empty?` to not reference stale flash data.
+
+### Deprecated
+- [Gustavo Caso] Deprecate `Hanami::Action#parsed_request_body`
+
 ## v1.2.0 - 2018-04-11
 
 ## v1.2.0.rc2 - 2018-04-06

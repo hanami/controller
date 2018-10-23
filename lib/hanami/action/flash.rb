@@ -1,4 +1,4 @@
-require 'json'
+require 'hanami/utils/json'
 
 module Hanami
   module Action
@@ -14,29 +14,26 @@ module Hanami
       # @api private
       SESSION_KEY = :__flash
 
-      # Session key where the last request_id is stored
+      # Session key where keep data is store for redirect
       #
-      # @since 0.4.0
+      # @since 1.3.0
       # @api private
-      LAST_REQUEST_KEY = :__last_request_id
+      KEPT_KEY = :__kept_key
 
       # Initialize a new Flash instance
       #
       # @param session [Rack::Session::Abstract::SessionHash] the session
-      # @param request_id [String] the HTTP Request ID
       #
       # @return [Hanami::Action::Flash] the flash
       #
       # @see http://www.rubydoc.info/gems/rack/Rack/Session/Abstract/SessionHash
       # @see Hanami::Action::Rack#session_id
-      def initialize(session, request_id)
+      def initialize(session)
         @session         = session
-        @request_id      = request_id
-        @last_request_id = session[LAST_REQUEST_KEY]
-        @merged          = {}
+        @keep            = false
 
-        session[SESSION_KEY]             ||= {}
-        session[SESSION_KEY][request_id] ||= {}
+        session[KEPT_KEY] ||= []
+        session[SESSION_KEY] = {}
       end
 
       # Set the given value for the given key
@@ -47,7 +44,7 @@ module Hanami
       # @since 0.3.0
       # @api private
       def []=(key, value)
-        data[key] = value
+        _data[key] = value
       end
 
       # Get the value associated to the given key, if any
@@ -57,28 +54,26 @@ module Hanami
       # @since 0.3.0
       # @api private
       def [](key)
-        @merged.fetch(key) do
-          _values.find {|data| !data[key].nil? }
-        end
+        _data.fetch(key) { search_in_kept_data(key) }
       end
 
-      # Iterates through data
+      # Iterates through current request data and kept data
       #
       # @param blk [Proc]
       #
       # @since 1.2.0
       def each(&blk)
-        @merged.each(&blk)
+        _values.each(&blk)
       end
 
-      # Iterates through data
+      # Iterates through current request data and kept data
       #
       # @param blk [Proc]
       # @return [Array]
       #
       # @since 1.2.0
       def map(&blk)
-        @merged.map(&blk)
+        _values.map(&blk)
       end
 
       # Removes entirely the flash from the session if it has stale contents
@@ -93,11 +88,11 @@ module Hanami
         # this bug that I've found via a browser.
         #
         # It may happen that `#flash` is nil, and those two methods will fail
-        unless flash.nil?
-          expire_stale!
-          remove!
-          merge!
-          set_last_request_id!
+        unless _data.nil?
+          update_kept_request_count
+          keep_data if @keep
+          expire_kept
+          remove
         end
       end
 
@@ -109,48 +104,38 @@ module Hanami
       # @since 0.3.0
       # @api private
       def empty?
-        _values.all?(&:empty?)
+        _values.empty?
       end
 
       # @return [String]
       #
       # @since 1.0.0
       def inspect
-        "#<#{self.class}:#{'0x%x' % (__id__ << 1)} #{@merged.inspect}>"
+        "#<#{self.class}:#{'0x%x' % (__id__ << 1)} {:data=>#{_data.inspect}, :kept=>#{kept_data.inspect}} >"
+      end
+
+      # Set @keep to true, is use when triggering a redirect, and the content of _data is not empty.
+      # @return [TrueClass, NilClass]
+      #
+      # @since 1.3.0
+      # @api private
+      #
+      # @see Hanami::Action::Flash#empty?
+      def keep!
+        return if empty?
+        @keep = true
       end
 
       private
 
-      # The flash registry that holds the data for **all** the recent requests
+      # The flash registry that holds the data for the current requests
       #
       # @return [Hash] the flash
       #
       # @since 0.3.0
       # @api private
-      def flash
+      def _data
         @session[SESSION_KEY] || {}
-      end
-
-      # The flash registry that holds the data **only for** the current request
-      #
-      # @return [Hash] the flash for the current request
-      #
-      # @since 0.3.0
-      # @api private
-      def data
-        flash[@request_id] || {}
-      end
-
-      # Expire the stale data from the previous request.
-      #
-      # @return [void]
-      #
-      # @since 0.3.0
-      # @api private
-      def expire_stale!
-        flash.each do |request_id, _|
-          flash.delete(request_id) if delete?(request_id)
-        end
       end
 
       # Remove the flash entirely from the session if empty.
@@ -161,60 +146,125 @@ module Hanami
       # @api private
       #
       # @see Hanami::Action::Flash#empty?
-      def remove!
-        @session.delete(SESSION_KEY) if empty?
+      def remove
+        if empty?
+          @session.delete(SESSION_KEY)
+          @session.delete(KEPT_KEY)
+        end
       end
 
-      # @since 1.0.0
-      # @api private
+      # Returns the values from current session and kept.
       #
-      # @see Hanami::Action::Flash#[]
-      def merge!
-        @merged = last_request_flash.merge(data)
-      end
-
-      # Values from all the stored requests
-      #
-      # @return [Array]
+      # @return [Hash]
       #
       # @since 0.3.0
       # @api private
       def _values
-        flash.select { |session_id, _| !delete?(session_id) }.values
+        _data.merge(kept_data)
       end
 
-      # Determine if delete data from flash for the given Request ID
+      # Get the kept request data
       #
-      # @return [TrueClass,FalseClass] the result of the check
+      # @return [Array]
       #
-      # @since 0.4.0
+      # @since 1.3.0
       # @api private
-      #
-      # @see Hanami::Action::Flash#expire_stale!
-      def delete?(request_id)
-        ![@request_id, @session[LAST_REQUEST_KEY]].include?(request_id)
+      def kept
+        @session[KEPT_KEY] || []
       end
 
-      # Get the last request session flash
+      # Merge current data into KEPT_KEY hash
       #
-      # @return [Hash] the flash of last request
+      # @return [Hash] the current value of KEPT_KEY
       #
-      # @since 0.4.0
+      # @since 1.3.0
       # @api private
-      def last_request_flash
-        flash[@last_request_id] || {}
+      def keep_data
+        new_kept_data = kept << Hanami::Utils::Json.generate({ count: 0, data: _data })
+
+        update_kept(new_kept_data)
       end
 
-      # Store the last request_id to create the next flash with its values
-      # is current flash is not empty.
+      # Removes from kept data those who have lived for more than two requests
       #
-      # @return [void]
-      # @since 0.4.0
+      # @return [Hash] the current value of KEPT_KEY
+      #
+      # @since 1.3.0
       # @api private
-      def set_last_request_id!
-        @session[LAST_REQUEST_KEY] = @request_id if !empty?
+      def expire_kept
+        new_kept_data = kept.reject do |kept_data|
+          parsed = Hanami::Utils::Json.parse(kept_data)
+          parsed['count'] >= 2 if is_hash?(parsed) && parsed['count'].is_a?(Integer)
+        end
+
+        update_kept(new_kept_data)
       end
 
+      # Update the count of request for each kept data
+      #
+      # @return [Hash] the current value of KEPT_KEY
+      #
+      # @since 1.3.0
+      # @api private
+      def update_kept_request_count
+        new_kept_data = kept.map do |kept_data|
+          parsed = Hanami::Utils::Json.parse(kept_data)
+          parsed['count'] += 1 if is_hash?(parsed) && parsed['count'].is_a?(Integer)
+          Hanami::Utils::Json.generate(parsed)
+        end
+
+        update_kept(new_kept_data)
+      end
+
+      # Search in the kept data for a match on the key
+      #
+      # @param key [#to_s] the key
+      # @return [Object, NilClass]
+      #
+      # @since 1.3.0
+      # @api private
+      def search_in_kept_data(key)
+        string_key = key.to_s
+
+        data = kept.find do |kept_data|
+          parsed = Hanami::Utils::Json.parse(kept_data)
+          parsed['data'].fetch(string_key, nil) if is_hash?(parsed['data'])
+        end
+
+        Hanami::Utils::Json.parse(data)['data'][string_key] if data
+      end
+
+      # Set the given new_kept_data to KEPT_KEY
+      #
+      # @param new_kept_data
+      # @return [Hash] the current value of KEPT_KEY
+      #
+      # @since 1.3.0
+      # @api private
+      def update_kept(new_kept_data)
+        @session[KEPT_KEY] = new_kept_data
+      end
+
+      # Values from kept
+      #
+      # @return [Hash]
+      #
+      # @since 1.3.0
+      # @api private
+      def kept_data
+        kept.each_with_object({}) { |kept_data, result| result.merge!(Hanami::Utils::Json.parse(kept_data)['data']) }
+      end
+
+      # Check if data is a hash
+      #
+      # @param data
+      # @return [TrueClass, FalseClass]
+      #
+      # @since 1.3.0
+      # @api private
+      def is_hash?(data)
+        data && data.is_a?(Hash)
+      end
     end
   end
 end
