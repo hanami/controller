@@ -1,6 +1,10 @@
 # Hanami::Controller
 Complete, fast and testable actions for Rack
 
+## v1.3.0 - 2018-10-24
+### Added
+- [Gustavo Caso] Swappable JSON backed for `Hanami::Action::Flash` based on `Hanami::Utils::Json`
+
 ## v1.3.0.beta1 - 2018-08-08
 ### Added
 - [Luca Guidi] Official support for JRuby 9.2.0.0
