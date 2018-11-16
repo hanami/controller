@@ -6,7 +6,7 @@ unless ENV['CI']
   gem 'yard',   require: false
 end
 
-gem 'hanami-utils',  '~> 2.0.alpha', require: false, git: 'https://github.com/hanami/utils.git',  branch: 'feature/callbacks-chain-dup'
+gem 'hanami-utils',  '~> 2.0.alpha', require: false, git: 'https://github.com/hanami/utils.git',  branch: 'unstable'
 gem 'hanami-router', '~> 2.0.alpha', require: false, git: 'https://github.com/hanami/router.git', branch: 'unstable'
 
 group :validations do
