@@ -186,8 +186,6 @@ module Hanami
         end
       else
         base.class_eval do
-          self.before_callbacks = superclass.before_callbacks.dup
-          self.after_callbacks  = superclass.after_callbacks.dup
           prepend InstanceMethods
         end
       end
