@@ -51,7 +51,7 @@ RSpec.describe Hanami::Action do
     describe "with default cookies" do
       let(:configuration) do
         Hanami::Controller::Configuration.new do |config|
-          config.cookies(domain: "hanamirb.org", path: "/controller", secure: true, httponly: true)
+          config.cookies = { domain: "hanamirb.org", path: "/controller", secure: true, httponly: true }
         end
       end
 
