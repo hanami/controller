@@ -209,6 +209,8 @@ module Hanami
       # FIXME: new API docs
       attr_accessor :default_charset
 
+      attr_reader :default_headers
+
       # Set default headers for all responses
       #
       # By default this value is an empty hash.
@@ -223,19 +225,15 @@ module Hanami
       # @example Setting the value
       #   require 'hanami/controller'
       #
-      #   Hanami::Controller.configure do
-      #     default_headers({
+      #   Hanami::Controller::Configuration.new do |config|
+      #     config.default_headers = {
       #       'X-Frame-Options' => 'DENY'
-      #     })
+      #     }
       #   end
-      def default_headers(headers = nil)
-        if headers
-          @default_headers.merge!(
-            headers.reject {|_,v| v.nil? }
-          )
-        else
-          @default_headers
-        end
+      def default_headers=(headers)
+        @default_headers.merge!(
+          headers.reject { |_, v| v.nil? }
+        )
       end
 
       attr_reader :cookies
