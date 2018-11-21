@@ -200,7 +200,7 @@ RSpec.describe Hanami::Controller::Configuration do
       let(:configuration) do
         h = headers
         described_class.new do |config|
-          config.default_headers(h)
+          config.default_headers = h
         end
       end
 
@@ -214,7 +214,7 @@ RSpec.describe Hanami::Controller::Configuration do
         let(:configuration) do
           h = headers
           described_class.new do |config|
-            config.default_headers(h.merge('X-NIL' => nil))
+            config.default_headers = h.merge('X-NIL' => nil)
           end
         end
 

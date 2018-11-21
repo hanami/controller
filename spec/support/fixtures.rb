@@ -1188,9 +1188,9 @@ module HeadTest
   class Application
     def initialize
       configuration = Hanami::Controller::Configuration.new do |config|
-        config.default_headers(
+        config.default_headers = {
           "X-Frame-Options" => "DENY"
-        )
+        }
       end
 
       router = Hanami::Router.new(namespace: HeadTest, configuration: configuration) do

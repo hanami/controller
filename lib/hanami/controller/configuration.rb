@@ -209,6 +209,8 @@ module Hanami
       # FIXME: new API docs
       attr_accessor :default_charset
 
+      attr_reader :default_headers
+
       # Set default headers for all responses
       #
       # By default this value is an empty hash.
@@ -223,20 +225,18 @@ module Hanami
       # @example Setting the value
       #   require 'hanami/controller'
       #
-      #   Hanami::Controller.configure do
-      #     default_headers({
+      #   Hanami::Controller::Configuration.new do |config|
+      #     config.default_headers = {
       #       'X-Frame-Options' => 'DENY'
-      #     })
+      #     }
       #   end
-      def default_headers(headers = nil)
-        if headers
-          @default_headers.merge!(
-            headers.reject {|_,v| v.nil? }
-          )
-        else
-          @default_headers
-        end
+      def default_headers=(headers)
+        @default_headers.merge!(
+          headers.reject { |_, v| v.nil? }
+        )
       end
+
+      attr_reader :cookies
 
       # Set default cookies options for all responses
       #
@@ -252,22 +252,18 @@ module Hanami
       # @example Setting the value
       #   require 'hanami/controller'
       #
-      #   Hanami::Controller.configure do
-      #     cookies({
+      #   Hanami::Controller::Configuration.new do |config|
+      #     config.cookies = {
       #       domain: 'hanamirb.org',
       #       path: '/controller',
       #       secure: true,
       #       httponly: true
-      #     })
+      #     }
       #   end
-      def cookies(options = nil)
-        if options
-          @cookies.merge!(
-            options.reject { |_, v| v.nil? }
-          )
-        else
-          @cookies
-        end
+      def cookies=(options)
+        @cookies.merge!(
+          options.reject { |_, v| v.nil? }
+        )
       end
 
       # Returns a format for the given mime type
