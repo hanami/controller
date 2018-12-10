@@ -45,6 +45,10 @@ Complete, fast and testable actions for Rack
 - [Luca Guidi] When an exception is raised, it won't be caught, unless it's handled
 - [Luca Guidi] `Hanami::Action` exception handlers now accept `Hanami::Action::Request`, `Hanami::Action::Response`, and exception arguments
 
+## v1.3.0 - 2018-10-24
+### Added
+- [Gustavo Caso] Swappable JSON backed for `Hanami::Action::Flash` based on `Hanami::Utils::Json`
+
 ## v1.3.0.beta1 - 2018-08-08
 ### Added
 - [Luca Guidi] Official support for JRuby 9.2.0.0
