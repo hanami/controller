@@ -587,7 +587,7 @@ action = RemoveCookies.new
 action.call({}) # => [200, {'Set-Cookie' => "foo=; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 -0000"}, '...']
 ```
 
-Default values can be set in configuration, but overriden case by case.
+Default values can be set in configuration, but overridden case by case.
 
 ```ruby
 require 'hanami/controller'
