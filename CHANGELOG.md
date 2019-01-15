@@ -1,6 +1,11 @@
 # Hanami::Controller
 Complete, fast and testable actions for Rack
 
+## v1.3.1 - 2019-01-17
+### Added
+- [Luca Guidi] Official support for Ruby: MRI 2.6
+- [Luca Guidi] Support `bundler` 2.0+
+
 ## v1.3.0 - 2018-10-24
 ### Added
 - [Gustavo Caso] Swappable JSON backed for `Hanami::Action::Flash` based on `Hanami::Utils::Json`
