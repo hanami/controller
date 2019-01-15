@@ -1862,6 +1862,7 @@ module Inheritance
 
       class Destroy < Show
         def call(*, res)
+          super
           res[:destroyed] = true
         end
       end

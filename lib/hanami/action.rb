@@ -440,23 +440,24 @@ module Hanami
       #
       # @since 0.1.0
       # @api private
-      def call(env)
-        request  = nil
-        response = nil
-        halted   = catch :halt do
-          begin
-            params   = self.class.params_class.new(env)
-            request  = Hanami::Action::Request.new(env, params)
-            response = Hanami::Action::Response.new(action: self.class.name, configuration: configuration, content_type: Mime.calculate_content_type_with_charset(configuration, request, accepted_mime_types), env: env, header: configuration.default_headers)
-            _run_before_callbacks(request, response)
-            super(request, response)
-            _run_after_callbacks(request, response)
-          rescue => exception
-            _handle_exception(request, response, exception)
-          end
-        end
+      def call(env_or_request_when_already_called, response_when_already_called = nil)
+        if response_when_already_called
+          super
+        else
+          request, response = prepare_request_response(env_or_request_when_already_called)
 
-        finish(request, response, halted)
+          halted = catch :halt do
+            begin
+              _run_before_callbacks(request, response)
+              super(request, response)
+              _run_after_callbacks(request, response)
+            rescue => exception
+              _handle_exception(request, response, exception)
+            end
+          end
+
+          finish(request, response, halted)
+        end
       end
     end
 
@@ -699,6 +700,14 @@ module Hanami
     # @since 1.2.0
     def flash
       raise Hanami::Controller::MissingSessionError.new(:flash)
+    end
+
+    def prepare_request_response(env)
+      params   = self.class.params_class.new(env)
+      request  = Hanami::Action::Request.new(env, params)
+      response = Hanami::Action::Response.new(action: self.class.name, configuration: configuration, content_type: Mime.calculate_content_type_with_charset(configuration, request, accepted_mime_types), env: env, header: configuration.default_headers)
+
+      [request, response]
     end
 
     # Finalize the response
