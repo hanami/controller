@@ -1,6 +1,7 @@
 require "json"
 require "digest/md5"
 require "hanami/router"
+require "hanami/middleware/body_parser"
 require "hanami/utils/escape"
 require "hanami/action/params"
 require "hanami/action/cookies"
