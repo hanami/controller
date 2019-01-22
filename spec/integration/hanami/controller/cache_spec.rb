@@ -71,7 +71,7 @@ module CacheControl
       end.to_app
     end
 
-    def handle(env)
+    def call(env)
       @app.call(env)
     end
   end
@@ -160,7 +160,7 @@ module Expires
       end.to_app
     end
 
-    def handle(env)
+    def call(env)
       @app.call(env)
     end
   end
@@ -212,7 +212,7 @@ module ConditionalGet
       end
     end
 
-    def handle(env)
+    def call(env)
       @app.call(env)
     end
   end
