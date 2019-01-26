@@ -22,7 +22,7 @@ Complete, fast and testable actions for Rack and [Hanami](http://hanamirb.org)
 
 ## Rubies
 
-__Hanami::Controller__ supports Ruby (MRI) 2.3+ and JRuby 9.1.5.0+
+__Hanami::Controller__ supports Ruby (MRI) 2.5+
 
 ## Installation
 
@@ -963,6 +963,6 @@ __Hanami::Controller__ uses [Semantic Versioning 2.0.0](http://semver.org)
 
 ## Copyright
 
-Copyright © 2014-2017 Luca Guidi – Released under MIT License
+Copyright © 2014-2019 Luca Guidi – Released under MIT License
 
 This project was formerly known as Lotus (`lotus-controller`).
