@@ -1,12 +1,13 @@
 # Hanami::Controller
 Complete, fast and testable actions for Rack
 
-## v2.0.0.alpha1 (unreleased)
+## v2.0.0.alpha1 - 2019-01-30
 ### Added
 - [Luca Guidi] `Hanami::Action::Request#session` to access the HTTP session as it was originally sent
 - [Luca Guidi] `Hanami::Action::Request#cookies` to access the HTTP cookies as they were originally sent
 
 ### Changed
+- [Luca Guidi] Drop support for Ruby: MRI 2.3, and 2.4.
 - [Luca Guidi] `Hanami::Action` is a superclass
 - [Luca Guidi] `Hanami::Action#initialize` requires a `configuration:` keyword argument
 - [Luca Guidi] `Hanami::Action#initialize` returns a frozen action instance
