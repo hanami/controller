@@ -7,6 +7,7 @@ Complete, fast and testable actions for Rack
 - [Luca Guidi] `Hanami::Action::Request#cookies` to access the HTTP cookies as they were originally sent
 
 ### Changed
+- [Luca Guidi] Drop support for Ruby: MRI 2.3, and 2.4.
 - [Luca Guidi] `Hanami::Action` is a superclass
 - [Luca Guidi] `Hanami::Action#initialize` requires a `configuration:` keyword argument
 - [Luca Guidi] `Hanami::Action#initialize` returns a frozen action instance
