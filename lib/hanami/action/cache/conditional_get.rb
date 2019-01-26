@@ -1,3 +1,5 @@
+require "hanami/utils/blank"
+
 module Hanami
   class Action
     module Cache
