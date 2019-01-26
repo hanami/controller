@@ -1,7 +1,7 @@
 # Hanami::Controller
 Complete, fast and testable actions for Rack
 
-## v2.0.0.alpha1 (unreleased)
+## v2.0.0.alpha1 - 2019-01-30
 ### Added
 - [Luca Guidi] `Hanami::Action::Request#session` to access the HTTP session as it was originally sent
 - [Luca Guidi] `Hanami::Action::Request#cookies` to access the HTTP cookies as they were originally sent
