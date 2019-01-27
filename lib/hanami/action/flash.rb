@@ -263,7 +263,7 @@ module Hanami
       # @since 1.3.0
       # @api private
       def is_hash?(data)
-        data && data.is_a?(Hash)
+        data && data.is_a?(::Hash)
       end
     end
   end

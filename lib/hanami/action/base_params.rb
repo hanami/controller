@@ -173,7 +173,7 @@ module Hanami
       def _router_params(fallback = {})
         env.fetch(ROUTER_PARAMS) do
           if session = fallback.delete(RACK_SESSION) # rubocop:disable Lint/AssignmentInCondition
-            fallback[RACK_SESSION] = Utils::Hash.new(session).symbolize!.to_hash
+            fallback[RACK_SESSION] = Utils::Hash.deep_symbolize(session)
           end
 
           fallback

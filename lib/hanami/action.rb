@@ -418,7 +418,7 @@ module Hanami
         obj.instance_variable_set(:@accepted_mime_types, Mime.restrict_mime_types(configuration, accepted_formats))
         obj.instance_variable_set(
           :@handled_exceptions,
-          Hash[
+          ::Hash[
             configuration
             .handled_exceptions
             .merge(handled_exceptions)
