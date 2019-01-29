@@ -472,10 +472,10 @@ module Hanami
     # Otherwise, it sets the response body with the default message associated
     # to the code (eg 404 will set `"Not Found"`).
     #
-    # @param code [Fixnum] a valid HTTP status code
-    # @param message [String] the response body
+    # @param status [Fixnum] a valid HTTP status code
+    # @param body [String] the response body
     #
-    # @raises [StandardError] if the code isn't valid
+    # @raise [StandardError] if the code isn't valid
     #
     # @since 0.2.0
     #
@@ -514,7 +514,7 @@ module Hanami
       HTTP_STATUSES_WITHOUT_BODY.include?(res.status)
     end
 
-    # @since x.x.x
+    # @since 2.0.0
     # @api private
     def _requires_empty_headers?(res)
       _requires_no_body?(res) || res.head?
@@ -658,7 +658,7 @@ module Hanami
       ENTITY_HEADERS.include?(header)
     end
 
-    # @since x.x.x
+    # @since 2.0.0
     # @api private
     def _empty_headers(res)
       res.headers.select! { |header, _| keep_response_header?(header) }

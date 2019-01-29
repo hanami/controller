@@ -177,7 +177,7 @@ module Hanami
 
       # Patched version of <tt>Rack::Utils.best_q_match</tt>.
       #
-      # @since x.x.x
+      # @since 2.0.0
       # @api private
       #
       # @see http://www.rubydoc.info/gems/rack/Rack/Utils#best_q_match-class_method

@@ -5,14 +5,16 @@ Complete, fast and testable actions for Rack
 ### Added
 - [Luca Guidi] `Hanami::Action::Request#session` to access the HTTP session as it was originally sent
 - [Luca Guidi] `Hanami::Action::Request#cookies` to access the HTTP cookies as they were originally sent
+- [Luca Guidi & Tim Riley] Allow to build a deep inheritance chain for actions
 
 ### Changed
 - [Luca Guidi] Drop support for Ruby: MRI 2.3, and 2.4.
 - [Luca Guidi] `Hanami::Action` is a superclass
 - [Luca Guidi] `Hanami::Action#initialize` requires a `configuration:` keyword argument
 - [Luca Guidi] `Hanami::Action#initialize` returns a frozen action instance
-- [Luca Guidi] `Hanami::Action#call` accepts `Hanami::Action::Request` and `Hanami::Action::Response`
-- [Luca Guidi] `Hanami::Action#call` returns `Hanami::Action::Response`
+- [Tim Riley] `Hanami::Action` subclasses must implement `#handle` instead of `#call`
+- [Luca Guidi] `Hanami::Action#handle` accepts `Hanami::Action::Request` and `Hanami::Action::Response`
+- [Luca Guidi] `Hanami::Action#handle` returns `Hanami::Action::Response`
 - [Luca Guidi] Removed `Hanami::Controller.configure`, `.configuration`, `.duplicate`, and `.load!`
 - [Luca Guidi] Removed `Hanami::Action.use` to mount Rack middleware at the action level
 - [Luca Guidi] `Hanami::Controller::Configuration` changed syntax from DSL style to setters (eg. `Hanami::Controller::Configuration.new { |c| c.default_request_format = :html }`)
@@ -31,8 +33,9 @@ Complete, fast and testable actions for Rack
 - [Luca Guidi] Removed `Hanami::Action#format` in favor of `Hanami::Action::Response#format`
 - [Luca Guidi] Introduced `Hanami::Action#format` as factory to assign response format: `res.format = format(:json)` or `res.format = format("application/json")`
 - [Luca Guidi] Removed `Hanami::Action#format=` in favor of `Hanami::Action::Response#format=`
+- [Gustavo Caso] `Hanami::Action.accept` now looks at request `Content-Type` header to accept/deny a request
 - [Luca Guidi] Removed `Hanami::Action#request_id` in favor of `Hanami::Action::Request#id`
-- [Luca Guidi] Removed `Hanami::Action#parsed_request_body` in favor of `Hanami::Action::Request#parsed_body`
+- [Gustavo Caso] Removed `Hanami::Action#parsed_request_body` in favor of `Hanami::Action::Request#parsed_body`
 - [Luca Guidi] Removed `Hanami::Action#head?` in favor of `Hanami::Action::Request#head?`
 - [Luca Guidi] Removed `Hanami::Action#status` in favor of `Hanami::Action::Response#status=` and `#body=`
 - [Luca Guidi] Removed `Hanami::Action#session` in favor of `Hanami::Action::Response#session`
@@ -42,6 +45,7 @@ Complete, fast and testable actions for Rack
 - [Luca Guidi] Removed `Hanami::Action#cache_control`, `#expires`, and `#fresh` in favor of `Hanami::Action::Response#cache_control`, `#expires`, and `#fresh`, respectively
 - [Luca Guidi] Removed `Hanami::Action#send_file` and `#unsafe_send_file` in favor of `Hanami::Action::Response#send_file` and `#unsafe_send_file`, respectively
 - [Luca Guidi] Removed `Hanami::Action#errors`
+- [Gustavo Caso] Removed body cleanup for `HEAD` requests
 - [Luca Guidi] `Hanami::Action` callback hooks now accept `Hanami::Action::Request` and `Hanami::Action::Response` arguments
 - [Luca Guidi] When an exception is raised, it won't be caught, unless it's handled
 - [Luca Guidi] `Hanami::Action` exception handlers now accept `Hanami::Action::Request`, `Hanami::Action::Response`, and exception arguments
