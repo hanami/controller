@@ -91,7 +91,19 @@ RSpec.describe Hanami::Action do
     end
   end
 
-  describe "#request" do
+  describe "#name" do
+    it "returns action name" do
+      subject = FullStack::Controllers::Home::Index.new(configuration: configuration)
+      expect(subject.name).to eq("full_stack.controllers.home.index")
+    end
+
+    it "returns nil for anonymous classes" do
+      subject = Class.new(Hanami::Action).new(configuration: configuration)
+      expect(subject.name).to be(nil)
+    end
+  end
+
+  describe "request" do
     it "gets a Rack-like request object" do
       action_class = Class.new(Hanami::Action) do
         def handle(req, res)
