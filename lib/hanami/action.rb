@@ -410,8 +410,10 @@ module Hanami
     end
 
     module Name
+      MODULE_SEPARATOR_TRANSFORMER = [:gsub, "::", "."].freeze
+
       def self.call(name)
-        Utils::String.transform(name, [:gsub, "::", "."], :underscore) unless name.nil?
+        Utils::String.transform(name, MODULE_SEPARATOR_TRANSFORMER, :underscore) unless name.nil?
       end
 
       class << self
