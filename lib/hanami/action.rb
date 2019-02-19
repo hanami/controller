@@ -11,6 +11,7 @@ require 'hanami/action/rack/file'
 
 require 'rack/utils'
 require 'hanami/utils'
+require 'hanami/utils/string'
 require 'hanami/utils/kernel'
 
 require 'hanami/utils/class_attribute'
@@ -408,12 +409,25 @@ module Hanami
       handled_exceptions.merge!(exception)
     end
 
+    module Name
+      MODULE_SEPARATOR_TRANSFORMER = [:gsub, "::", "."].freeze
+
+      def self.call(name)
+        Utils::String.transform(name, MODULE_SEPARATOR_TRANSFORMER, :underscore) unless name.nil?
+      end
+
+      class << self
+        alias [] call
+      end
+    end
+
     # Callbacks API instance methods
     #
     # @since 0.1.0
     # @api private
     def self.new(configuration:, **args)
       allocate.tap do |obj|
+        obj.instance_variable_set(:@name, Name[name])
         obj.instance_variable_set(:@configuration, configuration)
         obj.instance_variable_set(:@accepted_mime_types, Mime.restrict_mime_types(configuration, accepted_formats))
         obj.instance_variable_set(
@@ -430,6 +444,8 @@ module Hanami
       end
     end
 
+    attr_reader :name
+
     # Implements the Rack/Hanami::Action protocol
     #
     # @since 0.1.0
@@ -442,7 +458,7 @@ module Hanami
         begin
           params   = self.class.params_class.new(env)
           request  = Hanami::Action::Request.new(env, params)
-          response = Hanami::Action::Response.new(action: self.class.name, configuration: configuration, content_type: Mime.calculate_content_type_with_charset(configuration, request, accepted_mime_types), env: env, header: configuration.default_headers)
+          response = Hanami::Action::Response.new(action: name, configuration: configuration, content_type: Mime.calculate_content_type_with_charset(configuration, request, accepted_mime_types), env: env, header: configuration.default_headers)
           _run_before_callbacks(request, response)
           handle(request, response)
           _run_after_callbacks(request, response)
