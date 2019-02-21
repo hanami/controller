@@ -148,6 +148,8 @@ module Hanami
       end
 
       def renderable?
+        return !head? && body.empty? if body.respond_to?(:empty?)
+
         !@sending_file && !head?
       end
 
