@@ -32,10 +32,10 @@ module Hanami
       attr_reader :action, :exposures, :format, :env
       attr_accessor :charset
 
-      def self.build(response, env)
-        new(action: "", configuration: nil, content_type: Mime.best_q_match(env[HTTP_ACCEPT]), env: env, header: response[RACK_HEADERS]).tap do |r|
-          r.status = response[RACK_STATUS]
-          r.body   = response[RACK_BODY].first
+      def self.build(status, env)
+        new(action: "", configuration: nil, content_type: Mime.best_q_match(env[HTTP_ACCEPT]), env: env).tap do |r|
+          r.status = status
+          r.body   = Http::Status.message_for(status)
           r.set_format(Mime.format_for(r.content_type))
         end
       end
