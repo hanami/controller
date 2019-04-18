@@ -271,4 +271,32 @@ RSpec.describe Hanami::Controller::Configuration do
       end
     end
   end
+
+  describe "#instrumentation" do
+    describe "when not previously set" do
+      it "returns default value" do
+        expect(configuration.instrumentation).to be_kind_of(Hanami::Controller::Instrumentation)
+      end
+    end
+
+    describe "when set with relative path" do
+      class CustomInstrumentation
+        def broadcast(*)
+        end
+
+        def subscribe(*, &blk)
+        end
+      end
+
+      let(:configuration) do
+        described_class.new do |config|
+          config.instrumentation = CustomInstrumentation.new
+        end
+      end
+
+      it "returns the value" do
+        expect(configuration.instrumentation).to be_kind_of(CustomInstrumentation)
+      end
+    end
+  end
 end

@@ -2,6 +2,8 @@ require 'hanami/utils/class'
 require 'hanami/utils/kernel'
 require 'hanami/utils/string'
 
+require 'hanami/controller/instrumentation'
+
 module Hanami
   module Controller
     # Configuration for the framework, controllers and actions.
@@ -59,6 +61,7 @@ module Hanami
         @default_charset         = nil
         @default_headers         = {}
         @cookies                 = {}
+        @instrumentation         = Hanami::Controller::Instrumentation.new
         @root_directory          = ::Pathname.new(Dir.pwd).realpath
         @public_directory        = root_directory.join(DEFAULT_PUBLIC_DIRECTORY).to_s
         instance_eval(&blk) unless blk.nil?
@@ -290,6 +293,12 @@ module Hanami
       # @api private
       def mime_type_for(format)
         @formats.key(format)
+      end
+
+      attr_reader :instrumentation
+
+      def instrumentation=(value)
+        @instrumentation = value
       end
 
       # @api private

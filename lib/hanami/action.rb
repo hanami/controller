@@ -443,13 +443,19 @@ module Hanami
           params   = self.class.params_class.new(env)
           request  = Hanami::Action::Request.new(env, params)
           response = Hanami::Action::Response.new(action: self.class.name, configuration: configuration, content_type: Mime.calculate_content_type_with_charset(configuration, request, accepted_mime_types), env: env, header: configuration.default_headers)
+
+          configuration.instrumentation.broadcast('hanami.action.start_processing', {})
           _run_before_callbacks(request, response)
+
           handle(request, response)
           _run_after_callbacks(request, response)
+          configuration.instrumentation.broadcast('hanami.action.processed', {})
         rescue => exception
           _handle_exception(request, response, exception)
+          configuration.instrumentation.broadcast('hanami.action.failed', {})
         end
       end
+
 
       finish(request, response, halted)
     end
