@@ -96,4 +96,15 @@ RSpec.describe "Full stack application" do
     expect(last_response.status).to be(302)
     expect(last_response.body).to   eq("Found") # This message is 302 status
   end
+
+  # See https://github.com/hanami/controller/issues/285
+  it "doesn't persist flash after first redirect" do
+    get "/failure"
+    follow_redirect!
+    follow_redirect!
+
+    expect(last_response.status).to be(200)
+    expect(last_response.body).to_not match("Ouch, access denied")
+    expect(last_response.body).to match("flash message not found")
+  end
 end

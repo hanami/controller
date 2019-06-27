@@ -1498,6 +1498,35 @@ module FullStack
         end
       end
     end
+
+    module Redirect
+      class Failure
+        include FullStack::Action
+
+        def call(_params)
+          flash[:message] = "Ouch, access denied"
+          redirect_to "/login"
+        end
+      end
+
+      class Login
+        include FullStack::Action
+
+        def call(_params)
+          redirect_to "/destination"
+        end
+      end
+
+      class Destination
+        include FullStack::Action
+
+        expose :message
+
+        def call(_params)
+          @message = flash[:message] || "flash message not found"
+        end
+      end
+    end
   end
 
   class Renderer
@@ -1535,6 +1564,10 @@ module FullStack
         namespace 'users' do
           get '/1', to: 'users#show'
         end
+
+        get '/failure', to: 'redirect#failure'
+        get '/login', to: 'redirect#login'
+        get '/destination', to: 'redirect#destination'
       end
 
       @renderer   = Renderer.new
