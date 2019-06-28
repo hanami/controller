@@ -84,6 +84,14 @@ steps:
   commands:
   - ./script/test isolation
 
+- name: integration
+  image: ruby:2.5
+  volumes:
+  - name: bundle
+    path: /usr/local/bundle
+  commands:
+  - ./script/test integration
+
 - name: quality
   image: ruby:2.5
   environment:
@@ -130,6 +138,14 @@ steps:
     path: /usr/local/bundle
   commands:
   - ./script/test isolation
+
+- name: integration
+  image: ruby:2.4
+  volumes:
+  - name: bundle
+    path: /usr/local/bundle
+  commands:
+  - ./script/test integration
 
 - name: quality
   image: ruby:2.4
@@ -178,6 +194,14 @@ steps:
   commands:
   - ./script/test isolation
 
+- name: integration
+  image: ruby:2.3
+  volumes:
+  - name: bundle
+    path: /usr/local/bundle
+  commands:
+  - ./script/test integration
+
 - name: quality
   image: ruby:2.3
   environment:
@@ -200,7 +224,7 @@ group: build
 
 steps:
 - name: install
-  image: jruby:9.2
+  image: hanami/jruby-9.2
   volumes:
   - name: bundle
     path: /usr/local/bundle
@@ -210,15 +234,31 @@ steps:
   - bundle install --jobs=3 --retry=3
 
 - name: unit
-  image: jruby:9.2
+  image: hanami/jruby-9.2
   volumes:
   - name: bundle
     path: /usr/local/bundle
   commands:
   - COVERAGE=true bundle exec rake spec:unit
 
+- name: isolation
+  image: hanami/jruby-9.2
+  volumes:
+  - name: bundle
+    path: /usr/local/bundle
+  commands:
+  - ./script/test isolation
+
+- name: integration
+  image: hanami/jruby-9.2
+  volumes:
+  - name: bundle
+    path: /usr/local/bundle
+  commands:
+  - ./script/test integration
+
 - name: quality
-  image: jruby:9.2
+  image: hanami/jruby-9.2
   environment:
     CODECOV_TOKEN:
       from_secret: codecov
@@ -239,7 +279,7 @@ group: build
 
 steps:
 - name: install
-  image: jruby:9.1
+  image: hanami/jruby-9.1
   volumes:
   - name: bundle
     path: /usr/local/bundle
@@ -249,7 +289,7 @@ steps:
   - bundle install --jobs=3 --retry=3
 
 - name: unit
-  image: jruby:9.1
+  image: hanami/jruby-9.1
   volumes:
   - name: bundle
     path: /usr/local/bundle
@@ -257,15 +297,23 @@ steps:
   - COVERAGE=true bundle exec rake spec:unit
 
 - name: isolation
-  image: jruby:9.1
+  image: hanami/jruby-9.1
   volumes:
   - name: bundle
     path: /usr/local/bundle
   commands:
   - ./script/test isolation
 
+- name: integration
+  image: hanami/jruby-9.1
+  volumes:
+  - name: bundle
+    path: /usr/local/bundle
+  commands:
+  - ./script/test integration
+
 - name: quality
-  image: jruby:9.1
+  image: hanami/jruby-9.1
   environment:
     CODECOV_TOKEN:
       from_secret: codecov
