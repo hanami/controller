@@ -50,7 +50,7 @@ module Hanami
         # @since 0.3.0
         #
         # @see Hanami::Action::Params
-        # @see http://hanamirb.org/guides/validations/overview/
+        # @see https://guides.hanamirb.org//validations/overview
         #
         # @example Anonymous Block
         #   require 'hanami/controller'

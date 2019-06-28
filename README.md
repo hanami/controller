@@ -14,11 +14,12 @@ Complete, fast and testable actions for Rack and [Hanami](http://hanamirb.org)
 ## Contact
 
 * Home page: http://hanamirb.org
+* Community: http://hanamirb.org/community
+* Guides: https://guides.hanamirb.org
 * Mailing List: http://hanamirb.org/mailing-list
 * API Doc: http://rdoc.info/gems/hanami-controller
 * Bugs/Issues: https://github.com/hanami/controller/issues
 * Chat: http://chat.hanamirb.org
-* Chat: https://gitter.im/hanami/chat
 
 ## Rubies
 
