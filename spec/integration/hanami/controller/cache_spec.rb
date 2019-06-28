@@ -310,6 +310,18 @@ RSpec.describe "HTTP Cache" do
         end
       end
 
+      context "when If-Modified-Since is set" do
+        it "completes request" do
+          response = app.get("/etag", "HTTP_IF_MODIFIED_SINCE" => Time.now.httpdate)
+          expect(response.status).to be(200)
+        end
+
+        it "returns etag header" do
+          response = app.get("/etag", "HTTP_IF_MODIFIED_SINCE" => Time.now.httpdate)
+          expect(response.headers.fetch("ETag")).to eq("updated")
+        end
+      end
+
       context "when etag has nil value" do
         it "completes request" do
           response = app.get("/etag-nil-value", "HTTP_IF_NONE_MATCH" => "outdated")

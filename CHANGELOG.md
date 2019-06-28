@@ -1,6 +1,10 @@
 # Hanami::Controller
 Complete, fast and testable actions for Rack
 
+## v1.3.2 - 2019-06-28
+### Fixed
+- [Ian Ker-Seymer] Ensure `Etag` to work when `If-Modified-Since` is sent from browser and upstream proxy sets `Last-Modified` automatically.
+
 ## v1.3.1 - 2019-01-18
 ### Added
 - [Luca Guidi] Official support for Ruby: MRI 2.6

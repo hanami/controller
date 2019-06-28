@@ -126,7 +126,7 @@ module Hanami
       #
       # @since 0.7.0
       #
-      # @see http://hanamirb.org/guides/validations/overview/
+      # @see https://guides.hanamirb.org/validations/overview
       #
       # @example
       #   class Signup
