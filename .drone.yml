@@ -241,14 +241,6 @@ steps:
   commands:
   - COVERAGE=true bundle exec rake spec:unit
 
-- name: isolation
-  image: hanami/jruby-9.2
-  volumes:
-  - name: bundle
-    path: /usr/local/bundle
-  commands:
-  - ./script/test isolation
-
 - name: integration
   image: hanami/jruby-9.2
   volumes:
@@ -295,14 +287,6 @@ steps:
     path: /usr/local/bundle
   commands:
   - COVERAGE=true bundle exec rake spec:unit
-
-- name: isolation
-  image: hanami/jruby-9.1
-  volumes:
-  - name: bundle
-    path: /usr/local/bundle
-  commands:
-  - ./script/test isolation
 
 - name: integration
   image: hanami/jruby-9.1
