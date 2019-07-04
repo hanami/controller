@@ -11,7 +11,7 @@ gem 'hanami-router', '~> 1.3', require: false, git: 'https://github.com/hanami/r
 
 group :validations do
   if ENV['HANAMI_VALIDATIONS'] == '2'
-    gem 'hanami-validations', '~> 2.0.alpha', require: false, git: 'https://github.com/hanami/validations.git', branch: 'feature/hanami-validator'
+    gem 'hanami-validations', '~> 2.0.alpha', require: false, git: 'https://github.com/hanami/validations.git', branch: 'unstable'
   else
     gem 'hanami-validations', '~> 1.3', require: false, git: 'https://github.com/hanami/validations.git', branch: 'master'
   end
