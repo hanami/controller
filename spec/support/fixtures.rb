@@ -1500,6 +1500,24 @@ module FullStack
     end
 
     module Redirect
+      class OneMoreRedirect
+        include FullStack::Action
+
+        def call(_params)
+          flash[:message] = "Ouch, access denied"
+          redirect_to "/extra_redirect"
+        end
+      end
+
+      class ExtraRedirect
+        include FullStack::Action
+
+        def call(_params)
+          redirect_to "/login"
+        end
+      end
+
+
       class Failure
         include FullStack::Action
 
@@ -1565,6 +1583,8 @@ module FullStack
           get '/1', to: 'users#show'
         end
 
+        get '/one_more_redirect', to: 'redirect#one_more_redirect'
+        get '/extra_redirect', to: 'redirect#extra_redirect'
         get '/failure', to: 'redirect#failure'
         get '/login', to: 'redirect#login'
         get '/destination', to: 'redirect#destination'

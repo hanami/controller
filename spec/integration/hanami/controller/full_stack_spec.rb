@@ -98,8 +98,19 @@ RSpec.describe "Full stack application" do
   end
 
   # See https://github.com/hanami/controller/issues/285
-  it "doesn't persist flash after first redirect" do
-    get "/failure"
+  # it "doesn't persist flash after first redirect" do
+  #   get "/failure"
+  #   follow_redirect!
+  #   follow_redirect!
+
+  #   expect(last_response.status).to be(200)
+  #   expect(last_response.body).to_not match("Ouch, access denied")
+  #   expect(last_response.body).to match("flash message not found")
+  # end
+
+  it "doesn't persist flash after multiple redirects" do
+    get "/one_more_redirect"
+    follow_redirect!
     follow_redirect!
     follow_redirect!
 
