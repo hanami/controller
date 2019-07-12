@@ -10,6 +10,8 @@ require "hanami/action/cache"
 require "hanami/action/glue"
 require_relative "./renderer"
 
+require_relative './validations'
+
 HTTP_TEST_STATUSES_WITHOUT_BODY = Set.new((100..199).to_a << 204 << 205 << 304).freeze
 HTTP_TEST_STATUSES = {
   100 => "Continue",
@@ -582,7 +584,12 @@ end
 class WhitelistedParamsAction < Hanami::Action
   class Params < Hanami::Action::Params
     params do
-      required(:id).maybe
+      if RSpec::Support::Validations.version?(2)
+        required(:id).maybe(:integer)
+      else
+        required(:id).maybe(:int?)
+      end
+
       required(:article).schema do
         required(:tags).each(:str?)
       end
@@ -608,7 +615,11 @@ end
 
 class WhitelistedUploadDslAction < Hanami::Action
   params do
-    required(:id).maybe
+    if RSpec::Support::Validations.version?(2)
+      required(:id).maybe(:integer)
+    else
+      required(:id).maybe(:int?)
+    end
     required(:upload).filled
   end
 
@@ -630,10 +641,23 @@ end
 class TestParams < Hanami::Action::Params
   params do
     required(:email).filled(format?: /\A.+@.+\z/)
-    optional(:password).filled(:str?).confirmation
+
+    if RSpec::Support::Validations.version?(2)
+      optional(:password).filled(:str?)
+    else
+      optional(:password).filled(:str?).confirmation
+    end
+
     required(:name).filled
-    required(:tos).filled(:bool?)
-    required(:age).filled(:int?)
+
+    if RSpec::Support::Validations.version?(2)
+      required(:tos).value(:bool)
+      required(:age).value(:integer)
+    else
+      required(:tos).filled(:bool?)
+      required(:age).filled(:int?)
+    end
+
     required(:address).schema do
       required(:line_one).filled
       required(:deep).schema do
@@ -1268,7 +1292,12 @@ module FullStack
         include Inspector
 
         params do
-          required(:id).value(:int?)
+          if RSpec::Support::Validations.version?(2)
+            required(:id).value(:integer)
+          else
+            required(:id).value(:int?)
+          end
+
           required(:book).schema do
             required(:title).filled(:str?)
             required(:author).schema do

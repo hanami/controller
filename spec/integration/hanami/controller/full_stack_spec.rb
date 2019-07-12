@@ -69,7 +69,8 @@ RSpec.describe "Full stack application" do
     patch "/books/1", book: {
       title: "Hanami in Action",
       author: {
-        name: "Luca"
+        name: "Luca",
+        favourite_colour: "purple"
       }
     }
     result = JSON.parse(last_response.body, symbolize_names: true)
