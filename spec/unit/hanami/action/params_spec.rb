@@ -41,7 +41,7 @@ RSpec.describe Hanami::Action::Params do
         Tempfile.create('multipart-upload') do |upload|
           action.call('id' => '1', 'unknown' => '2', 'upload' => upload, '_csrf_token' => '3')
 
-          expect(action.params[:id]).to          eq('1')
+          expect(action.params[:id]).to          eq(1)
           expect(action.params[:unknown]).to     be(nil)
           expect(action.params[:upload]).to      eq(upload)
           expect(action.params[:_csrf_token]).to eq('3')
@@ -113,12 +113,13 @@ RSpec.describe Hanami::Action::Params do
         context "in a Rack context" do
           it "returns only the listed params" do
             response = Rack::MockRequest.new(action).request('PATCH', "?id=23", params: { x: { foo: 'bar' } })
-            expect(response.body).to match(%({:id=>"23"}))
+            expect(response.body).to match(%({:id=>23}))
           end
 
           it "doesn't filter _csrf_token" do
             response = Rack::MockRequest.new(action).request('PATCH', "?id=1", params: { _csrf_token: 'def', x: { foo: 'bar' } })
-            expect(response.body).to match(%(:_csrf_token=>"def", :id=>"1"))
+            expect(response.body).to match(%(:_csrf_token=>"def"))
+            expect(response.body).to match(%(:id=>1))
           end
         end
 
@@ -182,7 +183,14 @@ RSpec.describe Hanami::Action::Params do
       expect(params.valid?).to be(false)
 
       expect(params.errors.fetch(:signup).fetch(:name)).to eq(['is missing'])
-      expect(params.error_messages).to                     eq(['Name is missing', 'Age is missing', 'Age must be greater than or equal to 18'])
+
+      with_hanami_validations(1) do
+        expect(params.error_messages).to eq(['Name is missing', 'Age is missing', 'Age must be greater than or equal to 18'])
+      end
+
+      with_hanami_validations(2) do
+        expect(params.error_messages).to eq(['Name is missing', 'Age is missing'])
+      end
     end
 
     it "is it valid when all the validation criteria are met" do
