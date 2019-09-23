@@ -86,8 +86,8 @@ RSpec.describe Hanami::Action::Params do
       context "with Hanami::Router" do
         it "returns all the params as they are" do
           # Hanami::Router params are always symbolized
-          _, _, body = action.call('router.params' => { id: '23' })
-          expect(body).to eq([%({:id=>"23"})])
+          _, _, body = action.call('router.params' => { id: '23' }, a: '1')
+          expect(body).to eq([%({:id=>"23", :a=>"1"})])
         end
       end
     end

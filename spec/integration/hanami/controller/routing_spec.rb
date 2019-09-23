@@ -126,7 +126,7 @@ RSpec.describe 'Hanami::Router integration' do
       response = app.request("PATCH", "/flowers/23", params: { flower: { name: "Sakura!" } })
 
       expect(response.status).to be(200)
-      expect(response.body).to   eq(%({:flower=>{:name=>"Sakura!"}, :id=>"23"}))
+      expect(response.body).to   eq(%({:id=>"23", :flower=>{:name=>"Sakura!"}}))
     end
 
     it "calls DELETE destroy" do

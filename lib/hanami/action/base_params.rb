@@ -157,11 +157,13 @@ module Hanami
       def _extract_params
         result = {}
 
+        result.merge! _router_params
+
         if env.key?(RACK_INPUT)
           result.merge! ::Rack::Request.new(env).params
-          result.merge! _router_params
         else
-          result.merge! _router_params(env)
+          _overwrite_rack_session
+          result.merge! env.reject { |k, _| k == ROUTER_PARAMS }
           env[REQUEST_METHOD] ||= DEFAULT_REQUEST_METHOD
         end
 
@@ -170,13 +172,15 @@ module Hanami
 
       # @since 0.7.0
       # @api private
-      def _router_params(fallback = {})
-        env.fetch(ROUTER_PARAMS) do
-          if session = fallback.delete(RACK_SESSION) # rubocop:disable Lint/AssignmentInCondition
-            fallback[RACK_SESSION] = Utils::Hash.new(session).symbolize!.to_hash
-          end
+      def _router_params
+        env.fetch(ROUTER_PARAMS, {})
+      end
 
-          fallback
+      # @since 1.3.3
+      # @api private
+      def _overwrite_rack_session
+        if session = env.delete(RACK_SESSION) # rubocop:disable Lint/AssignmentInCondition
+          env[RACK_SESSION] = Utils::Hash.new(session).symbolize!.to_hash
         end
       end
     end
