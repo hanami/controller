@@ -1,5 +1,6 @@
 require 'hanami/utils/class_attribute'
 require 'hanami/http/status'
+require 'hanami/action/rack/error_processing'
 
 module Hanami
   module Action
@@ -11,23 +12,6 @@ module Hanami
     # @see Hanami::Action::Throwable#halt
     # @see Hanami::Action::Throwable#status
     module Throwable
-      # @since 0.2.0
-      # @api private
-      RACK_ERRORS = 'rack.errors'.freeze
-
-      # This isn't part of Rack SPEC
-      #
-      # Exception notifiers use <tt>rack.exception</tt> instead of
-      # <tt>rack.errors</tt>, so we need to support it.
-      #
-      # @since 0.5.0
-      # @api private
-      #
-      # @see Hanami::Action::Throwable::RACK_ERRORS
-      # @see http://www.rubydoc.info/github/rack/rack/file/SPEC#The_Error_Stream
-      # @see https://github.com/hanami/controller/issues/133
-      RACK_EXCEPTION = 'rack.exception'.freeze
-
       # @since 0.1.0
       # @api private
       def self.included(base)
@@ -155,18 +139,7 @@ module Hanami
       def _reference_in_rack_errors(exception)
         return if configuration.handled_exception?(exception)
 
-        @_env[RACK_EXCEPTION] = exception
-
-        if errors = @_env[RACK_ERRORS]
-          errors.write(_dump_exception(exception))
-          errors.flush
-        end
-      end
-
-      # @since 0.2.0
-      # @api private
-      def _dump_exception(exception)
-        [[exception.class, exception.message].compact.join(": "), *exception.backtrace].join("\n\t")
+        Hanami::Action::Rack::ErrorProcessing.save_error_in_rack_env(@_env, exception)
       end
 
       # @since 0.1.0
