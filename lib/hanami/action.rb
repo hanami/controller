@@ -4,6 +4,7 @@ begin
 rescue LoadError
 end
 
+require 'hanami/controller/configuration'
 require 'hanami/action/request'
 require 'hanami/action/response'
 require 'hanami/action/base_params'
@@ -425,7 +426,7 @@ module Hanami
     #
     # @since 0.1.0
     # @api private
-    def self.new(configuration:, **args)
+    def self.new(configuration: Hanami::Controller::Configuration.new, **args)
       allocate.tap do |obj|
         obj.instance_variable_set(:@name, Name[name])
         obj.instance_variable_set(:@configuration, configuration)
