@@ -67,14 +67,21 @@ module Hanami
         _rescue do
           @_env    = env
           @headers = ::Rack::Utils::HeaderHash.new(configuration.default_headers)
-          @params  = self.class.params_class.new(@_env)
-          super @params
+
+          @params ||= {}
+          @params[Thread.current.object_id] = self.class.params_class.new(@_env)
+          super params
+          @params.delete(Thread.current.object_id)
         end
 
         finish
       end
 
       private
+
+      def params
+        @params[Thread.current.object_id]
+      end
 
       # Prepare the Rack response before the control is returned to the
       # webserver.
