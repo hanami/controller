@@ -71,17 +71,17 @@ module Hanami
           @params ||= {}
           @params[Thread.current.object_id] = self.class.params_class.new(@_env)
           super params
-          @params.delete(Thread.current.object_id)
         end
 
         finish
       end
 
-      private
-
       def params
+        @params ||= {}
         @params[Thread.current.object_id]
       end
+
+      private
 
       # Prepare the Rack response before the control is returned to the
       # webserver.
