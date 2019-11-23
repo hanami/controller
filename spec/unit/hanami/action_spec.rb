@@ -10,6 +10,29 @@ RSpec.describe Hanami::Action do
     end
   end
 
+  describe "#with" do
+    let(:action_class) {
+      Class.new(Hanami::Action) do
+        attr_reader :dep_one, :dep_two
+
+        def initialize(dep_one:, dep_two:, **deps)
+          @dep_one = dep_one
+          @dep_two = dep_two
+          super
+        end
+      end
+    }
+
+    it "returns a copy of the action with updated options" do
+      action = action_class.new(dep_one: "one", dep_two: "two")
+
+      new_action = action.with(dep_two: "due")
+      expect(new_action).to be_an(action.class)
+      expect(new_action.dep_one).to eq "one"
+      expect(new_action.dep_two).to eq "due"
+    end
+  end
+
   describe "#call" do
     it "calls an action" do
       response = CallAction.new(configuration: configuration).call({})

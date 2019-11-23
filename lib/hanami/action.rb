@@ -422,10 +422,18 @@ module Hanami
       end
     end
 
-    # Callbacks API instance methods
+    # Returns a new action
     #
-    # @since 0.1.0
-    # @api private
+    # @overload new(**args)
+    #   @param args [Hash] action dependencies
+    #
+    # @overload new(configuration:, **args)
+    #   @param configuration [Hanami::Controller::Configuration] action configuration
+    #   @param args [Hash] action dependencies
+    #
+    # @return [Hanami::Action] Action object
+    #
+    # @since 2.0.0
     def self.new(configuration: Hanami::Controller::Configuration.new, **args)
       allocate.tap do |obj|
         obj.instance_variable_set(:@name, Name[name])
@@ -471,7 +479,20 @@ module Hanami
       finish(request, response, halted)
     end
 
-    def initialize(**)
+    def initialize(**deps)
+      @_deps = deps
+    end
+
+    # Returns a new copy of the action with new arguments merged with those
+    # previously passed to `.new`
+    #
+    # @param new_args [Hash] new arguments
+    #
+    # @return [Hanami::Action] New action object
+    #
+    # @since 2.0.0
+    def with(**new_args)
+      self.class.new(@_deps.merge(new_args))
     end
 
     protected
