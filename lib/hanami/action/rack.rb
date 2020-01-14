@@ -83,6 +83,14 @@ module Hanami
       # The key that returns router parsed body from the Rack env
       ROUTER_PARSED_BODY = 'router.parsed_body'.freeze
 
+      # This is the root directory for `#unsafe_send_file`
+      #
+      # @since 1.3.3
+      # @api private
+      #
+      # @see #unsafe_send_file
+      FILE_SYSTEM_ROOT = Pathname.new("/").freeze
+
       # Override Ruby's hook for modules.
       # It includes basic Hanami::Action modules to the given class.
       #
@@ -353,7 +361,11 @@ module Hanami
       #     end
       #   end
       def unsafe_send_file(path)
-        directory = self.class.configuration.root_directory if Pathname.new(path).relative?
+        directory = if Pathname.new(path).relative?
+                      self.class.configuration.root_directory
+                    else
+                      FILE_SYSTEM_ROOT
+                    end
 
         _send_file(
           File.new(path, directory).call(@_env)

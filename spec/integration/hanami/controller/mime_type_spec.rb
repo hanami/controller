@@ -21,7 +21,7 @@ module Mimes
     include Hanami::Action
 
     def call(_params)
-      self.body = format
+      self.body = format.to_s
     end
   end
 
@@ -32,7 +32,7 @@ module Mimes
     configuration.default_charset 'ISO-8859-1'
 
     def call(_params)
-      self.body = format
+      self.body = format.to_s
     end
   end
 
@@ -41,7 +41,7 @@ module Mimes
 
     def call(_params)
       self.format = :xml
-      self.body   = format
+      self.body   = format.to_s
     end
   end
 
@@ -51,7 +51,7 @@ module Mimes
     def call(_params)
       self.charset = 'latin1'
       self.format  = :html
-      self.body    = format
+      self.body    = format.to_s
     end
   end
 
@@ -64,7 +64,7 @@ module Mimes
       headers['X-AcceptXml']     = accept?('application/xml').to_s
       headers['X-AcceptJson']    = accept?('text/json').to_s
 
-      self.body = format
+      self.body = format.to_s
     end
   end
 
@@ -75,7 +75,7 @@ module Mimes
     accept :json, :custom
 
     def call(_params)
-      self.body = format
+      self.body = format.to_s
     end
   end
 
@@ -105,7 +105,7 @@ module Mimes
     configuration.default_response_format :json
 
     def call(_params)
-      self.body = configuration.default_request_format
+      self.body = configuration.default_request_format.to_s
     end
   end
 
@@ -135,7 +135,7 @@ module Mimes
 
     def call(_params)
       self.format = :json
-      self.body   = format
+      self.body   = format.to_s
     end
   end
 
@@ -146,7 +146,7 @@ module Mimes
 
     def call(_params)
       self.format = :json
-      self.body   = format
+      self.body   = format.to_s
     end
   end
 end

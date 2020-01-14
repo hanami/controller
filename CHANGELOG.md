@@ -1,6 +1,12 @@
 # Hanami::Controller
 Complete, fast and testable actions for Rack
 
+## v1.3.3 - 2020-01-14
+### Added
+- [Luca Guidi] Official support for Ruby: MRI 2.7
+- [Luca Guidi] Support `rack` 2.1
+- [Luca Guidi] Support for both `hanami-validations` 1 and 2
+
 ## v1.3.2 - 2019-06-28
 ### Fixed
 - [Ian Ker-Seymer] Ensure `Etag` to work when `If-Modified-Since` is sent from browser and upstream proxy sets `Last-Modified` automatically.
