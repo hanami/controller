@@ -85,8 +85,10 @@ module Hanami
 
       # This is the root directory for `#unsafe_send_file`
       #
-      # @since x.x.x
+      # @since 1.3.3
       # @api private
+      #
+      # @see #unsafe_send_file
       FILE_SYSTEM_ROOT = Pathname.new("/").freeze
 
       # Override Ruby's hook for modules.

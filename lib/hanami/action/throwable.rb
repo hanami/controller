@@ -1,6 +1,6 @@
 require 'hanami/utils/class_attribute'
 require 'hanami/http/status'
-require 'hanami/action/rack/error_processing'
+require 'hanami/action/rack/errors'
 
 module Hanami
   module Action
@@ -139,7 +139,7 @@ module Hanami
       def _reference_in_rack_errors(exception)
         return if configuration.handled_exception?(exception)
 
-        Hanami::Action::Rack::ErrorProcessing.save_error_in_rack_env(@_env, exception)
+        Hanami::Action::Rack::Errors.set(@_env, exception)
       end
 
       # @since 0.1.0
