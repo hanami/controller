@@ -5,7 +5,7 @@ Complete, fast and testable actions for Rack and [Hanami](http://hanamirb.org)
 ## Status
 
 [![Gem Version](https://badge.fury.io/rb/hanami-controller.svg)](https://badge.fury.io/rb/hanami-controller)
-[![TravisCI](https://travis-ci.org/hanami/controller.svg?branch=master)](https://travis-ci.org/hanami/controller)
+[![Build Status](https://ci.hanamirb.org/api/badges/hanami/controller/status.svg)](https://ci.hanamirb.org/hanami/controller)
 [![CircleCI](https://circleci.com/gh/hanami/controller/tree/master.svg?style=svg)](https://circleci.com/gh/hanami/controller/tree/master)
 [![Test Coverage](https://codecov.io/gh/hanami/controller/branch/master/graph/badge.svg)](https://codecov.io/gh/hanami/controller)
 [![Depfu](https://badges.depfu.com/badges/7cd17419fba78b726be1353118fb01de/overview.svg)](https://depfu.com/github/hanami/controller?project=Bundler)

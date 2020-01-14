@@ -31,14 +31,14 @@ RSpec.describe Hanami::Action do
       action   = SetCookiesWithOptionsAction.new(configuration: configuration, expires: tomorrow)
       response = action.call({})
 
-      expect(response.headers).to eq("Content-Type" => "application/octet-stream; charset=utf-8", "Set-Cookie" => "kukki=yum%21; domain=hanamirb.org; path=/controller; expires=#{tomorrow.gmtime.rfc2822}; secure; HttpOnly")
+      expect(response.headers).to eq("Content-Type" => "application/octet-stream; charset=utf-8", "Set-Cookie" => "kukki=yum%21; domain=hanamirb.org; path=/controller; expires=#{tomorrow.httpdate}; secure; HttpOnly")
     end
 
     it "removes cookies" do
       action = RemoveCookiesAction.new(configuration: configuration)
       response = action.call("HTTP_COOKIE" => "foo=bar;rm=me")
 
-      expect(response.headers).to eq("Content-Type" => "application/octet-stream; charset=utf-8", "Set-Cookie" => "rm=; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 -0000")
+      expect(response.headers).to eq("Content-Type" => "application/octet-stream; charset=utf-8", "Set-Cookie" => "rm=; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT")
     end
 
     it "iterates cookies" do
@@ -79,7 +79,7 @@ RSpec.describe Hanami::Action do
         response = action.call({})
         max_age = 120
         expect(response.headers["Set-Cookie"]).to include("max-age=#{max_age}")
-        expect(response.headers["Set-Cookie"]).to include("expires=#{(Time.now + max_age).gmtime.rfc2822}")
+        expect(response.headers["Set-Cookie"]).to include("expires=#{(Time.now + max_age).httpdate}")
       end
     end
   end

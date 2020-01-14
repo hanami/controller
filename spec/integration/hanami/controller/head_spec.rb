@@ -1,4 +1,5 @@
 require 'rack/test'
+require 'rack/utils'
 
 RSpec.describe "HTTP HEAD" do
   include Rack::Test::Methods
@@ -35,7 +36,7 @@ RSpec.describe "HTTP HEAD" do
 
   HTTP_TEST_STATUSES_WITHOUT_BODY.each do |code|
     describe "with: #{code}" do
-      if [204, 304].include?(code)
+      if Rack::Utils::STATUS_WITH_NO_ENTITY_BODY.key?(code)
         it "doesn't send body and default headers" do
           get "/code/#{code}"
 

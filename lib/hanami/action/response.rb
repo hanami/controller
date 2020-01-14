@@ -29,6 +29,8 @@ module Hanami
 
       EMPTY_BODY = [].freeze
 
+      FILE_SYSTEM_ROOT = Pathname.new("/").freeze
+
       attr_reader :action, :exposures, :format, :env
       attr_accessor :charset
 
@@ -108,7 +110,11 @@ module Hanami
       end
 
       def unsafe_send_file(path)
-        directory = @configuration.root_directory if Pathname.new(path).relative?
+        directory = if Pathname.new(path).relative?
+                      @configuration.root_directory
+                    else
+                      FILE_SYSTEM_ROOT
+                    end
 
         _send_file(
           Rack::File.new(path, directory).call(env)
@@ -152,6 +158,8 @@ module Hanami
 
         !@sending_file && !head?
       end
+
+      alias to_ary to_a
 
       def head?
         env[REQUEST_METHOD] == HEAD
