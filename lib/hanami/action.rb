@@ -497,6 +497,12 @@ module Hanami
 
     protected
 
+    # Hook for subclasses to apply behavior as part of action invocation
+    #
+    # @param request [Hanami::Action::Request]
+    # @param response [Hanami::Action::Response]
+    #
+    # @since 2.0.0
     def handle(request, response)
     end
 
