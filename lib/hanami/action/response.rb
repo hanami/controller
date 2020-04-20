@@ -67,6 +67,10 @@ module Hanami
         end
       end
 
+      def render(view, **render_options)
+        self.body = view.(**render_options).to_s
+      end
+
       def format=(args)
         @format, content_type = *args
         content_type = Action::Mime.content_type_with_charset(content_type, charset)
