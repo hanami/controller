@@ -455,6 +455,10 @@ module Hanami
 
     attr_reader :name
 
+    def initialize(**deps)
+      @_deps = deps
+    end
+
     # Implements the Rack/Hanami::Action protocol
     #
     # @since 0.1.0
@@ -477,10 +481,6 @@ module Hanami
       end
 
       finish(request, response, halted)
-    end
-
-    def initialize(**deps)
-      @_deps = deps
     end
 
     # Returns a new copy of the action with new arguments merged with those
