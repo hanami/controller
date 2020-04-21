@@ -31,7 +31,7 @@ module Hanami
 
       FILE_SYSTEM_ROOT = Pathname.new("/").freeze
 
-      attr_reader :action, :exposures, :format, :env
+      attr_reader :request, :action, :exposures, :format, :env, :view_options
       attr_accessor :charset
 
       def self.build(status, env)
@@ -42,15 +42,17 @@ module Hanami
         end
       end
 
-      def initialize(action:, configuration:, content_type: nil, env: {}, header: {})
+      def initialize(request:, action:, configuration:, content_type: nil, env: {}, header: {}, view_options: nil)
         super([], 200, header.dup)
         set_header("Content-Type", content_type)
 
-        @action        = action
+        @request = request
+        @action = action
         @configuration = configuration
-        @charset   = ::Rack::MediaType.params(content_type).fetch('charset', nil)
+        @charset = ::Rack::MediaType.params(content_type).fetch('charset', nil)
         @exposures = {}
-        @env       = env
+        @env = env
+        @view_options = view_options
 
         @sending_file = false
       end
@@ -67,8 +69,8 @@ module Hanami
         end
       end
 
-      def render(view, **render_options)
-        self.body = view.(**render_options).to_s
+      def render(view, **options)
+        self.body = view.(**view_options.(request, self), **options).to_s
       end
 
       def format=(args)
