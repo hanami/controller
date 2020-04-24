@@ -265,7 +265,7 @@ module Hanami
 
       # Sets the HTTP status code for the response
       #
-      # @param status [Fixnum] an HTTP status code
+      # @param status [Integer] an HTTP status code
       # @return [void]
       #
       # @since 0.1.0
