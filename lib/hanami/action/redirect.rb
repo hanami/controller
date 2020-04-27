@@ -15,7 +15,7 @@ module Hanami
       # Redirect to the given URL and halt the request
       #
       # @param url [String] the destination URL
-      # @param status [Fixnum] the http code
+      # @param status [Integer] the http code
       #
       # @since 0.1.0
       #
