@@ -7,6 +7,10 @@ RSpec.describe "Full stack application" do
     FullStack::Application.new
   end
 
+  before do
+    pending
+  end
+
   it "passes action inside the Rack env" do
     get "/", {}, "HTTP_ACCEPT" => "text/html"
 

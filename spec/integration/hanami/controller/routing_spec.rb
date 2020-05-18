@@ -1,6 +1,10 @@
 RSpec.describe 'Hanami::Router integration' do
   let(:app) { Rack::MockRequest.new(RouterIntegration::Application.new) }
 
+  before do
+    pending
+  end
+
   it "calls simple action" do
     response = app.get("/")
 
