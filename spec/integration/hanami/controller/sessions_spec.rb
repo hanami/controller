@@ -5,11 +5,10 @@ RSpec.describe "HTTP sessions" do
   include Rack::Test::Methods
 
   let(:router) do
-    configuration = Hanami::Controller::Configuration.new
-    Hanami::Router.new(configuration: configuration) do
-      get    '/',       to: 'dashboard#index'
-      post   '/login',  to: 'sessions#create'
-      delete '/logout', to: 'sessions#destroy'
+    Hanami::Router.new do
+      get    '/',       to: Dashboard::Index.new
+      post   '/login',  to: Sessions::Create.new
+      delete '/logout', to: Sessions::Destroy.new
     end
   end
 

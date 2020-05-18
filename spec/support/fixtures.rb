@@ -1128,17 +1128,17 @@ module SendFileTest
         config.public_directory = "spec/support/fixtures"
       end
 
-      router = Hanami::Router.new(configuration: configuration, namespace: SendFileTest) do
-        get "/files/flow",                    to: "files#flow"
-        get "/files/unsafe_local",            to: "files#unsafe_local"
-        get "/files/unsafe_public",           to: "files#unsafe_public"
-        get "/files/unsafe_absolute",         to: "files#unsafe_absolute"
-        get "/files/unsafe_missing_local",    to: "files#unsafe_missing_local"
-        get "/files/unsafe_missing_absolute", to: "files#unsafe_missing_absolute"
-        get "/files/before_callback",         to: "files#before_callback"
-        get "/files/after_callback",          to: "files#after_callback"
-        get "/files/:id(.:format)",           to: "files#show"
-        get "/files/(*glob)",                 to: "files#glob"
+      router = Hanami::Router.new do
+        get "/files/flow",                    to: Files::Flow.new
+        get "/files/unsafe_local",            to: Files::UnsafeLocal.new
+        get "/files/unsafe_public",           to: Files::UnsafePublic.new
+        get "/files/unsafe_absolute",         to: Files::UnsafeAbsolute.new
+        get "/files/unsafe_missing_local",    to: Files::UnsafeMissingLocal.new
+        get "/files/unsafe_missing_absolute", to: Files::UnsafeMissingAbsolute.new
+        get "/files/before_callback",         to: Files::BeforeCallback.new
+        get "/files/after_callback",          to: Files::AfterCallback.new
+        get "/files/:id(.:format)",           to: Files::Show.new
+        get "/files/(*glob)",                 to: Files::Glob.new
       end
 
       @app = Rack::Builder.new do
@@ -1218,10 +1218,10 @@ module HeadTest
         }
       end
 
-      router = Hanami::Router.new(namespace: HeadTest, configuration: configuration) do
-        get "/",           to: "home#index"
-        get "/code/:code", to: "home#code"
-        get "/override",   to: "home#override"
+      router = Hanami::Router.new do
+        get "/",           to: Home::Index.new
+        get "/code/:code", to: Home::Code.new
+        get "/override",   to: Home::Override.new
       end
 
       @app = Rack::Builder.new do
@@ -1410,27 +1410,25 @@ module FullStack
 
   class Application
     def initialize
-      configuration = Hanami::Controller::Configuration.new
-
-      routes = Hanami::Router.new(namespace: FullStack::Controllers, configuration: configuration) do
-        get "/",     to: "home#index"
-        get "/head", to: "home#head"
+      routes = Hanami::Router.new do
+        get "/",     to: FullStack::Controllers::Home::Index.new
+        get "/head", to: FullStack::Controllers::Home::Head.new
         resources :books, only: %i[index create update]
 
-        get  "/settings", to: "settings#index"
-        post "/settings", to: "settings#create"
+        get  "/settings", to: FullStack::Controllers::Settings::Index.new
+        post "/settings", to: FullStack::Controllers::Settings::Create.new
 
-        get "/poll", to: "poll#start"
+        get "/poll", to: FullStack::Controllers::Poll::Start.new
 
         prefix "poll" do
-          get  "/1", to: "poll#step1"
-          post "/1", to: "poll#step1"
-          get  "/2", to: "poll#step2"
-          post "/2", to: "poll#step2"
+          get  "/1", to: FullStack::Controllers::Poll::Step1.new
+          post "/1", to: FullStack::Controllers::Poll::Step1.new
+          get  "/2", to: FullStack::Controllers::Poll::Step2.new
+          post "/2", to: FullStack::Controllers::Poll::Step2.new
         end
 
         prefix "users" do
-          get "/1", to: "users#show"
+          get "/1", to: FullStack::Controllers::Users::Show.new
         end
       end
 
@@ -1507,7 +1505,7 @@ module SessionWithCookies
 
       resolver = EndpointResolver.new(configuration: configuration, namespace: SessionWithCookies::Controllers)
       routes   = Hanami::Router.new(resolver: resolver) do
-        get "/", to: "home#index"
+        get "/", to: SessionWithCookies::Controllers::Home::Index.new
       end
 
       @renderer = Renderer.new
@@ -1540,10 +1538,8 @@ module SessionsWithoutCookies
 
   class Application
     def initialize
-      configuration = Hanami::Controller::Configuration.new
-
-      routes = Hanami::Router.new(configuration: configuration, namespace: SessionsWithoutCookies::Controllers) do
-        get "/", to: "home#index"
+      routes = Hanami::Router.new do
+        get "/", to: SessionsWithoutCookies::Controllers::Home::Index.new
       end
 
       @renderer = Renderer.new
@@ -1628,19 +1624,19 @@ module Mimes
 
   class Application
     def initialize
-      configuration = Hanami::Controller::Configuration.new do |config|
-        config.format custom: "application/custom"
-      end
+      # configuration = Hanami::Controller::Configuration.new do |config|
+      #   config.format custom: "application/custom"
+      # end
 
-      @router = Hanami::Router.new(configuration: configuration) do
-        get "/",                   to: "mimes#default"
-        get "/custom",             to: "mimes#custom"
-        get "/accept",             to: "mimes#accept"
-        get "/restricted",         to: "mimes#restricted"
-        get "/latin",              to: "mimes#latin"
-        get "/nocontent",          to: "mimes#no_content"
-        get "/overwritten_format", to: "mimes#override_default_response"
-        get "/custom_from_accept", to: "mimes#custom_from_accept"
+      @router = Hanami::Router.new do
+        get "/",                   to: Mimes::Default.new
+        get "/custom",             to: Mimes::Custom.new
+        get "/accept",             to: Mimes::Accept.new
+        get "/restricted",         to: Mimes::Restricted.new
+        get "/latin",              to: Mimes::Latin.new
+        get "/nocontent",          to: Mimes::NoContent.new
+        get "/overwritten_format", to: Mimes::OverrideDefaultResponse.new
+        get "/custom_from_accept", to: Mimes::CustomFromAccept.new
       end
     end
 
@@ -1661,12 +1657,12 @@ module MimesWithDefault
 
   class Application
     def initialize
-      configuration = Hanami::Controller::Configuration.new do |config|
-        config.default_response_format = :html
-      end
+      # configuration = Hanami::Controller::Configuration.new do |config|
+      #   config.default_response_format = :html
+      # end
 
-      @router = Hanami::Router.new(configuration: configuration) do
-        get "/default_and_accept", to: "mimes_with_default#default"
+      @router = Hanami::Router.new do
+        get "/default_and_accept", to: MimesWithDefault::Default.new
       end
     end
 
@@ -1683,10 +1679,10 @@ module RouterIntegration
     def initialize
       configuration = Hanami::Controller::Configuration.new
 
-      routes = Hanami::Router.new(configuration: configuration) do
-        get "/",         to: "root"
-        get "/team",     to: "about#team"
-        get "/contacts", to: "about#contacts"
+      routes = Hanami::Router.new do
+        get "/",         to: Root.new
+        get "/team",     to: About::Team.new
+        get "/contacts", to: About::Contacts.new
 
         resource  :identity
         resources :flowers
@@ -1713,9 +1709,9 @@ module SessionIntegration
       resolver      = EndpointResolver.new(configuration: configuration)
 
       routes = Hanami::Router.new(resolver: resolver) do
-        get    "/",       to: "dashboard#index"
-        post   "/login",  to: "sessions#create"
-        delete "/logout", to: "sessions#destroy"
+        get    "/",       to: Dashboard::Index.new
+        post   "/login",  to: Session::Create.new
+        delete "/logout", to: Sessions::Destroy.new
       end
 
       @app = Rack::Builder.new do
@@ -1823,15 +1819,15 @@ module Flash
   class Application
     def initialize # rubocop:disable Metrics/MethodLength
       configuration = Hanami::Controller::Configuration.new
-      routes   = Hanami::Router.new(configuration: configuration, namespace: Flash::Controllers) do
-        get "/",      to: "home#index"
-        post "/",     to: "home#index"
-        get "/print", to: "home#print"
-        get "/books", to: "home#books"
-        get "/map_redirect",   to: "home#map_redirect"
-        get "/each_redirect",  to: "home#each_redirect"
-        get "/map",            to: "home#map"
-        get "/each",           to: "home#each"
+      routes   = Hanami::Router.new do
+        get "/",      to: Flash::Controllers::Home::Index.new
+        post "/",     to: Flash::Controllers::Home::Index.new
+        get "/print", to: Flash::Controllers::Home::Print.new
+        get "/books", to: Flash::Controllers::Home::Books.new
+        get "/map_redirect",   to: Flash::Controllers::Home::MapRedirect.new
+        get "/each_redirect",  to: Flash::Controllers::Home::EachRedirect.new
+        get "/map",            to: Flash::Controllers::Home::Map.new
+        get "/each",           to: Flash::Controllers::Home::Each.new
       end
 
       @middleware = Rack::Builder.new do
@@ -1902,7 +1898,7 @@ module Inheritance
   class Application
     def initialize
       configuration = Hanami::Controller::Configuration.new
-      @routes = Hanami::Router.new(configuration: configuration, namespace: Inheritance::Controllers) do
+      @routes = Hanami::Router.new do
         resources :books, only: %i[show destroy]
       end
     end

@@ -55,14 +55,13 @@ module CacheControl
 
   class Application
     def initialize
-      configuration = Hanami::Controller::Configuration.new
-      routes = Hanami::Router.new(configuration: configuration) do
-        get '/default',            to: 'cache_control#default'
-        get '/overriding',         to: 'cache_control#overriding'
-        get '/symbol',             to: 'cache_control#symbol'
-        get '/symbols',            to: 'cache_control#symbols'
-        get '/hash',               to: 'cache_control#hash'
-        get '/private-and-public', to: 'cache_control#private_public'
+      routes = Hanami::Router.new do
+        get '/default',            to: CacheControl::Default.new
+        get '/overriding',         to: CacheControl::Overriding.new
+        get '/symbol',             to: CacheControl::Symbol.new
+        get '/symbols',            to: CacheControl::Symbols.new
+        get '/hash',               to: CacheControl::Hash.new
+        get '/private-and-public', to: CacheControl::PrivatePublic.new
       end
 
       @app = Rack::Builder.new do
@@ -145,13 +144,12 @@ module Expires
 
   class Application
     def initialize
-      configuration = Hanami::Controller::Configuration.new
-      routes = Hanami::Router.new(configuration: configuration) do
-        get '/default',              to: 'expires#default'
-        get '/overriding',           to: 'expires#overriding'
-        get '/symbol',               to: 'expires#symbol'
-        get '/symbols',              to: 'expires#symbols'
-        get '/hash',                 to: 'expires#hash'
+      routes = Hanami::Router.new do
+        get '/default',              to: Expires::Default.new
+        get '/overriding',           to: Expires::Overriding.new
+        get '/symbol',               to: Expires::Symbol.new
+        get '/symbols',              to: Expires::Symbols.new
+        get '/hash',                 to: Expires::Hash.new
       end
 
       @app = Rack::Builder.new do
@@ -193,13 +191,12 @@ module ConditionalGet
 
   class Application
     def initialize
-      configuration = Hanami::Controller::Configuration.new
-      routes = Hanami::Router.new(configuration: configuration) do
-        get '/etag',                    to: 'conditional_get#etag'
-        get '/last-modified',           to: 'conditional_get#last_modified'
-        get '/etag-last-modified',      to: 'conditional_get#etag_last_modified'
-        get '/last-modified-nil-value', to: 'conditional_get#last_modified_nil_value'
-        get '/etag-nil-value',          to: 'conditional_get#etag_nil_value'
+      routes = Hanami::Router.new do
+        get '/etag',                    to: ConditionalGet::Etag.new
+        get '/last-modified',           to: ConditionalGet::LastModified.new
+        get '/etag-last-modified',      to: ConditionalGet::EtagLastModified.new
+        get '/last-modified-nil-value', to: ConditionalGet::LastModifiedNilValue.new
+        get '/etag-nil-value',          to: ConditionalGet::EtagNilValue.new
       end
 
       @app = Rack::Builder.new do

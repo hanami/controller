@@ -53,8 +53,17 @@ RSpec.describe Hanami::Action::Request do
   end
 
   describe '#host_with_port' do
-    it 'gets host and port' do
-      expect(build_request.host_with_port).to eq('example.com:80')
+    context 'standard HTTP port' do
+      it 'gets host only' do
+        expect(build_request.host_with_port).to eq('example.com')
+      end
+    end
+
+    context 'non-standard port' do
+      it 'gets host and port' do
+        request = described_class.new(Rack::MockRequest.env_for('http://example.com:81/foo?q=bar', {}), {})
+        expect(request.host_with_port).to eq('example.com:81')
+      end
     end
   end
 
