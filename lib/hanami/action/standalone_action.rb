@@ -335,8 +335,16 @@ module Hanami
           halted = catch :halt do
             begin
               params   = self.class.params_class.new(env)
-              request  = Hanami::Action::Request.new(env, params)
-              response = Hanami::Action::Response.new(action: name, configuration: configuration, content_type: Mime.calculate_content_type_with_charset(configuration, request, accepted_mime_types), env: env, header: configuration.default_headers)
+              request  = build_request(env, params)
+              response = build_response(
+                request: request,
+                action: name,
+                configuration: configuration,
+                content_type: Mime.calculate_content_type_with_charset(configuration, request, accepted_mime_types),
+                env: env,
+                header: configuration.default_headers
+              )
+
               _run_before_callbacks(request, response)
               handle(request, response)
               _run_after_callbacks(request, response)
@@ -453,6 +461,14 @@ module Hanami
           end
 
           nil
+        end
+
+        def build_request(env, params)
+          Request.new(env, params)
+        end
+
+        def build_response(**options)
+          Response.new(**options)
         end
 
         # @since 0.2.0

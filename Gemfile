@@ -1,4 +1,9 @@
+# frozen_string_literal: true
+
 source 'http://rubygems.org'
+
+git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
+
 gemspec
 
 unless ENV['CI']
@@ -13,4 +18,9 @@ group :validations do
   gem 'hanami-validations', '~> 2.0.alpha', require: false, git: 'https://github.com/hanami/validations.git', branch: 'unstable'
 end
 
-gem 'hanami-devtools', require: false, git: 'https://github.com/hanami/devtools.git'
+group :test do
+  gem 'hanami', github: 'hanami/hanami', branch: 'unstable'
+  gem 'hanami-view', github: 'hanami/view', branch: 'master'
+end
+
+gem 'hanami-devtools', github: 'hanami/devtools'

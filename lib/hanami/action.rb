@@ -1,3 +1,4 @@
+require_relative 'action/application_action'
 require_relative 'action/standalone_action'
 
 module Hanami
@@ -144,5 +145,22 @@ module Hanami
     LOCATION = 'Location'.freeze
 
     include StandaloneAction
+
+    def self.inherited(subclass)
+      super
+
+      # If inheriting directly from Hanami::Action within an Hanami app,
+      # configure the action for the application
+      if subclass.superclass == Action && (provider = application_provider(subclass))
+        subclass.include ApplicationAction.new(provider)
+      end
+    end
+
+    def self.application_provider(subclass)
+      if Hanami.respond_to?(:application?) && Hanami.application?
+        Hanami.application.component_provider(subclass)
+      end
+    end
+    private_class_method :application_provider
   end
 end
