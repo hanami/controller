@@ -21,6 +21,7 @@ end
 group :test do
   gem 'hanami', github: 'hanami/hanami', branch: 'unstable'
   gem 'hanami-view', github: 'hanami/view', branch: 'master'
+  gem 'slim'
 end
 
 gem 'hanami-devtools', github: 'hanami/devtools'
