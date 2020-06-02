@@ -1622,6 +1622,14 @@ module Mimes
     end
   end
 
+  class Strict < Hanami::Action
+    accept :json
+
+    def handle(_req, res)
+      res.body, = *format(res.content_type)
+    end
+  end
+
   class Application
     def initialize
       # configuration = Hanami::Controller::Configuration.new do |config|
@@ -1637,6 +1645,7 @@ module Mimes
         get "/nocontent",          to: Mimes::NoContent.new
         get "/overwritten_format", to: Mimes::OverrideDefaultResponse.new
         # get "/custom_from_accept", to: Mimes::CustomFromAccept.new
+        get "/strict",             to: Mimes::Strict.new
       end
     end
 

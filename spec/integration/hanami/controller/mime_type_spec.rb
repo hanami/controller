@@ -105,6 +105,20 @@ RSpec.describe 'MIME Type' do
         expect(response.body).to eq('html')
       end
     end
+
+    context "with an accepted format" do
+      it "accepts the matching format" do
+        response = app.get("/strict", "HTTP_ACCEPT" => "application/json", "CONTENT_TYPE" => "application/json")
+        expect(response.status).to be(200)
+        expect(response.headers["Content-Type"]).to eq("application/json; charset=utf-8")
+        expect(response.body).to eq("json")
+      end
+
+      it "does not accept an unmatched format" do
+        response = app.get("/strict", "HTTP_ACCEPT" => "application/xml", "CONTENT_TYPE" => "application/xml")
+        expect(response.status).to be(406)
+      end
+    end
   end
 
   describe "Accept" do
