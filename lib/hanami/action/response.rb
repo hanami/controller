@@ -11,6 +11,8 @@ require 'hanami/action/cache/conditional_get'
 module Hanami
   class Action
     class Response < ::Rack::Response
+      DEFAULT_VIEW_OPTIONS = -> * { {} }.freeze
+
       REQUEST_METHOD = "REQUEST_METHOD".freeze
       HTTP_ACCEPT = "HTTP_ACCEPT".freeze
       SESSION_KEY = "rack.session".freeze
@@ -31,7 +33,7 @@ module Hanami
 
       FILE_SYSTEM_ROOT = Pathname.new("/").freeze
 
-      attr_reader :action, :exposures, :format, :env
+      attr_reader :request, :action, :exposures, :format, :env, :view_options
       attr_accessor :charset
 
       def self.build(status, env)
@@ -42,15 +44,17 @@ module Hanami
         end
       end
 
-      def initialize(action:, configuration:, content_type: nil, env: {}, header: {})
+      def initialize(request:, action:, configuration:, content_type: nil, env: {}, header: {}, view_options: nil)
         super([], 200, header.dup)
         set_header("Content-Type", content_type)
 
-        @action        = action
+        @request = request
+        @action = action
         @configuration = configuration
-        @charset   = ::Rack::MediaType.params(content_type).fetch('charset', nil)
+        @charset = ::Rack::MediaType.params(content_type).fetch('charset', nil)
         @exposures = {}
-        @env       = env
+        @env = env
+        @view_options = view_options || DEFAULT_VIEW_OPTIONS
 
         @sending_file = false
       end
@@ -65,6 +69,10 @@ module Hanami
         else
           write(str) unless str.nil? || str == EMPTY_BODY
         end
+      end
+
+      def render(view, **options)
+        self.body = view.(**view_options.(request, self), **options).to_str
       end
 
       def format=(args)
