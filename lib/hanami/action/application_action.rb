@@ -27,8 +27,8 @@ module Hanami
         resolve_context = method(:resolve_view_context)
 
         define_method :initialize do |**deps|
-          @view_context = deps[:view_context] || resolve_context.()
           super(**deps)
+          @view_context = deps[:view_context] || resolve_context.()
         end
       end
 
