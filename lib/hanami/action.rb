@@ -149,9 +149,10 @@ module Hanami
     def self.inherited(subclass)
       super
 
-      # If inheriting directly from Hanami::Action within an Hanami app,
-      # configure the action for the application
-      if subclass.superclass == Action && (provider = application_provider(subclass))
+      # When inheriting within an Hanami app, and the application provider has
+      # changed from the superclass, (re-)configure the action for the provider,
+      # i.e. for the slice and/or the application itself
+      if (provider = application_provider(subclass)) && provider != application_provider(subclass.superclass)
         subclass.include ApplicationAction.new(provider)
       end
     end

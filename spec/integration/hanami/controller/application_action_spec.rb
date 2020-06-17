@@ -57,7 +57,7 @@ RSpec.describe "Application actions", :application_integration do
     describe "#view_context" do
       subject(:view_context) { action.view_context }
 
-      shared_examples "injected view context" do
+      shared_examples "injectable view context" do
         context "view context provided to initializer" do
           let(:view_context) { double(:view_context) }
           let(:action_args) { {view_context: view_context} }
@@ -76,7 +76,7 @@ RSpec.describe "Application actions", :application_integration do
             is_expected.to be_nil
           end
 
-          it_behaves_like "injected view context"
+          it_behaves_like "injectable view context"
         end
 
         context "view context registered in slice" do
@@ -90,7 +90,7 @@ RSpec.describe "Application actions", :application_integration do
             is_expected.to eql slice_view_context
           end
 
-          it_behaves_like "injected view context"
+          it_behaves_like "injectable view context"
         end
 
         context "view context registered in application" do
@@ -104,7 +104,7 @@ RSpec.describe "Application actions", :application_integration do
             is_expected.to eql application_view_context
           end
 
-          it_behaves_like "injected view context"
+          it_behaves_like "injectable view context"
         end
       end
 
@@ -116,7 +116,7 @@ RSpec.describe "Application actions", :application_integration do
             is_expected.to be_nil
           end
 
-          it_behaves_like "injected view context"
+          it_behaves_like "injectable view context"
         end
 
         context "view context registered in application" do
@@ -130,7 +130,75 @@ RSpec.describe "Application actions", :application_integration do
             is_expected.to eql application_view_context
           end
 
-          it_behaves_like "injected view context"
+          it_behaves_like "injectable view context"
+        end
+      end
+
+      context "Action inside slice, inheriting from Action inside application" do
+        let(:action_class) {
+          module TestApp
+            class Action < Hanami::Action
+            end
+          end
+
+          module Main
+            class Action < TestApp::Action
+            end
+          end
+
+          Main::Action
+        }
+
+        context "no view context registered" do
+          it "is nil" do
+            is_expected.to be_nil
+          end
+
+          it_behaves_like "injectable view context"
+        end
+
+        context "view context registered in application" do
+          let(:application_view_context) { double(:application_view_context) }
+
+          before do
+            Hanami.application.register "view.context", application_view_context
+          end
+
+          it "is the applications's view context" do
+            is_expected.to eql application_view_context
+          end
+
+          it_behaves_like "injectable view context"
+        end
+
+        context "view context registered in slice" do
+          let(:slice_view_context) { double(:slice_view_context) }
+
+          before do
+            Main::Slice.register "view.context", slice_view_context
+          end
+
+          it "is the slices's view context" do
+            is_expected.to eql slice_view_context
+          end
+
+          it_behaves_like "injectable view context"
+        end
+
+        context "view context registered in both application and slice" do
+          let(:application_view_context) { double(:application_view_context) }
+          let(:slice_view_context) { double(:slice_view_context) }
+
+          before do
+            Hanami.application.register "view.context", application_view_context
+            Main::Slice.register "view.context", slice_view_context
+          end
+
+          it "is the slices's view context" do
+            is_expected.to eql slice_view_context
+          end
+
+          it_behaves_like "injectable view context"
         end
       end
     end
@@ -209,5 +277,3 @@ RSpec.describe "Application actions", :application_integration do
     end
   end
 end
-
-
