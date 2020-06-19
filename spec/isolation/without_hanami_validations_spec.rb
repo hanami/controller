@@ -2,7 +2,7 @@ require_relative '../support/isolation_spec_helper'
 
 RSpec.describe 'Without validations' do
   let(:configuration) do
-    Hanami::Controller::Configuration.new
+    Hanami::Action::Configuration.new
   end
 
   it "doesn't load Hanami::Validations" do
