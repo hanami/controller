@@ -1,6 +1,16 @@
 RSpec.describe Hanami::Action::Configuration do
   subject(:configuration) { described_class.new }
 
+  describe '#initialize' do
+    it 'yields itself to a given block' do
+      yielded = nil
+
+      configuration = described_class.new { |config| yielded = config }
+
+      expect(configuration).to be yielded
+    end
+  end
+
   describe '#handled_exceptions' do
     it 'is an empty hash by default' do
       expect(configuration.handled_exceptions).to eq({})
