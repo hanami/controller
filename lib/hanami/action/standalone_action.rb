@@ -28,9 +28,11 @@ module Hanami
       end
 
       module ClassMethods
-        def config
-          @config ||= Configuration.new
+        def configuration
+          @configuration ||= Configuration.new
         end
+
+        alias config configuration
 
         # Override Ruby's hook for modules.
         # It includes basic Hanami::Action modules to the given class.
@@ -54,7 +56,7 @@ module Hanami
             end
           end
 
-          subclass.instance_variable_set '@config', config.dup
+          subclass.instance_variable_set '@configuration', configuration.dup
         end
 
         # Returns the class which defines the params
@@ -295,7 +297,7 @@ module Hanami
         # @return [Hanami::Action] Action object
         #
         # @since 2.0.0
-        def new(configuration: self.config, **args)
+        def new(configuration: self.configuration, **args)
           allocate.tap do |obj|
             obj.instance_variable_set(:@name, Name[name])
             obj.instance_variable_set(:@configuration, configuration)
