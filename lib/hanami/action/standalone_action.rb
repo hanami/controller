@@ -297,10 +297,10 @@ module Hanami
         # @return [Hanami::Action] Action object
         #
         # @since 2.0.0
-        def new(configuration: self.configuration, **args)
+        def new(configuration: self.configuration.dup, **args)
           allocate.tap do |obj|
             obj.instance_variable_set(:@name, Name[name])
-            obj.instance_variable_set(:@configuration, configuration)
+            obj.instance_variable_set(:@configuration, configuration.finalize!)
             obj.instance_variable_set(:@accepted_mime_types, Mime.restrict_mime_types(configuration, accepted_formats))
             obj.instance_variable_set(
               :@handled_exceptions,

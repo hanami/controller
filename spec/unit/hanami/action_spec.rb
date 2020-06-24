@@ -3,21 +3,31 @@
 require "hanami/devtools/unit"
 
 RSpec.describe Hanami::Action do
+  let(:action_class) { Class.new(described_class) }
+  subject(:action) { action_class.new }
+
   describe ".configuration" do
+    subject(:configuration) { action_class.configuration }
+
     it "returns an Action::Configuration object" do
-      expect(described_class.configuration).to be_an_instance_of(Hanami::Action::Configuration)
+      is_expected.to be_an_instance_of(Hanami::Action::Configuration)
+    end
+
+    it "is not frozen" do
+      is_expected.not_to be_frozen
     end
   end
 
   describe ".config" do
+    subject(:config) { action_class.config }
+
     it "is an alias for the configuration" do
-      expect(described_class.config).to be_an_instance_of(Hanami::Action::Configuration)
+      is_expected.to be action_class.configuration
     end
   end
 
   describe "#initialize" do
-    it "instantiate a frozen action" do
-      action = CallAction.new(configuration: configuration)
+    it "instantiates a frozen action" do
       expect(action).to be_frozen
     end
   end
