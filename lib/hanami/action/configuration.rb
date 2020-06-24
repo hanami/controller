@@ -10,7 +10,14 @@ module Hanami
     class Configuration
       include Dry::Configurable
 
-      # FIXME: API docs
+      # Initialize the Configuration
+      #
+      # @yield [config] the configuration object
+      #
+      # @return [Configuration]
+      #
+      # @since 2.0.0
+      # @api private
       def initialize(*)
         super
         yield self if block_given?
