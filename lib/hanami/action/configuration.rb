@@ -23,25 +23,31 @@ module Hanami
         yield self if block_given?
       end
 
-      # Specify how to handle an exception with an HTTP status
+      # @!method handled_exceptions=(exceptions_hash)
       #
-      # Raised exceptions will return the configured HTTP status, only if
+      #   Specify how to handle an exception with an HTTP status
+      #
+      #   Raised exceptions will return the configured HTTP status, only if
       #   `handled_exceptions` is set on `true`.
       #
-      # @param exception [Hash] the exception class must be the key and the HTTP
-      #   status the value
+      #   @param exception [Hash] the exception class must be the key and the HTTP
+      #     status the value
       #
-      # @since 0.2.0
+      #   @since 0.2.0
       #
-      # @see Hanami::Controller#configure
-      # @see Hanami::Action::Throwable
+      #   @see handled_exceptions
+      #   @see Hanami::Action::Throwable
       #
-      # @example
-      #   require 'hanami/controller'
+      #   @example
+      #     configuration.handled_exceptions = {ArgumentError => 400}
       #
-      #   Hanami::Controller.configure do
-      #     handle_exception ArgumentError => 400
-      #   end
+      # @!method handled_exceptions
+      #
+      #   Returns the configured handled exceptions
+      #
+      #   @see handled_exceptions=
+      #
+      #   @since 0.2.0
       setting :handled_exceptions, {}
 
       def handle_exception(exception)
