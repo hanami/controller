@@ -11,7 +11,6 @@ unless ENV['CI']
   gem 'yard',   require: false
 end
 
-gem 'dry-configurable', github: "dry-rb/dry-configurable", branch: "evaluate-setting-if-input-defined"
 gem 'hanami-utils',  '~> 2.0.alpha', require: false, git: 'https://github.com/hanami/utils.git',  branch: 'unstable'
 gem 'hanami-router', '~> 2.0.alpha', require: false, git: 'https://github.com/hanami/router.git', branch: 'unstable'
 
