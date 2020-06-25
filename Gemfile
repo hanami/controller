@@ -18,10 +18,6 @@ group :validations do
   gem 'hanami-validations', '~> 2.0.alpha', require: false, git: 'https://github.com/hanami/validations.git', branch: 'unstable'
 end
 
-# group :development do
-#   gem 'pry'
-# end
-
 group :test do
   gem 'hanami', github: 'hanami/hanami', branch: 'unstable'
   gem 'hanami-view', github: 'hanami/view', branch: 'master'
