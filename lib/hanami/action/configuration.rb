@@ -23,20 +23,18 @@ module Hanami
         yield self if block_given?
       end
 
-      # @!method handled_exceptions=(exceptions_hash)
+      # @!method handled_exceptions=(exceptions)
       #
-      #   Specify how to handle an exception with an HTTP status
+      #   Specifies how to handle exceptions with an HTTP status
       #
-      #   Raised exceptions will return the configured HTTP status, only if
-      #   `handled_exceptions` is set on `true`.
+      #   Raised exceptions will return the corresponding HTTP status
       #
-      #   @param exception [Hash] the exception class must be the key and the HTTP
-      #     status the value
+      #   @param exceptions [Hash{Exception=>Integer}] exception classes as
+      #     keys and HTTP statuses as values
+      #
+      #   @return [void]
       #
       #   @since 0.2.0
-      #
-      #   @see handled_exceptions
-      #   @see Hanami::Action::Throwable
       #
       #   @example
       #     configuration.handled_exceptions = {ArgumentError => 400}
@@ -45,16 +43,36 @@ module Hanami
       #
       #   Returns the configured handled exceptions
       #
+      #   @return [Hash{Exception=>Integer}]
+      #
       #   @see handled_exceptions=
       #
       #   @since 0.2.0
       setting :handled_exceptions, {}
 
-      def handle_exception(exception)
-        handled_exceptions.merge!(exception)
+      # Specifies how to handle exceptions with an HTTP status
+      #
+      # Raised exceptions will return the corresponding HTTP status
+      #
+      # The specified exceptions will be merged with any previously configured
+      # exceptions
+      #
+      # @param exceptions [Hash{Exception=>Integer}] exception classes as keys
+      #   and HTTP statuses as values
+      #
+      # @return [void]
+      #
+      # @since 0.2.0
+      #
+      # @see handled_exceptions=
+      #
+      # @example
+      #   configuration.handle_exceptions(ArgumentError => 400}
+      def handle_exception(exceptions)
+        handled_exceptions.merge!(exceptions)
       end
 
-      # Default Mime type to format mapping
+      # Default MIME type to format mapping
       #
       # @since 0.2.0
       # @api private
@@ -64,29 +82,59 @@ module Hanami
         'text/html'                => :html
       }.freeze
 
-      # TODO: docs
+      # @!method formats=(formats)
+      #
+      #   Specifies the MIME type to format mapping
+      #
+      #   @param formats [Hash{String=>Symbol}] MIME type strings as keys and
+      #     format symbols as values
+      #
+      #   @return [void]
+      #
+      #   @since 0.2.0
+      #
+      #   @see format
+      #   @see Hanami::Action::Mime
+      #
+      #   @example
+      #     configuration.formats = {"text/html" => :html}
+      #
+      # @!method formats
+      #
+      #   Returns the configured MIME type to format mapping
+      #
+      #   @return [Symbol,nil] the corresponding format, if present
+      #
+      #   @see format
+      #   @see formats=
+      #
+      #   @since 0.2.0
       setting :formats, DEFAULT_FORMATS.dup
 
-      # Register a format
+      # Registers a MIME type to format mapping
       #
-      # @param hash [Hash] the symbol format must be the key and the mime type
-      #   string must be the value of the hash
+      # @param hash [Hash{Symbol=>String}] format symbols as keys and the MIME
+      #   type strings must as values
+      #
+      # @return [void]
       #
       # @since 0.2.0
       #
       # @see Hanami::Action::Mime
+      #
+      # @example configuration.format html: "text/html"
       def format(hash)
         symbol, mime_type = *Utils::Kernel.Array(hash)
         formats[Utils::Kernel.String(mime_type)] = Utils::Kernel.Symbol(symbol)
       end
 
-      # Returns a format for the given mime type
+      # Returns the configured format for the given MIME type
       #
       # @param mime_type [#to_s,#to_str] A mime type
       #
-      # @return [Symbol,nil] the corresponding format, if present
+      # @return [Symbol,nil] the corresponding format, nil if not found
       #
-      # @see Hanami::Controller::Configuration#format
+      # @see format
       #
       # @since 0.2.0
       # @api private
@@ -94,23 +142,27 @@ module Hanami
         formats[mime_type]
       end
 
-      # Return the configured format's MIME types
+      # Returns the configured format's MIME types
+      #
+      # @return [Array<String>] the format's MIME types
+      #
+      # @see formats=
+      # @see format
       #
       # @since 0.8.0
-      # @api private
       #
-      # @see Hanami::Controller::Configuration#format
+      # @api private
       def mime_types
         # FIXME: this isn't efficient. speed it up!
         ((formats.keys - DEFAULT_FORMATS.keys) +
           Hanami::Action::Mime::TYPES.values).freeze
       end
 
-      # Returns a mime type for the given format
+      # Returns a MIME type for the given format
       #
       # @param format [#to_sym] a format
       #
-      # @return [String,nil] the corresponding mime type, if present
+      # @return [String,nil] the corresponding MIME type, if present
       #
       # @since 0.2.0
       # @api private
@@ -118,121 +170,228 @@ module Hanami
         formats.key(format)
       end
 
-      # Set a format as default fallback for all the requests without a strict
-      # requirement for the mime type.
+      # @!method default_request_format=(format)
       #
-      # The given format must be coercible to a symbol, and be a valid mime type
-      # alias. If it isn't, at the runtime the framework will raise a
-      # `Hanami::Controller::UnknownFormatError`.
+      #   Sets a format as default fallback for all the requests without a strict
+      #   requirement for the MIME type.
       #
-      # By default this value is nil.
+      #   The given format must be coercible to a symbol, and be a valid MIME
+      #   type alias. If it isn't, at runtime the framework will raise an
+      #   `Hanami::Controller::UnknownFormatError`.
       #
-      # @since 0.5.0
+      #   By default, this value is nil.
       #
-      # @see Hanami::Action::Mime
+      #   @param format [Symbol]
       #
-      # FIXME: new API docs
-      setting :default_request_format do |value|
-        Utils::Kernel.Symbol(value) unless value.nil?
+      #   @return [void]
+      #
+      #   @since 0.5.0
+      #
+      #   @see Hanami::Action::Mime
+      #
+      # @!method default_request_format
+      #
+      #   Returns the configured default request format
+      #
+      #   @return [Symbol] format
+      #
+      #   @see default_request_format=
+      #
+      #   @since 0.5.0
+      setting :default_request_format do |format|
+        Utils::Kernel.Symbol(format) unless format.nil?
       end
 
-      # Set a format to be used for all responses regardless of the request type.
+      # @!method default_response_format=(format)
       #
-      # The given format must be coercible to a symbol, and be a valid mime type
-      # alias. If it isn't, at the runtime the framework will raise a
-      # `Hanami::Controller::UnknownFormatError`.
+      #   Sets a format to be used for all responses regardless of the request
+      #   type.
       #
-      # By default this value is nil.
+      #   The given format must be coercible to a symbol, and be a valid MIME
+      #   type alias. If it isn't, at the runtime the framework will raise an
+      #   `Hanami::Controller::UnknownFormatError`.
       #
-      # @since 0.5.0
+      #   By default, this value is nil.
       #
-      # @see Hanami::Action::Mime
+      #   @param format [Symbol]
       #
-      # FIXME: new API docs
+      #   @return [void]
+      #
+      #   @since 0.5.0
+      #
+      #   @see Hanami::Action::Mime
+      #
+      # @!method default_response_format
+      #
+      #   Return the configured default response format
+      #
+      #   @return [Symbol] format
+      #
+      #   @see default_request_format=
+      #
+      #   @since 0.5.0
       setting :default_response_format do |format|
         Utils::Kernel.Symbol(format) unless format.nil?
       end
 
-      # Set a charset as default fallback for all the requests without a strict
-      # requirement for the charset.
+      # @!method default_charset=(charset)
       #
-      # By default this value is nil.
+      #   Sets a charset (character set) as default fallback for all the requests
+      #   without a strict requirement for the charset.
       #
-      # @since 0.3.0
+      #   By default, this value is nil.
       #
-      # @see Hanami::Action::Mime
+      #   @param charset [String]
       #
-      # FIXME: new API docs
+      #   @return [void]
+      #
+      #   @since 0.3.0
+      #
+      #   @see Hanami::Action::Mime
+      #
+      # @!method default_charset
+      #
+      #   Return the configured default charset.
+      #
+      #   @return [String,nil] the charset, if present
+      #
+      #   @see default_charset=
+      #
+      #   @since 0.3.0
       setting :default_charset
 
-      # Set default headers for all responses
+      # @!method default_headers=(headers)
       #
-      # By default this value is an empty hash.
+      #   Sets default headers for all responses.
       #
-      # @since 0.4.0
+      #   By default, this is an empty hash.
       #
-      # @example Getting the value
-      #   require 'hanami/controller'
+      #   @param headers [Hash{String=>String}] the headers
       #
-      #   Hanami::Controller.configuration.default_headers # => {}
+      #   @return [void]
       #
-      # @example Setting the value
-      #   require 'hanami/controller'
+      #   @since 0.4.0
       #
-      #   Hanami::Controller::Configuration.new do |config|
-      #     config.default_headers = {
-      #       'X-Frame-Options' => 'DENY'
-      #     }
-      #   end
-      setting :default_headers, {} do |header_options|
-        header_options.compact
+      #   @see default_headers
+      #
+      #   @example
+      #     configuration.default_headers = {'X-Frame-Options' => 'DENY'}
+      #
+      # @!method default_headers
+      #
+      #   Returns the configured headers
+      #
+      #   @return [Hash{String=>String}] the headers
+      #
+      #   @since 0.4.0
+      #
+      #   @see default_headers=
+      setting :default_headers, {} do |headers|
+        headers.compact
       end
 
-      # Set default cookies options for all responses
+      # @!method cookies=(cookie_options)
       #
-      # By default this value is an empty hash.
+      #   Sets default cookie options for all responses.
       #
-      # @since 0.4.0
+      #   By default this, is an empty hash.
       #
-      # @example Getting the value
-      #   require 'hanami/controller'
+      #   @param cookie_options [Hash{Symbol=>String}] the cookie options
       #
-      #   Hanami::Controller.configuration.cookies # => {}
+      #   @return [void]
       #
-      # @example Setting the value
-      #   require 'hanami/controller'
+      #   @since 0.4.0
       #
-      #   Hanami::Controller::Configuration.new do |config|
-      #     config.cookies = {
+      #   @example
+      #     configuration.cookies = {
       #       domain: 'hanamirb.org',
       #       path: '/controller',
       #       secure: true,
       #       httponly: true
       #     }
-      #   end
+      #
+      # @!method cookies
+      #
+      #   Returns the configured cookie options
+      #
+      #   @return [Hash{Symbol=>String}]
+      #
+      #   @since 0.4.0
+      #
+      #   @see cookies=
       setting :cookies, {} do |cookie_options|
         cookie_options.compact
       end
 
-      # @api private
-      # @since 1.0.0
+      # @!method root_directory=(dir)
+      #
+      #   Sets the the for the public directory, which is used for file downloads.
+      #   This must be an existent directory.
+      #
+      #   Defaults to the current working directory.
+      #
+      #   @param dir [String] the directory path
+      #
+      #   @return [void]
+      #
+      #   @since 1.0.0
+      #
+      #   @api private
+      #
+      # @!method root_directory
+      #
+      #   Returns the configured root directory
+      #
+      #   @return [String] the directory path
+      #
+      #   @see root_directory=
+      #
+      #   @since 1.0.0
+      #
+      #   @api private
       setting :root_directory, Dir.pwd do |dir|
         Pathname(dir).realpath
       end
 
       # Default public directory
       #
-      # It serves as base root for file downloads
+      # This serves as the root directory for file downloads
       #
       # @since 1.0.0
+      #
       # @api private
       DEFAULT_PUBLIC_DIRECTORY = 'public'.freeze
 
-      # FIXME: API docs
+      # @!method public_directory=(directory)
+      #
+      #   Sets the path to public directory. This directory is used for file downloads.
+      #
+      #   This given directory will be appended onto the root directory.
+      #
+      #   By default, the public directory is "public".
+      #
+      #   @param directory [String] the public directory path
+      #
+      #   @return [void]
+      #
+      #   @see root_directory
+      #   @see public_directory
       setting :public_directory, DEFAULT_PUBLIC_DIRECTORY
 
+      # Return the configured public directory, appended onto the root directory.
+      #
+      # @return [String] the fill directory path
+      #
+      # @example
+      #   configuration.public_directory = "public"
+      #
+      #   configuration.public_directory
+      #   # => "/path/to/root/public"
+      #
+      # @see public_directory=
+      # @see root_directory=
       def public_directory
-        # NOTE: This must be a string, for Rack compatibility
+        # This must be a string, for Rack compatibility
         root_directory.join(super).to_s
       end
 
