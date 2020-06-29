@@ -45,12 +45,9 @@ module Hanami
       end
 
       def configure_action(action_class)
-        if application.config.cookies.enabled?
-          action_class.config.cookies = application.config.cookies.options
+        application.config.actions.values.each do |(key, value)|
+          action_class.config.public_send :"#{key}=", value
         end
-
-        action_class.config.default_request_format = application.config.default_request_format
-        action_class.config.default_response_format = application.config.default_response_format
       end
 
       module InstanceMethods
