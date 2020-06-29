@@ -44,7 +44,7 @@ module Hanami
       end
 
       module InstanceMethods
-        define_method :view_context do
+        def view_context
           @view_context
         end
 
