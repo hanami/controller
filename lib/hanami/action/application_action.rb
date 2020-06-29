@@ -15,6 +15,7 @@ module Hanami
 
       def included(action_class)
         action_class.include InstanceMethods
+        configure_action action_class
       end
 
       def inspect
@@ -41,6 +42,15 @@ module Hanami
         elsif application.key?(identifier)
           application[identifier]
         end
+      end
+
+      def configure_action(action_class)
+        if application.config.cookies.enabled?
+          action_class.config.cookies = application.config.cookies.options
+        end
+
+        action_class.config.default_request_format = application.config.default_request_format
+        action_class.config.default_response_format = application.config.default_response_format
       end
 
       module InstanceMethods
