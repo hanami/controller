@@ -13,8 +13,8 @@ module Hanami
         define_initialize
       end
 
-      def included(klass)
-        klass.include InstanceMethods
+      def included(action_class)
+        action_class.include InstanceMethods
       end
 
       def inspect
