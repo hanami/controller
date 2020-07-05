@@ -23,6 +23,16 @@ module Hanami
         yield self if block_given?
       end
 
+      # Returns the list of available settings
+      #
+      # @return [Set]
+      #
+      # @since 2.0.0
+      # @api private
+      def settings
+        self.class.settings
+      end
+
       # @!method handled_exceptions=(exceptions)
       #
       #   Specifies how to handle exceptions with an HTTP status
