@@ -11,8 +11,8 @@ require 'hanami/utils/string'
 require 'hanami/utils/kernel'
 require 'rack/utils'
 
-require_relative '../controller/configuration'
 require_relative 'base_params'
+require_relative 'configuration'
 require_relative 'halt'
 require_relative 'mime'
 require_relative 'rack/file'
@@ -28,6 +28,12 @@ module Hanami
       end
 
       module ClassMethods
+        def configuration
+          @configuration ||= Configuration.new
+        end
+
+        alias config configuration
+
         # Override Ruby's hook for modules.
         # It includes basic Hanami::Action modules to the given class.
         #
@@ -49,6 +55,8 @@ module Hanami
               include Validatable if defined?(Validatable)
             end
           end
+
+          subclass.instance_variable_set '@configuration', configuration.dup
         end
 
         # Returns the class which defines the params
@@ -289,10 +297,10 @@ module Hanami
         # @return [Hanami::Action] Action object
         #
         # @since 2.0.0
-        def new(configuration: Hanami::Controller::Configuration.new, **args)
+        def new(configuration: self.configuration.dup, **args)
           allocate.tap do |obj|
             obj.instance_variable_set(:@name, Name[name])
-            obj.instance_variable_set(:@configuration, configuration)
+            obj.instance_variable_set(:@configuration, configuration.finalize!)
             obj.instance_variable_set(:@accepted_mime_types, Mime.restrict_mime_types(configuration, accepted_formats))
             obj.instance_variable_set(
               :@handled_exceptions,

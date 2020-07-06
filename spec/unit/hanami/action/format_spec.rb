@@ -61,7 +61,7 @@ RSpec.describe Hanami::Action do
     # Bug
     # See https://github.com/hanami/controller/issues/167
     it "accepts '*/*' and returns configured default format" do
-      configuration = Hanami::Controller::Configuration.new do |config|
+      configuration = Hanami::Action::Configuration.new do |config|
         config.default_response_format = :jpg
       end
 

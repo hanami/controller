@@ -21,6 +21,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'rack',         '~> 2.0'
   spec.add_dependency 'hanami-utils', '~> 2.0.alpha'
+  spec.add_dependency 'dry-configurable', '~> 0.11', '>= 0.11.6'
 
   spec.add_development_dependency 'bundler',   '>= 1.6', '< 3'
   spec.add_development_dependency 'rack-test', '~> 1.0'

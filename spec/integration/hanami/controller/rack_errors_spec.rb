@@ -76,7 +76,7 @@ module Errors
 
   class Application
     def initialize
-      configuration = Hanami::Controller::Configuration.new do |config|
+      configuration = Hanami::Action::Configuration.new do |config|
         config.handle_exception ConfigurationHandledException => 500
       end
 

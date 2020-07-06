@@ -977,7 +977,7 @@ module MusicPlayer
 
   class Application
     def initialize
-      configuration = Hanami::Controller::Configuration.new do |config|
+      configuration = Hanami::Action::Configuration.new do |config|
         config.handle_exception ArgumentError => 400
         config.default_headers(
           "X-Frame-Options" => "DENY"
@@ -1124,7 +1124,7 @@ module SendFileTest
 
   class Application
     def initialize
-      configuration = Hanami::Controller::Configuration.new do |config|
+      configuration = Hanami::Action::Configuration.new do |config|
         config.public_directory = "spec/support/fixtures"
       end
 
@@ -1212,7 +1212,7 @@ module HeadTest
 
   class Application
     def initialize
-      configuration = Hanami::Controller::Configuration.new do |config|
+      configuration = Hanami::Action::Configuration.new do |config|
         config.default_headers = {
           "X-Frame-Options" => "DENY"
         }
@@ -1501,7 +1501,7 @@ module SessionWithCookies
 
   class Application
     def initialize
-      configuration = Hanami::Controller::Configuration.new
+      configuration = Hanami::Action::Configuration.new
 
       resolver = EndpointResolver.new(configuration: configuration, namespace: SessionWithCookies::Controllers)
       routes   = Hanami::Router.new(resolver: resolver) do
@@ -1624,7 +1624,7 @@ module Mimes
 
   class Application
     def initialize
-      # configuration = Hanami::Controller::Configuration.new do |config|
+      # configuration = Hanami::Action::Configuration.new do |config|
       #   config.format custom: "application/custom"
       # end
 
@@ -1657,7 +1657,7 @@ module MimesWithDefault
 
   class Application
     def initialize
-      # configuration = Hanami::Controller::Configuration.new do |config|
+      # configuration = Hanami::Action::Configuration.new do |config|
       #   config.default_response_format = :html
       # end
 
@@ -1677,7 +1677,7 @@ require "hanami/middleware/body_parser"
 module RouterIntegration
   class Application
     def initialize
-      configuration = Hanami::Controller::Configuration.new
+      configuration = Hanami::Action::Configuration.new
 
       routes = Hanami::Router.new do
         get "/",         to: Root.new
@@ -1705,7 +1705,7 @@ end
 module SessionIntegration
   class Application
     def initialize
-      configuration = Hanami::Controller::Configuration.new
+      configuration = Hanami::Action::Configuration.new
       resolver      = EndpointResolver.new(configuration: configuration)
 
       routes = Hanami::Router.new(resolver: resolver) do
@@ -1730,7 +1730,7 @@ end
 module StandaloneSessionIntegration
   class Application
     def initialize
-      configuration = Hanami::Controller::Configuration.new
+      configuration = Hanami::Action::Configuration.new
 
       @app = Rack::Builder.new do
         use Rack::Lint
@@ -1818,7 +1818,7 @@ module Flash
 
   class Application
     def initialize # rubocop:disable Metrics/MethodLength
-      configuration = Hanami::Controller::Configuration.new
+      configuration = Hanami::Action::Configuration.new
       routes   = Hanami::Router.new do
         get "/",      to: Flash::Controllers::Home::Index.new
         post "/",     to: Flash::Controllers::Home::Index.new
@@ -1897,7 +1897,7 @@ module Inheritance
 
   class Application
     def initialize
-      configuration = Hanami::Controller::Configuration.new
+      configuration = Hanami::Action::Configuration.new
       @routes = Hanami::Router.new do
         resources :books, only: %i[show destroy]
       end

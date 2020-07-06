@@ -12,7 +12,7 @@ RSpec.describe Hanami::Action do
 
     describe "with global handled exceptions" do
       it "handles raised exception" do
-        configuration = Hanami::Controller::Configuration.new do |config|
+        configuration = Hanami::Action::Configuration.new do |config|
           config.handle_exception DomainLogicException => 400
         end
 
