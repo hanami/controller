@@ -13,8 +13,9 @@ module Hanami
         define_initialize
       end
 
-      def included(klass)
-        klass.include InstanceMethods
+      def included(action_class)
+        action_class.include InstanceMethods
+        configure_action action_class
       end
 
       def inspect
@@ -43,8 +44,15 @@ module Hanami
         end
       end
 
+      def configure_action(action_class)
+        action_class.config.settings.each do |setting|
+          application_value = application.config.actions.public_send(:"#{setting}")
+          action_class.config.public_send :"#{setting}=", application_value
+        end
+      end
+
       module InstanceMethods
-        define_method :view_context do
+        def view_context
           @view_context
         end
 

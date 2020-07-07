@@ -11,6 +11,13 @@ RSpec.describe Hanami::Action::Configuration do
     end
   end
 
+  describe '#settings' do
+    it 'returns a set of available settings' do
+      expect(configuration.settings).to be_a(Set)
+      expect(configuration.settings).to include(:handled_exceptions, :formats)
+    end
+  end
+
   describe '#handled_exceptions' do
     it 'is an empty hash by default' do
       expect(configuration.handled_exceptions).to eq({})
