@@ -29,9 +29,9 @@ jobs:
           name: run tests
           command: |
             ./script/ci
-  "jruby-9.2":
+  "ruby-2.6":
     docker:
-       - image: hanami/jruby-9.2
+       - image: hanami/ruby-2.6
     working_directory: ~/hanami-controller
     steps:
       - checkout
@@ -60,4 +60,4 @@ workflows:
   build:
     jobs:
       - "ruby-2.7"
-      # - "jruby-9.2"
+      - "ruby-2.6"
