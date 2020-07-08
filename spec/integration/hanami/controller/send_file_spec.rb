@@ -88,8 +88,8 @@ RSpec.describe "Full stack application" do
       head "/files/1", {}
 
       expect(response.status).to      be(200)
-      expect(response.headers).to_not have_key("Content-Length")
-      expect(response.headers).to_not have_key("Content-Type")
+      expect(response.headers.keys).to_not include("Content-Length")
+      expect(response.headers.keys).to_not include("Content-Type")
       expect(response.body).to        be_empty
     end
 

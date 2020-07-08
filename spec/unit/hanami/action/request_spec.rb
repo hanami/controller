@@ -168,7 +168,7 @@ RSpec.describe Hanami::Action::Request do
   private
 
   def build_request(attributes = {})
-    url = 'http://example.com/foo?q=bar'
+    url = attributes.delete('url') || 'http://example.com/foo?q=bar'
     env = Rack::MockRequest.env_for(url, attributes)
     described_class.new(env, {})
   end
