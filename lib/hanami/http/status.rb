@@ -31,7 +31,7 @@ module Hanami
 
       # Return a status for the given code
       #
-      # @param code [Fixnum] a valid HTTP code
+      # @param code [Integer] a valid HTTP code
       #
       # @return [Array] a pair of code and message for an HTTP status
       #
@@ -48,7 +48,7 @@ module Hanami
 
       # Return a message for the given status code
       #
-      # @param code [Fixnum] a valid HTTP code
+      # @param code [Integer] a valid HTTP code
       #
       # @return [String] a message for the given status code
       #

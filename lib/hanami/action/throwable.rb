@@ -71,7 +71,7 @@ module Hanami
       # Otherwise, it sets the response body with the default message associated
       # to the code (eg 404 will set `"Not Found"`).
       #
-      # @param code [Fixnum] a valid HTTP status code
+      # @param code [Integer] a valid HTTP status code
       # @param message [String] the response body
       #
       # @since 0.2.0
@@ -110,7 +110,7 @@ module Hanami
 
       # Sets the given code and message for the response
       #
-      # @param code [Fixnum] a valid HTTP status code
+      # @param code [Integer] a valid HTTP status code
       # @param message [String] the response body
       #
       # @since 0.1.0
