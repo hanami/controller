@@ -34,8 +34,7 @@ module Hanami
       end
 
       def resolve_view_context
-        # TODO: make identifier configurable
-        identifier = "view.context"
+        identifier = application.config.actions.view_context_identifier
 
         if provider.key?(identifier)
           provider[identifier]
