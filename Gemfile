@@ -19,7 +19,7 @@ group :validations do
 end
 
 group :test do
-  gem 'hanami', github: 'hanami/hanami', branch: 'enhancement/unstable/use-action-application-configuration'
+  gem 'hanami', github: 'hanami/hanami', branch: 'unstable'
   gem 'hanami-view', github: 'hanami/view', branch: 'master'
   gem 'slim'
 end
