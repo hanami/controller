@@ -49,14 +49,12 @@ RSpec.describe "Application actions / view integration", :application_integratio
     describe "#view_context" do
       subject(:view_context) { action.view_context }
 
-      shared_examples "injected view context" do
-        context "view context provided to initializer" do
-          let(:view_context) { double(:view_context) }
-          let(:action_args) { {view_context: view_context} }
+      context "Explicitly injected object" do
+        let(:view_context) { double(:view_context) }
+        let(:action_args) { {view_context: view_context} }
 
-          it "is the provided context object" do
-            is_expected.to eql view_context
-          end
+        it "returns the injected object" do
+          is_expected.to eql view_context
         end
       end
 
@@ -67,36 +65,45 @@ RSpec.describe "Application actions / view integration", :application_integratio
           it "is nil" do
             is_expected.to be_nil
           end
-
-          it_behaves_like "injected view context"
         end
 
-        context "view context registered in slice" do
-          let(:slice_view_context) { double(:slice_view_context) }
+        context "default view context identifier" do
+          context "view context registered in slice" do
+            let(:slice_view_context) { double(:slice_view_context) }
 
-          before do
-            Main::Slice.register "view.context", slice_view_context
+            before do
+              Main::Slice.register "view.context", slice_view_context
+            end
+
+            it "is the slice's view context" do
+              is_expected.to eql slice_view_context
+            end
           end
 
-          it "is the slice's view context" do
-            is_expected.to eql slice_view_context
-          end
+          context "view context registered in application" do
+            let(:application_view_context) { double(:application_view_context) }
 
-          it_behaves_like "injected view context"
+            before do
+              Hanami.application.register "view.context", application_view_context
+            end
+
+            it "is the applications's view context" do
+              is_expected.to eql application_view_context
+            end
+          end
         end
 
-        context "view context registered in application" do
-          let(:application_view_context) { double(:application_view_context) }
+        context "custom view context identifier" do
+          let(:custom_view_context) { double(:custom_view_context) }
 
           before do
-            Hanami.application.register "view.context", application_view_context
+            Hanami.application.config.actions.view_context_identifier = "view.custom_context"
+            Main::Slice.register "view.custom_context", custom_view_context
           end
 
-          it "is the applications's view context" do
-            is_expected.to eql application_view_context
+          it "is the context registered with the custom identifier" do
+            is_expected.to eql custom_view_context
           end
-
-          it_behaves_like "injected view context"
         end
       end
 
@@ -107,8 +114,6 @@ RSpec.describe "Application actions / view integration", :application_integratio
           it "is nil" do
             is_expected.to be_nil
           end
-
-          it_behaves_like "injected view context"
         end
 
         context "view context registered in application" do
@@ -121,8 +126,6 @@ RSpec.describe "Application actions / view integration", :application_integratio
           it "is the applications's view context" do
             is_expected.to eql application_view_context
           end
-
-          it_behaves_like "injected view context"
         end
       end
     end

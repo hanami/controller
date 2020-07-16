@@ -233,7 +233,7 @@ module Hanami
       #
       # @!method default_response_format
       #
-      #   Return the configured default response format
+      #   Returns the configured default response format
       #
       #   @return [Symbol] format
       #
@@ -261,7 +261,7 @@ module Hanami
       #
       # @!method default_charset
       #
-      #   Return the configured default charset.
+      #   Returns the configured default charset.
       #
       #   @return [String,nil] the charset, if present
       #
@@ -388,7 +388,7 @@ module Hanami
       #   @see public_directory
       setting :public_directory, DEFAULT_PUBLIC_DIRECTORY
 
-      # Return the configured public directory, appended onto the root directory.
+      # Returns the configured public directory, appended onto the root directory.
       #
       # @return [String] the fill directory path
       #
