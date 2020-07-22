@@ -3,18 +3,29 @@
 module Hanami
   class Action
     class ApplicationAction < Module
+      DynamicInstanceMethods = Class.new(Module)
+
       attr_reader :provider
       attr_reader :application
+      attr_reader :instance_mod
 
       def initialize(provider)
         @provider = provider
         @application = provider.respond_to?(:application) ? provider.application : Hanami.application
-
-        define_initialize
+        @instance_mod = DynamicInstanceMethods.new
       end
 
       def included(action_class)
-        action_class.include InstanceMethods
+        # TODO: I think we should probably do:
+        #
+        #   instance_mod.include StaticInstanceMethods
+        #
+        # And just include the single instance_mod, rather than these two
+        # modules, for a simpler ancestors chain
+        action_class.include StaticInstanceMethods
+        action_class.include instance_mod
+
+        define_initialize action_class
         configure_action action_class
       end
 
@@ -24,11 +35,13 @@ module Hanami
 
       private
 
-      def define_initialize
+      def define_initialize(action_class)
+        resolve_view = method(:resolve_paired_view)
         resolve_context = method(:resolve_view_context)
 
         define_method :initialize do |**deps|
           super(**deps)
+          @view = deps[:view] || resolve_view.(action_class)
           @view_context = deps[:view_context] || resolve_context.()
         end
       end
@@ -43,6 +56,26 @@ module Hanami
         end
       end
 
+      def resolve_paired_view(action_class)
+        # TODO: This is naive, needs to be expanded (should also be extracted into a standalone, testable class)
+        # TODO: it should also use a setting for the "views." bit
+        identifier = "views.#{action_identifier(action_class)}"
+
+        provider[identifier] if provider.key?(identifier)
+      end
+
+      def action_identifier(action_class)
+        # TODO: replace last .sub with something like this:
+        # .sub(/^#{view_class.config.template_inference_base}\//, "")
+
+        provider
+          .inflector
+          .underscore(action_class.name)
+          .sub(/^#{provider.namespace_path}\//, "")
+          .sub(/^actions\//, "")
+          .gsub("/", ".")
+      end
+
       def configure_action(action_class)
         action_class.config.settings.each do |setting|
           application_value = application.config.actions.public_send(:"#{setting}")
@@ -50,7 +83,12 @@ module Hanami
         end
       end
 
-      module InstanceMethods
+      module StaticInstanceMethods
+        # FIXME: Can I turn these into attr_readers?
+        def view
+          @view
+        end
+
         def view_context
           @view_context
         end
