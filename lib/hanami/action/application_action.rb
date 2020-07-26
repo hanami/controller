@@ -3,34 +3,23 @@
 module Hanami
   class Action
     class ApplicationAction < Module
-      DynamicInstanceMethods = Class.new(Module)
-
       attr_reader :provider
       attr_reader :application
-      attr_reader :instance_mod
 
       def initialize(provider)
         @provider = provider
         @application = provider.respond_to?(:application) ? provider.application : Hanami.application
-        @instance_mod = DynamicInstanceMethods.new
       end
 
       def included(action_class)
-        # TODO: I think we should probably do:
-        #
-        #   instance_mod.include StaticInstanceMethods
-        #
-        # And just include the single instance_mod, rather than these two
-        # modules, for a simpler ancestors chain
-        action_class.include StaticInstanceMethods
-        action_class.include instance_mod
+        action_class.include InstanceMethods
 
         define_initialize action_class
         configure_action action_class
       end
 
       def inspect
-        "#<#{self.class.name}[#{provider}]>"
+        "#<#{self.class.name}[#{provider.name}]>"
       end
 
       private
@@ -74,7 +63,7 @@ module Hanami
         end
       end
 
-      module StaticInstanceMethods
+      module InstanceMethods
         # FIXME: Can I turn these into attr_readers?
         def view
           @view
