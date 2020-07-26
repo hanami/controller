@@ -13,8 +13,6 @@ RSpec.describe "Application actions / View rendering / Paired view inference", :
     Hanami.init
   end
 
-
-
   let(:action) { action_class.new }
 
   context "Regular action" do
