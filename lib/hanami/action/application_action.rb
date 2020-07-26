@@ -57,23 +57,14 @@ module Hanami
       end
 
       def resolve_paired_view(action_class)
-        # TODO: This is naive, needs to be expanded (should also be extracted into a standalone, testable class)
-        # TODO: it should also use a setting for the "views." bit
-        identifier = "views.#{action_identifier(action_class)}"
+        view_identifiers = application.config.actions.view_name_inferrer.(
+          action_name: action_class.name,
+          provider: provider
+        )
 
-        provider[identifier] if provider.key?(identifier)
-      end
-
-      def action_identifier(action_class)
-        # TODO: replace last .sub with something like this:
-        # .sub(/^#{view_class.config.template_inference_base}\//, "")
-
-        provider
-          .inflector
-          .underscore(action_class.name)
-          .sub(/^#{provider.namespace_path}\//, "")
-          .sub(/^actions\//, "")
-          .gsub("/", ".")
+        view_identifiers.each_with_object(nil) { |identifier|
+          break provider[identifier] if provider.key?(identifier)
+        }
       end
 
       def configure_action(action_class)

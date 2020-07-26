@@ -1,13 +1,17 @@
 # frozen_string_literal: true
 
 require_relative "configuration"
+require_relative "view_name_inferrer"
 
 module Hanami
   class Action
     class ApplicationConfiguration
       include Dry::Configurable
 
+      setting :name_inference_base, "actions"
       setting :view_context_identifier, "view.context"
+      setting :view_name_inferrer, ViewNameInferrer
+      setting :view_name_inference_base, "views"
 
       Configuration._settings.each do |action_setting|
         _settings << action_setting.dup
