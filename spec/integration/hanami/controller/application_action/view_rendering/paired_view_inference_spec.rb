@@ -38,6 +38,31 @@ RSpec.describe "Application actions / View rendering / Paired view inference", :
       it "auto-injects a paired view from a matching container identifier" do
         expect(action.view).to be view
       end
+
+      context "Another view explicitly auto-injected" do
+        let(:action_class) {
+          module Main
+            module Actions
+              module Articles
+                class Index < Hanami::Action
+                  include Deps[view: "views.articles.custom"]
+                end
+              end
+            end
+          end
+          Main::Actions::Articles::Index
+        }
+
+        let(:explicit_view) { double(:explicit_view) }
+
+        before do
+          Main::Slice.register "views.articles.custom", explicit_view
+        end
+
+        it "respects the explicitly auto-injected view" do
+          expect(action.view).to be explicit_view
+        end
+      end
     end
 
     context "No paired view exists" do
