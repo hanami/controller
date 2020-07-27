@@ -67,14 +67,8 @@ module Hanami
       end
 
       module InstanceMethods
-        # FIXME: Can I turn these into attr_readers?
-        def view
-          @view
-        end
-
-        def view_context
-          @view_context
-        end
+        attr_reader :view
+        attr_reader :view_context
 
         private
 
