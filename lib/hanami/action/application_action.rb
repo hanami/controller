@@ -54,7 +54,7 @@ module Hanami
           provider: provider
         )
 
-        view_identifiers.each_with_object(nil) { |identifier|
+        view_identifiers.detect { |identifier|
           break provider[identifier] if provider.key?(identifier)
         }
       end
