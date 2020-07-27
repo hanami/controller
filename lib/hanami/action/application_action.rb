@@ -9,27 +9,32 @@ module Hanami
       def initialize(provider)
         @provider = provider
         @application = provider.respond_to?(:application) ? provider.application : Hanami.application
-
-        define_initialize
       end
 
       def included(action_class)
         action_class.include InstanceMethods
+
+        define_initialize action_class
         configure_action action_class
       end
 
       def inspect
-        "#<#{self.class.name}[#{provider}]>"
+        "#<#{self.class.name}[#{provider.name}]>"
       end
 
       private
 
-      def define_initialize
+      def define_initialize(action_class)
+        resolve_view = method(:resolve_paired_view)
         resolve_context = method(:resolve_view_context)
 
         define_method :initialize do |**deps|
           super(**deps)
-          @view_context = deps[:view_context] || resolve_context.()
+
+          # Conditionally assign these to repsect any explictly auto-injected
+          # dependencies provided by the class
+          @view ||= deps[:view] || resolve_view.(action_class)
+          @view_context ||= deps[:view_context] || resolve_context.()
         end
       end
 
@@ -43,6 +48,17 @@ module Hanami
         end
       end
 
+      def resolve_paired_view(action_class)
+        view_identifiers = application.config.actions.view_name_inferrer.(
+          action_name: action_class.name,
+          provider: provider
+        )
+
+        view_identifiers.detect { |identifier|
+          break provider[identifier] if provider.key?(identifier)
+        }
+      end
+
       def configure_action(action_class)
         action_class.config.settings.each do |setting|
           application_value = application.config.actions.public_send(:"#{setting}")
@@ -51,9 +67,8 @@ module Hanami
       end
 
       module InstanceMethods
-        def view_context
-          @view_context
-        end
+        attr_reader :view
+        attr_reader :view_context
 
         private
 
