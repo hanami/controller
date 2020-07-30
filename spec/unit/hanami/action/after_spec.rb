@@ -1,7 +1,7 @@
 RSpec.describe Hanami::Action do
   describe '.after' do
     it 'invokes the method(s) from the given symbol(s) after the action is run' do
-      action = AfterMethodAction.new(configuration: configuration)
+      action = AfterMethodAction.new
       response = action.call({})
 
       expect(response[:egg]).to eq('gE!g')
@@ -10,7 +10,7 @@ RSpec.describe Hanami::Action do
     end
 
     it 'invokes the given block after the action is run' do
-      action = AfterBlockAction.new(configuration: configuration)
+      action = AfterBlockAction.new
       response = action.call({})
 
       expect(response[:egg]).to       eq('Coque'.reverse)

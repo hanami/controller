@@ -15,7 +15,7 @@ RSpec.describe Hanami::Action::Params do
     let(:params) { Class.new(Hanami::Action::Params) }
 
     context "when this feature isn't enabled" do
-      let(:action) { ParamsAction.new(configuration: configuration) }
+      let(:action) { ParamsAction.new }
 
       it "raw gets all params" do
         File.open('spec/support/fixtures/multipart-upload.png', 'rb') do |upload|
@@ -35,7 +35,7 @@ RSpec.describe Hanami::Action::Params do
     end
 
     context "when this feature is enabled" do
-      let(:action) { WhitelistedUploadDslAction.new(configuration: configuration) }
+      let(:action) { WhitelistedUploadDslAction.new }
 
       it "raw gets all params" do
         Tempfile.create('multipart-upload') do |upload|
@@ -59,7 +59,7 @@ RSpec.describe Hanami::Action::Params do
     let(:params) { Class.new(Hanami::Action::Params) }
 
     context "when this feature isn't enabled" do
-      let(:action) { ParamsAction.new(configuration: configuration) }
+      let(:action) { ParamsAction.new }
 
       it "creates a Params innerclass" do
         expect(defined?(ParamsAction::Params)).to eq('constant')
@@ -94,7 +94,7 @@ RSpec.describe Hanami::Action::Params do
 
     context "when this feature is enabled" do
       context "with an explicit class" do
-        let(:action) { WhitelistedParamsAction.new(configuration: configuration) }
+        let(:action) { WhitelistedParamsAction.new }
 
         # For unit tests in Hanami projects, developers may want to define
         # params with symbolized keys.
@@ -132,7 +132,7 @@ RSpec.describe Hanami::Action::Params do
       end
 
       context "with an anoymous class" do
-        let(:action) { WhitelistedDslAction.new(configuration: configuration) }
+        let(:action) { WhitelistedDslAction.new }
 
         it "creates a Params innerclass" do
           expect(defined?(WhitelistedDslAction::Params)).to eq('constant')

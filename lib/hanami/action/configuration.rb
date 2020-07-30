@@ -79,7 +79,10 @@ module Hanami
       # @example
       #   configuration.handle_exceptions(ArgumentError => 400}
       def handle_exception(exceptions)
-        handled_exceptions.merge!(exceptions)
+        self.handled_exceptions = handled_exceptions
+          .merge(exceptions)
+          .sort { |(ex1, _), (ex2, _)| ex1.ancestors.include?(ex2) ? -1 : 1 }
+          .to_h
       end
 
       # Default MIME type to format mapping
