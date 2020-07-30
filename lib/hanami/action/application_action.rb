@@ -70,6 +70,14 @@ module Hanami
         attr_reader :view
         attr_reader :view_context
 
+        protected
+
+        def handle(request, response)
+          if view
+            response.render view, **request.params
+          end
+        end
+
         private
 
         def build_response(**options)
