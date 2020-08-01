@@ -1,28 +1,28 @@
 RSpec.describe Hanami::Action do
   describe "#session" do
     it "captures session from Rack env" do
-      action   = SessionAction.new(configuration: configuration)
+      action   = SessionAction.new
       response = action.call("rack.session" => { "user_id" => "23" })
 
       expect(response.session).to eq(user_id: "23")
     end
 
     it "returns empty hash when it is missing" do
-      action   = SessionAction.new(configuration: configuration)
+      action   = SessionAction.new
       response = action.call({})
 
       expect(response.session).to eq({})
     end
 
     it "exposes session" do
-      action = SessionAction.new(configuration: configuration)
+      action = SessionAction.new
       response = action.call("rack.session" => { "foo" => "bar" })
 
       expect(response[:session]).to eq(foo: "bar")
     end
 
     it "allows value access via symbols" do
-      action   = SessionAction.new(configuration: configuration)
+      action   = SessionAction.new
       response = action.call("rack.session" => { "foo" => "bar" })
 
       expect(response.session[:foo]).to eq("bar")
@@ -31,7 +31,7 @@ RSpec.describe Hanami::Action do
 
   describe "flash" do
     it "exposes flash" do
-      action = FlashAction.new(configuration: configuration)
+      action = FlashAction.new
       response = action.call({})
 
       expect(response[:flash]).to be_kind_of(Hanami::Action::Flash)
@@ -40,7 +40,7 @@ RSpec.describe Hanami::Action do
 
     describe "#each" do
       it "iterates through data" do
-        action = FlashAction.new(configuration: configuration)
+        action = FlashAction.new
         response = action.call({})
 
         result = []
@@ -54,7 +54,7 @@ RSpec.describe Hanami::Action do
 
     describe "#map" do
       it "iterates through data" do
-        action = FlashAction.new(configuration: configuration)
+        action = FlashAction.new
         response = action.call({})
 
         result = response.flash.map do |type, message|

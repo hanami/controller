@@ -55,6 +55,7 @@ RSpec.describe Hanami::Action do
     end
   end
 
+  # FIXME #with isn't needed anymore
   describe "#with" do
     let(:action_class) {
       Class.new(Hanami::Action) do
@@ -80,7 +81,7 @@ RSpec.describe Hanami::Action do
 
   describe "#call" do
     it "calls an action" do
-      response = CallAction.new(configuration: configuration).call({})
+      response = CallAction.new.call({})
 
       expect(response.status).to  eq(201)
       expect(response.headers).to eq("Content-Length" => "19", "Content-Type" => "application/octet-stream; charset=utf-8", "X-Custom" => "OK")
@@ -89,55 +90,55 @@ RSpec.describe Hanami::Action do
 
     context "when an exception isn't handled" do
       it "should raise an actual exception" do
-        expect { UncheckedErrorCallAction.new(configuration: configuration).call({}) }.to raise_error(RuntimeError)
+        expect { UncheckedErrorCallAction.new.call({}) }.to raise_error(RuntimeError)
       end
     end
 
     context "when an exception is handled" do
       it "returns an HTTP 500 status code when an exception is raised" do
-        response = ErrorCallAction.new(configuration: configuration).call({})
+        response = ErrorCallAction.new.call({})
 
         expect(response.status).to eq(500)
         expect(response.body).to   eq(["Internal Server Error"])
       end
 
       it "handles inherited exception with specified method" do
-        response = ErrorCallFromInheritedErrorClass.new(configuration: configuration).call({})
+        response = ErrorCallFromInheritedErrorClass.new.call({})
 
         expect(response.status).to eq(501)
         expect(response.body).to   eq(["An inherited exception occurred!"])
       end
 
       it "handles exception with specified method" do
-        response = ErrorCallFromInheritedErrorClassStack.new(configuration: configuration).call({})
+        response = ErrorCallFromInheritedErrorClassStack.new.call({})
 
         expect(response.status).to eq(501)
         expect(response.body).to   eq(["MyCustomError was thrown"])
       end
 
       it "handles exception with specified method (symbol)" do
-        response = ErrorCallWithSymbolMethodNameAsHandlerAction.new(configuration: configuration).call({})
+        response = ErrorCallWithSymbolMethodNameAsHandlerAction.new.call({})
 
         expect(response.status).to eq(501)
         expect(response.body).to   eq(["Please go away!"])
       end
 
       it "handles exception with specified method (string)" do
-        response = ErrorCallWithStringMethodNameAsHandlerAction.new(configuration: configuration).call({})
+        response = ErrorCallWithStringMethodNameAsHandlerAction.new.call({})
 
         expect(response.status).to eq(502)
         expect(response.body).to   eq(["StandardError"])
       end
 
       it "handles exception with specified status code" do
-        response = ErrorCallWithSpecifiedStatusCodeAction.new(configuration: configuration).call({})
+        response = ErrorCallWithSpecifiedStatusCodeAction.new.call({})
 
         expect(response.status).to eq(422)
         expect(response.body).to   eq(["Unprocessable Entity"])
       end
 
       it "returns a successful response if the code and status aren't set" do
-        response = ErrorCallWithUnsetStatusResponse.new(configuration: configuration).call({})
+        response = ErrorCallWithUnsetStatusResponse.new.call({})
 
         expect(response.status).to eq(200)
         expect(response.body).to   eq([])
@@ -147,26 +148,26 @@ RSpec.describe Hanami::Action do
     context "when invoking the session method with sessions disabled" do
       it "raises an informative exception" do
         expected = Hanami::Controller::MissingSessionError
-        expect { MissingSessionAction.new(configuration: configuration).call({}) }.to raise_error(expected, "To use `session', add `include Hanami::Action::Session`.")
+        expect { MissingSessionAction.new.call({}) }.to raise_error(expected, "To use `session', add `include Hanami::Action::Session`.")
       end
     end
 
     context "when invoking the flash method with sessions disabled" do
       it "raises an informative exception" do
         expected = Hanami::Controller::MissingSessionError
-        expect { MissingFlashAction.new(configuration: configuration).call({}) }.to raise_error(expected, "To use `flash', add `include Hanami::Action::Session`.")
+        expect { MissingFlashAction.new.call({}) }.to raise_error(expected, "To use `flash', add `include Hanami::Action::Session`.")
       end
     end
   end
 
   describe "#name" do
     it "returns action name" do
-      subject = FullStack::Controllers::Home::Index.new(configuration: configuration)
+      subject = FullStack::Controllers::Home::Index.new
       expect(subject.name).to eq("full_stack.controllers.home.index")
     end
 
     it "returns nil for anonymous classes" do
-      subject = Class.new(Hanami::Action).new(configuration: configuration)
+      subject = Class.new(Hanami::Action).new
       expect(subject.name).to be(nil)
     end
   end
@@ -179,7 +180,7 @@ RSpec.describe Hanami::Action do
         end
       end
 
-      action = action_class.new(configuration: configuration)
+      action = action_class.new
       env = Rack::MockRequest.env_for("http://example.com/foo")
       response = action.call(env)
 
@@ -188,7 +189,7 @@ RSpec.describe Hanami::Action do
   end
 
   describe "Method visibility" do
-    let(:action) { VisibilityAction.new(configuration: configuration) }
+    let(:action) { VisibilityAction.new }
 
     it "ensures that protected and private methods can be safely invoked by developers" do
       response = action.call({})

@@ -110,7 +110,7 @@ class UncheckedErrorCallAction < Hanami::Action
 end
 
 class ErrorCallAction < Hanami::Action
-  handle_exception RuntimeError => 500
+  config.handle_exception RuntimeError => 500
 
   def handle(_req, _res)
     raise
@@ -119,7 +119,7 @@ end
 
 class MyCustomError < StandardError; end
 class ErrorCallFromInheritedErrorClass < Hanami::Action
-  handle_exception StandardError => :handler
+  config.handle_exception StandardError => :handler
 
   def handle(*)
     raise MyCustomError
@@ -134,8 +134,8 @@ class ErrorCallFromInheritedErrorClass < Hanami::Action
 end
 
 class ErrorCallFromInheritedErrorClassStack < Hanami::Action
-  handle_exception StandardError => :standard_handler
-  handle_exception MyCustomError => :handler
+  config.handle_exception StandardError => :standard_handler
+  config.handle_exception MyCustomError => :handler
 
   def handle(*)
     raise MyCustomError
@@ -155,7 +155,7 @@ class ErrorCallFromInheritedErrorClassStack < Hanami::Action
 end
 
 class ErrorCallWithSymbolMethodNameAsHandlerAction < Hanami::Action
-  handle_exception StandardError => :handler
+  config.handle_exception StandardError => :handler
 
   def handle(*)
     raise StandardError
@@ -170,7 +170,7 @@ class ErrorCallWithSymbolMethodNameAsHandlerAction < Hanami::Action
 end
 
 class ErrorCallWithStringMethodNameAsHandlerAction < Hanami::Action
-  handle_exception StandardError => "standard_error_handler"
+  config.handle_exception StandardError => "standard_error_handler"
 
   def handle(*)
     raise StandardError
@@ -185,7 +185,7 @@ class ErrorCallWithStringMethodNameAsHandlerAction < Hanami::Action
 end
 
 class ErrorCallWithUnsetStatusResponse < Hanami::Action
-  handle_exception ArgumentError => "arg_error_handler"
+  config.handle_exception ArgumentError => "arg_error_handler"
 
   def handle(*)
     raise ArgumentError
@@ -198,7 +198,10 @@ class ErrorCallWithUnsetStatusResponse < Hanami::Action
 end
 
 class ErrorCallWithSpecifiedStatusCodeAction < Hanami::Action
-  handle_exception StandardError => 422
+  puts "ErrorCallWithSpecifiedStatusCodeAction"
+  puts "config.handle_exception StandardError => 422"
+  configuration.handle_exception StandardError => 422
+  puts "done"
 
   def handle(_req, _res)
     raise StandardError
@@ -274,7 +277,7 @@ class ErrorBeforeMethodAction < BeforeMethodAction
 end
 
 class HandledErrorBeforeMethodAction < BeforeMethodAction
-  handle_exception RecordNotFound => 404
+  config.handle_exception RecordNotFound => 404
 
   private
 
@@ -416,6 +419,8 @@ end
 class GetDefaultCookiesAction < Hanami::Action
   include Hanami::Action::Cookies
 
+  config.cookies = { domain: "hanamirb.org", path: "/controller", secure: true, httponly: true }
+
   def handle(*, res)
     res.body          = ""
     res.cookies[:bar] = "foo"
@@ -424,6 +429,8 @@ end
 
 class GetOverwrittenCookiesAction < Hanami::Action
   include Hanami::Action::Cookies
+
+  config.cookies = { domain: "hanamirb.org", path: "/controller", secure: true, httponly: true }
 
   def handle(*, res)
     res.body          = ""
@@ -553,7 +560,7 @@ class ThrowAfterBlockAction < Hanami::Action
 end
 
 class HandledExceptionAction < Hanami::Action
-  handle_exception RecordNotFound => 404
+  config.handle_exception RecordNotFound => 404
 
   def handle(_req, _res)
     raise RecordNotFound.new
@@ -564,6 +571,8 @@ class DomainLogicException < StandardError
 end
 
 class GlobalHandledExceptionAction < Hanami::Action
+  config.handle_exception DomainLogicException => 400
+
   def handle(_req, _res)
     raise DomainLogicException.new
   end
@@ -876,7 +885,7 @@ module App
   end
 
   class StandaloneAction < Hanami::Action
-    handle_exception App::CustomError => 400
+    config.handle_exception App::CustomError => 400
 
     def handle(_req, _res)
       raise App::CustomError
@@ -890,7 +899,7 @@ module App2
 
   module Standalone
     class Index < Hanami::Action
-      handle_exception App2::CustomError => 400
+      config.handle_exception App2::CustomError => 400
 
       def handle(_req, _res)
         raise App2::CustomError
@@ -956,7 +965,7 @@ module MusicPlayer
         include Hanami::Action::Session
         include MusicPlayer::Controllers::Authentication
 
-        handle_exception ArtistNotFound => 404
+        config.handle_exception ArtistNotFound => 404
 
         def handle(_req, _res)
           raise ArtistNotFound
@@ -1464,7 +1473,7 @@ class HandledRackExceptionAction < Hanami::Action
   class TestException < ::StandardError
   end
 
-  handle_exception TestException => 500
+  config.handle_exception TestException => 500
 
   def handle(_req, _res)
     raise TestException.new
@@ -1478,7 +1487,7 @@ class HandledRackExceptionSubclassAction < Hanami::Action
   class TestSubclassException < TestException
   end
 
-  handle_exception TestException => 500
+  config.handle_exception TestException => 500
 
   def handle(_req, _res)
     raise TestSubclassException.new
@@ -1501,9 +1510,7 @@ module SessionWithCookies
 
   class Application
     def initialize
-      configuration = Hanami::Action::Configuration.new
-
-      resolver = EndpointResolver.new(configuration: configuration, namespace: SessionWithCookies::Controllers)
+      resolver = EndpointResolver.new(namespace: SessionWithCookies::Controllers)
       routes   = Hanami::Router.new(resolver: resolver) do
         get "/", to: SessionWithCookies::Controllers::Home::Index.new
       end
@@ -1706,7 +1713,7 @@ module SessionIntegration
   class Application
     def initialize
       configuration = Hanami::Action::Configuration.new
-      resolver      = EndpointResolver.new(configuration: configuration)
+      resolver      = EndpointResolver.new
 
       routes = Hanami::Router.new(resolver: resolver) do
         get    "/",       to: Dashboard::Index.new
@@ -1730,12 +1737,10 @@ end
 module StandaloneSessionIntegration
   class Application
     def initialize
-      configuration = Hanami::Action::Configuration.new
-
       @app = Rack::Builder.new do
         use Rack::Lint
         use Rack::Session::Cookie, secret: SecureRandom.hex(16)
-        run StandaloneSession.new(configuration: configuration)
+        run StandaloneSession.new
       end
     end
 

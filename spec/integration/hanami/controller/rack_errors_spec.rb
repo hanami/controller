@@ -47,7 +47,7 @@ module Errors
 
   # Handled
   class ActionHandled < Hanami::Action
-    handle_exception HandledException => 400
+    config.handle_exception HandledException => 400
 
     def handle(*)
       raise HandledException
@@ -55,7 +55,7 @@ module Errors
   end
 
   class ActionHandledSubclass < Hanami::Action
-    handle_exception HandledException => 400
+    config.handle_exception HandledException => 400
 
     def handle(*)
       raise HandledExceptionSubclass
@@ -63,12 +63,16 @@ module Errors
   end
 
   class ConfigurationHandled < Hanami::Action
+    config.handle_exception ConfigurationHandledException => 500
+
     def handle(*)
       raise ConfigurationHandledException
     end
   end
 
   class ConfigurationHandledSubclass < Hanami::Action
+    config.handle_exception ConfigurationHandledException => 500
+
     def handle(*)
       raise ConfigurationHandledExceptionSubclass
     end
@@ -76,10 +80,6 @@ module Errors
 
   class Application
     def initialize
-      configuration = Hanami::Action::Configuration.new do |config|
-        config.handle_exception ConfigurationHandledException => 500
-      end
-
       routes = Hanami::Router.new do
         get '/without_message',     to: Errors::WithoutMessage.new
         get '/with_message',        to: Errors::WithMessage.new
