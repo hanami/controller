@@ -16,59 +16,84 @@ RSpec.describe "Application actions / View rendering / Paired view inference", :
   let(:action) { action_class.new }
 
   context "Regular action" do
-    let(:action_class) {
-      module Main
-        module Actions
-          module Articles
-            class Index < Hanami::Action
-            end
-          end
+    shared_examples "action with view inference" do
+      context "Paired view exists" do
+        let(:view) { double(:view) }
+
+        before do
+          Main::Slice.register "views.articles.index", view
         end
-      end
-      Main::Actions::Articles::Index
-    }
 
-    context "Paired view exists" do
-      let(:view) { double(:view) }
+        it "auto-injects a paired view from a matching container identifier" do
+          expect(action.view).to be view
+        end
 
-      before do
-        Main::Slice.register "views.articles.index", view
-      end
-
-      it "auto-injects a paired view from a matching container identifier" do
-        expect(action.view).to be view
-      end
-
-      context "Another view explicitly auto-injected" do
-        let(:action_class) {
-          module Main
-            module Actions
-              module Articles
-                class Index < Hanami::Action
-                  include Deps[view: "views.articles.custom"]
+        context "Another view explicitly auto-injected" do
+          let(:action_class) {
+            module Main
+              module Actions
+                module Articles
+                  class Index < Hanami::Action
+                    include Deps[view: "views.articles.custom"]
+                  end
                 end
               end
             end
+            Main::Actions::Articles::Index
+          }
+
+          let(:explicit_view) { double(:explicit_view) }
+
+          before do
+            Main::Slice.register "views.articles.custom", explicit_view
           end
-          Main::Actions::Articles::Index
-        }
 
-        let(:explicit_view) { double(:explicit_view) }
-
-        before do
-          Main::Slice.register "views.articles.custom", explicit_view
+          it "respects the explicitly auto-injected view" do
+            expect(action.view).to be explicit_view
+          end
         end
+      end
 
-        it "respects the explicitly auto-injected view" do
-          expect(action.view).to be explicit_view
+      context "No paired view exists" do
+        it "does not auto-inject any view" do
+          expect(action.view).to be_nil
         end
       end
     end
 
-    context "No paired view exists" do
-      it "does not auto-inject any view" do
-        expect(action.view).to be_nil
-      end
+    context "Direct Hanami::View subclass" do
+      let(:action_class) {
+        module Main
+          module Actions
+            module Articles
+              class Index < Hanami::Action
+              end
+            end
+          end
+        end
+        Main::Actions::Articles::Index
+      }
+
+      it_behaves_like "action with view inference"
+    end
+
+    context "Subclass of shared superclass" do
+      let(:action_class) {
+        module Main
+          class Action < Hanami::Action
+          end
+
+          module Actions
+            module Articles
+              class Index < Action
+              end
+            end
+          end
+        end
+        Main::Actions::Articles::Index
+      }
+
+      it_behaves_like "action with view inference"
     end
   end
 
@@ -109,4 +134,6 @@ RSpec.describe "Application actions / View rendering / Paired view inference", :
       end
     end
   end
+
+
 end
