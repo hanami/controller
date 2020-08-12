@@ -26,7 +26,7 @@ class Renderer
     return unless response.respond_to?(:status)
 
     if response.status == 200
-      response.body = "#{action.class.name} #{response.exposures} params: #{response[:params].to_h} flash: #{response[:flash].inspect}"
+      response.body = "#{action.class.name} #{response.exposures} params: #{response[:params].to_h} flash: #{response.session[:_flash].inspect}"
     end
 
     true
