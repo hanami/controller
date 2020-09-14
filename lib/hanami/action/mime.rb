@@ -7,6 +7,13 @@ module Hanami
     module Mime
       DEFAULT_CONTENT_TYPE = 'application/octet-stream'.freeze
       DEFAULT_CHARSET      = 'utf-8'.freeze
+
+      # The key that returns content mime type from the Rack env
+      #
+      # @since 1.2.0
+      # @api private
+      HTTP_CONTENT_TYPE    = 'CONTENT_TYPE'.freeze
+
       # The header key to set the mime type of the response
       #
       # @since 0.1.0
@@ -157,7 +164,7 @@ module Hanami
       #
       # @return [TrueClass, FalseClass]
       def self.accepted_mime_type?(request, accepted_mime_types, configuration)
-        mime_type = request.env[CONTENT_TYPE] || default_content_type(configuration) || DEFAULT_CONTENT_TYPE
+        mime_type = request.env[HTTP_CONTENT_TYPE] || default_content_type(configuration) || DEFAULT_CONTENT_TYPE
 
         !accepted_mime_types.find { |mt| ::Rack::Mime.match?(mt, mime_type) }.nil?
       end

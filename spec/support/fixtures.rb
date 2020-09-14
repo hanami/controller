@@ -1629,6 +1629,14 @@ module Mimes
     end
   end
 
+  class Strict < Hanami::Action
+    accept :json
+
+    def handle(_req, res)
+      res.body, = *format(res.content_type)
+    end
+  end
+
   class Application
     def initialize
       # configuration = Hanami::Action::Configuration.new do |config|
@@ -1637,13 +1645,14 @@ module Mimes
 
       @router = Hanami::Router.new do
         get "/",                   to: Mimes::Default.new
-        get "/custom",             to: Mimes::Custom.new
+        # get "/custom",             to: Mimes::Custom.new
         get "/accept",             to: Mimes::Accept.new
-        get "/restricted",         to: Mimes::Restricted.new
+        # get "/restricted",         to: Mimes::Restricted.new
         get "/latin",              to: Mimes::Latin.new
         get "/nocontent",          to: Mimes::NoContent.new
         get "/overwritten_format", to: Mimes::OverrideDefaultResponse.new
-        get "/custom_from_accept", to: Mimes::CustomFromAccept.new
+        # get "/custom_from_accept", to: Mimes::CustomFromAccept.new
+        get "/strict",             to: Mimes::Strict.new
       end
     end
 
