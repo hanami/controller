@@ -9,8 +9,7 @@ module Hanami
       # The flash hash for the current request
       alias now __getobj__
 
-      # Setup the next hash when initializing, and treat nil as a new empty
-      # hash
+      # Setup the next hash when initializing, treat nil as a new empty hash
       def initialize(hash = {})
         super(hash || {})
         @next = {}
@@ -23,8 +22,8 @@ module Hanami
 
       # Remove given key from the next hash, or clear the next hash if no
       # argument is given
-      def discard(key = nil)
-        if key.nil?
+      def discard(key = (no_arg = true))
+        if no_arg
           @next.clear
         else
           @next.delete(key)
@@ -34,8 +33,8 @@ module Hanami
       # Copy the entry with the given key from the current hash to the next
       # hash, or copy all entries from the current hash to the next hash if no
       # argument is given
-      def keep(key = nil)
-        if key.nil?
+      def keep(key = (no_arg = true))
+        if no_arg
           @next.merge!(self)
         else
           self[key] = self[key]
