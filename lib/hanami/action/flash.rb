@@ -1,4 +1,3 @@
-require 'hanami/utils/json'
 
 module Hanami
   class Action
