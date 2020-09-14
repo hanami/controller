@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rack'
 require 'rack/response'
 require 'hanami/utils/kernel'
@@ -13,23 +15,23 @@ module Hanami
     class Response < ::Rack::Response
       DEFAULT_VIEW_OPTIONS = -> * { {} }.freeze
 
-      REQUEST_METHOD = "REQUEST_METHOD".freeze
-      HTTP_ACCEPT = "HTTP_ACCEPT".freeze
-      SESSION_KEY = "rack.session".freeze
-      REQUEST_ID  = "hanami.request_id".freeze
-      LOCATION    = "Location".freeze
+      REQUEST_METHOD = "REQUEST_METHOD"
+      HTTP_ACCEPT = "HTTP_ACCEPT"
+      SESSION_KEY = "rack.session"
+      REQUEST_ID  = "hanami.request_id"
+      LOCATION    = "Location"
 
-      X_CASCADE = "X-Cascade".freeze
-      CONTENT_LENGTH = "Content-Length".freeze
+      X_CASCADE = "X-Cascade"
+      CONTENT_LENGTH = "Content-Length"
       NOT_FOUND = 404
 
       RACK_STATUS  = 0
       RACK_HEADERS = 1
       RACK_BODY    = 2
 
-      HEAD = "HEAD".freeze
+      HEAD = "HEAD"
 
-      FLASH_SESSION_KEY = "_flash".freeze
+      FLASH_SESSION_KEY = "_flash"
 
       EMPTY_BODY = [].freeze
 
