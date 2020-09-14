@@ -12,7 +12,7 @@ module Hanami
 
       # Setup the next hash when initializing, and handle treat nil
       # as a new empty hash.
-      def initialize(hash={})
+      def initialize(hash = {})
         super(hash||{})
         @next = {}
       end
