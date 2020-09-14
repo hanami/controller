@@ -29,6 +29,8 @@ module Hanami
 
       HEAD = "HEAD".freeze
 
+      FLASH_SESSION_KEY = "_flash".freeze
+
       EMPTY_BODY = [].freeze
 
       FILE_SYSTEM_ROOT = Pathname.new("/").freeze
@@ -98,7 +100,7 @@ module Hanami
       end
 
       def flash
-        @flash ||= Flash.new(session[:_flash])
+        @flash ||= Flash.new(session[FLASH_SESSION_KEY])
       end
 
       def redirect_to(url, status: 302)
