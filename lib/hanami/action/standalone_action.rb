@@ -563,17 +563,6 @@ module Hanami
           end
         end
 
-        # Raise error when `Hanami::Action::Session` isn't included.
-        #
-        # To use `session`, include `Hanami::Action::Session`.
-        #
-        # @raise [Hanami::Controller::MissingSessionError]
-        #
-        # @since 1.2.0
-        def session
-          raise Hanami::Controller::MissingSessionError.new(:session)
-        end
-
         # Finalize the response
         #
         # This method is abstract and COULD be implemented by included modules in
