@@ -10,7 +10,7 @@ module Hanami
     #
     # @since 0.3.0
     # @api public
-    class Flash < DelegateClass(Hash)
+    class Flash
       # @return [Hash] The flash hash for the next request, written to by {#[]=}.
       #
       # @see #[]=
@@ -26,7 +26,7 @@ module Hanami
       # @since 0.3.0
       # @api public
       def initialize(hash = {})
-        super(hash || {})
+        @flash = hash || {}
         @next = {}
       end
 
@@ -37,7 +37,19 @@ module Hanami
       # @since 2.0.0
       # @api public
       def now
-        __getobj__
+        @flash
+      end
+
+      # Returns a value associated with the given key
+      #
+      # @param key [Object] the key
+      #
+      # @return value [Object,NilClass] the value
+      #
+      # @since 0.3.0
+      # @api public
+      def [](key)
+        @flash[key]
       end
 
       # Updates the next hash with the given key and value
@@ -49,6 +61,36 @@ module Hanami
       # @api public
       def []=(key, value)
         @next[key] = value
+      end
+
+      # Iterates through current request data and kept data
+      #
+      # @param blk [Proc]
+      #
+      # @since 1.2.0
+      def each(&blk)
+        @flash.each(&blk)
+      end
+
+      # Iterates through current request data and kept data
+      #
+      # @param blk [Proc]
+      # @return [Array]
+      #
+      # @since 1.2.0
+      def map(&blk)
+        @flash.map(&blk)
+      end
+
+      # Check if there are contents stored in the flash from the current or the
+      # previous request.
+      #
+      # @return [TrueClass,FalseClass] the result of the check
+      #
+      # @since 0.3.0
+      # @api private
+      def empty?
+        @flash.empty?
       end
 
       # Removes entries from the next hash
@@ -86,7 +128,7 @@ module Hanami
       # @api public
       def keep(key = (no_arg = true))
         if no_arg
-          @next.merge!(self)
+          @next.merge!(@flash)
         else
           self[key] = self[key]
         end
@@ -97,7 +139,7 @@ module Hanami
       # @since 2.0.0
       # @api public
       def sweep
-        replace(@next)
+        @flash = @next.dup
         @next.clear
         self
       end
