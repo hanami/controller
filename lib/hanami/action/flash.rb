@@ -2,26 +2,67 @@
 
 module Hanami
   class Action
+    # A container to transport data with the HTTP session, with a lifespan of
+    # just one HTTP request or redirect.
+    #
+    # Behaves like a hash, returning entries for the current request, except for
+    # {#[]=}, which updates the hash for the next request.
+    #
+    # @since 0.3.0
+    # @api public
     class Flash < DelegateClass(Hash)
-      # The flash hash for the next request, which gets written to by #[]=
+      # @return [Hash] The flash hash for the next request, written to by {#[]=}.
+      #
+      # @see #[]=
+      #
+      # @since 2.0.0
+      # @api public
       attr_reader :next
 
-      # The flash hash for the current request
-      alias now __getobj__
-
-      # Setup the next hash when initializing, treat nil as a new empty hash
+      # Initializes a new flash instance
+      #
+      # @param hash [Hash, nil] the flash hash for the current request. nil will become an empty hash.
+      #
+      # @since 0.3.0
+      # @api public
       def initialize(hash = {})
         super(hash || {})
         @next = {}
       end
 
-      # Update the next hash with the given key and value
-      def []=(k, v)
-        @next[k] = v
+      # @!attribute [r] now
+      #
+      # @return [Hash] The flash hash for the current request
+      #
+      # @since 2.0.0
+      # @api public
+      def now
+        __getobj__
       end
 
-      # Remove given key from the next hash, or clear the next hash if no
-      # argument is given
+      # Updates the next hash with the given key and value
+      #
+      # @param key [Object] the key
+      # @param value [Object] the value
+      #
+      # @since 0.3.0
+      # @api public
+      def []=(key, value)
+        @next[key] = value
+      end
+
+      # Removes entries from the next hash
+      #
+      # @overload discard(key)
+      #   Removes the given key from the next hash
+      #
+      #   @param key [Object] key to discard
+      #
+      # @overload discard
+      #   Clears the next hash
+      #
+      # @since 2.0.0
+      # @api public
       def discard(key = (no_arg = true))
         if no_arg
           @next.clear
@@ -30,9 +71,19 @@ module Hanami
         end
       end
 
-      # Copy the entry with the given key from the current hash to the next
-      # hash, or copy all entries from the current hash to the next hash if no
-      # argument is given
+      # Copies entries from the current hash to the next hash
+      #
+      # @overload keep(key)
+      #   Copies the entry for the given key from the current hash to the next
+      #   hash
+      #
+      #   @param key [Object] key to copy
+      #
+      # @overload keep
+      #   Copies all entries from the current hash to the next hash
+      #
+      # @since 2.0.0
+      # @api public
       def keep(key = (no_arg = true))
         if no_arg
           @next.merge!(self)
@@ -41,7 +92,10 @@ module Hanami
         end
       end
 
-      # Replace the current hash with the next hash and clear the next hash
+      # Replaces the current hash with the next hash and clears the next hash
+      #
+      # @since 2.0.0
+      # @api public
       def sweep
         replace(@next)
         @next.clear
