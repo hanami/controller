@@ -8,6 +8,13 @@ module Hanami
     # Behaves like a hash, returning entries for the current request, except for
     # {#[]=}, which updates the hash for the next request.
     #
+    # This implementation is derived from Roda's FlashHash, also released under
+    # the MIT Licence:
+    #
+    # Copyright (c) 2014-2020 Jeremy Evans
+    # Copyright (c) 2010-2014 Michel Martens, Damian Janowski and Cyril David
+    # Copyright (c) 2008-2009 Christian Neukirchen
+    #
     # @since 0.3.0
     # @api public
     class Flash
