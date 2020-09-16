@@ -45,11 +45,11 @@ module Hanami
         @flash
       end
 
-      # Returns a value associated with the given key
+      # Returns the value for the given key in the current hash
       #
       # @param key [Object] the key
       #
-      # @return value [Object,NilClass] the value
+      # @return [Object, nil] the value
       #
       # @since 0.3.0
       # @api public
