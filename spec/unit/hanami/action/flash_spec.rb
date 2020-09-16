@@ -30,10 +30,6 @@ RSpec.describe Hanami::Action::Flash do
     it "returns raw data for the current request" do
       expect(flash.now).to be(input_hash)
     end
-
-    it "is aliased as #to_h" do
-      expect(flash.to_h).to be(input_hash)
-    end
   end
 
   describe "#next" do

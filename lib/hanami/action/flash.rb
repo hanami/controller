@@ -38,10 +38,6 @@ module Hanami
         @flash
       end
 
-      # @since 2.0.0
-      # @api public
-      alias to_h now
-
       # Returns a value associated with the given key
       #
       # @param key [Object] the key
@@ -65,30 +61,31 @@ module Hanami
         @next[key] = value
       end
 
-      # Iterates through current request data and kept data
+      # Calls the given block once for each element in the current hash
       #
-      # @param blk [Proc]
+      # @param block [Proc]
       #
       # @since 1.2.0
       # @api public
-      def each(&blk)
-        @flash.each(&blk)
+      def each(&block)
+        @flash.each(&block)
       end
 
-      # Iterates through current request data and kept data
+      # Returns a new array with the results of running block once for every
+      # element in the current hash
       #
-      # @param blk [Proc]
+      # @param block [Proc]
       # @return [Array]
       #
       # @since 1.2.0
       # @api public
-      def map(&blk)
-        @flash.map(&blk)
+      def map(&block)
+        @flash.map(&block)
       end
 
-      # Check if flash is empty.
+      # Returns `true` if the current hash contains no elements.
       #
-      # @return [TrueClass,FalseClass] the result of the check
+      # @return [Boolean]
       #
       # @since 0.3.0
       # @api public
@@ -96,9 +93,9 @@ module Hanami
         @flash.empty?
       end
 
-      # Check if there is a value associated with the given key.
+      # Returns `true` if the given key is present in the current hash.
       #
-      # @return [TrueClass,FalseClass] the result of the check
+      # @return [Boolean]
       #
       # @since 2.0.0
       # @api public
