@@ -30,8 +30,6 @@ module Hanami
         @next = {}
       end
 
-      # @!attribute [r] now
-      #
       # @return [Hash] The flash hash for the current request
       #
       # @since 2.0.0
@@ -39,6 +37,10 @@ module Hanami
       def now
         @flash
       end
+
+      # @since 2.0.0
+      # @api public
+      alias to_h now
 
       # Returns a value associated with the given key
       #
@@ -68,6 +70,7 @@ module Hanami
       # @param blk [Proc]
       #
       # @since 1.2.0
+      # @api public
       def each(&blk)
         @flash.each(&blk)
       end
@@ -78,19 +81,29 @@ module Hanami
       # @return [Array]
       #
       # @since 1.2.0
+      # @api public
       def map(&blk)
         @flash.map(&blk)
       end
 
-      # Check if there are contents stored in the flash from the current or the
-      # previous request.
+      # Check if flash is empty.
       #
       # @return [TrueClass,FalseClass] the result of the check
       #
       # @since 0.3.0
-      # @api private
+      # @api public
       def empty?
         @flash.empty?
+      end
+
+      # Check if there is a value associated with the given key.
+      #
+      # @return [TrueClass,FalseClass] the result of the check
+      #
+      # @since 2.0.0
+      # @api public
+      def key?(key)
+        @flash.key?(key)
       end
 
       # Removes entries from the next hash
