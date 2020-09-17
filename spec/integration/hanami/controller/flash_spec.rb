@@ -11,7 +11,7 @@ RSpec.describe "Flash application" do
     get "/"
     follow_redirect!
 
-    expect(last_response.body).to match(/Hanami::Action::Flash:0x[\d\w]* {:data=>{}, :kept=>{"hello"=>"world"}}/)
+    expect(last_response.body).to match(/{:hello=>"world"}/)
     expect(last_response.body).to match(/flash_empty: false/)
   end
 
@@ -27,7 +27,7 @@ RSpec.describe "Flash application" do
       get "/each_redirect"
       follow_redirect!
 
-      expect(last_response.body).to match(/flash_each: \[\["hello", "world"\]\]/)
+      expect(last_response.body).to match(/flash_each: \[\[:hello, "world"\]\]/)
     end
   end
 
@@ -36,7 +36,7 @@ RSpec.describe "Flash application" do
       get "/map_redirect"
       follow_redirect!
 
-      expect(last_response.body).to match(/flash_map: \[\["hello", "world"\]\]/)
+      expect(last_response.body).to match(/flash_map: \[\[:hello, "world"\]\]/)
     end
   end
 end

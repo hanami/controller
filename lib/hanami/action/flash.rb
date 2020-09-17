@@ -1,269 +1,164 @@
-require 'hanami/utils/json'
+# frozen_string_literal: true
 
 module Hanami
   class Action
-    # Container useful to transport data with the HTTP session
-    # It has a life span of one HTTP request or redirect.
+    # A container to transport data with the HTTP session, with a lifespan of
+    # just one HTTP request or redirect.
+    #
+    # Behaves like a hash, returning entries for the current request, except for
+    # {#[]=}, which updates the hash for the next request.
+    #
+    # This implementation is derived from Roda's FlashHash, also released under
+    # the MIT Licence:
+    #
+    # Copyright (c) 2014-2020 Jeremy Evans
+    # Copyright (c) 2010-2014 Michel Martens, Damian Janowski and Cyril David
+    # Copyright (c) 2008-2009 Christian Neukirchen
     #
     # @since 0.3.0
-    # @api private
+    # @api public
     class Flash
-      # Session key where the data is stored
+      # @return [Hash] The flash hash for the next request, written to by {#[]=}.
+      #
+      # @see #[]=
+      #
+      # @since 2.0.0
+      # @api public
+      attr_reader :next
+
+      # Initializes a new flash instance
+      #
+      # @param hash [Hash, nil] the flash hash for the current request. nil will become an empty hash.
       #
       # @since 0.3.0
-      # @api private
-      SESSION_KEY = :__flash
-
-      # Session key where keep data is store for redirect
-      #
-      # @since 1.3.0
-      # @api private
-      KEPT_KEY = :__kept_key
-
-      # Initialize a new Flash instance
-      #
-      # @param session [Rack::Session::Abstract::SessionHash] the session
-      #
-      # @return [Hanami::Action::Flash] the flash
-      #
-      # @see http://www.rubydoc.info/gems/rack/Rack/Session/Abstract/SessionHash
-      # @see Hanami::Action::Rack#session_id
-      def initialize(session)
-        @session         = session
-        @keep            = false
-
-        session[KEPT_KEY] ||= []
-        session[SESSION_KEY] = {}
+      # @api public
+      def initialize(hash = {})
+        @flash = hash || {}
+        @next = {}
       end
 
-      # Set the given value for the given key
+      # @return [Hash] The flash hash for the current request
       #
-      # @param key [#to_s] the key
+      # @since 2.0.0
+      # @api public
+      def now
+        @flash
+      end
+
+      # Returns the value for the given key in the current hash
+      #
+      # @param key [Object] the key
+      #
+      # @return [Object, nil] the value
+      #
+      # @since 0.3.0
+      # @api public
+      def [](key)
+        @flash[key]
+      end
+
+      # Updates the next hash with the given key and value
+      #
+      # @param key [Object] the key
       # @param value [Object] the value
       #
       # @since 0.3.0
-      # @api private
+      # @api public
       def []=(key, value)
-        _data[key] = value
+        @next[key] = value
       end
 
-      # Get the value associated to the given key, if any
+      # Calls the given block once for each element in the current hash
       #
-      # @return [Object,NilClass] the value
-      #
-      # @since 0.3.0
-      # @api private
-      def [](key)
-        _data.fetch(key) { search_in_kept_data(key) }
-      end
-
-      # Iterates through current request data and kept data
-      #
-      # @param blk [Proc]
+      # @param block [Proc]
       #
       # @since 1.2.0
-      def each(&blk)
-        _values.each(&blk)
+      # @api public
+      def each(&block)
+        @flash.each(&block)
       end
 
-      # Iterates through current request data and kept data
+      # Returns a new array with the results of running block once for every
+      # element in the current hash
       #
-      # @param blk [Proc]
+      # @param block [Proc]
       # @return [Array]
       #
       # @since 1.2.0
-      def map(&blk)
-        _values.map(&blk)
+      # @api public
+      def map(&block)
+        @flash.map(&block)
       end
 
-      # Removes entirely the flash from the session if it has stale contents
-      # or if empty.
+      # Returns `true` if the current hash contains no elements.
       #
-      # @return [void]
-      #
-      # @since 0.3.0
-      # @api private
-      def clear
-        # FIXME we're just before a release and I can't find a proper way to reproduce
-        # this bug that I've found via a browser.
-        #
-        # It may happen that `#flash` is nil, and those two methods will fail
-        unless _data.nil?
-          update_kept_request_count
-          keep_data if @keep
-          expire_kept
-          remove
-        end
-      end
-
-      # Check if there are contents stored in the flash from the current or the
-      # previous request.
-      #
-      # @return [TrueClass,FalseClass] the result of the check
+      # @return [Boolean]
       #
       # @since 0.3.0
-      # @api private
+      # @api public
       def empty?
-        _values.empty?
+        @flash.empty?
       end
 
-      # @return [String]
+      # Returns `true` if the given key is present in the current hash.
       #
-      # @since 1.0.0
-      def inspect
-        "#<#{self.class}:#{'0x%x' % (__id__ << 1)} {:data=>#{_data.inspect}, :kept=>#{kept_data.inspect}} >"
+      # @return [Boolean]
+      #
+      # @since 2.0.0
+      # @api public
+      def key?(key)
+        @flash.key?(key)
       end
 
-      # Set @keep to true, is use when triggering a redirect, and the content of _data is not empty.
-      # @return [TrueClass, NilClass]
+      # Removes entries from the next hash
       #
-      # @since 1.3.0
-      # @api private
+      # @overload discard(key)
+      #   Removes the given key from the next hash
       #
-      # @see Hanami::Action::Flash#empty?
-      def keep!
-        return if empty?
-        @keep = true
-      end
-
-      private
-
-      # The flash registry that holds the data for the current requests
+      #   @param key [Object] key to discard
       #
-      # @return [Hash] the flash
+      # @overload discard
+      #   Clears the next hash
       #
-      # @since 0.3.0
-      # @api private
-      def _data
-        @session[SESSION_KEY] || {}
-      end
-
-      # Remove the flash entirely from the session if empty.
-      #
-      # @return [void]
-      #
-      # @since 0.3.0
-      # @api private
-      #
-      # @see Hanami::Action::Flash#empty?
-      def remove
-        if empty?
-          @session.delete(SESSION_KEY)
-          @session.delete(KEPT_KEY)
+      # @since 2.0.0
+      # @api public
+      def discard(key = (no_arg = true))
+        if no_arg
+          @next.clear
+        else
+          @next.delete(key)
         end
       end
 
-      # Returns the values from current session and kept.
+      # Copies entries from the current hash to the next hash
       #
-      # @return [Hash]
+      # @overload keep(key)
+      #   Copies the entry for the given key from the current hash to the next
+      #   hash
       #
-      # @since 0.3.0
-      # @api private
-      def _values
-        _data.merge(kept_data)
-      end
-
-      # Get the kept request data
+      #   @param key [Object] key to copy
       #
-      # @return [Array]
+      # @overload keep
+      #   Copies all entries from the current hash to the next hash
       #
-      # @since 1.3.0
-      # @api private
-      def kept
-        @session[KEPT_KEY] || []
-      end
-
-      # Merge current data into KEPT_KEY hash
-      #
-      # @return [Hash] the current value of KEPT_KEY
-      #
-      # @since 1.3.0
-      # @api private
-      def keep_data
-        new_kept_data = kept << Hanami::Utils::Json.generate({ count: 0, data: _data })
-
-        update_kept(new_kept_data)
-      end
-
-      # Removes from kept data those who have lived for more than two requests
-      #
-      # @return [Hash] the current value of KEPT_KEY
-      #
-      # @since 1.3.0
-      # @api private
-      def expire_kept
-        new_kept_data = kept.reject do |kept_data|
-          parsed = Hanami::Utils::Json.parse(kept_data)
-          parsed['count'] >= 2 if is_hash?(parsed) && parsed['count'].is_a?(Integer)
+      # @since 2.0.0
+      # @api public
+      def keep(key = (no_arg = true))
+        if no_arg
+          @next.merge!(@flash)
+        else
+          self[key] = self[key]
         end
-
-        update_kept(new_kept_data)
       end
 
-      # Update the count of request for each kept data
+      # Replaces the current hash with the next hash and clears the next hash
       #
-      # @return [Hash] the current value of KEPT_KEY
-      #
-      # @since 1.3.0
-      # @api private
-      def update_kept_request_count
-        new_kept_data = kept.map do |kept_data|
-          parsed = Hanami::Utils::Json.parse(kept_data)
-          parsed['count'] += 1 if is_hash?(parsed) && parsed['count'].is_a?(Integer)
-          Hanami::Utils::Json.generate(parsed)
-        end
-
-        update_kept(new_kept_data)
-      end
-
-      # Search in the kept data for a match on the key
-      #
-      # @param key [#to_s] the key
-      # @return [Object, NilClass]
-      #
-      # @since 1.3.0
-      # @api private
-      def search_in_kept_data(key)
-        string_key = key.to_s
-
-        data = kept.find do |kept_data|
-          parsed = Hanami::Utils::Json.parse(kept_data)
-          parsed['data'].fetch(string_key, nil) if is_hash?(parsed['data'])
-        end
-
-        Hanami::Utils::Json.parse(data)['data'][string_key] if data
-      end
-
-      # Set the given new_kept_data to KEPT_KEY
-      #
-      # @param new_kept_data
-      # @return [Hash] the current value of KEPT_KEY
-      #
-      # @since 1.3.0
-      # @api private
-      def update_kept(new_kept_data)
-        @session[KEPT_KEY] = new_kept_data
-      end
-
-      # Values from kept
-      #
-      # @return [Hash]
-      #
-      # @since 1.3.0
-      # @api private
-      def kept_data
-        kept.each_with_object({}) { |kept_data, result| result.merge!(Hanami::Utils::Json.parse(kept_data)['data']) }
-      end
-
-      # Check if data is a hash
-      #
-      # @param data
-      # @return [TrueClass, FalseClass]
-      #
-      # @since 1.3.0
-      # @api private
-      def is_hash?(data)
-        data && data.is_a?(::Hash)
+      # @since 2.0.0
+      # @api public
+      def sweep
+        @flash = @next.dup
+        @next.clear
+        self
       end
     end
   end

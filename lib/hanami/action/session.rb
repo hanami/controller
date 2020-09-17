@@ -16,17 +16,6 @@ module Hanami
 
       private
 
-      # Container useful to transport data with the HTTP session
-      #
-      # @return [Hanami::Action::Flash] a Flash instance
-      #
-      # @since 0.3.0
-      #
-      # @see Hanami::Action::Flash
-      def flash
-        @flash ||= Flash.new(session)
-      end
-
       # Finalize the response
       #
       # @return [void]
@@ -36,9 +25,12 @@ module Hanami
       #
       # @see Hanami::Action#finish
       def finish(req, res, *)
-        res.flash.clear
-        res[:session] = res.session
-        res[:flash]   = res.flash
+        if (next_flash = res.flash.next).any?
+          res.session['_flash'] = next_flash
+        else
+          res.session.delete('_flash')
+        end
+
         super
       end
     end
