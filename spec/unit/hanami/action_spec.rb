@@ -49,9 +49,29 @@ RSpec.describe Hanami::Action do
     end
   end
 
-  describe "#initialize" do
+  describe ".new" do
+    let(:action_class) {
+      Class.new(Hanami::Action) do
+        attr_reader :args, :kwargs, :block
+
+        def initialize(*args, **kwargs, &block)
+          @args = args
+          @kwargs = kwargs
+          @block = block
+        end
+      end
+    }
+
     it "instantiates a frozen action" do
       expect(action).to be_frozen
+    end
+
+    it "forwards arguments to `#initialize`" do
+      action = action_class.new(1, 2, 3, a: 4, b: 5) { 6 }
+
+      expect(action.args).to eq([1, 2, 3])
+      expect(action.kwargs).to eq({a: 4, b: 5})
+      expect(action.block.call).to eq(6)
     end
   end
 
