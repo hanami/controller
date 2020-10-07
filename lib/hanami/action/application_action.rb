@@ -16,6 +16,7 @@ module Hanami
 
         define_initialize action_class
         configure_action action_class
+        extend_behavior action_class
       end
 
       def inspect
@@ -63,6 +64,13 @@ module Hanami
         action_class.config.settings.each do |setting|
           application_value = application.config.actions.public_send(:"#{setting}")
           action_class.config.public_send :"#{setting}=", application_value
+        end
+      end
+
+      def extend_behavior(action_class)
+        if application.config.actions.csrf_protection
+          require "hanami/action/csrf_protection"
+          action_class.include Hanami::Action::CSRFProtection
         end
       end
 
