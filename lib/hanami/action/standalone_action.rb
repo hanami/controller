@@ -321,18 +321,6 @@ module Hanami
           @_deps = deps
         end
 
-        # Returns a new copy of the action with new arguments merged with those
-        # previously passed to `.new`
-        #
-        # @param new_args [Hash] new arguments
-        #
-        # @return [Hanami::Action] New action object
-        #
-        # @since 2.0.0
-        def with(**new_args)
-          self.class.new(@_deps.merge(new_args))
-        end
-
         protected
 
         # Hook for subclasses to apply behavior as part of action invocation
