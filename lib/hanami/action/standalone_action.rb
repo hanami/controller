@@ -249,22 +249,22 @@ module Hanami
 
         # Returns a new action
         #
-        # @overload new(**args)
-        #   @param args [Hash] action dependencies
+        # @overload new(**deps, ...)
+        #   @param deps [Hash] action dependencies
         #
-        # @overload new(configuration:, **args)
+        # @overload new(configuration:, **deps, ...)
         #   @param configuration [Hanami::Controller::Configuration] action configuration
-        #   @param args [Hash] action dependencies
+        #   @param deps [Hash] action dependencies
         #
         # @return [Hanami::Action] Action object
         #
         # @since 2.0.0
-        def new(configuration: self.configuration, **args)
+        def new(*args, configuration: self.configuration, **kwargs, &block)
           allocate.tap do |obj|
             obj.instance_variable_set(:@name, Name[name])
             obj.instance_variable_set(:@configuration, configuration.dup.finalize!)
             obj.instance_variable_set(:@accepted_mime_types, Mime.restrict_mime_types(configuration, accepted_formats))
-            obj.send(:initialize, **args)
+            obj.send(:initialize, *args, **kwargs, &block)
             obj.freeze
           end
         end
