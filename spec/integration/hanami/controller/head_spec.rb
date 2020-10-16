@@ -79,14 +79,14 @@ RSpec.describe "HTTP HEAD" do
         get "/code/#{code}"
 
         expect(response.status).to      be(code)
-        expect(response.headers).to_not have_key("Content-Length")
+        expect(response.headers.keys).to_not include("Content-Length")
       end
 
       it "doesn't send Content-Type header" do
         get "/code/#{code}"
 
         expect(response.status).to      be(code)
-        expect(response.headers).to_not have_key("Content-Type")
+        expect(response.headers.keys).to_not include("Content-Type")
       end
 
       it "sends Content-Location header" do
