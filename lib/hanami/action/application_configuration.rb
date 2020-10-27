@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative "application_configuration/security"
 require_relative "application_configuration/sessions"
 require_relative "configuration"
 require_relative "view_name_inferrer"
@@ -17,9 +18,12 @@ module Hanami
       setting :view_name_inferrer, ViewNameInferrer
       setting :view_name_inference_base, "views"
 
+      attr_reader :security
+
       def initialize(*)
         super
 
+        @security = Security.new
         @base_configuration = Configuration.new
 
         # Adjust defaults for base configuration settings
