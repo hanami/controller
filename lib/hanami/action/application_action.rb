@@ -65,6 +65,9 @@ module Hanami
           application_value = application.config.actions.public_send(:"#{setting}")
           action_class.config.public_send :"#{setting}=", application_value
         end
+
+        # WIP: add nice way to add default headers?
+        action_class.default_headers.merge! application.config.actions.security.to_headers
       end
 
       def extend_behavior(action_class)
