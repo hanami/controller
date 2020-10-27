@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "dry/core/constants"
 require "hanami/utils/string"
 require "hanami/utils/class"
 
