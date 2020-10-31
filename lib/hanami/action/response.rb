@@ -48,8 +48,8 @@ module Hanami
         end
       end
 
-      def initialize(request:, action:, configuration:, content_type: nil, env: {}, header: {}, view_options: nil)
-        super([], 200, header.dup)
+      def initialize(request:, action:, configuration:, content_type: nil, env: {}, headers: {}, view_options: nil)
+        super([], 200, headers.dup)
         set_header("Content-Type", content_type)
 
         @request = request
