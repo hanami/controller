@@ -4,13 +4,13 @@ require "hanami/action/configuration"
 RSpec.describe Hanami::Action::ApplicationConfiguration do
   subject(:configuration) { described_class.new }
 
-  it "configures base settings" do
+  it "configures base action settings" do
     expect { configuration.default_request_format = :json }
       .to change { configuration.default_request_format }
       .to :json
   end
 
-  it "configures base settings using custom methods" do
+  it "configures base actions settings using custom methods" do
     configuration.formats = {}
 
     expect { configuration.format json: "application/json" }
@@ -24,7 +24,7 @@ RSpec.describe Hanami::Action::ApplicationConfiguration do
       expect(configuration.settings).to include(:view_context_identifier, :handled_exceptions)
     end
 
-    it "includes all action settings" do
+    it "includes all base action settings" do
       expect(configuration.settings).to include(Hanami::Action::Configuration.settings)
     end
   end
