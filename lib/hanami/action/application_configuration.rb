@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative "application_configuration/cookies"
 require_relative "application_configuration/sessions"
 require_relative "configuration"
 require_relative "view_name_inferrer"
@@ -9,6 +10,7 @@ module Hanami
     class ApplicationConfiguration
       include Dry::Configurable
 
+      setting(:cookies, {}) { |options| Cookies.new(options) }
       setting(:sessions) { |storage, *options| Sessions.new(storage, *options) }
       setting :csrf_protection
 

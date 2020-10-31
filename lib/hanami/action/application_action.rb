@@ -72,6 +72,11 @@ module Hanami
           require "hanami/action/csrf_protection"
           action_class.include Hanami::Action::CSRFProtection
         end
+
+        if application.config.actions.cookies.enabled?
+          require "hanami/action/cookies"
+          action_class.include Hanami::Action::Cookies
+        end
       end
 
       module InstanceMethods

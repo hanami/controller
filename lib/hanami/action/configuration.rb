@@ -333,7 +333,9 @@ module Hanami
       #
       #   @see cookies=
       setting :cookies, {} do |cookie_options|
-        cookie_options.compact
+        # Call `to_h` here to permit `ApplicationConfiguration::Cookies` object to be
+        # provided when application actions are configured
+        cookie_options.to_h.compact
       end
 
       # @!method root_directory=(dir)
