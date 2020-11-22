@@ -22,9 +22,7 @@ module Hanami
 
         @base_configuration = Configuration.new
 
-        # Adjust defaults for base configuration settings
-        self.default_request_format = :html
-        self.default_response_format = :html
+        configure_defaults
       end
 
       def finalize!
@@ -46,6 +44,33 @@ module Hanami
       private
 
       attr_reader :base_configuration
+
+      # Apply defaults for base configuration settings
+      def configure_defaults
+        self.default_request_format = :html
+        self.default_response_format = :html
+
+        self.default_headers = {
+          "X-Frame-Options" => "DENY",
+          "X-Content-Type-Options" => "nosniff",
+          "X-XSS-Protection" => "1; mode=block",
+          "Content-Security-Policy" => \
+            "base-uri 'self'; " \
+            "child-src 'self'; " \
+            "connect-src 'self'; " \
+            "default-src 'none'; " \
+            "font-src 'self'; " \
+            "form-action 'self'; " \
+            "frame-ancestors 'self'; " \
+            "frame-src 'self'; " \
+            "img-src 'self' https: data:; " \
+            "media-src 'self'; " \
+            "object-src 'none'; " \
+            "plugin-types application/pdf; " \
+            "script-src 'self'; " \
+            "style-src 'self' 'unsafe-inline' https:"
+        }
+      end
 
       def method_missing(name, *args, &block)
         if config.respond_to?(name)

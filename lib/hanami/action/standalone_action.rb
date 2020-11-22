@@ -303,7 +303,7 @@ module Hanami
                 configuration: configuration,
                 content_type: Mime.calculate_content_type_with_charset(configuration, request, accepted_mime_types),
                 env: env,
-                header: configuration.default_headers
+                headers: configuration.default_headers
               )
 
               _run_before_callbacks(request, response)
