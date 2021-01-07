@@ -5,9 +5,8 @@ Complete, fast and testable actions for Rack and [Hanami](http://hanamirb.org)
 ## Status
 
 [![Gem Version](https://badge.fury.io/rb/hanami-controller.svg)](https://badge.fury.io/rb/hanami-controller)
-[![Build Status](https://ci.hanamirb.org/api/badges/hanami/controller/status.svg)](https://ci.hanamirb.org/hanami/controller)
-[![CircleCI](https://circleci.com/gh/hanami/controller/tree/master.svg?style=svg)](https://circleci.com/gh/hanami/controller/tree/master)
-[![Test Coverage](https://codecov.io/gh/hanami/controller/branch/master/graph/badge.svg)](https://codecov.io/gh/hanami/controller)
+[![CI](https://github.com/hanami/controller/workflows/ci/badge.svg?branch=unstable)](https://github.com/hanami/controller/actions?query=workflow%3Aci+branch%3Aunstable)
+[![Test Coverage](https://codecov.io/gh/hanami/controller/branch/unstable/graph/badge.svg)](https://codecov.io/gh/hanami/controller)
 [![Depfu](https://badges.depfu.com/badges/7cd17419fba78b726be1353118fb01de/overview.svg)](https://depfu.com/github/hanami/controller?project=Bundler)
 [![Inline Docs](http://inch-ci.org/github/hanami/controller.svg)](http://inch-ci.org/github/hanami/controller)
 
@@ -964,6 +963,10 @@ __Hanami::Controller__ uses [Semantic Versioning 2.0.0](http://semver.org)
 
 ## Copyright
 
+<<<<<<< HEAD
 Copyright © 2014-2019 Luca Guidi – Released under MIT License
+=======
+Copyright © 2014-2021 Luca Guidi – Released under MIT License
+>>>>>>> develop
 
 This project was formerly known as Lotus (`lotus-controller`).

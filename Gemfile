@@ -25,3 +25,5 @@ group :test do
 end
 
 gem 'hanami-devtools', github: 'hanami/devtools'
+
+gem 'dry-configurable', '0.11.6' # FIXME: this is only a temporary pin to troubleshoot 0.12.0

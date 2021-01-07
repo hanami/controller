@@ -99,7 +99,7 @@ module Hanami
         end
 
         def view_options(req, res)
-          {context: view_context&.with(view_context_options(req, res))}.compact
+          {context: view_context&.with(**view_context_options(req, res))}.compact
         end
 
         def view_context_options(req, res)
