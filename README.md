@@ -895,7 +895,7 @@ module Web
 end
 
 configuration = Hanami::Controller::Configuration.new
-router = Hanami::Router.new(configuration: configuration, namespace: Web::Controllers) do
+router = Hanami::Router.new(???, namespace: Web::Controllers) do
   get "/books/:id", "books#show"
 end
 ```
