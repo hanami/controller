@@ -151,8 +151,14 @@ module Hanami
         #       end
         #     end
         #   end
-        def use(middleware, *args, &block)
-          rack_builder.use middleware, *args, &block
+        if RUBY_VERSION >= '3.0'
+          def use(middleware, *args, **kwargs, &block)
+            rack_builder.use middleware, *args, **kwargs, &block
+          end
+        else
+          def use(middleware, *args, &block)
+            rack_builder.use middleware, *args, &block
+          end
         end
 
         # Returns the class which defines the params
@@ -175,10 +181,18 @@ module Hanami
       module InstanceMethods
         # @since 0.7.0
         # @api private
-        def initialize(*)
-          super
-          @_status = nil
-          @_body   = nil
+        if RUBY_VERSION >= '3.0'
+          def initialize(*, **)
+            super
+            @_status = nil
+            @_body   = nil
+          end
+        else
+          def initialize(*)
+            super
+            @_status = nil
+            @_body   = nil
+          end
         end
       end
 

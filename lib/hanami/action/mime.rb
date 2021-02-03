@@ -210,10 +210,18 @@ module Hanami
       module InstanceMethods
         # @since 0.7.0
         # @api private
-        def initialize(*)
-          super
-          @content_type = nil
-          @charset      = nil
+        if RUBY_VERSION >= '3.0'
+          def initialize(*, **)
+            super
+            @content_type = nil
+            @charset      = nil
+          end
+        else
+          def initialize(*)
+            super
+            @content_type = nil
+            @charset      = nil
+          end
         end
       end
 

@@ -251,20 +251,22 @@ class YMiddleware
 end
 
 class XMiddleware
-  def initialize(app)
+  def initialize(app, extra:)
     @app = app
+    @extra = extra
   end
 
   def call(env)
     code, headers, body = @app.call(env)
-    [code, headers.merge!('X-Middleware' => 'OK'), body]
+    headers.merge!('X-Middleware' => 'OK', 'X-Middleware-Extra' => @extra)
+    [code, headers, body]
   end
 end
 
 module UseAction
   class Index
     include Hanami::Action
-    use XMiddleware
+    use XMiddleware, extra: 'extra'
 
     def call(params)
       self.body = 'Hello from UseAction::Index'
