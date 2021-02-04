@@ -1194,6 +1194,15 @@ in deployment environments, use `Hanami::Controller.load!`.
 
 __Hanami::Controller__ uses [Semantic Versioning 2.0.0](http://semver.org)
 
+## Supported Rubies
+
+| Gem Version or Git Branch | Ruby Version |
+|---------------------------|--------------|
+| master                    | 2.3 - 2.7    |
+| 1.x                       | 2.3 - 2.7    |
+| unstable                  | 2.6 - 3.x    |
+| 2.x                       | 2.6 - 3.x    |
+
 ## Contributing
 
 1. Fork it
