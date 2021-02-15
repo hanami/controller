@@ -364,7 +364,9 @@ module Hanami
       #   @since 1.0.0
       #
       #   @api private
-      setting :root_directory, Dir.pwd do |dir|
+      setting :root_directory do |dir|
+        dir ||= Dir.pwd
+
         Pathname(dir).realpath
       end
 
