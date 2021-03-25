@@ -963,10 +963,6 @@ __Hanami::Controller__ uses [Semantic Versioning 2.0.0](http://semver.org)
 
 ## Copyright
 
-<<<<<<< HEAD
-Copyright © 2014-2019 Luca Guidi – Released under MIT License
-=======
 Copyright © 2014-2021 Luca Guidi – Released under MIT License
->>>>>>> develop
 
 This project was formerly known as Lotus (`lotus-controller`).
