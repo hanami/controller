@@ -19,11 +19,12 @@ group :validations do
 end
 
 group :test do
-  gem 'hanami', github: 'hanami/hanami', branch: 'unstable'
-  gem 'hanami-view', github: 'hanami/view', branch: 'master'
+  gem 'dry-files',   '~> 0.1', github: 'dry-rb/dry-files', branch: 'master'
+
+  gem 'hanami-cli',  '~> 2.0.alpha', github: 'hanami/cli', branch: 'main'
+  gem 'hanami-view', '~> 2.0.alpha', github: 'hanami/view', branch: 'master'
+  gem 'hanami',      '~> 2.0.alpha', github: 'hanami/hanami', branch: 'unstable'
   gem 'slim'
 end
 
 gem 'hanami-devtools', github: 'hanami/devtools'
-
-gem 'dry-configurable', '0.11.6' # FIXME: this is only a temporary pin to troubleshoot 0.12.0

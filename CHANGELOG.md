@@ -1,6 +1,25 @@
 # Hanami::Controller
 Complete, fast and testable actions for Rack
 
+## v2.0.0.alpha2 - 2021-05-04
+### Added
+- [Luca Guidi] Official support for Ruby: MRI 3.0
+- [Tim Riley] Introduced `Hanami::Action::ApplicationAction`
+- [Tim Riley] Introduced `Hanami::Action::Configuration`
+- [Tim Riley] Introduced `Hanami::Action::ApplicationConfiguration`
+- [Tim Riley] Auto-inject a paired view into any `Hanami::Action::ApplicationAction` instance
+- [Tim Riley] Auto-render `Hanami::Action::ApplicationAction` subclasses that don't implement `#handle`
+- [Tim Riley] Enable CSRF protection automatically when HTTP sessions are enabled
+
+### Fixed
+- [Luca Guidi] Ensure `Hanami::Action::Response#renderable?` to return `false` when body is set
+- [Andrew Croome] Ensure `Hanami::Action.accept` to use Rack `CONTENT_TYPE` for the _before callback_ check
+
+### Changed
+- [Luca Guidi] Drop support for Ruby: MRI 2.5.
+- [Tim Riley] Removed `Hanami::Action.handle_exception` in favor of `Hanami::Action.config.handle_exception`
+- [Tim Riley] Rewritten `Hanami::Action::Flash`, based on Roda's `FlashHash`
+
 ## v2.0.0.alpha1 - 2019-01-30
 ### Added
 - [Luca Guidi] `Hanami::Action::Request#session` to access the HTTP session as it was originally sent
