@@ -15,8 +15,6 @@ RSpec.describe "Application actions / View rendering / Automatic rendering", :ap
       RUBY
 
       write "slices/main/lib/main/views/test.rb", <<~RUBY
-        require "main/view"
-
         module Main
           module Views
             class Test < Main::View
