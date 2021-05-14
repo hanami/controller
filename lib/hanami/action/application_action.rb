@@ -87,7 +87,7 @@ module Hanami
 
         def handle(request, response)
           if view
-            response.render view, **request.params
+            response.render(view, **request.params, **response.exposures)
           end
         end
 

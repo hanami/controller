@@ -1,7 +1,7 @@
 require "hanami"
 
 RSpec.describe "Application actions / View rendering / Automatic rendering", :application_integration do
-  it "Renders a view automatically, passing all params" do
+  it "Renders a view automatically, passing all params and exposures" do
     within_app do
       write "slices/main/lib/main/actions/test.rb", <<~RUBY
         require "hanami/action"
@@ -9,6 +9,10 @@ RSpec.describe "Application actions / View rendering / Automatic rendering", :ap
         module Main
           module Actions
             class Test < Hanami::Action
+              def handle(req, res)
+                res[:favorite_number] = 123
+                super
+              end
             end
           end
         end
@@ -18,14 +22,14 @@ RSpec.describe "Application actions / View rendering / Automatic rendering", :ap
         module Main
           module Views
             class Test < Main::View
-              expose :name
+              expose :name, :favorite_number
             end
           end
         end
       RUBY
 
       write "slices/main/web/templates/test.html.slim", <<~'SLIM'
-        h1 Hello, #{name}
+        h1 Hello, #{name}. Your favorite number is #{favorite_number}, right?
       SLIM
 
       require "hanami/init"
@@ -34,7 +38,7 @@ RSpec.describe "Application actions / View rendering / Automatic rendering", :ap
       response = action.(name: "Jennifer")
       rendered = response.body[0]
 
-      expect(rendered).to eq "<html><body><h1>Hello, Jennifer</h1></body></html>"
+      expect(rendered).to eq "<html><body><h1>Hello, Jennifer. Your favorite number is 123, right?</h1></body></html>"
       expect(response.status).to eq 200
     end
   end
