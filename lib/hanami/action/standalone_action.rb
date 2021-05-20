@@ -553,9 +553,7 @@ module Hanami
 
         # Finalize the response
         #
-        # This method is abstract and COULD be implemented by included modules in
-        # order to prepare their data before the response will be returned to the
-        # webserver.
+        # Prepare the data before the response will be returned to the webserver
         #
         # @since 0.1.0
         # @api private
