@@ -58,7 +58,7 @@ module Hanami
       #   @see handled_exceptions=
       #
       #   @since 0.2.0
-      setting :handled_exceptions, {}
+      setting :handled_exceptions, default: {}
 
       # Specifies how to handle exceptions with an HTTP status
       #
@@ -122,7 +122,7 @@ module Hanami
       #   @see formats=
       #
       #   @since 0.2.0
-      setting :formats, DEFAULT_FORMATS.dup
+      setting :formats, default: DEFAULT_FORMATS.dup
 
       # Registers a MIME type to format mapping
       #
@@ -211,9 +211,9 @@ module Hanami
       #   @see default_request_format=
       #
       #   @since 0.5.0
-      setting :default_request_format do |format|
+      setting :default_request_format, constructor: -> format {
         Utils::Kernel.Symbol(format) unless format.nil?
-      end
+      }
 
       # @!method default_response_format=(format)
       #
@@ -243,9 +243,9 @@ module Hanami
       #   @see default_request_format=
       #
       #   @since 0.5.0
-      setting :default_response_format do |format|
+      setting :default_response_format, constructor: -> format {
         Utils::Kernel.Symbol(format) unless format.nil?
-      end
+      }
 
       # @!method default_charset=(charset)
       #
@@ -299,9 +299,7 @@ module Hanami
       #   @since 0.4.0
       #
       #   @see default_headers=
-      setting :default_headers, {} do |headers|
-        headers.compact
-      end
+      setting :default_headers, default: {}, constructor: -> headers { headers.compact }
 
       # @!method cookies=(cookie_options)
       #
@@ -332,11 +330,11 @@ module Hanami
       #   @since 0.4.0
       #
       #   @see cookies=
-      setting :cookies, {} do |cookie_options|
+      setting :cookies, default: {}, constructor: -> cookie_options {
         # Call `to_h` here to permit `ApplicationConfiguration::Cookies` object to be
         # provided when application actions are configured
         cookie_options.to_h.compact
-      end
+      }
 
       # @!method root_directory=(dir)
       #
@@ -364,11 +362,11 @@ module Hanami
       #   @since 1.0.0
       #
       #   @api private
-      setting :root_directory do |dir|
+      setting :root_directory, constructor: -> dir {
         dir ||= Dir.pwd
 
         Pathname(dir).realpath
-      end
+      }
 
       # Default public directory
       #
@@ -393,7 +391,7 @@ module Hanami
       #
       #   @see root_directory
       #   @see public_directory
-      setting :public_directory, DEFAULT_PUBLIC_DIRECTORY
+      setting :public_directory, default: DEFAULT_PUBLIC_DIRECTORY
 
       # Returns the configured public directory, appended onto the root directory.
       #
