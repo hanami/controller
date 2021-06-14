@@ -10,14 +10,14 @@ module Hanami
     class ApplicationConfiguration
       include Dry::Configurable
 
-      setting(:cookies, {}) { |options| Cookies.new(options) }
-      setting(:sessions) { |storage, *options| Sessions.new(storage, *options) }
+      setting :cookies, default: {}, constructor: -> options { Cookies.new(options) }
+      setting :sessions, constructor: proc { |storage, *options| Sessions.new(storage, *options) }
       setting :csrf_protection
 
-      setting :name_inference_base, "actions"
-      setting :view_context_identifier, "view.context"
-      setting :view_name_inferrer, ViewNameInferrer
-      setting :view_name_inference_base, "views"
+      setting :name_inference_base, default: "actions"
+      setting :view_context_identifier, default: "view.context"
+      setting :view_name_inferrer, default: ViewNameInferrer
+      setting :view_name_inference_base, default: "views"
 
       def initialize(*)
         super
