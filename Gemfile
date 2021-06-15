@@ -11,18 +11,18 @@ unless ENV['CI']
   gem 'yard',   require: false
 end
 
-gem 'hanami-utils',  '~> 2.0.alpha', require: false, git: 'https://github.com/hanami/utils.git',  branch: 'unstable'
-gem 'hanami-router', '~> 2.0.alpha', require: false, git: 'https://github.com/hanami/router.git', branch: 'unstable'
+gem 'hanami-utils',  '~> 2.0.alpha', require: false, git: 'https://github.com/hanami/utils.git',  branch: 'main'
+gem 'hanami-router', '~> 2.0.alpha', require: false, git: 'https://github.com/hanami/router.git', branch: 'main'
 
 group :validations do
-  gem 'hanami-validations', '~> 2.0.alpha', require: false, git: 'https://github.com/hanami/validations.git', branch: 'unstable'
+  gem 'hanami-validations', '~> 2.0.alpha', require: false, git: 'https://github.com/hanami/validations.git', branch: 'main'
 end
 
 group :test do
   gem 'dry-files',   '~> 0.1', github: 'dry-rb/dry-files', branch: 'master'
 
   gem 'hanami-cli',  '~> 2.0.alpha', github: 'hanami/cli', branch: 'main'
-  gem 'hanami-view', '~> 2.0.alpha', github: 'hanami/view', branch: 'master'
+  gem 'hanami-view', '~> 2.0.alpha', github: 'hanami/view', branch: 'main'
   gem 'hanami',      '~> 2.0.alpha', github: 'hanami/hanami', branch: 'unstable'
   gem 'slim'
 end
