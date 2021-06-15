@@ -2,11 +2,15 @@
 
 Complete, fast and testable actions for Rack and [Hanami](http://hanamirb.org)
 
+## Version
+
+**This branch contains the code for `hanami-controller` 1.3.x.**
+
 ## Status
 
 [![Gem Version](https://badge.fury.io/rb/hanami-controller.svg)](https://badge.fury.io/rb/hanami-controller)
-[![CI](https://github.com/hanami/controller/workflows/ci/badge.svg?branch=master)](https://github.com/hanami/controller/actions?query=workflow%3Aci+branch%3Amaster)
-[![Test Coverage](https://codecov.io/gh/hanami/controller/branch/master/graph/badge.svg)](https://codecov.io/gh/hanami/controller)
+[![CI](https://github.com/hanami/controller/workflows/ci/badge.svg?branch=1.3.x)](https://github.com/hanami/controller/actions?query=workflow%3Aci+branch%3A1.3.x)
+[![Test Coverage](https://codecov.io/gh/hanami/controller/branch/1.3.x/graph/badge.svg)](https://codecov.io/gh/hanami/controller)
 [![Depfu](https://badges.depfu.com/badges/7cd17419fba78b726be1353118fb01de/overview.svg)](https://depfu.com/github/hanami/controller?project=Bundler)
 [![Inline Docs](http://inch-ci.org/github/hanami/controller.svg)](http://inch-ci.org/github/hanami/controller)
 
