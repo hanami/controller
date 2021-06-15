@@ -6,15 +6,15 @@ unless ENV['CI']
   gem 'yard',   require: false
 end
 
-gem 'hanami-utils',  '~> 1.3', require: false, git: 'https://github.com/hanami/utils.git',  branch: 'master'
-gem 'hanami-router', '~> 1.3', require: false, git: 'https://github.com/hanami/router.git', branch: 'master'
+gem 'hanami-utils',  '~> 1.3', require: false, git: 'https://github.com/hanami/utils.git',  branch: '1.3.x'
+gem 'hanami-router', '~> 1.3', require: false, git: 'https://github.com/hanami/router.git', branch: '1.3.x'
 
 group :validations do
   if ENV['HANAMI_VALIDATIONS'] == '2'
-    gem 'hanami-validations', '~> 2.0.alpha', require: false, git: 'https://github.com/hanami/validations.git', branch: 'unstable'
+    gem 'hanami-validations', '~> 2.0.alpha', require: false, git: 'https://github.com/hanami/validations.git', branch: 'main'
   else
-    gem 'hanami-validations', '~> 1.3', require: false, git: 'https://github.com/hanami/validations.git', branch: 'master'
+    gem 'hanami-validations', '~> 1.3', require: false, git: 'https://github.com/hanami/validations.git', branch: '1.3.x'
   end
 end
 
-gem 'hanami-devtools', require: false, git: 'https://github.com/hanami/devtools.git'
+gem 'hanami-devtools', require: false, git: 'https://github.com/hanami/devtools.git', branch: '1.3.x'
