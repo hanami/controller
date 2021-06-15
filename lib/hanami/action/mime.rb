@@ -1,24 +1,16 @@
-require 'rack/utils'
-require 'hanami/utils'
-require 'hanami/utils/kernel'
+require "hanami/utils"
+require "rack/utils"
+require "rack/mime"
 
 module Hanami
-  module Action
-    # Mime type API
-    #
-    # @since 0.1.0
-    #
-    # @see Hanami::Action::Mime::ClassMethods#accept
+  class Action
     module Mime
-      # The key that returns accepted mime types from the Rack env
-      #
-      # @since 0.1.0
-      # @api private
-      HTTP_ACCEPT          = 'HTTP_ACCEPT'.freeze
+      DEFAULT_CONTENT_TYPE = 'application/octet-stream'.freeze
+      DEFAULT_CHARSET      = 'utf-8'.freeze
 
       # The key that returns content mime type from the Rack env
       #
-      # @since 1.2.0
+      # @since 2.0.0
       # @api private
       HTTP_CONTENT_TYPE    = 'CONTENT_TYPE'.freeze
 
@@ -28,29 +20,11 @@ module Hanami
       # @api private
       CONTENT_TYPE         = 'Content-Type'.freeze
 
-      # The default mime type for an incoming HTTP request
-      #
-      # @since 0.1.0
-      # @api private
-      DEFAULT_ACCEPT       = '*/*'.freeze
-
-      # The default mime type that is returned in the response
-      #
-      # @since 0.1.0
-      # @api private
-      DEFAULT_CONTENT_TYPE = 'application/octet-stream'.freeze
-
-      # The default charset that is returned in the response
-      #
-      # @since 0.3.0
-      # @api private
-      DEFAULT_CHARSET = 'utf-8'.freeze
-
       # Most commom MIME Types used for responses
       #
       # @since 1.0.0
       # @api private
-      MIME_TYPES = {
+      TYPES = {
         txt: 'text/plain',
         html: 'text/html',
         json: 'application/json',
@@ -102,496 +76,115 @@ module Hanami
         xml: 'application/xml',
         xslt: 'application/xslt+xml',
         yml: 'text/yaml',
-        zip: 'application/zip' }.freeze
+        zip: 'application/zip'
+      }.freeze
 
-      # Override Ruby's hook for modules.
-      # It includes Mime types logic
-      #
-      # @param base [Class] the target action
-      #
-      # @since 0.1.0
-      # @api private
-      #
-      # @see http://www.ruby-doc.org/core-2.1.2/Module.html#method-i-included
-      def self.included(base)
-        base.class_eval do
-          extend ClassMethods
-          prepend InstanceMethods
-        end
-      end
-
-      module ClassMethods
-        # @since 0.2.0
-        # @api private
-        def format_to_mime_type(format)
-          configuration.mime_type_for(format) ||
-            MIME_TYPES[format] or
-            raise Hanami::Controller::UnknownFormatError.new(format)
-        end
-
-        private
-
-        # Restrict the access to the specified mime type symbols.
-        #
-        # @param formats[Array<Symbol>] one or more symbols representing mime type(s)
-        #
-        # @raise [Hanami::Controller::UnknownFormatError] if the symbol cannot
-        #   be converted into a mime type
-        #
-        # @since 0.1.0
-        #
-        # @see Hanami::Controller::Configuration#format
-        #
-        # @example
-        #   require 'hanami/controller'
-        #
-        #   class Show
-        #     include Hanami::Action
-        #     accept :html, :json
-        #
-        #     def call(params)
-        #       # ...
-        #     end
-        #   end
-        #
-        #   # When called with "*/*"              => 200
-        #   # When called with "text/html"        => 200
-        #   # When called with "application/json" => 200
-        #   # When called with "application/xml"  => 406
-        def accept(*formats)
-          mime_types = formats.map do |format|
-            format_to_mime_type(format)
-          end
-
-          configuration.restrict_mime_types!(mime_types)
-
-          before do
-            unless mime_types.find {|mt| accept?(mt) }
-              halt 406
-            end
-          end
-        end
-
-        # Restrict the payload type to the specified mime type symbols.
-        #
-        # @param formats[Array<Symbol>] one or more symbols representing mime type(s)
-        #
-        # @since 1.2.0
-        #
-        # @example
-        #   require 'hanami/controller'
-        #
-        #   class Upload
-        #     include Hanami::Action
-        #     content_type :json
-        #
-        #     def call(params)
-        #       # ...
-        #     end
-        #   end
-        #
-        #   # When called with "text/html"        => 415
-        #   # When called with "application/json" => 200
-        def content_type(*formats)
-          mime_types = formats.map { |format| format_to_mime_type(format) }
-
-          before do
-            mime_type = @_env[HTTP_CONTENT_TYPE] || default_content_type || DEFAULT_CONTENT_TYPE
-
-            if mime_types.none? {|mt| ::Rack::Mime.match?(mime_type, mt) }
-              halt 415
-            end
-          end
-        end
-      end
-
-      # @since 0.7.0
-      # @api private
-      module InstanceMethods
-        # @since 0.7.0
-        # @api private
-        def initialize(*)
-          super
-          @content_type = nil
-          @charset      = nil
-        end
-      end
-
-      # Returns a symbol representation of the content type.
-      #
-      # The framework automatically detects the request mime type, and returns
-      # the corresponding format.
-      #
-      # However, if this value was explicitly set by `#format=`, it will return
-      # that value
-      #
-      # @return [Symbol] a symbol that corresponds to the content type
-      #
-      # @since 0.2.0
-      #
-      # @see Hanami::Action::Mime#format=
-      # @see Hanami::Action::Mime#content_type
-      #
-      # @example Default scenario
-      #   require 'hanami/controller'
-      #
-      #   class Show
-      #     include Hanami::Action
-      #
-      #     def call(params)
-      #     end
-      #   end
-      #
-      #   action = Show.new
-      #
-      #   _, headers, _ = action.call({ 'HTTP_ACCEPT' => 'text/html' })
-      #   headers['Content-Type'] # => 'text/html'
-      #   action.format           # => :html
-      #
-      # @example Set value
-      #   require 'hanami/controller'
-      #
-      #   class Show
-      #     include Hanami::Action
-      #
-      #     def call(params)
-      #       self.format = :xml
-      #     end
-      #   end
-      #
-      #   action = Show.new
-      #
-      #   _, headers, _ = action.call({ 'HTTP_ACCEPT' => 'text/html' })
-      #   headers['Content-Type'] # => 'application/xml'
-      #   action.format           # => :xml
-      def format
-        @format ||= detect_format
-      end
-
-      # The content type that will be automatically set in the response.
-      #
-      # It prefers, in order:
-      #   * Explicit set value (see Hanami::Action::Mime#format=)
-      #   * Weighted value from Accept header based on all known MIME Types:
-      #     - Custom registered MIME Types (see Hanami::Controller::Configuration#format)
-      #   * Configured default content type (see Hanami::Controller::Configuration#default_response_format)
-      #   * Hard-coded default content type (see Hanami::Action::Mime::DEFAULT_CONTENT_TYPE)
-      #
-      # To override the value, use <tt>#format=</tt>
-      #
-      # @return [String] the content type from the request.
-      #
-      # @since 0.1.0
-      #
-      # @see Hanami::Action::Mime#format=
-      # @see Hanami::Configuration#default_request_format
-      # @see Hanami::Action::Mime#default_content_type
-      # @see Hanami::Action::Mime#DEFAULT_CONTENT_TYPE
-      # @see Hanami::Controller::Configuration#format
-      # @see Hanami::Controller::Configuration#default_response_format
-      #
-      # @example
-      #   require 'hanami/controller'
-      #
-      #   class Show
-      #     include Hanami::Action
-      #
-      #     def call(params)
-      #       # ...
-      #       content_type # => 'text/html'
-      #     end
-      #   end
-      def content_type
-        return @content_type unless @content_type.nil?
-        @content_type = content_type_from_accept_header if accept_header?
-        @content_type || default_response_type || default_content_type || DEFAULT_CONTENT_TYPE
-      end
-
-      # Action charset setter, receives new charset value
-      #
-      # @return [String] the charset of the request.
-      #
-      # @since 0.3.0
-      #
-      # @example
-      #   require 'hanami/controller'
-      #
-      #   class Show
-      #     include Hanami::Action
-      #
-      #     def call(params)
-      #       # ...
-      #       self.charset = 'koi8-r'
-      #     end
-      #   end
-      def charset=(value)
-        @charset = value
-      end
-
-      # The charset that will be automatically set in the response.
-      #
-      # It prefers, in order:
-      #   * Explicit set value (see #charset=)
-      #   * Default configuration charset
-      #   * Default content type
-      #
-      # To override the value, use <tt>#charset=</tt>
-      #
-      # @return [String] the charset of the request.
-      #
-      # @since 0.3.0
-      #
-      # @see Hanami::Action::Mime#charset=
-      # @see Hanami::Configuration#default_charset
-      # @see Hanami::Action::Mime#default_charset
-      # @see Hanami::Action::Mime#DEFAULT_CHARSET
-      #
-      # @example
-      #   require 'hanami/controller'
-      #
-      #   class Show
-      #     include Hanami::Action
-      #
-      #     def call(params)
-      #       # ...
-      #       charset # => 'text/html'
-      #     end
-      #   end
-      def charset
-        @charset || default_charset || DEFAULT_CHARSET
-      end
-
-      private
-
-      # Finalize the response by setting the current content type
-      #
-      # @since 0.1.0
-      # @api private
-      #
-      # @see Hanami::Action#finish
-      def finish
-        super
-        headers[CONTENT_TYPE] ||= content_type_with_charset
-      end
-
-      # Sets the given format and corresponding content type.
-      #
-      # The framework detects the `HTTP_ACCEPT` header of the request and sets
-      # the proper `Content-Type` header in the response.
-      # Within this default scenario, `#format` returns a symbol that
-      # corresponds to `#content_type`.
-      # For instance, if a client sends an `HTTP_ACCEPT` with `text/html`,
-      # `#content_type` will return `text/html` and `#format` `:html`.
-      #
-      # However, it's possible to override what the framework have detected.
-      # If a client asks for an `HTTP_ACCEPT` `*/*`, but we want to force the
-      # response to be a `text/html` we can use this method.
-      #
-      # When the format is set, the framework searches for a corresponding mime
-      # type to be set as the `Content-Type` header of the response.
-      # This lookup is performed first in the configuration, and then in
-      # `Hanami::Action::Mime::MIME_TYPES`. If the lookup fails, it raises an error.
-      #
-      # PERFORMANCE: Because `Hanami::Controller::Configuration#formats` is
-      # smaller and looked up first than `Hanami::Action::Mime::MIME_TYPES`,
-      # we suggest to configure the most common mime types used by your
-      # application, **even if they are already present in that Rack constant**.
-      #
-      # @param format [#to_sym] the format
-      #
-      # @return [void]
-      #
-      # @raise [TypeError] if the format cannot be coerced into a Symbol
-      # @raise [Hanami::Controller::UnknownFormatError] if the format doesn't
-      #   have a corresponding mime type
-      #
-      # @since 0.2.0
-      #
-      # @see Hanami::Action::Mime#format
-      # @see Hanami::Action::Mime#content_type
-      # @see Hanami::Controller::Configuration#format
-      #
-      # @example Default scenario
-      #   require 'hanami/controller'
-      #
-      #   class Show
-      #     include Hanami::Action
-      #
-      #     def call(params)
-      #     end
-      #   end
-      #
-      #   action = Show.new
-      #
-      #   _, headers, _ = action.call({ 'HTTP_ACCEPT' => '*/*' })
-      #   headers['Content-Type'] # => 'application/octet-stream'
-      #   action.format           # => :all
-      #
-      #   _, headers, _ = action.call({ 'HTTP_ACCEPT' => 'text/html' })
-      #   headers['Content-Type'] # => 'text/html'
-      #   action.format           # => :html
-      #
-      # @example Simple usage
-      #   require 'hanami/controller'
-      #
-      #   class Show
-      #     include Hanami::Action
-      #
-      #     def call(params)
-      #       # ...
-      #       self.format = :json
-      #     end
-      #   end
-      #
-      #   action = Show.new
-      #
-      #   _, headers, _ = action.call({ 'HTTP_ACCEPT' => '*/*' })
-      #   headers['Content-Type'] # => 'application/json'
-      #   action.format           # => :json
-      #
-      # @example Unknown format
-      #   require 'hanami/controller'
-      #
-      #   class Show
-      #     include Hanami::Action
-      #
-      #     def call(params)
-      #       # ...
-      #       self.format = :unknown
-      #     end
-      #   end
-      #
-      #   action = Show.new
-      #   action.call({ 'HTTP_ACCEPT' => '*/*' })
-      #     # => raise Hanami::Controller::UnknownFormatError
-      #
-      # @example Custom mime type/format
-      #   require 'hanami/controller'
-      #
-      #   Hanami::Controller.configure do
-      #     format :custom, 'application/custom'
-      #   end
-      #
-      #   class Show
-      #     include Hanami::Action
-      #
-      #     def call(params)
-      #       # ...
-      #       self.format = :custom
-      #     end
-      #   end
-      #
-      #   _, headers, _ = action.call({ 'HTTP_ACCEPT' => '*/*' })
-      #   headers['Content-Type'] # => 'application/custom'
-      #   action.format           # => :custom
-      def format=(format)
-        @format       = Utils::Kernel.Symbol(format)
-        @content_type = self.class.format_to_mime_type(@format)
-      end
-
-      # Match the given mime type with the Accept header
-      #
-      # @return [Boolean] true if the given mime type matches Accept
-      #
-      # @since 0.1.0
-      #
-      # @example
-      #   require 'hanami/controller'
-      #
-      #   class Show
-      #     include Hanami::Action
-      #
-      #     def call(params)
-      #       # ...
-      #       # @_env['HTTP_ACCEPT'] # => 'text/html,application/xhtml+xml,application/xml;q=0.9'
-      #
-      #       accept?('text/html')        # => true
-      #       accept?('application/xml')  # => true
-      #       accept?('application/json') # => false
-      #
-      #
-      #
-      #       # @_env['HTTP_ACCEPT'] # => '*/*'
-      #
-      #       accept?('text/html')        # => true
-      #       accept?('application/xml')  # => true
-      #       accept?('application/json') # => true
-      #     end
-      #   end
-      def accept?(mime_type)
-        !!::Rack::Utils.q_values(accept).find do |mime, _|
-          ::Rack::Mime.match?(mime_type, mime)
-        end
-      end
-
-      # @since 0.1.0
-      # @api private
-      def accept
-        @accept ||= @_env[HTTP_ACCEPT] || DEFAULT_ACCEPT
-      end
-
-      # Checks if there is an Accept header for the current request.
-      #
-      # @return [TrueClass,FalseClass] the result of the check
-      #
-      # @since 0.8.0
-      # @api private
-      def accept_header?
-        accept != DEFAULT_ACCEPT
-      end
-
-      # Look at the Accept header for the current request and see if it
-      # matches any of the common MIME types (see Hanami::Action::Mime#MIME_TYPES)
-      # or the custom registered ones (see Hanami::Controller::Configuration#format).
-      #
-      # @return [String,Nil] The matched MIME type for the given Accept header.
-      #
-      # @since 0.8.0
-      # @api private
-      #
-      # @see Hanami::Action::Mime#MIME_TYPES
-      # @see Hanami::Controller::Configuration#format
-      #
-      # @api private
-      def content_type_from_accept_header
-        best_q_match(accept, configuration.mime_types)
-      end
-
-      # @since 0.5.0
-      # @api private
-      def default_response_type
-        self.class.format_to_mime_type(configuration.default_response_format) if configuration.default_response_format
-      end
-
-      # @since 0.2.0
-      # @api private
-      def default_content_type
-        self.class.format_to_mime_type(
-          configuration.default_request_format
-        ) if configuration.default_request_format
-      end
-
-      # @since 0.2.0
-      # @api private
-      def detect_format
-        configuration.format_for(content_type) || MIME_TYPES.key(content_type)
-      end
-
-      # @since 0.3.0
-      # @api private
-      def default_charset
-        configuration.default_charset
-      end
-
-      # @since 0.3.0
-      # @api private
-      def content_type_with_charset
+      def self.content_type_with_charset(content_type, charset)
         "#{content_type}; charset=#{charset}"
       end
 
+      # Use for setting Content-Type
+      # If the request has the ACCEPT header it will try to return the best Content-Type based
+      # on the content of the ACCEPT header taking in consideration the weights
+      #
+      # If no ACCEPT header it will check the default response_format, then the default request format and
+      # lastly it will fallback to DEFAULT_CONTENT_TYPE
+      #
+      # @return [String]
+      def self.content_type(configuration, request, accepted_mime_types)
+        if request.accept_header?
+          type = best_q_match(request.accept, accepted_mime_types)
+          return type if type
+        end
+
+        default_response_type(configuration) || default_content_type(configuration) || DEFAULT_CONTENT_TYPE
+      end
+
+      def self.charset(default_charset)
+        default_charset || DEFAULT_CHARSET
+      end
+
+      def self.default_response_type(configuration)
+        format_to_mime_type(configuration.default_response_format, configuration)
+      end
+
+      def self.default_content_type(configuration)
+        format_to_mime_type(configuration.default_request_format, configuration)
+      end
+
+      def self.format_to_mime_type(format, configuration)
+        return if format.nil?
+
+        configuration.mime_type_for(format) ||
+          TYPES.fetch(format) { raise Hanami::Controller::UnknownFormatError.new(format) }
+      end
+
+      # Transforms MIME Types to symbol
+      # Used for setting the format of the response
+      #
+      # @see Hanami::Action::Mime#finish
+      # @example
+      #   detect_format("text/html; charset=utf-8", configuration)  #=> :html
+      #
+      # @return [Symbol, nil]
+      def self.detect_format(content_type, configuration)
+        return if content_type.nil?
+        ct = content_type.split(";").first
+        configuration.format_for(ct) || format_for(ct)
+      end
+
+      def self.format_for(content_type)
+        TYPES.key(content_type)
+      end
+
+      # Transforms symbols to MIME Types
+      # @example
+      #   restrict_mime_types(configuration, [:json])  #=> ["application/json"]
+      #
+      # @return [Array<String>, nil]
+      #
+      # @raise [Hanami::Controller::UnknownFormatError] if the format is invalid
+      def self.restrict_mime_types(configuration, accepted_formats)
+        return if accepted_formats.empty?
+
+        mime_types = accepted_formats.map do |format|
+          format_to_mime_type(format, configuration)
+        end
+
+        accepted_mime_types = mime_types & configuration.mime_types
+
+        return if accepted_mime_types.empty?
+        accepted_mime_types
+      end
+
+      # Use for checking the Content-Type header to make sure is valid based
+      # on the accepted_mime_types
+      #
+      # If no Content-Type is sent in the request it will check the default_request_format
+      #
+      # @return [TrueClass, FalseClass]
+      def self.accepted_mime_type?(request, accepted_mime_types, configuration)
+        mime_type = request.env[HTTP_CONTENT_TYPE] || default_content_type(configuration) || DEFAULT_CONTENT_TYPE
+
+        !accepted_mime_types.find { |mt| ::Rack::Mime.match?(mt, mime_type) }.nil?
+      end
+
+      # Use for setting the content_type and charset if the response
+      #
+      # @see Hanami::Action::Mime#call
+      #
+      # @return [String]
+      def self.calculate_content_type_with_charset(configuration, request, accepted_mime_types)
+        charset      = self.charset(configuration.default_charset)
+        content_type = self.content_type(configuration, request, accepted_mime_types)
+        content_type_with_charset(content_type, charset)
+      end
+
+      # private
+
       # Patched version of <tt>Rack::Utils.best_q_match</tt>.
       #
-      # @since 0.4.1
+      # @since 2.0.0
       # @api private
       #
       # @see http://www.rubydoc.info/gems/rack/Rack/Utils#best_q_match-class_method
@@ -599,7 +192,7 @@ module Hanami
       # @see https://github.com/hanami/controller/issues/59
       # @see https://github.com/hanami/controller/issues/104
       # @see https://github.com/hanami/controller/issues/275
-      def best_q_match(q_value_header, available_mimes)
+      def self.best_q_match(q_value_header, available_mimes = TYPES.values)
         ::Rack::Utils.q_values(q_value_header).each_with_index.map do |(req_mime, quality), index|
           match = available_mimes.find { |am| ::Rack::Mime.match?(am, req_mime) }
           next unless match

@@ -1,7 +1,7 @@
 require 'hanami/utils/hash'
 
 module Hanami
-  module Action
+  class Action
     # A set of HTTP Cookies
     #
     # It acts as an Hash
@@ -55,7 +55,7 @@ module Hanami
       # @since 0.1.0
       def initialize(env, headers, default_options)
         @_headers        = headers
-        @cookies         = Utils::Hash.new(extract(env)).deep_symbolize!
+        @cookies         = Utils::Hash.deep_symbolize(extract(env))
         @default_options = default_options
       end
 
@@ -166,7 +166,7 @@ module Hanami
       # @since 0.4.0
       # @api private
       def _merge_default_values(value)
-        cookies_options = if value.is_a? Hash
+        cookies_options = if value.is_a?(::Hash)
           value.merge! _add_expires_option(value)
         else
           { value: value }

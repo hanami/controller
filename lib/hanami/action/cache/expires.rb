@@ -1,7 +1,7 @@
 require 'hanami/action/cache/cache_control'
 
 module Hanami
-  module Action
+  class Action
     module Cache
       # Module with Expires logic
       #
@@ -49,9 +49,9 @@ module Hanami
         # @api private
         #
         # @see Hanami::Action#finish
-        def finish
+        def finish(_, res, _)
+          res.headers.merge!(self.class.expires_directives.headers) unless res.headers.include? HEADER
           super
-          headers.merge!(self.class.expires_directives.headers) unless headers.include? HEADER
         end
 
         # Class which stores Expires directives

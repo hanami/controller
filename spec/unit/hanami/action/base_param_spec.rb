@@ -12,8 +12,8 @@ RSpec.describe Hanami::Action::BaseParams do
 
   describe '#valid?' do
     it 'always returns true' do
-      action.call({})
-      expect(action.params).to be_valid
+      response = action.call({})
+      expect(response[:params]).to be_valid
     end
   end
 
