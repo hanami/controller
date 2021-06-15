@@ -2,11 +2,15 @@
 
 Complete, fast and testable actions for Rack and [Hanami](http://hanamirb.org)
 
+## Version
+
+**This branch contains the code for `hanami-controller` 2.x.**
+
 ## Status
 
 [![Gem Version](https://badge.fury.io/rb/hanami-controller.svg)](https://badge.fury.io/rb/hanami-controller)
-[![CI](https://github.com/hanami/controller/workflows/ci/badge.svg?branch=unstable)](https://github.com/hanami/controller/actions?query=workflow%3Aci+branch%3Aunstable)
-[![Test Coverage](https://codecov.io/gh/hanami/controller/branch/unstable/graph/badge.svg)](https://codecov.io/gh/hanami/controller)
+[![CI](https://github.com/hanami/controller/workflows/ci/badge.svg?branch=main)](https://github.com/hanami/controller/actions?query=workflow%3Aci+branch%3Amain)
+[![Test Coverage](https://codecov.io/gh/hanami/controller/branch/main/graph/badge.svg)](https://codecov.io/gh/hanami/controller)
 [![Depfu](https://badges.depfu.com/badges/7cd17419fba78b726be1353118fb01de/overview.svg)](https://depfu.com/github/hanami/controller?project=Bundler)
 [![Inline Docs](http://inch-ci.org/github/hanami/controller.svg)](http://inch-ci.org/github/hanami/controller)
 
@@ -22,7 +26,7 @@ Complete, fast and testable actions for Rack and [Hanami](http://hanamirb.org)
 
 ## Rubies
 
-__Hanami::Controller__ supports Ruby (MRI) 2.5+
+__Hanami::Controller__ supports Ruby (MRI) 2.6+
 
 ## Installation
 
