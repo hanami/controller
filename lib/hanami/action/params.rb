@@ -2,7 +2,7 @@ require 'hanami/action/base_params'
 require 'hanami/validations/form'
 
 module Hanami
-  module Action
+  class Action
     # A set of params requested by the client
     #
     # It's able to extract the relevant params from a Rack env of from an Hash.
@@ -202,7 +202,7 @@ module Hanami
         error_set.each_with_object([]) do |(key, messages), result|
           k = Utils::String.titleize(key)
 
-          _messages = if messages.is_a?(Hash)
+          _messages = if messages.is_a?(::Hash)
             error_messages(messages)
           else
             messages.map { |message| "#{k} #{message}" }

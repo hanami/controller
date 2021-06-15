@@ -1,32 +1,22 @@
 require 'rack/test'
-
-HeadRoutes = Hanami::Router.new(namespace: HeadTest) do
-  get '/',           to: 'home#index'
-  get '/code/:code', to: 'home#code'
-  get '/override',   to: 'home#override'
-end
-
-HeadApplication = Rack::Builder.new do
-  use Rack::Session::Cookie, secret: SecureRandom.hex(16)
-  run HeadRoutes
-end.to_app
+require 'rack/utils'
 
 RSpec.describe "HTTP HEAD" do
   include Rack::Test::Methods
 
   def app
-    HeadApplication
+    HeadTest::Application.new
   end
 
   def response
     last_response
   end
 
-  it "doesn't send body and default headers" do
+  it "doesn't cleanup body, but only default headers" do
     head "/"
 
     expect(response.status).to be(200)
-    expect(response.body).to   eq("")
+    expect(response.body).to   eq("index")
     expect(response.headers.to_a).to_not include(["X-Frame-Options", "DENY"])
   end
 
@@ -46,12 +36,36 @@ RSpec.describe "HTTP HEAD" do
 
   HTTP_TEST_STATUSES_WITHOUT_BODY.each do |code|
     describe "with: #{code}" do
-      it "doesn't send body and default headers" do
-        get "/code/#{code}"
+      if Rack::Utils::STATUS_WITH_NO_ENTITY_BODY.key?(code)
+        it "doesn't send body and default headers" do
+          get "/code/#{code}"
 
-        expect(response.status).to           be(code)
-        expect(response.body).to             eq("")
-        expect(response.headers.to_a).to_not include(["X-Frame-Options", "DENY"])
+          expect(response.status).to           be(code)
+          expect(response.body).to             eq("")
+          expect(response.headers.to_a).to_not include(["X-Frame-Options", "DENY"])
+        end
+
+        it "doesn't send Content-Length header" do
+          get "/code/#{code}"
+
+          expect(response.status).to      be(code)
+          expect(response.headers).to_not have_key("Content-Length")
+        end
+      else
+        it "does send body and default headers" do
+          get "/code/#{code}"
+
+          expect(response.status).to           be(code)
+          expect(response.body).to_not         be_empty
+          expect(response.headers.to_a).to_not include(["X-Frame-Options", "DENY"])
+        end
+
+        it "does send Content-Length header" do
+          get "/code/#{code}"
+
+          expect(response.status).to      be(code)
+          expect(response.headers).to     have_key("Content-Length")
+        end
       end
 
       it "sends Allow header" do

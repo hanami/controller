@@ -1,7 +1,7 @@
 require 'hanami/action/cache/directives'
 
 module Hanami
-  module Action
+  class Action
     module Cache
       # Module with Cache-Control logic
       #
@@ -37,7 +37,7 @@ module Hanami
           def cache_control_directives
             @cache_control_directives || Object.new.tap do |null_object|
               def null_object.headers
-                Hash.new
+                ::Hash.new
               end
             end
           end
@@ -49,9 +49,9 @@ module Hanami
         # @api private
         #
         # @see Hanami::Action#finish
-        def finish
+        def finish(_, res, _)
+          res.headers.merge!(self.class.cache_control_directives.headers) unless res.headers.include? HEADER
           super
-          headers.merge!(self.class.cache_control_directives.headers) unless headers.include? HEADER
         end
 
         # Class which stores CacheControl values

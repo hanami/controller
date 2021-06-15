@@ -1,7 +1,7 @@
 require 'hanami/action/params'
 
 module Hanami
-  module Action
+  class Action
     module Validatable
       # Defines the class name for anonymous params
       #

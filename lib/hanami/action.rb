@@ -1,17 +1,5 @@
-require 'hanami/action/configurable'
-require 'hanami/action/rack'
-require 'hanami/action/mime'
-require 'hanami/action/redirect'
-require 'hanami/action/exposable'
-require 'hanami/action/throwable'
-require 'hanami/action/callbacks'
-begin
-  require 'hanami/validations'
-  require 'hanami/action/validatable'
-rescue LoadError
-end
-require 'hanami/action/head'
-require 'hanami/action/callable'
+require_relative 'action/application_action'
+require_relative 'action/standalone_action'
 
 module Hanami
   # An HTTP endpoint
@@ -28,84 +16,152 @@ module Hanami
   #       # ...
   #     end
   #   end
-  module Action
-    # Override Ruby's hook for modules.
-    # It includes basic Hanami::Action modules to the given class.
+  class Action
+    # Rack SPEC response code
     #
-    # @param base [Class] the target action
+    # @since 1.0.0
+    # @api private
+    RESPONSE_CODE = 0
+
+    # Rack SPEC response headers
+    #
+    # @since 1.0.0
+    # @api private
+    RESPONSE_HEADERS = 1
+
+    # Rack SPEC response body
+    #
+    # @since 1.0.0
+    # @api private
+    RESPONSE_BODY = 2
+
+    DEFAULT_ERROR_CODE = 500
+
+    # Status codes that by RFC must not include a message body
+    #
+    # @since 0.3.2
+    # @api private
+    HTTP_STATUSES_WITHOUT_BODY = Set.new((100..199).to_a << 204 << 205 << 304).freeze
+
+    # Not Found
+    #
+    # @since 1.0.0
+    # @api private
+    NOT_FOUND = 404
+
+    # Entity headers allowed in blank body responses, according to
+    # RFC 2616 - Section 10 (HTTP 1.1).
+    #
+    # "The response MAY include new or updated metainformation in the form
+    #   of entity-headers".
+    #
+    # @since 0.4.0
+    # @api private
+    #
+    # @see http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.5
+    # @see http://www.w3.org/Protocols/rfc2616/rfc2616-sec7.html
+    ENTITY_HEADERS = {
+      'Allow'            => true,
+      'Content-Encoding' => true,
+      'Content-Language' => true,
+      'Content-Location' => true,
+      'Content-MD5'      => true,
+      'Content-Range'    => true,
+      'Expires'          => true,
+      'Last-Modified'    => true,
+      'extension-header' => true
+    }.freeze
+
+    # The request method
+    #
+    # @since 0.3.2
+    # @api private
+    REQUEST_METHOD = 'REQUEST_METHOD'.freeze
+
+    # The Content-Length HTTP header
+    #
+    # @since 1.0.0
+    # @api private
+    CONTENT_LENGTH = 'Content-Length'.freeze
+
+    # The non-standard HTTP header to pass the control over when a resource
+    # cannot be found by the current endpoint
+    #
+    # @since 1.0.0
+    # @api private
+    X_CASCADE = 'X-Cascade'.freeze
+
+    # HEAD request
+    #
+    # @since 0.3.2
+    # @api private
+    HEAD = 'HEAD'.freeze
+
+    # The key that returns accepted mime types from the Rack env
     #
     # @since 0.1.0
     # @api private
+    HTTP_ACCEPT          = 'HTTP_ACCEPT'.freeze
+
+    # The header key to set the mime type of the response
     #
-    # @see http://www.ruby-doc.org/core-2.1.2/Module.html#method-i-included
+    # @since 0.1.0
+    # @api private
+    CONTENT_TYPE         = 'Content-Type'.freeze
+
+    # The default mime type for an incoming HTTP request
     #
-    # @see Hanami::Action::Rack
-    # @see Hanami::Action::Mime
-    # @see Hanami::Action::Http
-    # @see Hanami::Action::Redirect
-    # @see Hanami::Action::Exposable
-    # @see Hanami::Action::Throwable
-    # @see Hanami::Action::Callbacks
-    # @see Hanami::Action::Validatable
-    # @see Hanami::Action::Configurable
-    # @see Hanami::Action::Callable
-    def self.included(base)
-      base.class_eval do
-        include Rack
-        include Mime
-        include Redirect
-        include Exposable
-        include Throwable
-        include Callbacks
-        include Validatable if defined?(Validatable)
-        include Configurable
-        include Head
-        prepend Callable
+    # @since 0.1.0
+    # @api private
+    DEFAULT_ACCEPT       = '*/*'.freeze
+
+    # The default mime type that is returned in the response
+    #
+    # @since 0.1.0
+    # @api private
+    DEFAULT_CONTENT_TYPE = 'application/octet-stream'.freeze
+
+    # @since 0.2.0
+    # @api private
+    RACK_ERRORS = 'rack.errors'.freeze
+
+    # This isn't part of Rack SPEC
+    #
+    # Exception notifiers use <tt>rack.exception</tt> instead of
+    # <tt>rack.errors</tt>, so we need to support it.
+    #
+    # @since 0.5.0
+    # @api private
+    #
+    # @see Hanami::Action::Throwable::RACK_ERRORS
+    # @see http://www.rubydoc.info/github/rack/rack/file/SPEC#The_Error_Stream
+    # @see https://github.com/hanami/controller/issues/133
+    RACK_EXCEPTION = 'rack.exception'.freeze
+
+    # The HTTP header for redirects
+    #
+    # @since 0.2.0
+    # @api private
+    LOCATION = 'Location'.freeze
+
+    include StandaloneAction
+
+    def self.inherited(subclass)
+      super
+
+      # When inheriting within an Hanami app, and the application provider has
+      # changed from the superclass, (re-)configure the action for the provider,
+      # i.e. for the slice and/or the application itself
+      if (provider = application_provider(subclass)) && provider != application_provider(subclass.superclass)
+        subclass.include ApplicationAction.new(provider)
       end
     end
 
-    private
-
-    # Raise error when `Hanami::Action::Session` isn't included.
-    #
-    # To use `session`, include `Hanami::Action::Session`.
-    #
-    # @raise [Hanami::Controller::MissingSessionError]
-    #
-    # @since 1.2.0
-    def session
-      raise Hanami::Controller::MissingSessionError.new(:session)
+    def self.application_provider(subclass)
+      if Hanami.respond_to?(:application?) && Hanami.application?
+        Hanami.application.component_provider(subclass)
+      end
     end
-
-    # Raise error when `Hanami::Action::Session` isn't included.
-    #
-    # To use `flash`, include `Hanami::Action::Session`.
-    #
-    # @raise [Hanami::Controller::MissingSessionError]
-    #
-    # @since 1.2.0
-    def flash
-      raise Hanami::Controller::MissingSessionError.new(:flash)
-    end
-
-    # Finalize the response
-    #
-    # This method is abstract and COULD be implemented by included modules in
-    # order to prepare their data before the response will be returned to the
-    # webserver.
-    #
-    # @since 0.1.0
-    # @api private
-    # @abstract
-    #
-    # @see Hanami::Action::Mime#finish
-    # @see Hanami::Action::Exposable#finish
-    # @see Hanami::Action::Callable#finish
-    # @see Hanami::Action::Session#finish
-    # @see Hanami::Action::Cookies#finish
-    # @see Hanami::Action::Cache#finish
-    # @see Hanami::Action::Head#finish
-    def finish
-    end
+    private_class_method :application_provider
   end
 end

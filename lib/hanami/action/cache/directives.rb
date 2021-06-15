@@ -1,5 +1,5 @@
 module Hanami
-  module Action
+  class Action
     module Cache
       # Cache-Control directives which have values
       #
