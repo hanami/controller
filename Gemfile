@@ -23,7 +23,7 @@ group :test do
 
   gem 'hanami-cli',  '~> 2.0.alpha', github: 'hanami/cli', branch: 'main'
   gem 'hanami-view', '~> 2.0.alpha', github: 'hanami/view', branch: 'main'
-  gem 'hanami',      '~> 2.0.alpha', github: 'hanami/hanami', branch: 'unstable'
+  gem 'hanami',      '~> 2.0.alpha', github: 'hanami/hanami', branch: 'main'
   gem 'slim'
 end
 
