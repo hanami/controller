@@ -33,3 +33,5 @@ gem 'hanami-devtools', github: 'hanami/devtools', branch: 'main'
 # associated gem updates)
 gem "dry-configurable", github: "dry-rb/dry-configurable", branch: "master"
 gem "dry-system", github: "dry-rb/dry-system", branch: "master"
+
+gem "dry-inflector", github: "dry-rb/dry-inflector", branch: "enhancement/new-default-acronyms"
