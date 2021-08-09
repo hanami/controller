@@ -407,7 +407,7 @@ module Hanami
       # @see root_directory=
       def public_directory
         # This must be a string, for Rack compatibility
-        root_directory.join(super).to_s
+        root_directory.join(super || DEFAULT_PUBLIC_DIRECTORY).to_s
       end
 
       private

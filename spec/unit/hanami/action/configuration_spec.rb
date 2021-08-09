@@ -245,5 +245,15 @@ RSpec.describe Hanami::Action::Configuration do
       configuration.public_directory = File.join(__dir__, 'absolute')
       expect(configuration.public_directory).to eql(File.join(root_directory, "absolute"))
     end
+
+    context "when public directory isn't set" do
+      before do
+        configuration.public_directory = nil
+      end
+
+      it "returns default public directory" do
+        expect(configuration.public_directory).to eql(File.join(root_directory, "public"))
+      end
+    end
   end
 end
