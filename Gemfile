@@ -8,6 +8,7 @@ end
 
 gem 'hanami-utils',  '~> 1.3', require: false, git: 'https://github.com/hanami/utils.git',  branch: '1.3.x'
 gem 'hanami-router', '~> 1.3', require: false, git: 'https://github.com/hanami/router.git', branch: '1.3.x'
+gem 'dry-configurable', '0.12.1'
 
 group :validations do
   if ENV['HANAMI_VALIDATIONS'] == '2'
