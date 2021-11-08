@@ -4,6 +4,7 @@ Complete, fast and testable actions for Rack
 ## v2.0.0.alpha3 - Unreleased
 ### Added
 - [Luca Guidi] Automatically include session behavior in `Hanami::Action` when sessions are enabled via Hanami application config
+- [Sean Collins] Pass exposures from action to view
 
 ### Changed
 - [Tim Riley] (Internal) Updated settings to use updated `setting` API in dry-configurable 0.13.0
