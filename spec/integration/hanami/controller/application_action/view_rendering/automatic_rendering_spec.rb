@@ -3,7 +3,7 @@ require "hanami"
 RSpec.describe "Application actions / View rendering / Automatic rendering", :application_integration do
   it "Renders a view automatically, passing all params and exposures" do
     within_app do
-      write "slices/main/lib/main/actions/test.rb", <<~RUBY
+      write "slices/main/actions/test.rb", <<~RUBY
         require "hanami/action"
 
         module Main
@@ -18,7 +18,7 @@ RSpec.describe "Application actions / View rendering / Automatic rendering", :ap
         end
       RUBY
 
-      write "slices/main/lib/main/views/test.rb", <<~RUBY
+      write "slices/main/views/test.rb", <<~RUBY
         module Main
           module Views
             class Test < Main::View
@@ -45,7 +45,7 @@ RSpec.describe "Application actions / View rendering / Automatic rendering", :ap
 
   it "Does not render if no view is available" do
     within_app do
-      write "slices/main/lib/main/actions/test.rb", <<~RUBY
+      write "slices/main/actions/test.rb", <<~RUBY
         require "hanami/action"
 
         module Main
@@ -76,7 +76,7 @@ RSpec.describe "Application actions / View rendering / Automatic rendering", :ap
         end
       RUBY
 
-      write "slices/main/lib/main/view.rb", <<~RUBY
+      write "slices/main/lib/view.rb", <<~RUBY
         # auto_register: false
 
         require "hanami/view"
