@@ -1,6 +1,13 @@
 # Hanami::Controller
 Complete, fast and testable actions for Rack
 
+## v2.0.0.alpha3 - Unreleased
+### Added
+- [Luca Guidi] Automatically include session behavior in `Hanami::Action` when sessions are enabled via Hanami application config
+
+### Changed
+- [Tim Riley] (Internal) Updated settings to use updated `setting` API in dry-configurable 0.13.0
+
 ## v2.0.0.alpha2 - 2021-05-04
 ### Added
 - [Luca Guidi] Official support for Ruby: MRI 3.0
