@@ -88,16 +88,6 @@ module Hanami
         attr_reader :view
         attr_reader :view_context
 
-        protected
-
-        def handle(request, response)
-          if view
-            response.render(view, **request.params, **response.exposures)
-          end
-        end
-
-        private
-
         def build_response(**options)
           options = options.merge(view_options: method(:view_options))
           super(**options)
@@ -109,6 +99,12 @@ module Hanami
 
         def view_context_options(req, res)
           {request: req, response: res}
+        end
+
+        # Automatically render the view, if the body hasn't been populated yet
+        def finish(req, res, halted)
+          res.render(view, **req.params, **res.exposures) if view && res.body.empty?
+          super
         end
       end
     end

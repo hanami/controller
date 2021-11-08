@@ -3,7 +3,7 @@ require "hanami"
 RSpec.describe "Application actions / View rendering / Automatic rendering", :application_integration do
   it "Renders a view automatically, passing all params and exposures" do
     within_app do
-      write "slices/main/actions/test.rb", <<~RUBY
+      write "slices/main/lib/actions/test.rb", <<~RUBY
         require "hanami/action"
 
         module Main
@@ -11,14 +11,13 @@ RSpec.describe "Application actions / View rendering / Automatic rendering", :ap
             class Test < Hanami::Action
               def handle(req, res)
                 res[:favorite_number] = 123
-                super
               end
             end
           end
         end
       RUBY
 
-      write "slices/main/views/test.rb", <<~RUBY
+      write "slices/main/lib/views/test.rb", <<~RUBY
         module Main
           module Views
             class Test < Main::View
@@ -40,6 +39,88 @@ RSpec.describe "Application actions / View rendering / Automatic rendering", :ap
 
       expect(rendered).to eq "<html><body><h1>Hello, Jennifer. Your favorite number is 123, right?</h1></body></html>"
       expect(response.status).to eq 200
+    end
+  end
+
+  it "Doesn't render view automatically when body is already assigned" do
+    within_app do
+      write "slices/main/lib/actions/test.rb", <<~RUBY
+        require "hanami/action"
+
+        module Main
+          module Actions
+            class Test < Hanami::Action
+              def handle(req, res)
+                res.body = "200: Okay okay okay"
+              end
+            end
+          end
+        end
+      RUBY
+
+      write "slices/main/lib/views/test.rb", <<~RUBY
+        module Main
+          module Views
+            class Test < Main::View
+              expose :name, :favorite_number
+            end
+          end
+        end
+      RUBY
+
+      write "slices/main/web/templates/test.html.slim", <<~'SLIM'
+        h1 Hello, #{name}. Your favorite number is #{favorite_number}, right?
+      SLIM
+
+      require "hanami/init"
+
+      action = Main::Slice["actions.test"]
+      response = action.(name: "Jennifer")
+      rendered = response.body[0]
+
+      expect(rendered).to eq "200: Okay okay okay"
+      expect(response.status).to eq 200
+    end
+  end
+
+  it "Doesn't render view automatically when halt is called" do
+    within_app do
+      write "slices/main/lib/actions/test.rb", <<~RUBY
+        require "hanami/action"
+
+        module Main
+          module Actions
+            class Test < Hanami::Action
+              def handle(req, res)
+                halt 404
+              end
+            end
+          end
+        end
+      RUBY
+
+      write "slices/main/lib/views/test.rb", <<~RUBY
+        module Main
+          module Views
+            class Test < Main::View
+              expose :name, :favorite_number
+            end
+          end
+        end
+      RUBY
+
+      write "slices/main/web/templates/test.html.slim", <<~'SLIM'
+        h1 Hello, #{name}. Your favorite number is #{favorite_number}, right?
+      SLIM
+
+      require "hanami/init"
+
+      action = Main::Slice["actions.test"]
+      response = action.(name: "Jennifer")
+      rendered = response.body[0]
+
+      expect(rendered).to eq "Not Found"
+      expect(response.status).to eq 404
     end
   end
 

@@ -8,6 +8,7 @@ Complete, fast and testable actions for Rack
 
 ### Changed
 - [Tim Riley] (Internal) Updated settings to use updated `setting` API in dry-configurable 0.13.0
+- [Sean Collins] Move automatic view rendering from `handle` to `finish`
 
 ## v2.0.0.alpha2 - 2021-05-04
 ### Added
