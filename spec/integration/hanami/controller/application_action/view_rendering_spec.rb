@@ -17,7 +17,7 @@ RSpec.describe "View rendering in application actions", :application_integration
         end
       RUBY
 
-      write "slices/main/lib/main/action.rb", <<~RUBY
+      write "slices/main/lib/action.rb", <<~RUBY
         # auto_register: false
 
         module Main
@@ -26,7 +26,7 @@ RSpec.describe "View rendering in application actions", :application_integration
         end
       RUBY
 
-      write "slices/main/lib/main/actions/test_action.rb", <<~RUBY
+      write "slices/main/actions/test_action.rb", <<~RUBY
         module Main
           module Actions
             class TestAction < Main::Action
@@ -40,7 +40,7 @@ RSpec.describe "View rendering in application actions", :application_integration
         end
       RUBY
 
-      write "slices/main/lib/main/view/context.rb", <<~RUBY
+      write "slices/main/lib/view/context.rb", <<~RUBY
         module Main
           class View < Hanami::View
             class Context < Hanami::View::Context
@@ -56,7 +56,7 @@ RSpec.describe "View rendering in application actions", :application_integration
         end
       RUBY
 
-      write "slices/main/lib/main/view.rb", <<~RUBY
+      write "slices/main/lib/view.rb", <<~RUBY
         # auto_register: false
 
         module Main
@@ -65,7 +65,7 @@ RSpec.describe "View rendering in application actions", :application_integration
         end
       RUBY
 
-      write "slices/main/lib/main/views/test_view.rb", <<~RUBY
+      write "slices/main/views/test_view.rb", <<~RUBY
         module Main
           module Views
             class TestView < Main::View

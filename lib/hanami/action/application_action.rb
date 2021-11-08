@@ -68,6 +68,11 @@ module Hanami
       end
 
       def extend_behavior(action_class)
+        if application.config.actions.sessions.enabled?
+          require "hanami/action/session"
+          action_class.include Hanami::Action::Session
+        end
+
         if application.config.actions.csrf_protection
           require "hanami/action/csrf_protection"
           action_class.include Hanami::Action::CSRFProtection
@@ -82,8 +87,6 @@ module Hanami
       module InstanceMethods
         attr_reader :view
         attr_reader :view_context
-
-        private
 
         def build_response(**options)
           options = options.merge(view_options: method(:view_options))
