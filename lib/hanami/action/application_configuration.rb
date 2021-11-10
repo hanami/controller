@@ -15,7 +15,7 @@ module Hanami
       setting :sessions, constructor: proc { |storage, *options| Sessions.new(storage, *options) }
       setting :csrf_protection
 
-      setting :content_security_policy, default: ContentSecurityPolicy.new
+      setting :content_security_policy, constructor: -> (value) { value === false ? value : ContentSecurityPolicy.new }
 
       setting :name_inference_base, default: "actions"
       setting :view_context_identifier, default: "view.context"

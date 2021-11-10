@@ -8,9 +8,6 @@ RSpec.describe Hanami::Action::ApplicationConfiguration, "#content_security_poli
 
   context "no CSP config specified" do
     it "has defaults" do
-      configuration = described_class.new
-      content_security_policy = configuration.content_security_policy
-
       expect(content_security_policy[:base_uri]).to eq("'self'")
 
       expected = [
