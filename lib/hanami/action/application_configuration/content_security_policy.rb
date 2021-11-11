@@ -52,7 +52,7 @@ module Hanami
         #   end
         # end
         def [](key)
-          @policy.fetch(key, nil)
+          @policy[key]
         end
 
         # Set a CSP setting
