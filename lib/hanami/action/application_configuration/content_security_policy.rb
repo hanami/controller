@@ -80,6 +80,23 @@ module Hanami
           @policy[key] = value
         end
 
+        # Deletes a CSP key
+        #
+        # @param key [Symbol] the underscored name of the CPS setting
+        #
+        # @since 2.0.0
+        # @api public
+        #
+        # @example
+        # module MyApp
+        #   class Application < Hanami::Application
+        #     config.actions.content_security_policy.delete(:object_src)
+        #   end
+        # end
+        def delete(key)
+          @policy.delete(key)
+        end
+
         # @since 2.0.0
         # @api private
         def to_str

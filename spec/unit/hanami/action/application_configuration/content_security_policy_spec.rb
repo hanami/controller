@@ -67,6 +67,20 @@ RSpec.describe Hanami::Action::ApplicationConfiguration, "#content_security_poli
       expect(content_security_policy[:plugin_types]).to be(nil)
       expect(content_security_policy.to_str).to match("plugin-types ;")
     end
+
+    it "deletes key" do
+      content_security_policy.delete(:object_src)
+
+      expect(content_security_policy[:object_src]).to be(nil)
+      expect(content_security_policy.to_str).to_not match("object-src")
+    end
+
+    it "adds a custom key" do
+      content_security_policy[:a_custom_key] = "foo"
+
+      expect(content_security_policy[:a_custom_key]).to eq("foo")
+      expect(content_security_policy.to_str).to match("a-custom-key foo")
+    end
   end
 
   context "with CSP enabled" do
