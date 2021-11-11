@@ -15,17 +15,23 @@ module Hanami
       setting :sessions, constructor: proc { |storage, *options| Sessions.new(storage, *options) }
       setting :csrf_protection
 
-      setting :content_security_policy, constructor: -> (value) { value === false ? value : ContentSecurityPolicy.new }
-
       setting :name_inference_base, default: "actions"
       setting :view_context_identifier, default: "view.context"
       setting :view_name_inferrer, default: ViewNameInferrer
       setting :view_name_inference_base, default: "views"
 
-      def initialize(*)
-        super
+      attr_accessor :content_security_policy
+
+      def initialize(*, **options)
+        super()
 
         @base_configuration = Configuration.new
+        @content_security_policy = ContentSecurityPolicy.new do |csp|
+          if assets_server_url = options[:assets_server_url]
+            csp[:script_src] += " #{assets_server_url}"
+            csp[:style_src] += " #{assets_server_url}"
+          end
+        end
 
         configure_defaults
       end

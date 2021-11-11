@@ -9,7 +9,7 @@ module Hanami
       class ContentSecurityPolicy
         # @since 2.0.0
         # @api private
-        def initialize
+        def initialize(&blk)
           @policy = {
             base_uri: "'self'",
             child_src: "'self'",
@@ -26,6 +26,15 @@ module Hanami
             script_src: "'self'",
             style_src: "'self' 'unsafe-inline' https:"
           }
+
+          blk&.(self)
+        end
+
+        # @since 2.0.0
+        # @api private
+        def initialize_copy(original_object)
+          @policy = original_object.instance_variable_get(:@policy).dup
+          super
         end
 
         # Get a CSP setting

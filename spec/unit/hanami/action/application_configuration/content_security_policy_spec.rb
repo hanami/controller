@@ -7,27 +7,40 @@ RSpec.describe Hanami::Action::ApplicationConfiguration, "#content_security_poli
   subject(:content_security_policy) { configuration.content_security_policy }
 
   context "no CSP config specified" do
-    it "has defaults" do
-      expect(content_security_policy[:base_uri]).to eq("'self'")
+    context "without assets_server_url" do
 
-      expected = [
-        %(base-uri 'self';),
-        %(child-src 'self';),
-        %(connect-src 'self';),
-        %(default-src 'none';),
-        %(font-src 'self';),
-        %(form-action 'self';),
-        %(frame-ancestors 'self';),
-        %(frame-src 'self';),
-        %(img-src 'self' https: data:;),
-        %(media-src 'self';),
-        %(object-src 'none';),
-        %(plugin-types application/pdf;),
-        %(script-src 'self';),
-        %(style-src 'self' 'unsafe-inline' https:)
-      ].join("\n")
+      it "has defaults" do
+        expect(content_security_policy[:base_uri]).to eq("'self'")
 
-      expect(content_security_policy.to_str).to eq(expected)
+        expected = [
+          %(base-uri 'self';),
+          %(child-src 'self';),
+          %(connect-src 'self';),
+          %(default-src 'none';),
+          %(font-src 'self';),
+          %(form-action 'self';),
+          %(frame-ancestors 'self';),
+          %(frame-src 'self';),
+          %(img-src 'self' https: data:;),
+          %(media-src 'self';),
+          %(object-src 'none';),
+          %(plugin-types application/pdf;),
+          %(script-src 'self';),
+          %(style-src 'self' 'unsafe-inline' https:)
+        ].join("\n")
+
+        expect(content_security_policy.to_str).to eq(expected)
+      end
+    end
+
+    context "with assets_server_url" do
+      let(:configuration) { described_class.new(assets_server_url: assets_server_url) }
+      let(:assets_server_url) { "http://localhost:8080" }
+
+      it "includes server url" do
+        expect(content_security_policy[:script_src]).to eq("'self' #{assets_server_url}")
+        expect(content_security_policy[:style_src]).to eq("'self' 'unsafe-inline' https: #{assets_server_url}")
+      end
     end
   end
 
