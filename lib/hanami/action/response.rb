@@ -76,6 +76,8 @@ module Hanami
       end
 
       def render(view, **options)
+        raise Hanami::Controller::MissingViewError unless view
+
         self.body = view.(**view_options.(request, self), **options).to_str
       end
 

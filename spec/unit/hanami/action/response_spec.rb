@@ -6,7 +6,8 @@ RSpec.describe Hanami::Action::Response do
       described_class.new(
         request: request,
         action: "action",
-        configuration: Hanami::Action::Configuration.new, env: env,
+        configuration: Hanami::Action::Configuration.new,
+        env: env,
         view_options: view_options
       )
     }
@@ -14,62 +15,74 @@ RSpec.describe Hanami::Action::Response do
     let(:request) { double(:request) }
     let(:env) { { "REQUEST_METHOD" => "GET" } }
 
-    let(:view) { spy(:view) }
-
-    before do
-      rendered = double(:rendered, to_str: "view output")
-
-      if expected_view_args.any?
-        allow(view).to receive(:call).with(**expected_view_args) { rendered }
-      else
-        args = RUBY_VERSION >= "2.7" ? no_args : {}
-        allow(view).to receive(:call).with(args) { rendered }
-      end
-    end
-
-    shared_examples "rendered view" do
-      it "calls the view with the generated view_options and sets its string value as the body" do
-        response.render view, **render_args
-        expect(response.body).to eq ["view output"]
-      end
-    end
-
-    context "view_options provided to response" do
-      let(:view_options) { double(:view_options) }
-      let(:context) { double(:context) }
+    context "with view" do
+      let(:view) { spy(:view) }
 
       before do
-        allow(view_options).to receive(:call).with(request, response) {
-          {context: context}
-        }
+        rendered = double(:rendered, to_str: "view output")
+
+        if expected_view_args.any?
+          allow(view).to receive(:call).with(**expected_view_args) { rendered }
+        else
+          args = RUBY_VERSION >= "2.7" ? no_args : {}
+          allow(view).to receive(:call).with(args) { rendered }
+        end
       end
 
-      context "with render arguments" do
-        let(:render_args) { {extra_args: "here"} }
-        let(:expected_view_args) { {context: context, extra_args: "here"} }
-        it_behaves_like "rendered view"
+      shared_examples "rendered view" do
+        it "calls the view with the generated view_options and sets its string value as the body" do
+          response.render view, **render_args
+          expect(response.body).to eq ["view output"]
+        end
       end
 
-      context "without render arguments" do
-        let(:render_args) { {} }
-        let(:expected_view_args) { {context: context} }
-        it_behaves_like "rendered view"
+      context "view_options provided to response" do
+        let(:view_options) { double(:view_options) }
+        let(:context) { double(:context) }
+
+        before do
+          allow(view_options).to receive(:call).with(request, response) {
+            {context: context}
+          }
+        end
+
+        context "with render arguments" do
+          let(:render_args) { {extra_args: "here"} }
+          let(:expected_view_args) { {context: context, extra_args: "here"} }
+          it_behaves_like "rendered view"
+        end
+
+        context "without render arguments" do
+          let(:render_args) { {} }
+          let(:expected_view_args) { {context: context} }
+          it_behaves_like "rendered view"
+        end
+      end
+
+      context "no view_options provided" do
+        let(:view_options) { nil }
+
+        context "with render arguments" do
+          let(:render_args) { {extra_args: "here"} }
+          let(:expected_view_args) { {extra_args: "here"} }
+          it_behaves_like "rendered view"
+        end
+
+        context "without render arguments" do
+          let(:render_args) { {} }
+          let(:expected_view_args) { {} }
+          it_behaves_like "rendered view"
+        end
       end
     end
 
-    context "no view_options provided" do
+    context "without view" do
       let(:view_options) { nil }
 
-      context "with render arguments" do
-        let(:render_args) { {extra_args: "here"} }
-        let(:expected_view_args) { {extra_args: "here"} }
-        it_behaves_like "rendered view"
-      end
-
-      context "without render arguments" do
-        let(:render_args) { {} }
-        let(:expected_view_args) { {} }
-        it_behaves_like "rendered view"
+      it "raises MissingViewError" do
+        expect { response.render nil }.to raise_error(
+          Hanami::Controller::MissingViewError
+        ).with_message("Cannot render a view that is missing")
       end
     end
   end

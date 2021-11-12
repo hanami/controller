@@ -190,6 +190,29 @@ RSpec.describe "Application actions / View rendering / Automatic rendering", :ap
     end
   end
 
+  it "Raises error if render? is true but there's no view available" do
+    within_app do
+      write "slices/main/actions/test.rb", <<~RUBY
+        require "hanami/action"
+
+        module Main
+          module Actions
+            class Test < Hanami::Action
+              def render?(_res)
+                true
+              end
+            end
+          end
+        end
+      RUBY
+
+      require "hanami/init"
+
+      action = Main::Slice["actions.test"]
+      expect { action.({}) }.to raise_error(Hanami::Controller::MissingViewError)
+    end
+  end
+
   def within_app
     with_tmp_directory(Dir.mktmpdir) do
       write "config/application.rb", <<~RUBY
