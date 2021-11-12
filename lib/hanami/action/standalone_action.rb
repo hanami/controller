@@ -559,7 +559,6 @@ module Hanami
         # @api private
         # @abstract
         #
-        # @see Hanami::Action::Callable#finish
         # @see Hanami::Action::Session#finish
         # @see Hanami::Action::Cookies#finish
         # @see Hanami::Action::Cache#finish
