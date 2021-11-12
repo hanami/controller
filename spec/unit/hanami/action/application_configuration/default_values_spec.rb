@@ -32,27 +32,19 @@ RSpec.describe Hanami::Action::ApplicationConfiguration, "default values" do
       specify { expect(configuration.default_response_format).to eq :html }
     end
 
+    describe "content_security_policy" do
+      specify { expect(configuration.content_security_policy).to be_kind_of(Hanami::Action::ApplicationConfiguration::ContentSecurityPolicy) }
+    end
+
     describe "default_headers" do
       specify {
+        configuration.finalize!
+
         expect(configuration.default_headers).to eq(
           "X-Frame-Options" => "DENY",
           "X-Content-Type-Options" => "nosniff",
           "X-XSS-Protection" => "1; mode=block",
-          "Content-Security-Policy" => "" \
-            "base-uri 'self'; " \
-            "child-src 'self'; " \
-            "connect-src 'self'; " \
-            "default-src 'none'; " \
-            "font-src 'self'; " \
-            "form-action 'self'; " \
-            "frame-ancestors 'self'; " \
-            "frame-src 'self'; " \
-            "img-src 'self' https: data:; " \
-            "media-src 'self'; " \
-            "object-src 'none'; " \
-            "plugin-types application/pdf; " \
-            "script-src 'self'; " \
-            "style-src 'self' 'unsafe-inline' https:"
+          "Content-Security-Policy" => configuration.content_security_policy.to_str
         )
       }
     end

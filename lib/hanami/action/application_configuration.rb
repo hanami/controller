@@ -2,6 +2,7 @@
 
 require_relative "application_configuration/cookies"
 require_relative "application_configuration/sessions"
+require_relative "application_configuration/content_security_policy"
 require_relative "configuration"
 require_relative "view_name_inferrer"
 
@@ -19,10 +20,18 @@ module Hanami
       setting :view_name_inferrer, default: ViewNameInferrer
       setting :view_name_inference_base, default: "views"
 
-      def initialize(*)
-        super
+      attr_accessor :content_security_policy
+
+      def initialize(*, **options)
+        super()
 
         @base_configuration = Configuration.new
+        @content_security_policy = ContentSecurityPolicy.new do |csp|
+          if assets_server_url = options[:assets_server_url]
+            csp[:script_src] += " #{assets_server_url}"
+            csp[:style_src] += " #{assets_server_url}"
+          end
+        end
 
         configure_defaults
       end
@@ -31,6 +40,10 @@ module Hanami
         # A nil value for `csrf_protection` means it has not been explicitly configured
         # (neither true nor false), so we can default it to whether sessions are enabled
         self.csrf_protection = sessions.enabled? if csrf_protection.nil?
+
+        if self.content_security_policy
+          self.default_headers["Content-Security-Policy"] = self.content_security_policy.to_str
+        end
       end
 
       # Returns the list of available settings
@@ -55,22 +68,7 @@ module Hanami
         self.default_headers = {
           "X-Frame-Options" => "DENY",
           "X-Content-Type-Options" => "nosniff",
-          "X-XSS-Protection" => "1; mode=block",
-          "Content-Security-Policy" => \
-            "base-uri 'self'; " \
-            "child-src 'self'; " \
-            "connect-src 'self'; " \
-            "default-src 'none'; " \
-            "font-src 'self'; " \
-            "form-action 'self'; " \
-            "frame-ancestors 'self'; " \
-            "frame-src 'self'; " \
-            "img-src 'self' https: data:; " \
-            "media-src 'self'; " \
-            "object-src 'none'; " \
-            "plugin-types application/pdf; " \
-            "script-src 'self'; " \
-            "style-src 'self' 'unsafe-inline' https:"
+          "X-XSS-Protection" => "1; mode=block"
         }
       end
 
