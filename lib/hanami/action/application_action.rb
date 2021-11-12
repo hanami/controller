@@ -101,10 +101,22 @@ module Hanami
           {request: req, response: res}
         end
 
-        # Automatically render the view, if the body hasn't been populated yet
         def finish(req, res, halted)
-          res.render(view, **req.params, **res.exposures) if view && res.body.empty?
+          res.render(view, **req.params, **res.exposures) if render?(res)
           super
+        end
+
+        # Decide whether to render the current response with the associated view.
+        # This can be overridden to enable/disable automatic rendering.
+        #
+        # @param response [Hanami::Action::Response]
+        #
+        # @return [TrueClass,FalseClass]
+        #
+        # @since 2.0.0
+        # @api public
+        def render?(res)
+          view && res.body.empty?
         end
       end
     end

@@ -42,6 +42,50 @@ RSpec.describe "Application actions / View rendering / Automatic rendering", :ap
     end
   end
 
+  it "Does not render a view automatically when #render? returns false " do
+    within_app do
+      write "slices/main/actions/test.rb", <<~RUBY
+        require "hanami/action"
+
+        module Main
+          module Actions
+            class Test < Hanami::Action
+              def handle(req, res)
+                res[:favorite_number] = 123
+              end
+
+              def render?(_res)
+                false
+              end
+            end
+          end
+        end
+      RUBY
+
+      write "slices/main/views/test.rb", <<~RUBY
+        module Main
+          module Views
+            class Test < Main::View
+              expose :name, :favorite_number
+            end
+          end
+        end
+      RUBY
+
+      write "slices/main/web/templates/test.html.slim", <<~'SLIM'
+        h1 Hello, #{name}. Your favorite number is #{favorite_number}, right?
+      SLIM
+
+      require "hanami/init"
+
+      action = Main::Slice["actions.test"]
+      response = action.(name: "Jennifer")
+
+      expect(response.body).to eq []
+      expect(response.status).to eq 200
+    end
+  end
+
   it "Doesn't render view automatically when body is already assigned" do
     within_app do
       write "slices/main/actions/test.rb", <<~RUBY
