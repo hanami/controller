@@ -106,7 +106,15 @@ module Hanami
           super
         end
 
-        # This can be overridden to enable/disable automatic rendering
+        # Decide whether to render the current response with the associated view.
+        # This can be overridden to enable/disable automatic rendering.
+        #
+        # @param response [Hanami::Action::Response]
+        #
+        # @return [TrueClass,FalseClass]
+        #
+        # @since 2.0.0
+        # @api public
         def render?(res)
           view && res.body.empty?
         end
