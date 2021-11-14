@@ -76,7 +76,7 @@ module Hanami
       end
 
       def render(view, **options)
-        self.body = view.(**view_options.(request, self), **options).to_str
+        self.body = view.(**view_options.(request, self), **exposures.merge(options)).to_str
       end
 
       def format=(args)
