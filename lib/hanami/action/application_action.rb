@@ -106,6 +106,16 @@ module Hanami
           super
         end
 
+        # Access application routes
+        #
+        # @return [Hanami::Application::RoutesHelper]
+        #
+        # @since 2.0.0
+        # @see Hanami::Application::RoutesHelper
+        def routes
+          Hanami.application[:routes_helper]
+        end
+
         # Decide whether to render the current response with the associated view.
         # This can be overridden to enable/disable automatic rendering.
         #
