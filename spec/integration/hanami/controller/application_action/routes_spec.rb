@@ -32,7 +32,7 @@ RSpec.describe "Routes", :application_integration do
           module Actions
             class TestAction < Hanami::Action
               def handle(req, res)
-                res.body = "Hello, world!"
+                res.body = routes.path(:root)
               end
             end
           end
@@ -41,9 +41,8 @@ RSpec.describe "Routes", :application_integration do
 
       require "hanami/init"
 
-      action = Main::Slice["actions.test_action"]
-
-      expect(action.routes.path(:root)).to eq("/")
+      response = Main::Slice["actions.test_action"].call({})
+      expect(response.body).to eq ["/"]
     end
   end
 end
