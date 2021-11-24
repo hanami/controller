@@ -14,7 +14,7 @@ module Hanami
       def included(action_class)
         action_class.include InstanceMethods
 
-        define_initialize action_class
+        define_initialize
         configure_action action_class
         extend_behavior action_class
       end
@@ -25,7 +25,7 @@ module Hanami
 
       private
 
-      def define_initialize(action_class)
+      def define_initialize
         resolve_view = method(:resolve_paired_view)
         resolve_context = method(:resolve_view_context)
         resolve_routes = method(:resolve_routes)
