@@ -14,7 +14,7 @@ module Hanami
       def included(action_class)
         action_class.include InstanceMethods
 
-        define_initialize action_class
+        define_initialize
         configure_action action_class
         extend_behavior action_class
       end
@@ -25,27 +25,19 @@ module Hanami
 
       private
 
-      def define_initialize(action_class)
+      def define_initialize
         resolve_view = method(:resolve_paired_view)
         resolve_context = method(:resolve_view_context)
+        resolve_routes = method(:resolve_routes)
 
         define_method :initialize do |**deps|
           # Conditionally assign these to repsect any explictly auto-injected
           # dependencies provided by the class
           @view ||= deps[:view] || resolve_view.(self.class)
           @view_context ||= deps[:view_context] || resolve_context.()
+          @routes ||= deps[:routes] || resolve_routes.()
 
           super(**deps)
-        end
-      end
-
-      def resolve_view_context
-        identifier = application.config.actions.view_context_identifier
-
-        if provider.key?(identifier)
-          provider[identifier]
-        elsif application.key?(identifier)
-          application[identifier]
         end
       end
 
@@ -58,6 +50,20 @@ module Hanami
         view_identifiers.detect { |identifier|
           break provider[identifier] if provider.key?(identifier)
         }
+      end
+
+      def resolve_view_context
+        identifier = application.config.actions.view_context_identifier
+
+        if provider.key?(identifier)
+          provider[identifier]
+        elsif application.key?(identifier)
+          application[identifier]
+        end
+      end
+
+      def resolve_routes
+        application[:routes_helper] if application.key?(:routes_helper)
       end
 
       def configure_action(action_class)
@@ -87,6 +93,7 @@ module Hanami
       module InstanceMethods
         attr_reader :view
         attr_reader :view_context
+        attr_reader :routes
 
         def build_response(**options)
           options = options.merge(view_options: method(:view_options))
