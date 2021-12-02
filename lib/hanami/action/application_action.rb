@@ -109,6 +109,7 @@ module Hanami
         end
 
         def finish(req, res, halted)
+          res.status, res.body = *halted unless halted.nil?
           res.render(view, **req.params) if render?(res)
           super
         end

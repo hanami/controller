@@ -190,6 +190,45 @@ RSpec.describe "Application actions / View rendering / Automatic rendering", :ap
     end
   end
 
+  it "Does not render a view automatically a request is halted" do
+    within_app do
+      write "slices/main/actions/test.rb", <<~RUBY
+        require "hanami/action"
+
+        module Main
+          module Actions
+            class Test < Hanami::Action
+              def handle(req, res)
+                halt 418, "I'm a teapot"
+              end
+            end
+          end
+        end
+      RUBY
+
+      write "slices/main/views/test.rb", <<~RUBY
+        module Main
+          module Views
+            class Test < Main::View
+            end
+          end
+        end
+      RUBY
+
+      write "slices/main/web/templates/test.html.slim", <<~'SLIM'
+        #{raise("Oh no"}
+      SLIM
+
+      require "hanami/init"
+
+      action = Main::Slice["actions.test"]
+      response = action.(name: "Jennifer")
+
+      expect(response.body).to eq ["I'm a teapot"]
+      expect(response.status).to eq 418
+    end
+  end
+
   def within_app
     with_tmp_directory(Dir.mktmpdir) do
       write "config/application.rb", <<~RUBY
