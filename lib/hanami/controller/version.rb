@@ -3,6 +3,6 @@ module Hanami
     # Defines the version
     #
     # @since 0.1.0
-    VERSION = '2.0.0.alpha3'.freeze
+    VERSION = '2.0.0.alpha4'.freeze
   end
 end

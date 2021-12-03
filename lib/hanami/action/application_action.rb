@@ -116,7 +116,7 @@ module Hanami
         # Decide whether to render the current response with the associated view.
         # This can be overridden to enable/disable automatic rendering.
         #
-        # @param response [Hanami::Action::Response]
+        # @param res [Hanami::Action::Response]
         #
         # @return [TrueClass,FalseClass]
         #

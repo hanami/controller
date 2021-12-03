@@ -1,6 +1,11 @@
 # Hanami::Controller
 Complete, fast and testable actions for Rack
 
+## v2.0.0.alpha4 - 2021-12-07
+### Added
+- [Luca Guidi] Manage Content Security Policy (CSP) defaults and new API via `Hanami::Action::ApplicationConfiguration#content_security_policy`
+- [Tim Riley & Marc Busqué] Provide access to routes inside all application actions via `Hanami::Action::ApplicationAction#routes`
+
 ## v2.0.0.alpha3 - 2021-11-09
 ### Added
 - [Luca Guidi] Automatically include session behavior in `Hanami::Action` when sessions are enabled via Hanami application config

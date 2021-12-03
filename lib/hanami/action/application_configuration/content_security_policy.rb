@@ -46,11 +46,11 @@ module Hanami
         # @api public
         #
         # @example
-        # module MyApp
-        #   class Application < Hanami::Application
-        #     config.actions.content_security_policy[:base_uri] # => "'self'"
+        #   module MyApp
+        #     class Application < Hanami::Application
+        #       config.actions.content_security_policy[:base_uri] # => "'self'"
+        #     end
         #   end
-        # end
         def [](key)
           @policy[key]
         end
@@ -64,18 +64,18 @@ module Hanami
         # @api public
         #
         # @example Replace a default value
-        # module MyApp
-        #   class Application < Hanami::Application
-        #     config.actions.content_security_policy[:plugin_types] = nil
+        #   module MyApp
+        #     class Application < Hanami::Application
+        #       config.actions.content_security_policy[:plugin_types] = nil
+        #     end
         #   end
-        # end
         #
         # @example Append to a default value
-        # module MyApp
-        #   class Application < Hanami::Application
-        #     config.actions.content_security_policy[:script_src] += " https://my.cdn.test"
+        #   module MyApp
+        #     class Application < Hanami::Application
+        #       config.actions.content_security_policy[:script_src] += " https://my.cdn.test"
+        #     end
         #   end
-        # end
         def []=(key, value)
           @policy[key] = value
         end
@@ -88,11 +88,11 @@ module Hanami
         # @api public
         #
         # @example
-        # module MyApp
-        #   class Application < Hanami::Application
-        #     config.actions.content_security_policy.delete(:object_src)
+        #   module MyApp
+        #     class Application < Hanami::Application
+        #       config.actions.content_security_policy.delete(:object_src)
+        #     end
         #   end
-        # end
         def delete(key)
           @policy.delete(key)
         end
