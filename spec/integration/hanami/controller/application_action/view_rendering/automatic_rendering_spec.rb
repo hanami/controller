@@ -216,7 +216,7 @@ RSpec.describe "Application actions / View rendering / Automatic rendering", :ap
       RUBY
 
       write "slices/main/web/templates/test.html.slim", <<~'SLIM'
-        #{raise("Oh no"}
+        == raise("This should not be rendered")
       SLIM
 
       require "hanami/init"

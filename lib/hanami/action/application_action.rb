@@ -109,9 +109,9 @@ module Hanami
         end
 
         def finish(req, res, halted)
-          res.status, res.body = *halted unless halted.nil?
+          result = super
           res.render(view, **req.params) if render?(res)
-          super
+          result
         end
 
         # Decide whether to render the current response with the associated view.
