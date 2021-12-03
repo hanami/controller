@@ -11,8 +11,8 @@ module Hanami
     #
     # @since 2.0.0
     class MissingViewError < Error
-      def initialize
-        super("Cannot render a view that is missing")
+      def initialize(klass)
+        super("missing view for #{klass}")
       end
     end
   end

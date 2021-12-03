@@ -77,12 +77,18 @@ RSpec.describe Hanami::Action::Response do
     end
 
     context "without view" do
-      let(:view_options) { nil }
+      subject(:response) {
+        described_class.new(
+          request: request,
+          action: double(:action, class: "MyAction"),
+          configuration: Hanami::Action::Configuration.new,
+        )
+      }
 
       it "raises MissingViewError" do
         expect { response.render nil }.to raise_error(
           Hanami::Controller::MissingViewError
-        ).with_message("Cannot render a view that is missing")
+        ).with_message("missing view for MyAction")
       end
     end
   end

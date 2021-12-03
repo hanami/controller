@@ -30,7 +30,7 @@ module Hanami
         resolve_context = method(:resolve_view_context)
 
         define_method :initialize do |**deps|
-          # Conditionally assign these to repsect any explictly auto-injected
+          # Conditionally assign these to respect any explictly auto-injected
           # dependencies provided by the class
           @view ||= deps[:view] || resolve_view.(self.class)
           @view_context ||= deps[:view_context] || resolve_context.()
