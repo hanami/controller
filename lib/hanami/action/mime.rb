@@ -58,6 +58,7 @@ module Hanami
         png: 'image/png',
         psd: 'image/vnd.adobe.photoshop',
         rtf: 'application/rtf',
+        rss: 'application/rss+xml',
         sh: 'application/x-sh',
         svg: 'image/svg+xml',
         swf: 'application/x-shockwave-flash',
