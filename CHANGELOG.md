@@ -1,6 +1,10 @@
 # Hanami::Controller
 Complete, fast and testable actions for Rack
 
+## v2.0.0.alpha5 - 2022-01-12
+### Added
+- [Philip Arndt] Added "rss" ("application/rss+xml") to list of supported MIME types
+
 ## v2.0.0.alpha4 - 2021-12-07
 ### Added
 - [Luca Guidi] Manage Content Security Policy (CSP) defaults and new API via `Hanami::Action::ApplicationConfiguration#content_security_policy`
