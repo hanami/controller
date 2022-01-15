@@ -28,8 +28,3 @@ group :test do
 end
 
 gem 'hanami-devtools', github: 'hanami/devtools', branch: 'main'
-
-# Required until release of expanded dry-configurable `setting` keyword args API (and
-# associated gem updates)
-gem "dry-configurable", github: "dry-rb/dry-configurable", branch: "master"
-gem "dry-system", github: "dry-rb/dry-system", branch: "master"
