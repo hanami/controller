@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require "hanami"
-require "hanami/action"
+require "hanami/application_action"
 require "hanami/view"
 require "slim"
 
@@ -21,7 +21,7 @@ RSpec.describe "View rendering in application actions", :application_integration
         # auto_register: false
 
         module Main
-          class Action < Hanami::Action
+          class Action < Hanami::ApplicationAction
           end
         end
       RUBY

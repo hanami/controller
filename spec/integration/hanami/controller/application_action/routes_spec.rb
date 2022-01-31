@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require "hanami"
-require "hanami/action"
+require "hanami/application_action"
 
 RSpec.describe "Routes", :application_integration do
   specify "Access application routes from an action" do
@@ -30,7 +30,7 @@ RSpec.describe "Routes", :application_integration do
       write "slices/main/actions/test_action.rb", <<~RUBY
         module Main
           module Actions
-            class TestAction < Hanami::Action
+            class TestAction < Hanami::ApplicationAction
               def handle(req, res)
                 res.body = routes.path(:root)
               end

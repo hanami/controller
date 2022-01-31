@@ -1,4 +1,5 @@
 require "hanami"
+require "hanami/application_action"
 
 RSpec.describe "Application actions / View rendering / Automatic rendering", :application_integration do
   it "Renders a view automatically, passing all params and exposures" do
@@ -8,7 +9,7 @@ RSpec.describe "Application actions / View rendering / Automatic rendering", :ap
 
         module Main
           module Actions
-            class Test < Hanami::Action
+            class Test < Hanami::ApplicationAction
               def handle(req, res)
                 res[:favorite_number] = 123
               end
@@ -49,7 +50,7 @@ RSpec.describe "Application actions / View rendering / Automatic rendering", :ap
 
         module Main
           module Actions
-            class Test < Hanami::Action
+            class Test < Hanami::ApplicationAction
               def handle(req, res)
                 res[:favorite_number] = 123
               end
@@ -93,7 +94,7 @@ RSpec.describe "Application actions / View rendering / Automatic rendering", :ap
 
         module Main
           module Actions
-            class Test < Hanami::Action
+            class Test < Hanami::ApplicationAction
               def handle(req, res)
                 res.body = "200: Okay okay okay"
               end
@@ -134,7 +135,7 @@ RSpec.describe "Application actions / View rendering / Automatic rendering", :ap
 
         module Main
           module Actions
-            class Test < Hanami::Action
+            class Test < Hanami::ApplicationAction
               def handle(req, res)
                 halt 404
               end
@@ -175,7 +176,7 @@ RSpec.describe "Application actions / View rendering / Automatic rendering", :ap
 
         module Main
           module Actions
-            class Test < Hanami::Action
+            class Test < Hanami::ApplicationAction
             end
           end
         end

@@ -1,4 +1,5 @@
 require "hanami"
+require "hanami/application_action"
 
 RSpec.describe "Application actions / View rendering / Paired view inference", :application_integration do
   before do
@@ -33,7 +34,7 @@ RSpec.describe "Application actions / View rendering / Paired view inference", :
             module Main
               module Actions
                 module Articles
-                  class Index < Hanami::Action
+                  class Index < Hanami::ApplicationAction
                     include Deps[view: "views.articles.custom"]
                   end
                 end
@@ -66,7 +67,7 @@ RSpec.describe "Application actions / View rendering / Paired view inference", :
         module Main
           module Actions
             module Articles
-              class Index < Hanami::Action
+              class Index < Hanami::ApplicationAction
               end
             end
           end
@@ -80,7 +81,7 @@ RSpec.describe "Application actions / View rendering / Paired view inference", :
     context "Subclass of shared superclass" do
       let(:action_class) {
         module Main
-          class Action < Hanami::Action
+          class Action < Hanami::ApplicationAction
           end
 
           module Actions
@@ -102,7 +103,7 @@ RSpec.describe "Application actions / View rendering / Paired view inference", :
       module Main
         module Actions
           module Articles
-            class Create < Hanami::Action
+            class Create < Hanami::ApplicationAction
             end
           end
         end

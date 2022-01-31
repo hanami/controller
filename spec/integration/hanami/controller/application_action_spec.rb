@@ -1,18 +1,21 @@
 # frozen_string_literal: true
 
 require "hanami"
-require "hanami/action"
+require "hanami/application_action"
 
 RSpec.describe "Application actions", :application_integration do
+  subject(:action) { action_class.new }
+
   describe "Outside Hanami app" do
-    subject(:action) { Class.new(Hanami::Action).new }
+    let(:action_class) { Class.new(Hanami::ApplicationAction) }
 
     before do
-      allow(Hanami).to receive(:respond_to?).with(:application?) { nil }
+      allow(Hanami).to receive(:application) { nil }
     end
 
-    it "is not an application action" do
-      expect(action.class.ancestors).not_to include(a_kind_of(Hanami::Action::ApplicationAction))
+    it "raises error on definition" do
+      expect { action_class }.to raise_error(ArgumentError).
+        with_message("ApplicationAction must be defined within a Hanami::Application")
     end
   end
 
@@ -30,19 +33,21 @@ RSpec.describe "Application actions", :application_integration do
       Hanami.init
     end
 
-    let(:action_class) {
+    let(:action_class) do
       module Main
-        class Action < Hanami::Action
+        class Action < Hanami::ApplicationAction
         end
       end
 
       Main::Action
-    }
-
-    subject(:action) { action_class.new }
+    end
 
     it "is an application action" do
-      expect(action.class.ancestors).to include(a_kind_of(Hanami::Action::ApplicationAction))
+      expect(action.class.superclass).to eq(Hanami::ApplicationAction)
+    end
+
+    it "has custom inspector" do
+      expect(action.inspect).to eq("#<Main::Action[main]>")
     end
   end
 end

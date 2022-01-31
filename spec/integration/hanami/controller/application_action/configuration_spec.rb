@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require "hanami"
-require "hanami/action"
+require "hanami/application_action"
 
 RSpec.describe "Application actions / Configuration", :application_integration do
   describe "Inside Hanami app" do
@@ -21,7 +21,7 @@ RSpec.describe "Application actions / Configuration", :application_integration d
 
     let(:action_class) {
       module Main
-        class Action < Hanami::Action
+        class Action < Hanami::ApplicationAction
         end
       end
 

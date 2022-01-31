@@ -75,77 +75,63 @@ RSpec.describe "HTTP Standalone Sessions" do
 end
 
 RSpec.describe "Application actions / HTTP sessions", :application_integration do
-  describe "Outside Hanami app" do
-    subject(:action_class) { Class.new(Hanami::Action) }
+  before do
+    application_class
 
-    before do
-      allow(Hanami).to receive(:respond_to?).with(:application?) { nil }
+    module Main
     end
+
+    Hanami.application.register_slice :main, namespace: Main, root: "/path/to/app/slices/main"
+    Hanami.init
+  end
+
+  subject(:action_class) {
+    module Main
+      class Action < Hanami::ApplicationAction
+      end
+    end
+
+    Main::Action
+  }
+
+  context "with HTTP sessions enabled" do
+    subject(:application_class) {
+      module TestApp
+        class Application < Hanami::Application
+          config.actions.sessions = :cookie, {secret: "abc123"}
+        end
+      end
+    }
+
+    it "has HTTP sessions enabled" do
+      expect(action_class.ancestors).to include(Hanami::Action::Session)
+    end
+  end
+
+  context "CSRF protection explicitly disabled" do
+    subject(:application_class) {
+      module TestApp
+        class Application < Hanami::Application
+          config.sessions = nil
+        end
+      end
+    }
 
     it "does not have HTTP sessions enabled" do
       expect(action_class.ancestors).not_to include(Hanami::Action::Session)
     end
   end
 
-  describe "Inside Hanami app" do
-    before do
-      application_class
-
-      module Main
-      end
-
-      Hanami.application.register_slice :main, namespace: Main, root: "/path/to/app/slices/main"
-      Hanami.init
-    end
-
-    subject(:action_class) {
-      module Main
-        class Action < Hanami::Action
+  context "HTTP sessions not enabled" do
+    subject(:application_class) {
+      module TestApp
+        class Application < Hanami::Application
         end
       end
-
-      Main::Action
     }
 
-    context "with HTTP sessions enabled" do
-      subject(:application_class) {
-        module TestApp
-          class Application < Hanami::Application
-            config.actions.sessions = :cookie, {secret: "abc123"}
-          end
-        end
-      }
-
-      it "has HTTP sessions enabled" do
-        expect(action_class.ancestors).to include(Hanami::Action::Session)
-      end
-    end
-
-    context "CSRF protection explicitly disabled" do
-      subject(:application_class) {
-        module TestApp
-          class Application < Hanami::Application
-            config.sessions = nil
-          end
-        end
-      }
-
-      it "does not have HTTP sessions enabled" do
-        expect(action_class.ancestors).not_to include(Hanami::Action::Session)
-      end
-    end
-
-    context "HTTP sessions not enabled" do
-      subject(:application_class) {
-        module TestApp
-          class Application < Hanami::Application
-          end
-        end
-      }
-
-      it "does not have HTTP session enabled" do
-        expect(action_class.ancestors).not_to include(Hanami::Action::Session)
-      end
+    it "does not have HTTP session enabled" do
+      expect(action_class.ancestors).not_to include(Hanami::Action::Session)
     end
   end
 end
