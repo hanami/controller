@@ -29,7 +29,7 @@ RSpec.describe "Application actions / Cookies", :application_integration do
 
       Hanami.application.register_slice :main, namespace: Main, root: "/path/to/app/slices/main"
 
-      Hanami.init
+      Hanami.prepare
     end
 
     subject(:action_class) {

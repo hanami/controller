@@ -10,7 +10,7 @@ RSpec.describe "Application actions / View rendering / Paired view inference", :
     module Main; end
     Hanami.application.register_slice :main, namespace: Main, root: "/path/to/app/slices/main"
 
-    Hanami.init
+    Hanami.prepare
   end
 
   let(:action) { action_class.new }

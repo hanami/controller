@@ -31,7 +31,7 @@ RSpec.describe "Application actions / View rendering / Automatic rendering", :ap
         h1 Hello, #{name}. Your favorite number is #{favorite_number}, right?
       SLIM
 
-      require "hanami/init"
+      require "hanami/prepare"
 
       action = Main::Slice["actions.test"]
       response = action.(name: "Jennifer")
@@ -76,7 +76,7 @@ RSpec.describe "Application actions / View rendering / Automatic rendering", :ap
         h1 Hello, #{name}. Your favorite number is #{favorite_number}, right?
       SLIM
 
-      require "hanami/init"
+      require "hanami/prepare"
 
       action = Main::Slice["actions.test"]
       response = action.(name: "Jennifer")
@@ -116,7 +116,7 @@ RSpec.describe "Application actions / View rendering / Automatic rendering", :ap
         h1 Hello, #{name}. Your favorite number is #{favorite_number}, right?
       SLIM
 
-      require "hanami/init"
+      require "hanami/prepare"
 
       action = Main::Slice["actions.test"]
       response = action.(name: "Jennifer")
@@ -157,7 +157,7 @@ RSpec.describe "Application actions / View rendering / Automatic rendering", :ap
         h1 Hello, #{name}. Your favorite number is #{favorite_number}, right?
       SLIM
 
-      require "hanami/init"
+      require "hanami/prepare"
 
       action = Main::Slice["actions.test"]
       response = action.(name: "Jennifer")
@@ -181,7 +181,7 @@ RSpec.describe "Application actions / View rendering / Automatic rendering", :ap
         end
       RUBY
 
-      require "hanami/init"
+      require "hanami/prepare"
 
       action = Main::Slice["actions.test"]
       response = action.({})
