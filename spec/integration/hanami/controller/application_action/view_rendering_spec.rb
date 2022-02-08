@@ -91,7 +91,7 @@ RSpec.describe "View rendering in application actions", :application_integration
         p = age
       SLIM
 
-      require "hanami/init"
+      require "hanami/prepare"
 
       action = Main::Slice["actions.test_action"]
       response = action.(name: "Jennifer", last_name: "Lopez")
