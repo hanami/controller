@@ -23,7 +23,7 @@ RSpec.describe "Application actions / CSRF protection", :application_integration
       end
 
       Hanami.application.register_slice :main, namespace: Main, root: "/path/to/app/slices/main"
-      Hanami.init
+      Hanami.prepare
     end
 
     subject(:action_class) {

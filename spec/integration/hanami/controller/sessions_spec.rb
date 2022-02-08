@@ -95,7 +95,7 @@ RSpec.describe "Application actions / HTTP sessions", :application_integration d
       end
 
       Hanami.application.register_slice :main, namespace: Main, root: "/path/to/app/slices/main"
-      Hanami.init
+      Hanami.prepare
     end
 
     subject(:action_class) {

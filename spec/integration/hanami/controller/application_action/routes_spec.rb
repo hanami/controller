@@ -39,7 +39,7 @@ RSpec.describe "Routes", :application_integration do
         end
       RUBY
 
-      require "hanami/init"
+      require "hanami/prepare"
 
       response = Main::Slice["actions.test_action"].call({})
       expect(response.body).to eq ["/"]

@@ -27,11 +27,11 @@ RSpec.describe "Application actions / View integration", :application_integratio
       end
       Hanami.application.register_slice :main, namespace: Main, root: "/path/to/app/slices/main"
 
-      Hanami.application.tap(&pre_app_init_hook)
-      Hanami.init
+      Hanami.application.tap(&pre_app_prepare_hook)
+      Hanami.prepare
     end
 
-    let(:pre_app_init_hook) { proc { } }
+    let(:pre_app_prepare_hook) { proc { } }
 
     let(:action_module) { Main }
 
@@ -99,7 +99,7 @@ RSpec.describe "Application actions / View integration", :application_integratio
         context "custom view context identifier" do
           let(:custom_view_context) { double(:custom_view_context) }
 
-          let(:pre_app_init_hook) {
+          let(:pre_app_prepare_hook) {
             proc do |app|
               app.config.actions.view_context_identifier = "view.custom_context"
             end
