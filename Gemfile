@@ -11,6 +11,8 @@ unless ENV['CI']
   gem 'yard',   require: false
 end
 
+gem 'dry-system', require: false, git: 'https://github.com/dry-rb/dry-system.git', branch: 'master'
+
 gem 'hanami-utils',  '~> 2.0.alpha', require: false, git: 'https://github.com/hanami/utils.git',  branch: 'main'
 gem 'hanami-router', '~> 2.0.alpha', require: false, git: 'https://github.com/hanami/router.git', branch: 'main'
 

@@ -27,7 +27,7 @@ RSpec.describe "Application actions", :application_integration do
       end
 
       Hanami.application.register_slice :main, namespace: Main, root: "/path/to/app/slices/main"
-      Hanami.init
+      Hanami.prepare
     end
 
     let(:action_class) {
