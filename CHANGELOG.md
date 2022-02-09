@@ -1,6 +1,14 @@
 # Hanami::Controller
 Complete, fast and testable actions for Rack
 
+## v2.0.0.alpha6 - 2022-02-10
+### Added
+- [Luca Guidi] Official support for Ruby: MRI 3.1
+
+### Changed
+- [Luca Guidi] Drop support for Ruby: MRI 2.6, and 2.7.
+- [Sean Collins] Align with Rack list of HTTP supported status. Added: `103`, `306`, `421`, `425`, `451`, and `509`. Removed: `418`, `420`, `444`, `449`, `450`, `451`, `499`, `598`, `599`.
+
 ## v2.0.0.alpha5 - 2022-01-12
 ### Added
 - [Philip Arndt] Added "rss" ("application/rss+xml") to list of supported MIME types
