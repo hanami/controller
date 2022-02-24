@@ -36,6 +36,7 @@ RSpec.describe Hanami::Action::ApplicationConfiguration, "#content_security_poli
       let(:assets_server_url) { "http://localhost:8080" }
 
       it "includes server url" do
+        expect(content_security_policy[:default_src]).to eq("'self' #{assets_server_url}")
         expect(content_security_policy[:script_src]).to eq("'self' #{assets_server_url}")
         expect(content_security_policy[:style_src]).to eq("'self' 'unsafe-inline' https: #{assets_server_url}")
       end

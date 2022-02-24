@@ -28,6 +28,7 @@ module Hanami
         @base_configuration = Configuration.new
         @content_security_policy = ContentSecurityPolicy.new do |csp|
           if assets_server_url = options[:assets_server_url]
+            csp[:default_src] += " #{assets_server_url}"
             csp[:script_src] += " #{assets_server_url}"
             csp[:style_src] += " #{assets_server_url}"
           end
