@@ -22,7 +22,6 @@ RSpec.describe Hanami::Action::ApplicationConfiguration, "#content_security_poli
           %(img-src 'self' https: data:;),
           %(media-src 'self';),
           %(object-src 'none';),
-          %(plugin-types application/pdf;),
           %(script-src 'self';),
           %(style-src 'self' 'unsafe-inline' https:;),
           %(worker-src 'self')
@@ -61,10 +60,10 @@ RSpec.describe Hanami::Action::ApplicationConfiguration, "#content_security_poli
     end
 
     it "nullifies value" do
-      content_security_policy[:plugin_types] = nil
+      content_security_policy[:frame_src] = nil
 
-      expect(content_security_policy[:plugin_types]).to be(nil)
-      expect(content_security_policy.to_str).to match("plugin-types ;")
+      expect(content_security_policy[:frame_src]).to be(nil)
+      expect(content_security_policy.to_str).to match("frame-src ;")
     end
 
     it "deletes key" do
