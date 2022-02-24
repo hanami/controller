@@ -24,7 +24,8 @@ module Hanami
             object_src: "'none'",
             plugin_types: "application/pdf",
             script_src: "'self'",
-            style_src: "'self' 'unsafe-inline' https:"
+            style_src: "'self' 'unsafe-inline' https:",
+            worker_src: "'self'"
           }
 
           blk&.(self)

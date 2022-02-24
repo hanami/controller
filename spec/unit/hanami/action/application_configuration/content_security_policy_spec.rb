@@ -8,7 +8,6 @@ RSpec.describe Hanami::Action::ApplicationConfiguration, "#content_security_poli
 
   context "no CSP config specified" do
     context "without assets_server_url" do
-
       it "has defaults" do
         expect(content_security_policy[:base_uri]).to eq("'self'")
 
@@ -26,7 +25,8 @@ RSpec.describe Hanami::Action::ApplicationConfiguration, "#content_security_poli
           %(object-src 'none';),
           %(plugin-types application/pdf;),
           %(script-src 'self';),
-          %(style-src 'self' 'unsafe-inline' https:)
+          %(style-src 'self' 'unsafe-inline' https:;),
+          %(worker-src 'self')
         ].join("\n")
 
         expect(content_security_policy.to_str).to eq(expected)
