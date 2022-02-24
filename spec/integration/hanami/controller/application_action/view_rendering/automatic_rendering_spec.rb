@@ -3,37 +3,39 @@ require "hanami"
 RSpec.describe "Application actions / View rendering / Automatic rendering", :application_integration do
   it "Renders a view automatically, passing all params and exposures" do
     within_app do
-      write "slices/main/actions/test.rb", <<~RUBY
-        require "hanami/action"
-
+      write "slices/main/actions/profile/show.rb", <<~RUBY
         module Main
           module Actions
-            class Test < Hanami::Action
-              def handle(req, res)
-                res[:favorite_number] = 123
+            module Profile
+              class Show < Main::Action::Base
+                def handle(req, res)
+                  res[:favorite_number] = 123
+                end
               end
             end
           end
         end
       RUBY
 
-      write "slices/main/views/test.rb", <<~RUBY
+      write "slices/main/views/profile/show.rb", <<~RUBY
         module Main
           module Views
-            class Test < Main::View
-              expose :name, :favorite_number
+            module Profile
+              class Show < Main::View::Base
+                expose :name, :favorite_number
+              end
             end
           end
         end
       RUBY
 
-      write "slices/main/web/templates/test.html.slim", <<~'SLIM'
+      write "slices/main/templates/profile/show.html.slim", <<~'SLIM'
         h1 Hello, #{name}. Your favorite number is #{favorite_number}, right?
       SLIM
 
       require "hanami/prepare"
 
-      action = Main::Slice["actions.test"]
+      action = Main::Slice["actions.profile.show"]
       response = action.(name: "Jennifer")
       rendered = response.body[0]
 
@@ -44,41 +46,43 @@ RSpec.describe "Application actions / View rendering / Automatic rendering", :ap
 
   it "Does not render a view automatically when #render? returns false " do
     within_app do
-      write "slices/main/actions/test.rb", <<~RUBY
-        require "hanami/action"
-
+      write "slices/main/actions/profile/show.rb", <<~RUBY
         module Main
           module Actions
-            class Test < Hanami::Action
-              def handle(req, res)
-                res[:favorite_number] = 123
-              end
+            module Profile
+              class Show < Main::Action::Base
+                def handle(req, res)
+                  res[:favorite_number] = 123
+                end
 
-              def render?(_res)
-                false
+                def render?(_res)
+                  false
+                end
               end
             end
           end
         end
       RUBY
 
-      write "slices/main/views/test.rb", <<~RUBY
+      write "slices/main/views/profile/show.rb", <<~RUBY
         module Main
           module Views
-            class Test < Main::View
-              expose :name, :favorite_number
+            module Profile
+              class Show < Main::View::Base
+                expose :name, :favorite_number
+              end
             end
           end
         end
       RUBY
 
-      write "slices/main/web/templates/test.html.slim", <<~'SLIM'
+      write "slices/main/templates/profile/show.html.slim", <<~'SLIM'
         h1 Hello, #{name}. Your favorite number is #{favorite_number}, right?
       SLIM
 
       require "hanami/prepare"
 
-      action = Main::Slice["actions.test"]
+      action = Main::Slice["actions.profile.show"]
       response = action.(name: "Jennifer")
 
       expect(response.body).to eq []
@@ -88,37 +92,39 @@ RSpec.describe "Application actions / View rendering / Automatic rendering", :ap
 
   it "Doesn't render view automatically when body is already assigned" do
     within_app do
-      write "slices/main/actions/test.rb", <<~RUBY
-        require "hanami/action"
-
+      write "slices/main/actions/profile/show.rb", <<~RUBY
         module Main
           module Actions
-            class Test < Hanami::Action
-              def handle(req, res)
-                res.body = "200: Okay okay okay"
+            module Profile
+              class Show < Main::Action::Base
+                def handle(req, res)
+                  res.body = "200: Okay okay okay"
+                end
               end
             end
           end
         end
       RUBY
 
-      write "slices/main/views/test.rb", <<~RUBY
+      write "slices/main/views/profile/show.rb", <<~RUBY
         module Main
           module Views
-            class Test < Main::View
-              expose :name, :favorite_number
+            module Profile
+              class Show < Main::View::Base
+                expose :name, :favorite_number
+              end
             end
           end
         end
       RUBY
 
-      write "slices/main/web/templates/test.html.slim", <<~'SLIM'
+      write "slices/main/templates/profile/show.html.slim", <<~'SLIM'
         h1 Hello, #{name}. Your favorite number is #{favorite_number}, right?
       SLIM
 
       require "hanami/prepare"
 
-      action = Main::Slice["actions.test"]
+      action = Main::Slice["actions.profile.show"]
       response = action.(name: "Jennifer")
       rendered = response.body[0]
 
@@ -129,37 +135,39 @@ RSpec.describe "Application actions / View rendering / Automatic rendering", :ap
 
   it "Doesn't render view automatically when halt is called" do
     within_app do
-      write "slices/main/actions/test.rb", <<~RUBY
-        require "hanami/action"
-
+      write "slices/main/actions/profile/show.rb", <<~RUBY
         module Main
           module Actions
-            class Test < Hanami::Action
-              def handle(req, res)
-                halt 404
+            module Profile
+              class Show < Main::Action::Base
+                def handle(req, res)
+                  halt 404
+                end
               end
             end
           end
         end
       RUBY
 
-      write "slices/main/views/test.rb", <<~RUBY
+      write "slices/main/views/profile/show.rb", <<~RUBY
         module Main
           module Views
-            class Test < Main::View
-              expose :name, :favorite_number
+            module Profile
+              class Show < Main::View::Base
+                expose :name, :favorite_number
+              end
             end
           end
         end
       RUBY
 
-      write "slices/main/web/templates/test.html.slim", <<~'SLIM'
+      write "slices/main/templates/profile/show.html.slim", <<~'SLIM'
         h1 Hello, #{name}. Your favorite number is #{favorite_number}, right?
       SLIM
 
       require "hanami/prepare"
 
-      action = Main::Slice["actions.test"]
+      action = Main::Slice["actions.profile.show"]
       response = action.(name: "Jennifer")
       rendered = response.body[0]
 
@@ -170,12 +178,12 @@ RSpec.describe "Application actions / View rendering / Automatic rendering", :ap
 
   it "Does not render if no view is available" do
     within_app do
-      write "slices/main/actions/test.rb", <<~RUBY
-        require "hanami/action"
-
+      write "slices/main/actions/profile/show.rb", <<~RUBY
         module Main
           module Actions
-            class Test < Hanami::Action
+            module Profile
+              class Show < Main::Action::Base
+              end
             end
           end
         end
@@ -183,7 +191,7 @@ RSpec.describe "Application actions / View rendering / Automatic rendering", :ap
 
       require "hanami/prepare"
 
-      action = Main::Slice["actions.test"]
+      action = Main::Slice["actions.profile.show"]
       response = action.({})
       expect(response.body).to eq []
       expect(response.status).to eq 200
@@ -201,18 +209,59 @@ RSpec.describe "Application actions / View rendering / Automatic rendering", :ap
         end
       RUBY
 
-      write "slices/main/lib/view.rb", <<~RUBY
+      write "lib/test_app/action/base.rb", <<~RUBY
         # auto_register: false
 
-        require "hanami/view"
+        require "hanami/action"
 
-        module Main
-          class View < Hanami::View
+        module TestApp
+          module Action
+            class Base < Hanami::Action
+            end
           end
         end
       RUBY
 
-      write "slices/main/web/templates/layouts/application.html.slim", <<~SLIM
+      write "slices/main/lib/action/base.rb", <<~RUBY
+        # auto_register: false
+
+        require "test_app/action/base"
+
+        module Main
+          module Action
+            class Base < TestApp::Action::Base
+            end
+          end
+        end
+      RUBY
+
+      write "lib/test_app/view/base.rb", <<~RUBY
+        # auto_register: false
+
+        require "hanami/view"
+
+        module TestApp
+          module View
+            class Base < Hanami::View
+            end
+          end
+        end
+      RUBY
+
+      write "slices/main/lib/view/base.rb", <<~RUBY
+        # auto_register: false
+
+        require "test_app/view/base"
+
+        module Main
+          module View
+            class Base < TestApp::View::Base
+            end
+          end
+        end
+      RUBY
+
+      write "slices/main/templates/layouts/application.html.slim", <<~SLIM
         html
           body
             == yield
