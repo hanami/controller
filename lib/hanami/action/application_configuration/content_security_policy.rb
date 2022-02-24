@@ -12,7 +12,6 @@ module Hanami
         def initialize(&blk)
           @policy = {
             base_uri: "'self'",
-            child_src: "'self'",
             connect_src: "'self'",
             default_src: "'none'",
             font_src: "'self'",
