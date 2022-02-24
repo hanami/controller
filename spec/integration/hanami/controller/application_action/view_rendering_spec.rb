@@ -17,26 +17,66 @@ RSpec.describe "View rendering in application actions", :application_integration
         end
       RUBY
 
-      write "slices/main/lib/action.rb", <<~RUBY
+      write "lib/test_app/action/base.rb", <<~RUBY
         # auto_register: false
 
-        module Main
-          class Action < Hanami::Action
+        require "hanami/action"
+
+        module TestApp
+          module Action
+            class Base < Hanami::Action
+            end
           end
         end
       RUBY
 
-      write "slices/main/actions/test_action.rb", <<~RUBY
-        module Main
-          module Actions
-            class TestAction < Main::Action
-              include Deps[view: "views.test_view"]
+      write "lib/test_app/view/base.rb", <<~RUBY
+        # auto_register: false
 
-              def handle(req, res)
-                res[:job] = "Singer"
-                res[:age] = 0
-                res.render view, name: req.params[:name], age: 51
-              end
+        require "hanami/view"
+
+        module TestApp
+          module View
+            class Base < Hanami::View
+            end
+          end
+        end
+      RUBY
+
+      write "lib/test_app/view/context.rb", <<~RUBY
+        # auto_register: false
+
+        require "hanami/view/context"
+
+        module TestApp
+          module View
+            class Context < Hanami::View::Context
+            end
+          end
+        end
+      RUBY
+
+      write "slices/main/lib/action/base.rb", <<~RUBY
+        # auto_register: false
+
+        require "test_app/action/base"
+
+        module Main
+          module Action
+            class Base < TestApp::Action::Base
+            end
+          end
+        end
+      RUBY
+
+      write "slices/main/lib/view/base.rb", <<~RUBY
+        # auto_register: false
+
+        require "test_app/view/base"
+
+        module Main
+          module View
+            class Base < TestApp::View::Base
             end
           end
         end
@@ -44,8 +84,8 @@ RSpec.describe "View rendering in application actions", :application_integration
 
       write "slices/main/lib/view/context.rb", <<~RUBY
         module Main
-          class View < Hanami::View
-            class Context < Hanami::View::Context
+          module View
+            class Context < TestApp::View::Context
               def request
                 _options.fetch(:request)
               end
@@ -58,32 +98,44 @@ RSpec.describe "View rendering in application actions", :application_integration
         end
       RUBY
 
-      write "slices/main/lib/view.rb", <<~RUBY
-        # auto_register: false
-
+      write "slices/main/actions/users/show.rb", <<~RUBY
         module Main
-          class View < Hanami::View
-          end
-        end
-      RUBY
+          module Actions
+            module Users
+              class Show < Main::Action::Base
+                include Deps[view: "views.users.show"]
 
-      write "slices/main/views/test_view.rb", <<~RUBY
-        module Main
-          module Views
-            class TestView < Main::View
-              expose :name, :job, :age
+                def handle(req, res)
+                  res[:job] = "Singer"
+                  res[:age] = 0
+
+                  res.render view, name: req.params[:name], age: 51
+                end
+              end
             end
           end
         end
       RUBY
 
-      write "slices/main/web/templates/layouts/application.html.slim", <<~SLIM
+      write "slices/main/views/users/show.rb", <<~RUBY
+        module Main
+          module Views
+            module Users
+              class Show < Main::View::Base
+                expose :name, :job, :age
+              end
+            end
+          end
+        end
+      RUBY
+
+      write "slices/main/templates/layouts/application.html.slim", <<~SLIM
         html
           body
             == yield
       SLIM
 
-      write "slices/main/web/templates/test_view.html.slim", <<~'SLIM'
+      write "slices/main/templates/users/show.html.slim", <<~'SLIM'
         h1 Hello, #{name}
         - request.params.to_h.values.sort.each do |value|
           p = value
@@ -93,7 +145,7 @@ RSpec.describe "View rendering in application actions", :application_integration
 
       require "hanami/prepare"
 
-      action = Main::Slice["actions.test_action"]
+      action = Main::Slice["actions.users.show"]
       response = action.(name: "Jennifer", last_name: "Lopez")
       rendered = response.body[0]
 
