@@ -13,7 +13,7 @@ module Hanami
           @policy = {
             base_uri: "'self'",
             connect_src: "'self'",
-            default_src: "'none'",
+            default_src: "'self'",
             font_src: "'self'",
             form_action: "'self'",
             frame_ancestors: "'self'",

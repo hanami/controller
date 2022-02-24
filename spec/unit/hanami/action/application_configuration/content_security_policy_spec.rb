@@ -14,7 +14,7 @@ RSpec.describe Hanami::Action::ApplicationConfiguration, "#content_security_poli
         expected = [
           %(base-uri 'self';),
           %(connect-src 'self';),
-          %(default-src 'none';),
+          %(default-src 'self';),
           %(font-src 'self';),
           %(form-action 'self';),
           %(frame-ancestors 'self';),
