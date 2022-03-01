@@ -23,12 +23,9 @@ RSpec.describe "Application actions / View integration", :application_integratio
         end
       end
 
-      module Main
-      end
-      Hanami.application.register_slice :main, namespace: Main, root: "/path/to/app/slices/main"
-
+      Hanami.application.register_slice :main
       Hanami.application.tap(&pre_app_prepare_hook)
-      Hanami.prepare
+      Hanami.application.prepare
     end
 
     let(:pre_app_prepare_hook) { proc { } }

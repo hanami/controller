@@ -23,13 +23,8 @@ RSpec.describe "Application actions / Cookies", :application_integration do
       end
 
       Hanami.application.instance_eval(&application_hook) if respond_to?(:application_hook)
-
-      module Main
-      end
-
-      Hanami.application.register_slice :main, namespace: Main, root: "/path/to/app/slices/main"
-
-      Hanami.prepare
+      Hanami.application.register_slice :main
+      Hanami.application.prepare
     end
 
     subject(:action_class) {

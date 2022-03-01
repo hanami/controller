@@ -91,11 +91,8 @@ RSpec.describe "Application actions / HTTP sessions", :application_integration d
     before do
       application_class
 
-      module Main
-      end
-
-      Hanami.application.register_slice :main, namespace: Main, root: "/path/to/app/slices/main"
-      Hanami.prepare
+      Hanami.application.register_slice :main
+      Hanami.application.prepare
     end
 
     subject(:action_class) {
