@@ -12,11 +12,8 @@ RSpec.describe "Application actions / Configuration", :application_integration d
         end
       end
 
-      module Main
-      end
-
-      Hanami.application.register_slice :main, namespace: Main, root: "/path/to/app/slices/main"
-      Hanami.prepare
+      Hanami.application.register_slice :main
+      Hanami.application.prepare
     end
 
     let(:action_class) {
