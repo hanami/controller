@@ -27,7 +27,7 @@ RSpec.describe Hanami::Action::ApplicationConfiguration, "#content_security_poli
           %(plugin-types application/pdf;),
           %(script-src 'self';),
           %(style-src 'self' 'unsafe-inline' https:)
-        ].join("\n")
+        ].join(' ')
 
         expect(content_security_policy.to_str).to eq(expected)
       end
