@@ -19,7 +19,7 @@ group :validations do
 end
 
 group :test do
-  gem 'dry-files',   '~> 0.1', github: 'dry-rb/dry-files', branch: 'master'
+  gem 'dry-files',   '~> 0.1', github: 'dry-rb/dry-files', branch: 'main'
 
   gem 'hanami-cli',  '~> 2.0.alpha', github: 'hanami/cli', branch: 'main'
   gem 'hanami-view', '~> 2.0.alpha', github: 'hanami/view', branch: 'main'
