@@ -184,13 +184,7 @@ module Hanami
         end
       end
 
-      # FIXME: This `if` clause is needed to we can define a different config class
-      # inside the application action class. But it's pretty gross. We should find a
-      # better way.
-      if instance_variable_defined?(:@configuration)
-        # byebug
-        subclass.instance_variable_set '@configuration', configuration.dup
-      end
+      subclass.instance_variable_set '@configuration', configuration.dup
     end
 
     def self.configuration
