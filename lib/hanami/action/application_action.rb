@@ -109,7 +109,7 @@ module Hanami
         end
 
         def finish(req, res, halted)
-          res.render(view, **req.params) if render?(res)
+          res.render(view, **req.params) if render?(res, halted)
           super
         end
 
@@ -122,8 +122,8 @@ module Hanami
         #
         # @since 2.0.0
         # @api public
-        def render?(res)
-          view && res.body.empty?
+        def render?(res, halted)
+          view && res.body.empty? && halted.nil?
         end
       end
     end

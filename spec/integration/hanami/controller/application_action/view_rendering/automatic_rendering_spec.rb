@@ -55,7 +55,7 @@ RSpec.describe "Application actions / View rendering / Automatic rendering", :ap
                   res[:favorite_number] = 123
                 end
 
-                def render?(_res)
+                def render?(_res, _halted)
                   false
                 end
               end
@@ -173,6 +173,57 @@ RSpec.describe "Application actions / View rendering / Automatic rendering", :ap
 
       expect(rendered).to eq "Not Found"
       expect(response.status).to eq 404
+    end
+  end
+
+  it "Doesn't render view automatically when redirect_to is called" do
+    within_app do
+      write "slices/main/actions/profile/show.rb", <<~RUBY
+        module Main
+          module Actions
+            module Profile
+              class Show < Main::Action::Base
+                before :redirect_unless_name
+
+                def handle(req, res)
+                  res[:name] = req.params[:name]
+                end
+
+                private
+
+                def redirect_unless_name(req, res)
+                  res.redirect_to "/" unless req.params[:name]
+                end
+              end
+            end
+          end
+        end
+      RUBY
+
+      write "slices/main/views/profile/show.rb", <<~RUBY
+        module Main
+          module Views
+            module Profile
+              class Show < Main::View::Base
+                expose :name
+              end
+            end
+          end
+        end
+      RUBY
+
+      write "slices/main/templates/profile/show.html.slim", <<~'SLIM'
+        h1 Hello, #{name.upcase}
+      SLIM
+
+      require "hanami/prepare"
+
+      action = Main::Slice["actions.profile.show"]
+      response = action.({})
+      rendered = response.body[0]
+
+      expect(rendered).to eq "Found"
+      expect(response.status).to eq 302
     end
   end
 
