@@ -33,7 +33,7 @@ __Hanami::Controller__ supports Ruby (MRI) 3.0+
 Add this line to your application's Gemfile:
 
 ```ruby
-gem "hanami/controller"
+gem "hanami-controller"
 ```
 
 And then execute:
