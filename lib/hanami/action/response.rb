@@ -106,7 +106,7 @@ module Hanami
       end
 
       def redirect_to(url, status: 302)
-        return unless renderable?
+        return unless allow_redirect?
 
         redirect(::String.new(url), status)
         Halt.call(status)
@@ -166,6 +166,12 @@ module Hanami
         return !head? && body.empty? if body.respond_to?(:empty?)
 
         !@sending_file && !head?
+      end
+
+      def allow_redirect?
+        return body.empty? if body.respond_to?(:empty?)
+
+        !@sending_file
       end
 
       alias to_ary to_a
