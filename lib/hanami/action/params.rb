@@ -225,13 +225,13 @@ module Hanami
         errors.empty?
       end
 
-      # Serialize params to Hash
+      # Serialize whitelisted params to Hash
       #
       # @return [::Hash]
       #
       # @since 0.3.0
       def to_h
-        @params
+        @result.output.to_h
       end
       alias_method :to_hash, :to_h
 
