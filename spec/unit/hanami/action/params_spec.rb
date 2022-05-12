@@ -122,6 +122,13 @@ RSpec.describe Hanami::Action::Params do
             expect(response.body).to match(%(:id=>1))
           end
         end
+
+        context "with Hanami::Router" do
+          it "returns only the listed params" do
+            response = action.call('router.params' => { id: 23, another: 'x' })
+            expect(response.body).to eq([%({:id=>23})])
+          end
+        end
       end
 
       context "with an anoymous class" do
@@ -143,6 +150,13 @@ RSpec.describe Hanami::Action::Params do
           it "returns only the listed params" do
             response = Rack::MockRequest.new(action).request('PATCH', "?username=jodosha", params: { x: { foo: 'bar' } })
             expect(response.body).to match(%({:username=>"jodosha"}))
+          end
+        end
+
+        context "with Hanami::Router" do
+          it "returns only the listed params" do
+            response = action.call('router.params' => { username: 'jodosha', y: 'x' })
+            expect(response.body).to eq([%({:username=>"jodosha"})])
           end
         end
       end
