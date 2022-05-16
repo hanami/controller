@@ -218,7 +218,7 @@ module Hanami
     #
     # Raises a developer friendly error to include `hanami/validations`.
     #
-    # @raise [NotImplementedError]
+    # @raise [NoMethodError]
     #
     # @api private
     # @since 2.0.0
