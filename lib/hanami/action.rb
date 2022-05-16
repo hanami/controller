@@ -224,7 +224,7 @@ module Hanami
     # @since 2.0.0
     def self.params(klass = nil, &blk)
       raise NoMethodError,
-            "To use Hanami::Action.params include hanami/validations gem in your Gemfile"
+            "To use `params`, please add 'hanami/validations' gem to your Gemfile"
     end
 
     # Define a callback for an Action.
