@@ -20,7 +20,10 @@ RSpec.describe 'Without validations' do
           required(:id).filled
         end
       end
-    end.to raise_error(NoMethodError, /include hanami\/validations gem/)
+    end.to raise_error(
+      NoMethodError,
+      /To use `params`, please add 'hanami\/validations' gem to your Gemfile/
+    )
   end
 
   it "has params that don't respond to .valid?" do
