@@ -75,6 +75,18 @@ RSpec.describe Hanami::Action do
     end
   end
 
+  # TODO: how to test?
+  # `hanami/validations` is already required and therefore `Validatable` included.
+  xdescribe ".params" do
+    let(:action_class) {
+      Class.new(Hanami::Action)
+    }
+
+    it "raises Hanami::Action::NotImplementedError" do
+      expect { action_class.params }.to raise_error(Hanami::Action::NotImplementedError)
+    end
+  end
+
   describe "#call" do
     it "calls an action" do
       response = CallAction.new.call({})

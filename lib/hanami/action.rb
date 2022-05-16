@@ -18,6 +18,7 @@ require_relative 'action/mime'
 require_relative 'action/rack/file'
 require_relative 'action/request'
 require_relative 'action/response'
+require_relative 'action/error'
 
 module Hanami
   # An HTTP endpoint
@@ -212,6 +213,19 @@ module Hanami
     # FIXME: make this thread-safe
     def self.accepted_formats
       @accepted_formats ||= []
+    end
+
+    # Placeholder implementation for params class method
+    #
+    # Raises a developer friendly error to include `hanami/validations`.
+    #
+    # @raises [Hanami::Action::NotImplementedError]
+    #
+    # @api private
+    # @since 2.0.0
+    def self.params(klass = nil, &blk)
+      raise Hanami::Action::NotImplementedError,
+            "To use Hanami::Action.params include hanami/validations gem in your Gemfile"
     end
 
     # Define a callback for an Action.
