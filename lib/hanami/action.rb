@@ -18,7 +18,6 @@ require_relative 'action/mime'
 require_relative 'action/rack/file'
 require_relative 'action/request'
 require_relative 'action/response'
-require_relative 'action/error'
 
 module Hanami
   # An HTTP endpoint
@@ -219,12 +218,12 @@ module Hanami
     #
     # Raises a developer friendly error to include `hanami/validations`.
     #
-    # @raises [Hanami::Action::NotImplementedError]
+    # @raise [NotImplementedError]
     #
     # @api private
     # @since 2.0.0
     def self.params(klass = nil, &blk)
-      raise Hanami::Action::NotImplementedError,
+      raise NotImplementedError,
             "To use Hanami::Action.params include hanami/validations gem in your Gemfile"
     end
 
