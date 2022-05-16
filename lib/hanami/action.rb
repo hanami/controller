@@ -223,7 +223,7 @@ module Hanami
     # @api private
     # @since 2.0.0
     def self.params(klass = nil, &blk)
-      raise NotImplementedError,
+      raise NoMethodError,
             "To use Hanami::Action.params include hanami/validations gem in your Gemfile"
     end
 
