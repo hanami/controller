@@ -347,13 +347,19 @@ class YieldAfterBlockAction < AfterBlockAction
   end
 end
 
-class MissingSessionAction < Hanami::Action
+class MissingRequestSessionAction < Hanami::Action
+  def handle(req, _)
+    req.session[:user_id]
+  end
+end
+
+class MissingResponseSessionAction < Hanami::Action
   def handle(_, res)
     res.session[:user_id] = 23
   end
 end
 
-class MissingFlashAction < Hanami::Action
+class MissingResponseFlashAction < Hanami::Action
   def handle(_, res)
     res.flash[:error] = "ouch"
   end
