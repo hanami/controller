@@ -18,6 +18,7 @@ require_relative 'action/mime'
 require_relative 'action/rack/file'
 require_relative 'action/request'
 require_relative 'action/response'
+require_relative 'action/error'
 
 module Hanami
   # An HTTP endpoint
@@ -679,6 +680,28 @@ module Hanami
       else
         raise Hanami::Controller::UnknownFormatError.new(value)
       end
+    end
+
+    # Raise error when `Hanami::Action::Session` isn't included.
+    #
+    # To use `session`, include `Hanami::Action::Session`.
+    #
+    # @raise [Hanami::Action::MissingSessionError]
+    #
+    # @since 2.0.0
+    def session
+      raise Hanami::Action::MissingSessionError.new(:session)
+    end
+
+    # Raise error when `Hanami::Action::Session` isn't included.
+    #
+    # To use `flash`, include `Hanami::Action::Session`.
+    #
+    # @raise [Hanami::Action::MissingSessionError]
+    #
+    # @since 2.0.0
+    def flash
+      raise Hanami::Action::MissingSessionError.new(:flash)
     end
 
     # Finalize the response
