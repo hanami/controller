@@ -14,11 +14,13 @@ module Hanami
     #
     # @see http://www.rubydoc.info/gems/rack/Rack/Request
     class Request < ::Rack::Request
-      attr_reader :params
+      attr_reader :params, :sessions_enabled
 
-      def initialize(env, params)
+      def initialize(env:, params:, sessions_enabled: false)
         super(env)
+
         @params = params
+        @sessions_enabled = sessions_enabled
       end
 
       def id
@@ -34,6 +36,14 @@ module Hanami
 
       def accept_header?
         accept != Action::DEFAULT_ACCEPT
+      end
+
+      def session
+        unless sessions_enabled
+          raise Hanami::Action::MissingSessionError.new("Hanami::Action::Request#session")
+        end
+
+        super
       end
 
       # @since 0.1.0

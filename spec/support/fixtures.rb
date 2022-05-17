@@ -347,15 +347,21 @@ class YieldAfterBlockAction < AfterBlockAction
   end
 end
 
-class MissingSessionAction < Hanami::Action
-  def handle(*)
-    session
+class MissingRequestSessionAction < Hanami::Action
+  def handle(req, _)
+    req.session[:user_id]
   end
 end
 
-class MissingFlashAction < Hanami::Action
-  def handle(*)
-    flash
+class MissingResponseSessionAction < Hanami::Action
+  def handle(_, res)
+    res.session[:user_id] = 23
+  end
+end
+
+class MissingResponseFlashAction < Hanami::Action
+  def handle(_, res)
+    res.flash[:error] = "ouch"
   end
 end
 
@@ -852,6 +858,12 @@ module Sessions
 
     def handle(*, res)
       res.session[:user_id] = nil
+    end
+  end
+
+  class Disabled < Hanami::Action
+    def handle(*, res)
+      res.session[:user_id] = 23
     end
   end
 end
@@ -1803,6 +1815,12 @@ module Flash
           res.body = "flash_map: #{res.flash.map { |type, message| [type, message] }}"
         end
       end
+
+      class Disabled < Hanami::Action
+        def handle(_, res)
+          res.flash[:error] = "ouch"
+        end
+      end
     end
   end
 
@@ -1817,6 +1835,7 @@ module Flash
         get "/each_redirect",  to: Flash::Controllers::Home::EachRedirect.new
         get "/map",            to: Flash::Controllers::Home::Map.new
         get "/each",           to: Flash::Controllers::Home::Each.new
+        get "/disabled",       to: Flash::Controllers::Home::Disabled.new
       end
 
       @middleware = Rack::Builder.new do
