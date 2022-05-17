@@ -39,7 +39,7 @@ module Hanami
       end
 
       def session
-        raise Hanami::Action::MissingSessionError.new("session") unless @sessions_enabled
+        raise Hanami::Action::MissingSessionError.new("Hanami::Action::Request#session") unless @sessions_enabled
 
         super
       end

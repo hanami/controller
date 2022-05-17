@@ -12,11 +12,12 @@ module Hanami
     # @since 2.0.0
     #
     # @see Hanami::Action::Session
+    # @see Hanami::Action::Request#session
     # @see Hanami::Action::Response#session
     # @see Hanami::Action::Response#flash
     class MissingSessionError < Error
       def initialize(session_method)
-        super("To use `#{session_method}', add `include Hanami::Action::Session`.")
+        super("To use `#{session_method}`, add `include Hanami::Action::Session`.")
       end
     end
   end

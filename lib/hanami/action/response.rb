@@ -43,13 +43,9 @@ module Hanami
         end
       end
 
-<<<<<<< HEAD
       # @since 2.0.0
       # @api private
-      def initialize(request:, action:, configuration:, content_type: nil, env: {}, headers: {}, view_options: nil) # rubocop:disable Metrics/ParameterLists
-=======
-      def initialize(request:, action:, configuration:, content_type: nil, env: {}, headers: {}, view_options: nil, sessions_enabled: false)
->>>>>>> 7c29362 (Raise error in Hanami::Action::Response#flash and Hanami::Action::Response#session when sessions are not enabled)
+      def initialize(request:, action:, configuration:, content_type: nil, env: {}, headers: {}, view_options: nil, sessions_enabled: false) # rubocop:disable Metrics/ParameterLists
         super([], 200, headers.dup)
         set_header(Action::CONTENT_TYPE, content_type)
 
@@ -108,13 +104,9 @@ module Hanami
       # @since 2.0.0
       # @api public
       def session
-<<<<<<< HEAD
-        env[Action::RACK_SESSION] ||= {}
-=======
-        raise Hanami::Action::MissingSessionError.new("session") unless sessions_enabled
+        raise Hanami::Action::MissingSessionError.new("Hanami::Action::Response#session") unless sessions_enabled
 
-        env[SESSION_KEY] ||= {}
->>>>>>> 7c29362 (Raise error in Hanami::Action::Response#flash and Hanami::Action::Response#session when sessions are not enabled)
+        env[Action::RACK_SESSION] ||= {}
       end
 
       # @since 2.0.0
@@ -126,13 +118,9 @@ module Hanami
       # @since 2.0.0
       # @api public
       def flash
-<<<<<<< HEAD
-        @flash ||= Flash.new(session[Flash::KEY])
-=======
-        raise Hanami::Action::MissingSessionError.new("flash") unless sessions_enabled
+        raise Hanami::Action::MissingSessionError.new("Hanami::Action::Response#flash") unless sessions_enabled
 
-        @flash ||= Flash.new(session[FLASH_SESSION_KEY])
->>>>>>> 7c29362 (Raise error in Hanami::Action::Response#flash and Hanami::Action::Response#session when sessions are not enabled)
+        @flash ||= Flash.new(session[Flash::KEY])
       end
 
       # @since 2.0.0
