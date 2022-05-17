@@ -857,7 +857,7 @@ module Sessions
 
   class Disabled < Hanami::Action
     def handle(*, res)
-      res.sessions[:user_id] = 23
+      res.session[:user_id] = 23
     end
   end
 end
