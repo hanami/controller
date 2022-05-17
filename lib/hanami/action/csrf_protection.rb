@@ -96,6 +96,7 @@ module Hanami
       # @api private
       def self.included(action)
         unless Hanami.respond_to?(:env?) && Hanami.env?(:test)
+          action.include Hanami::Action::Session
           action.class_eval do
             before :set_csrf_token, :verify_csrf_token
           end

@@ -27,7 +27,7 @@ module Hanami
 
       # @since 2.0.0
       # @api private
-      attr_reader :request, :action, :exposures, :format, :env, :view_options
+      attr_reader :request, :action, :exposures, :format, :env, :view_options, :sessions_enabled
 
       # @since 2.0.0
       # @api private
@@ -43,9 +43,13 @@ module Hanami
         end
       end
 
+<<<<<<< HEAD
       # @since 2.0.0
       # @api private
       def initialize(request:, action:, configuration:, content_type: nil, env: {}, headers: {}, view_options: nil) # rubocop:disable Metrics/ParameterLists
+=======
+      def initialize(request:, action:, configuration:, content_type: nil, env: {}, headers: {}, view_options: nil, sessions_enabled: false)
+>>>>>>> 7c29362 (Raise error in Hanami::Action::Response#flash and Hanami::Action::Response#session when sessions are not enabled)
         super([], 200, headers.dup)
         set_header(Action::CONTENT_TYPE, content_type)
 
@@ -57,6 +61,7 @@ module Hanami
         @env = env
         @view_options = view_options || DEFAULT_VIEW_OPTIONS
 
+        @sessions_enabled = sessions_enabled
         @sending_file = false
       end
 
@@ -103,7 +108,13 @@ module Hanami
       # @since 2.0.0
       # @api public
       def session
+<<<<<<< HEAD
         env[Action::RACK_SESSION] ||= {}
+=======
+        raise Hanami::Action::MissingSessionError.new("session") unless sessions_enabled
+
+        env[SESSION_KEY] ||= {}
+>>>>>>> 7c29362 (Raise error in Hanami::Action::Response#flash and Hanami::Action::Response#session when sessions are not enabled)
       end
 
       # @since 2.0.0
@@ -115,7 +126,13 @@ module Hanami
       # @since 2.0.0
       # @api public
       def flash
+<<<<<<< HEAD
         @flash ||= Flash.new(session[Flash::KEY])
+=======
+        raise Hanami::Action::MissingSessionError.new("flash") unless sessions_enabled
+
+        @flash ||= Flash.new(session[FLASH_SESSION_KEY])
+>>>>>>> 7c29362 (Raise error in Hanami::Action::Response#flash and Hanami::Action::Response#session when sessions are not enabled)
       end
 
       # @since 2.0.0
