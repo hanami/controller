@@ -598,28 +598,6 @@ module Hanami
       end
     end
 
-    # Raise error when `Hanami::Action::Session` isn't included.
-    #
-    # To use `session`, include `Hanami::Action::Session`.
-    #
-    # @raise [Hanami::Action::MissingSessionError]
-    #
-    # @since 2.0.0
-    def session
-      raise Hanami::Action::MissingSessionError.new(:session)
-    end
-
-    # Raise error when `Hanami::Action::Session` isn't included.
-    #
-    # To use `flash`, include `Hanami::Action::Session`.
-    #
-    # @raise [Hanami::Action::MissingSessionError]
-    #
-    # @since 2.0.0
-    def flash
-      raise Hanami::Action::MissingSessionError.new(:flash)
-    end
-
     # Finalize the response
     #
     # Prepare the data before the response will be returned to the webserver

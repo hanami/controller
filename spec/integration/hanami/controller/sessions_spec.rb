@@ -12,6 +12,7 @@ RSpec.describe "HTTP sessions" do
       get    "/",       to: Dashboard::Index.new
       post   "/login",  to: Sessions::Create.new
       delete "/logout", to: Sessions::Destroy.new
+      get    "/disabled", to: Sessions::Disabled.new
     end
   end
 
@@ -51,6 +52,13 @@ RSpec.describe "HTTP sessions" do
 
     get "/"
     expect(response.status).to be(401)
+  end
+
+  context "when sessions not enabled" do
+    it "raises Hanami::Action::MissingSessionError" do
+      expected = Hanami::Action::MissingSessionError
+      expect { get "/disabled" }.to raise_error(expected, "To use `flash', add `include Hanami::Action::Session`.")
+    end
   end
 end
 
