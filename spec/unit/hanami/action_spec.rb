@@ -144,21 +144,30 @@ RSpec.describe Hanami::Action do
     context "when setting res.session with sessions disabled" do
       it "raises an informative exception" do
         expected = Hanami::Action::MissingSessionError
-        expect { MissingResponseSessionAction.new.call({}) }.to raise_error(expected, "To use `session', add `include Hanami::Action::Session`.")
+        expect { MissingResponseSessionAction.new.call({}) }.to raise_error(
+          expected,
+          "To use `Hanami::Action::Response#session`, add `include Hanami::Action::Session`."
+        )
       end
     end
 
     context "when setting res.flash method with sessions disabled" do
       it "raises an informative exception" do
         expected = Hanami::Action::MissingSessionError
-        expect { MissingResponseFlashAction.new.call({}) }.to raise_error(expected, "To use `flash', add `include Hanami::Action::Session`.")
+        expect { MissingResponseFlashAction.new.call({}) }.to raise_error(
+          expected,
+          "To use `Hanami::Action::Response#flash`, add `include Hanami::Action::Session`."
+        )
       end
     end
 
     context "when accessing req.session with sessions disabled" do
       it "raises an informative exception" do
         expected = Hanami::Action::MissingSessionError
-        expect { MissingRequestSessionAction.new.call({}) }.to raise_error(expected, "To use `session', add `include Hanami::Action::Session`.")
+        expect { MissingRequestSessionAction.new.call({}) }.to raise_error(
+          expected,
+          "To use `Hanami::Action::Request#session`, add `include Hanami::Action::Session`."
+        )
       end
     end
   end
