@@ -17,9 +17,11 @@ module Hanami
 
       attr_reader :params
 
-      def initialize(env, params)
+      def initialize(env, params, sessions_enabled = false)
         super(env)
+
         @params = params
+        @sessions_enabled = sessions_enabled
       end
 
       def id
@@ -35,6 +37,12 @@ module Hanami
 
       def accept_header?
         accept != DEFAULT_ACCEPT
+      end
+
+      def session
+        raise Hanami::Action::MissingSessionError.new("session") unless @sessions_enabled
+
+        super
       end
 
       # @since 0.1.0

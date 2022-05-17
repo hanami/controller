@@ -159,7 +159,8 @@ module Hanami
       def request_id
         env.fetch(REQUEST_ID) do
           # FIXME: raise a meaningful error, by inviting devs to include Hanami::Action::Session
-          raise "Can't find request ID"
+          # raise "Can't find request ID"
+          raise Hanami::Action::MissingSessionError.new('request_id')
         end
       end
 

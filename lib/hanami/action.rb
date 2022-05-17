@@ -546,7 +546,7 @@ module Hanami
     end
 
     def build_request(env, params)
-      Request.new(env, params)
+      Request.new(env, params, sessions_enabled)
     end
 
     def build_response(**options)
