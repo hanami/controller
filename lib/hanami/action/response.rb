@@ -95,7 +95,9 @@ module Hanami
       end
 
       def session
-        raise Hanami::Action::MissingSessionError.new("Hanami::Action::Response#session") unless sessions_enabled
+        unless sessions_enabled
+          raise Hanami::Action::MissingSessionError.new("Hanami::Action::Response#session")
+        end
 
         env[SESSION_KEY] ||= {}
       end
@@ -105,7 +107,9 @@ module Hanami
       end
 
       def flash
-        raise Hanami::Action::MissingSessionError.new("Hanami::Action::Response#flash") unless sessions_enabled
+        unless sessions_enabled
+          raise Hanami::Action::MissingSessionError.new("Hanami::Action::Response#flash")
+        end
 
         @flash ||= Flash.new(session[FLASH_SESSION_KEY])
       end
