@@ -427,7 +427,7 @@ module Hanami
       halted = catch :halt do
         begin
           params   = self.class.params_class.new(env)
-          request  = build_request(env, params)
+          request  = build_request(env: env, params: params, sessions_enabled: sessions_enabled)
           response = build_response(
             request: request,
             action: name,
@@ -545,8 +545,8 @@ module Hanami
       false
     end
 
-    def build_request(env, params)
-      Request.new(env, params, sessions_enabled)
+    def build_request(**options)
+      Request.new(**options)
     end
 
     def build_response(**options)

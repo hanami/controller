@@ -61,7 +61,10 @@ RSpec.describe Hanami::Action::Request do
 
     context 'non-standard port' do
       it 'gets host and port' do
-        request = described_class.new(Rack::MockRequest.env_for('http://example.com:81/foo?q=bar', {}), {})
+        request = described_class.new(
+          env: Rack::MockRequest.env_for('http://example.com:81/foo?q=bar', {}),
+          params: {}
+        )
         expect(request.host_with_port).to eq('example.com:81')
       end
     end
@@ -158,7 +161,7 @@ RSpec.describe Hanami::Action::Request do
         []=
         values_at
       )
-      request = described_class.new({}, {})
+      request = described_class.new(env: {}, params: {})
       methods.each do |method|
         expect { request.send(method) }.to raise_error(NotImplementedError)
       end
@@ -170,6 +173,6 @@ RSpec.describe Hanami::Action::Request do
   def build_request(attributes = {})
     url = attributes.delete('url') || 'http://example.com/foo?q=bar'
     env = Rack::MockRequest.env_for(url, attributes)
-    described_class.new(env, {})
+    described_class.new(env: env, params: {})
   end
 end

@@ -17,7 +17,7 @@ module Hanami
 
       attr_reader :params, :sessions_enabled
 
-      def initialize(env, params, sessions_enabled = false)
+      def initialize(env:, params:, sessions_enabled: false)
         super(env)
 
         @params = params
