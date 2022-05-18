@@ -825,8 +825,8 @@ module Dashboard
     include Hanami::Action::Session
     before :authenticate!
 
-    def handle(*, res)
-      res.body = "User ID from session: #{res.session[:user_id]}"
+    def handle(req, res)
+      res.body = "User ID from session: #{req.session[:user_id]}"
     end
 
     private
@@ -862,6 +862,14 @@ module Sessions
   class Disabled < Hanami::Action
     def handle(*, res)
       res.session[:user_id] = 23
+    end
+  end
+
+  class ModifyingRequestSession < Hanami::Action
+    include Hanami::Action::Session
+
+    def handle(req, *)
+      req.session[:user_id] = 21
     end
   end
 end
