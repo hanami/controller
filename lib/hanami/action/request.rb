@@ -43,7 +43,17 @@ module Hanami
           raise Hanami::Action::MissingSessionError.new("Hanami::Action::Request#session")
         end
 
-        super
+        # TODO: clarify should req/res session/flash support access by symbol, string or both?
+        # TODO: deep freeze?
+        @session ||= Hanami::Utils::Hash.deep_symbolize(super.to_h).freeze
+      end
+
+      def flash
+        unless sessions_enabled
+          raise Hanami::Action::MissingSessionError.new("Hanami::Action::Request#flash")
+        end
+
+        @flash ||= Flash.new(session[FLASH_SESSION_KEY]).freeze
       end
 
       # @since 0.1.0
