@@ -1,6 +1,11 @@
 # Hanami::Controller
 Complete, fast and testable actions for Rack
 
+## v2.0.0.alpha8 - 2022-02-19
+
+### Changed
+- [Tim Riley] Removed automatic integration of `Hanami::Action` subclasses with their surrounding Hanami application. Action base classes within Hanami apps should inherit from `Hanami::Application::Action` instead.
+
 ## v2.0.0.alpha6 - 2022-02-10
 ### Added
 - [Luca Guidi] Official support for Ruby: MRI 3.1
