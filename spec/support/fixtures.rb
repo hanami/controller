@@ -1786,7 +1786,11 @@ module Flash
           if req.env["REQUEST_METHOD"] == "GET"
             res.redirect_to "/books"
           else
-            res.redirect_to "/print"
+            if req.env["hanami.session_object"] == "request"
+              res.redirect_to "/print-req"
+            else
+              res.redirect_to "/print"
+            end
           end
         end
       end
@@ -1804,6 +1808,14 @@ module Flash
 
         def handle(_, res)
           res.body = res.flash[:hello]
+        end
+      end
+
+      class PrintRequestFlash < Hanami::Action
+        include Hanami::Action::Session
+
+        def handle(req, _)
+          res.body = req.flash[:hello]
         end
       end
 
@@ -1858,6 +1870,7 @@ module Flash
         get "/",      to: Flash::Controllers::Home::Index.new
         post "/",     to: Flash::Controllers::Home::Index.new
         get "/print", to: Flash::Controllers::Home::Print.new
+        get "/print-req", to: Flash::Controllers::Home::PrintRequestFlash.new
         get "/books", to: Flash::Controllers::Home::Books.new
         get "/map_redirect",   to: Flash::Controllers::Home::MapRedirect.new
         get "/each_redirect",  to: Flash::Controllers::Home::EachRedirect.new
