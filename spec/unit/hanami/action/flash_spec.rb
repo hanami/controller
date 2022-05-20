@@ -56,6 +56,16 @@ RSpec.describe Hanami::Action::Flash do
         .to change { flash.next }
         .to(a: "val")
     end
+
+    context "when frozen" do
+      before do
+        flash.freeze
+      end
+
+      it "raises FrozenError" do
+        expect { flash[:a] = "val" }.to raise_error(FrozenError)
+      end
+    end
   end
 
   describe "#each" do
@@ -116,6 +126,16 @@ RSpec.describe Hanami::Action::Flash do
         expect { flash.discard :b }
           .to change { flash.next }
           .to({})
+      end
+
+      context "when frozen" do
+        before do
+          flash.freeze
+        end
+
+        it "raises FrozenError" do
+          expect { flash.discard :a }.to raise_error(FrozenError)
+        end
       end
     end
 
@@ -186,6 +206,16 @@ RSpec.describe Hanami::Action::Flash do
           .to(a: "val")
       end
     end
+
+    context "when frozen" do
+      before do
+        flash.freeze
+      end
+
+      it "raises FrozenError" do
+        expect { flash.keep }.to raise_error(FrozenError)
+      end
+    end
   end
 
   describe "#sweep" do
@@ -198,5 +228,9 @@ RSpec.describe Hanami::Action::Flash do
         .to change { flash.next }.from(a: "val").to({})
         .and change { flash.now }.from({}).to(a: "val")
     end
+  end
+
+  describe "#freeze" do
+    it "freezes the flash object and underlying data structures"
   end
 end

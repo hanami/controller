@@ -163,6 +163,15 @@ module Hanami
     # @api private
     LOCATION = 'Location'.freeze
 
+    # Flash session key
+    #
+    # @since 2.0.0
+    # @api private
+    #
+    # @see Hanami::Action::Request#flash
+    # @see Hanami::Action::Response#flash
+    FLASH_SESSION_KEY = "_flash".freeze
+
     # Override Ruby's hook for modules.
     # It includes basic Hanami::Action modules to the given class.
     #

@@ -31,8 +31,6 @@ module Hanami
 
       HEAD = "HEAD"
 
-      FLASH_SESSION_KEY = "_flash"
-
       EMPTY_BODY = [].freeze
 
       FILE_SYSTEM_ROOT = Pathname.new("/").freeze

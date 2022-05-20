@@ -123,6 +123,8 @@ module Hanami
       # @since 2.0.0
       # @api public
       def discard(key = (no_arg = true))
+        raise FrozenError if frozen?
+
         if no_arg
           @next.clear
         else
@@ -144,6 +146,8 @@ module Hanami
       # @since 2.0.0
       # @api public
       def keep(key = (no_arg = true))
+        raise FrozenError if frozen?
+
         if no_arg
           @next.merge!(@flash)
         else
@@ -156,9 +160,23 @@ module Hanami
       # @since 2.0.0
       # @api public
       def sweep
+        raise FrozenError if frozen?
+
         @flash = @next.dup
         @next.clear
         self
+      end
+
+      # Freeze the flash object
+      #
+      # @since 2.0.0
+      # @api public
+      def freeze
+        # TODO: deep freeze hashes
+        @flash.freeze
+        @next.freeze
+
+        super
       end
     end
   end
