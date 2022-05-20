@@ -170,7 +170,7 @@ module Hanami
     #
     # @see Hanami::Action::Request#flash
     # @see Hanami::Action::Response#flash
-    FLASH_SESSION_KEY = "_flash".freeze
+    FLASH_SESSION_KEY = :_flash
 
     # Override Ruby's hook for modules.
     # It includes basic Hanami::Action modules to the given class.

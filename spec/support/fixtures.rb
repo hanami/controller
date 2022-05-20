@@ -1814,7 +1814,7 @@ module Flash
       class PrintRequestFlash < Hanami::Action
         include Hanami::Action::Session
 
-        def handle(req, _)
+        def handle(req, res)
           res.body = req.flash[:hello]
         end
       end
