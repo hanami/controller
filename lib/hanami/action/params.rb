@@ -163,9 +163,9 @@ module Hanami
       def initialize(env)
         @env = env
         super(_extract_params)
-        @result = validate
-        @params = @result.output.to_h
-        @errors = Errors.new(@result.messages)
+        validation = validate
+        @params = validation.to_h
+        @errors = Errors.new(validation.messages)
         freeze
       end
 
