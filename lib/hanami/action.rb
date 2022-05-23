@@ -528,7 +528,7 @@ module Hanami
     end
 
     def enforce_accepted_mime_types(req, *)
-      Mime.accepted_mime_type?(req, accepted_mime_types, configuration) or halt 406
+      Mime.accepted_mime_type?(req, accepted_mime_types, configuration) or halt 415
     end
 
     def exception_handler(exception)
