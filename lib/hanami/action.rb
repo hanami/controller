@@ -214,6 +214,19 @@ module Hanami
       @accepted_formats ||= []
     end
 
+    # Placeholder implementation for params class method
+    #
+    # Raises a developer friendly error to include `hanami/validations`.
+    #
+    # @raise [NoMethodError]
+    #
+    # @api private
+    # @since 2.0.0
+    def self.params(klass = nil, &blk)
+      raise NoMethodError,
+            "To use `params`, please add 'hanami/validations' gem to your Gemfile"
+    end
+
     # Define a callback for an Action.
     # The callback will be executed **before** the action is called, in the
     # order they are added.
