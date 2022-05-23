@@ -225,7 +225,7 @@ module Hanami
         errors.empty?
       end
 
-      # Serialize whitelisted params to Hash
+      # Serialize validated params to Hash
       #
       # @return [::Hash]
       #
