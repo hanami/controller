@@ -373,7 +373,7 @@ module Hanami
     #   # When called with "*/*"              => 200
     #   # When called with "text/html"        => 200
     #   # When called with "application/json" => 200
-    #   # When called with "application/xml"  => 406
+    #   # When called with "application/xml"  => 415
     def self.accept(*formats)
       @accepted_formats = *formats
       before :enforce_accepted_mime_types
