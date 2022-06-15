@@ -12,12 +12,14 @@ RSpec.describe "HTTP HEAD" do
     last_response
   end
 
-  it "doesn't cleanup body, but only default headers" do
+  it "Returns headers but an empty body " do
     head "/"
+    headers = response.headers.to_a
 
     expect(response.status).to be(200)
-    expect(response.body).to   eq("index")
-    expect(response.headers.to_a).to_not include(["X-Frame-Options", "DENY"])
+    expect(response.body.to_s).to be_empty
+    expect(headers).to include(["Content-Type", "application/octet-stream; charset=utf-8"])
+    expect(headers).to include(["Content-Length", "5"])
   end
 
   it "allows to bypass restriction on custom headers" do

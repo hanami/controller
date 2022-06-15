@@ -528,9 +528,7 @@ module Hanami
 
     # @since 2.0.0
     # @api private
-    def _requires_empty_headers?(res)
-      _requires_no_body?(res) || res.head?
-    end
+    alias_method :_requires_empty_headers?, :_requires_no_body?
 
     private
 
@@ -682,6 +680,11 @@ module Hanami
       res.headers.select! { |header, _| keep_response_header?(header) }
     end
 
+    # @api private
+    def _empty_body(res)
+      res.body = Response::EMPTY_BODY
+    end
+
     def format(value)
       case value
       when Symbol
@@ -709,6 +712,7 @@ module Hanami
       res.status, res.body = *halted unless halted.nil?
 
       _empty_headers(res) if _requires_empty_headers?(res)
+      _empty_body(res) if res.head?
 
       res.set_format(Action::Mime.detect_format(res.content_type, configuration))
       res[:params] = req.params
