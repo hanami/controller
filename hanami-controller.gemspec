@@ -25,7 +25,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'dry-configurable', '~> 0.13', '>= 0.13.0'
 
   spec.add_development_dependency 'bundler',   '>= 1.6', '< 3'
-  spec.add_development_dependency 'rack-test', '~> 1.0'
+  spec.add_development_dependency 'rack-test', '~> 2.0'
   spec.add_development_dependency 'rake',      '~> 13'
   spec.add_development_dependency 'rspec',     '~> 3.9'
 end
