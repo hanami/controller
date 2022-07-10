@@ -6,7 +6,7 @@ require "rack/mime"
 
 module Hanami
   class Action
-    module Mime
+    module Mime # rubocop:disable Metrics/ModuleLength
       DEFAULT_CONTENT_TYPE = "application/octet-stream"
       DEFAULT_CHARSET      = "utf-8"
 

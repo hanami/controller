@@ -43,7 +43,7 @@ module Hanami
       # @since 0.2.0
       # @api private
       def initialize(format)
-        super("Cannot find a corresponding Mime type for '#{format}'. Please configure it with Hanami::Controller::Configuration#format.")
+        super("Cannot find a corresponding Mime type for '#{format}'. Please configure it with Hanami::Controller::Configuration#format.") # rubocop:disable Layout/LineLength
       end
     end
   end

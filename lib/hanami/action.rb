@@ -3,7 +3,7 @@
 begin
   require "hanami/validations"
   require "hanami/action/validatable"
-rescue LoadError
+rescue LoadError # rubocop:disable Lint/SuppressedException
 end
 
 require "hanami/utils/class_attribute"
@@ -172,6 +172,8 @@ module Hanami
     # @since 0.1.0
     # @api private
     def self.inherited(subclass)
+      super
+
       if subclass.superclass == Action
         subclass.class_eval do
           include Utils::ClassAttribute

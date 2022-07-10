@@ -48,7 +48,7 @@ module Hanami
         end
       end
 
-      def initialize(request:, action:, configuration:, content_type: nil, env: {}, headers: {}, view_options: nil)
+      def initialize(request:, action:, configuration:, content_type: nil, env: {}, headers: {}, view_options: nil) # rubocop:disable Metrics/ParameterLists
         super([], 200, headers.dup)
         set_header("Content-Type", content_type)
 
@@ -158,7 +158,7 @@ module Hanami
         end
       end
 
-      def set_format(value)
+      def set_format(value) # rubocop:disable Naming/AccessorMethodName
         @format = value
       end
 

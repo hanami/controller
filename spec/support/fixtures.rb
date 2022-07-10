@@ -457,6 +457,7 @@ class SetCookiesWithOptionsAction < Hanami::Action
   include Hanami::Action::Cookies
 
   def initialize(expires: Time.now.utc)
+    super()
     @expires = expires
   end
 
@@ -497,7 +498,8 @@ class CatchAndThrowSymbolAction < Hanami::Action
   def handle(_req, _res)
     catch :done do
       throw :done, 1
-      raise "This code shouldn't be reachable"
+
+      raise "This code shouldn't be reachable" # rubocop:disable Lint/UnreachableCode
     end
   end
 end
@@ -985,7 +987,7 @@ module MusicPlayer
 
   class Application
     def initialize
-      configuration = Hanami::Action::Configuration.new do |config|
+      Hanami::Action::Configuration.new do |config|
         config.handle_exception ArgumentError => 400
         config.default_headers(
           "X-Frame-Options" => "DENY"
@@ -1134,7 +1136,7 @@ module SendFileTest
 
   class Application
     def initialize
-      configuration = Hanami::Action::Configuration.new do |config|
+      Hanami::Action::Configuration.new do |config|
         config.public_directory = "spec/support/fixtures"
       end
 
@@ -1222,7 +1224,7 @@ module HeadTest
 
   class Application
     def initialize
-      configuration = Hanami::Action::Configuration.new do |config|
+      Hanami::Action::Configuration.new do |config|
         config.default_headers = {
           "X-Frame-Options" => "DENY"
         }
@@ -1692,7 +1694,7 @@ end
 module RouterIntegration
   class Application
     def initialize
-      configuration = Hanami::Action::Configuration.new
+      Hanami::Action::Configuration.new
 
       routes = Hanami::Router.new do
         get "/",         to: Root.new
@@ -1720,8 +1722,8 @@ end
 module SessionIntegration
   class Application
     def initialize
-      configuration = Hanami::Action::Configuration.new
-      resolver      = EndpointResolver.new
+      Hanami::Action::Configuration.new
+      resolver = EndpointResolver.new
 
       routes = Hanami::Router.new(resolver: resolver) do
         get    "/",       to: Dashboard::Index.new
@@ -1831,7 +1833,7 @@ module Flash
 
   class Application
     def initialize
-      configuration = Hanami::Action::Configuration.new
+      Hanami::Action::Configuration.new
       routes = Hanami::Router.new do
         get "/",      to: Flash::Controllers::Home::Index.new
         post "/",     to: Flash::Controllers::Home::Index.new
@@ -1910,7 +1912,7 @@ module Inheritance
 
   class Application
     def initialize
-      configuration = Hanami::Action::Configuration.new
+      Hanami::Action::Configuration.new
       @routes = Hanami::Router.new do
         resources :books, only: %i[show destroy]
       end
