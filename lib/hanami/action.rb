@@ -433,20 +433,13 @@ module Hanami
       @_deps = deps
     end
 
-    # Implements the Rack/Hanami::Action protocol
-    #
-    # @since 0.1.0
-    # @api private
-    def call(env)
-    end
-
     # Hook for subclasses to apply behavior as part of action invocation
     #
     # @param request [Hanami::Action::Request]
     # @param response [Hanami::Action::Response]
     #
     # @since 2.0.0
-    def handle(request, response)
+    def call(request, response)
     end
 
     def accepted_mime_types

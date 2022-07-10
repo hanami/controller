@@ -61,7 +61,7 @@ They are the endpoints that respond to incoming HTTP requests.
 
 ```ruby
 class Show < Hanami::Action
-  def handle(req, res)
+  def call(req, res)
     res[:article] = ArticleRepository.new.find(req.params[:id])
   end
 end
@@ -86,7 +86,7 @@ class Show < Hanami::Action
     super(configuration: configuration)
   end
 
-  def handle(req, res)
+  def call(req, res)
     res[:article] = repository.find(req.params[:id])
   end
 
@@ -110,7 +110,7 @@ With `Hanami::Router`:
 
 ```ruby
 class Show < Hanami::Action
-  def handle(req, *)
+  def call(req, *)
     # ...
     puts req.params # => { id: 23 } extracted from Rack env
   end
@@ -121,7 +121,7 @@ Standalone:
 
 ```ruby
 class Show < Hanami::Action
-  def handle(req, *)
+  def call(req, *)
     # ...
     puts req.params # => { :"rack.version"=>[1, 2], :"rack.input"=>#<StringIO:0x007fa563463948>, ... }
   end
@@ -132,7 +132,7 @@ Unit Testing:
 
 ```ruby
 class Show < Hanami::Action
-  def handle(req, *)
+  def call(req, *)
     # ...
     puts req.params # => { id: 23, key: "value" } passed as it is from testing
   end
@@ -164,7 +164,7 @@ class Signup < Hanami::Action
     end
   end
 
-  def handle(req, *)
+  def call(req, *)
     # Describe inheritance hierarchy
     puts req.params.class            # => Signup::Params
     puts req.params.class.superclass # => Hanami::Action::Params
@@ -205,7 +205,7 @@ class Signup < Hanami::Action
     optional(:avatar).filled(size?: 1..(MEGABYTE * 3))
   end
 
-  def handle(req, *)
+  def call(req, *)
     halt 400 unless req.params.valid?
     # ...
   end
@@ -228,7 +228,7 @@ This is the same `res` response object passed to `#handle`, where you can use it
 
 ```ruby
 class Show < Hanami::Action
-  def handle(*, res)
+  def call(*, res)
     res.status  = 201
     res.body    = "Hi!"
     res.headers.merge!("X-Custom" => "OK")
@@ -246,7 +246,7 @@ By default, an action exposes the received params.
 
 ```ruby
 class Show < Hanami::Action
-  def handle(req, res)
+  def call(req, res)
     res[:article] = ArticleRepository.new.find(req.params[:id])
   end
 end
@@ -270,7 +270,7 @@ They are useful for shared logic like authentication checks.
 class Show < Hanami::Action
   before :authenticate, :set_article
 
-  def handle(*)
+  def call(*)
   end
 
   private
@@ -293,7 +293,7 @@ class Show < Hanami::Action
   before { ... } # do some authentication stuff
   before { |req, res| res[:article] = ArticleRepository.new.find(req.params[:id]) }
 
-  def handle(*)
+  def call(*)
   end
 end
 ```
@@ -309,7 +309,7 @@ An exception handler can be a valid HTTP status code (eg. `500`, `401`), or a `S
 class Show < Hanami::Action
   handle_exception StandardError => 500
 
-  def handle(*)
+  def call(*)
     raise
   end
 end
@@ -324,7 +324,7 @@ You can map a specific raised exception to a different HTTP status.
 class Show < Hanami::Action
   handle_exception RecordNotFound => 404
 
-  def handle(*)
+  def call(*)
     raise RecordNotFound
   end
 end
@@ -363,7 +363,7 @@ configuration = Hanami::Controller::Configuration.new do |config|
 end
 
 class Show < Hanami::Action
-  def handle(*)
+  def call(*)
     raise RecordNotFound
   end
 end
@@ -382,13 +382,13 @@ module Articles
   class Index < Hanami::Action
     handle_exception MyCustomException => :handle_my_exception
 
-    def handle(*)
+    def call(*)
       raise MyCustomException
     end
 
     private
 
-    def handle_my_exception(req, res, exception)
+    def call_my_exception(req, res, exception)
       # ...
     end
   end
@@ -396,13 +396,13 @@ module Articles
   class Show < Hanami::Action
     handle_exception StandardError => :handle_standard_error
 
-    def handle(*)
+    def call(*)
       raise MyCustomException
     end
 
     private
 
-    def handle_standard_error(req, res, exception)
+    def call_standard_error(req, res, exception)
       # ...
     end
   end
@@ -421,7 +421,7 @@ When `#halt` is used with a valid HTTP code, it stops the execution and sets the
 class Show < Hanami::Action
   before :authenticate!
 
-  def handle(*)
+  def call(*)
     # ...
   end
 
@@ -440,7 +440,7 @@ Alternatively, you can specify a custom message.
 
 ```ruby
 class Show < Hanami::Action
-  def handle(req, res)
+  def call(req, res)
     res[:droid] = DroidRepository.new.find(req.params[:id]) or not_found
   end
 
@@ -469,7 +469,7 @@ require "hanami/action/cookies"
 class ReadCookiesFromRackEnv < Hanami::Action
   include Hanami::Action::Cookies
 
-  def handle(req, *)
+  def call(req, *)
     # ...
     req.cookies[:foo] # => "bar"
   end
@@ -488,7 +488,7 @@ require "hanami/action/cookies"
 class SetCookies < Hanami::Action
   include Hanami::Action::Cookies
 
-  def handle(*, res)
+  def call(*, res)
     # ...
     res.cookies[:foo] = "bar"
   end
@@ -507,7 +507,7 @@ require "hanami/action/cookies"
 class RemoveCookies < Hanami::Action
   include Hanami::Action::Cookies
 
-  def handle(*, res)
+  def call(*, res)
     # ...
     res.cookies[:foo] = nil
   end
@@ -530,7 +530,7 @@ end
 class SetCookies < Hanami::Action
   include Hanami::Action::Cookies
 
-  def handle(*, res)
+  def call(*, res)
     # ...
     res.cookies[:foo] = { value: "bar", max_age: 100 }
   end
@@ -553,7 +553,7 @@ require "hanami/action/session"
 class ReadSessionFromRackEnv < Hanami::Action
   include Hanami::Action::Session
 
-  def handle(req, *)
+  def call(req, *)
     # ...
     req.session[:age] # => "35"
   end
@@ -572,7 +572,7 @@ require "hanami/action/session"
 class SetSession < Hanami::Action
   include Hanami::Action::Session
 
-  def handle(*, res)
+  def call(*, res)
     # ...
     res.session[:age] = 31
   end
@@ -591,7 +591,7 @@ require "hanami/action/session"
 class RemoveSession < Hanami::Action
   include Hanami::Action::Session
 
-  def handle(*, res)
+  def call(*, res)
     # ...
     res.session[:age] = nil
   end
@@ -623,7 +623,7 @@ class HttpCacheController < Hanami::Action
   include Hanami::Action::Cache
   cache_control :public, max_age: 600 # => Cache-Control: public, max-age=600
 
-  def handle(*)
+  def call(*)
     # ...
   end
 end
@@ -639,7 +639,7 @@ class HttpCacheController < Hanami::Action
   include Hanami::Action::Cache
   expires 60, :public, max_age: 600 # => Expires: Sun, 03 Aug 2014 17:47:02 GMT, Cache-Control: public, max-age=600
 
-  def handle(*)
+  def call(*)
     # ...
   end
 end
@@ -660,7 +660,7 @@ require "hanami/action/cache"
 class ConditionalGetController < Hanami::Action
   include Hanami::Action::Cache
 
-  def handle(*)
+  def call(*)
     # ...
     fresh etag: resource.cache_key
     # => halt 304 with header IfNoneMatch = resource.cache_key
@@ -679,7 +679,7 @@ require "hanami/action/cache"
 class ConditionalGetController < Hanami::Action
   include Hanami::Action::Cache
 
-  def handle(*)
+  def call(*)
     # ...
     fresh last_modified: resource.update_at
     # => halt 304 with header IfModifiedSince = resource.update_at.httpdate
@@ -695,7 +695,7 @@ If you need to redirect the client to another resource, use `res.redirect_to`:
 
 ```ruby
 class Create < Hanami::Action
-  def handle(*, res)
+  def call(*, res)
     # ...
     res.redirect_to "http://example.com/articles/23"
   end
@@ -709,7 +709,7 @@ You can also redirect with a custom status code:
 
 ```ruby
 class Create < Hanami::Action
-  def handle(*, res)
+  def call(*, res)
     # ...
     res.redirect_to "http://example.com/articles/23", status: 301
   end
@@ -725,7 +725,7 @@ action.call({ article: { title: "Hello" }}) # => [301, {"Location" => "/articles
 
 ```ruby
 class Show < Hanami::Action
-  def handle(*)
+  def call(*)
   end
 end
 
@@ -742,7 +742,7 @@ However, you can force this value:
 
 ```ruby
 class Show < Hanami::Action
-  def handle(*, res)
+  def call(*, res)
     # ...
     res.format = format(:json)
   end
@@ -763,7 +763,7 @@ You can restrict the accepted MIME types:
 class Show < Hanami::Action
   accept :html, :json
 
-  def handle(*)
+  def call(*)
     # ...
   end
 end
@@ -778,7 +778,7 @@ You can check if the requested MIME type is accepted by the client.
 
 ```ruby
 class Show < Hanami::Action
-  def handle(req, res)
+  def call(req, res)
     # ...
     # @_env["HTTP_ACCEPT"] # => "text/html,application/xhtml+xml,application/xml;q=0.9"
 
@@ -808,7 +808,7 @@ configuration = Hanami::Controller::Configuration.new do |config|
 end
 
 class Index < Hanami::Action
-  def handle(*)
+  def call(*)
   end
 end
 
@@ -818,7 +818,7 @@ response = action.call({ "HTTP_ACCEPT" => "application/custom" }) # => Content-T
 response.format                                                   # => :custom
 
 class Show < Hanami::Action
-  def handle(*, res)
+  def call(*, res)
     # ...
     res.format = format(:custom)
   end
@@ -840,7 +840,7 @@ configuration = Hanami::Controller::Configuration.new do |config|
 end
 
 class Csv < Hanami::Action
-  def handle(*, res)
+  def call(*, res)
     res.format = format(:csv)
     res.body = Enumerator.new do |yielder|
       yielder << csv_header
@@ -891,7 +891,7 @@ module Web
   module Controllers
     module Books
       class Show < Hanami::Action
-        def handle(*)
+        def call(*)
         end
       end
     end

@@ -1,12 +1,12 @@
 RSpec.describe Hanami::Action do
   class FormatController
     class Lookup < Hanami::Action
-      def handle(*)
+      def call(*)
       end
     end
 
     class Custom < Hanami::Action
-      def handle(req, res)
+      def call(req, res)
         input = req.params[:format]
         input = input.to_sym unless input.nil?
 
@@ -17,7 +17,7 @@ RSpec.describe Hanami::Action do
     class Configuration < Hanami::Action
       config.default_response_format = :jpg
 
-      def handle(*, res)
+      def call(*, res)
         res.body = res.format
       end
     end

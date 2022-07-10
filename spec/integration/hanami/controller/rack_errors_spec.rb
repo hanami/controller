@@ -28,19 +28,19 @@ ConfigurationHandledExceptionSubclass = Class.new(ConfigurationHandledException)
 module Errors
   # Unhandled
   class WithoutMessage < Hanami::Action
-    def handle(*)
+    def call(*)
       raise UnhandledException
     end
   end
 
   class WithMessage < Hanami::Action
-    def handle(*)
+    def call(*)
       raise UnhandledExceptionWithMessage, "boom"
     end
   end
 
   class WithCustomMessage < Hanami::Action
-    def handle(*)
+    def call(*)
       raise UnhandledExceptionWithCustomMessage, "nope"
     end
   end
@@ -49,7 +49,7 @@ module Errors
   class ActionHandled < Hanami::Action
     config.handle_exception HandledException => 400
 
-    def handle(*)
+    def call(*)
       raise HandledException
     end
   end
@@ -57,7 +57,7 @@ module Errors
   class ActionHandledSubclass < Hanami::Action
     config.handle_exception HandledException => 400
 
-    def handle(*)
+    def call(*)
       raise HandledExceptionSubclass
     end
   end
@@ -65,7 +65,7 @@ module Errors
   class ConfigurationHandled < Hanami::Action
     config.handle_exception ConfigurationHandledException => 500
 
-    def handle(*)
+    def call(*)
       raise ConfigurationHandledException
     end
   end
@@ -73,7 +73,7 @@ module Errors
   class ConfigurationHandledSubclass < Hanami::Action
     config.handle_exception ConfigurationHandledException => 500
 
-    def handle(*)
+    def call(*)
       raise ConfigurationHandledExceptionSubclass
     end
   end

@@ -19,18 +19,10 @@ module Hanami
         halted = catch :halt do
           params   = action.class.params_class.new(env)
           request  = build_request(env, params)
-          response = build_response(
-            request: request,
-            action: action.name,
-            configuration: action.configuration,
-            content_type: Mime.calculate_content_type_with_charset(action.configuration, request,
-                                                                   action.accepted_mime_types),
-            env: env,
-            headers: action.configuration.default_headers
-          )
+          response = build_response(request, action, env)
 
           action._run_before_callbacks(request, response)
-          action.handle(request, response)
+          action.call(request, response)
           action._run_after_callbacks(request, response)
         rescue StandardError => exception
           action._handle_exception(request, response, exception)
@@ -47,8 +39,16 @@ module Hanami
         Request.new(env, params)
       end
 
-      def build_response(**options)
-        Response.new(**options)
+      def build_response(request, action, env)
+        Response.new(
+          request: request,
+          action: action.name,
+          configuration: action.configuration,
+          content_type: Mime.calculate_content_type_with_charset(action.configuration, request,
+                                                                 action.accepted_mime_types),
+          env: env,
+          headers: action.configuration.default_headers
+        )
       end
     end
   end

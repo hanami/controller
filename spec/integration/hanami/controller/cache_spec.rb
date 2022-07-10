@@ -7,7 +7,7 @@ module CacheControl
 
     cache_control :public, max_age: 600
 
-    def handle(*)
+    def call(*)
     end
   end
 
@@ -16,7 +16,7 @@ module CacheControl
 
     cache_control :public, max_age: 600
 
-    def handle(_, res)
+    def call(_, res)
       res.cache_control :private
     end
   end
@@ -24,7 +24,7 @@ module CacheControl
   class Symbol < Hanami::Action
     include Hanami::Action::Cache
 
-    def handle(_, res)
+    def call(_, res)
       res.cache_control :private
     end
   end
@@ -32,7 +32,7 @@ module CacheControl
   class Symbols < Hanami::Action
     include Hanami::Action::Cache
 
-    def handle(_, res)
+    def call(_, res)
       res.cache_control :private, :no_cache, :no_store
     end
   end
@@ -40,7 +40,7 @@ module CacheControl
   class Hash < Hanami::Action
     include Hanami::Action::Cache
 
-    def handle(_, res)
+    def call(_, res)
       res.cache_control :public, :no_store, max_age: 900, s_maxage: 86_400, min_fresh: 500, max_stale: 700
     end
   end
@@ -48,7 +48,7 @@ module CacheControl
   class PrivatePublic < Hanami::Action
     include Hanami::Action::Cache
 
-    def handle(_, res)
+    def call(_, res)
       res.cache_control :private, :public
     end
   end
@@ -80,7 +80,7 @@ module Web
   module Controllers
     module Home
       class Index < Hanami::Action
-        def handle(*)
+        def call(*)
         end
       end
     end
@@ -91,7 +91,7 @@ module Admin
   module Controllers
     module Home
       class Index < Hanami::Action
-        def handle(*)
+        def call(*)
         end
       end
     end
@@ -104,7 +104,7 @@ module Expires
 
     expires 900, :public, :no_cache
 
-    def handle(*)
+    def call(*)
     end
   end
 
@@ -113,7 +113,7 @@ module Expires
 
     expires 900, :public, :no_cache
 
-    def handle(_, res)
+    def call(_, res)
       res.expires 600, :private
     end
   end
@@ -121,7 +121,7 @@ module Expires
   class Symbol < Hanami::Action
     include Hanami::Action::Cache
 
-    def handle(_, res)
+    def call(_, res)
       res.expires 900, :private
     end
   end
@@ -129,7 +129,7 @@ module Expires
   class Symbols < Hanami::Action
     include Hanami::Action::Cache
 
-    def handle(_, res)
+    def call(_, res)
       res.expires 900, :private, :no_cache, :no_store
     end
   end
@@ -137,7 +137,7 @@ module Expires
   class Hash < Hanami::Action
     include Hanami::Action::Cache
 
-    def handle(_, res)
+    def call(_, res)
       res.expires 900, :public, :no_store, s_maxage: 86_400, min_fresh: 500, max_stale: 700
     end
   end
@@ -168,7 +168,7 @@ module ConditionalGet
   class Etag < Hanami::Action
     include Hanami::Action::Cache
 
-    def handle(_, res)
+    def call(_, res)
       res.fresh etag: 'updated'
     end
   end
@@ -176,7 +176,7 @@ module ConditionalGet
   class LastModified < Hanami::Action
     include Hanami::Action::Cache
 
-    def handle(_, res)
+    def call(_, res)
       res.fresh last_modified: Time.now
     end
   end
@@ -184,7 +184,7 @@ module ConditionalGet
   class EtagLastModified < Hanami::Action
     include Hanami::Action::Cache
 
-    def handle(_, res)
+    def call(_, res)
       res.fresh etag: 'updated', last_modified: Time.now
     end
   end
@@ -217,7 +217,7 @@ module ConditionalGet
   class LastModifiedNilValue < Hanami::Action
     include Hanami::Action::Cache
 
-    def handle(_, res)
+    def call(_, res)
       res.fresh last_modified: nil
     end
   end
@@ -225,7 +225,7 @@ module ConditionalGet
   class EtagNilValue < Hanami::Action
     include Hanami::Action::Cache
 
-    def handle(_, res)
+    def call(_, res)
       res.fresh etag: nil
     end
   end

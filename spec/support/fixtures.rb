@@ -84,14 +84,14 @@ end
 
 module Test
   class Index < Hanami::Action
-    def handle(req, res)
+    def call(req, res)
       res[:xyz] = req.params[:name]
     end
   end
 end
 
 class CallAction < Hanami::Action
-  def handle(_req, res)
+  def call(_req, res)
     res.status = 201
     res.body   = "Hi from TestAction!"
     res.headers.merge!("X-Custom" => "OK")
@@ -99,7 +99,7 @@ class CallAction < Hanami::Action
 end
 
 class UncheckedErrorCallAction < Hanami::Action
-  def handle(_req, _res)
+  def call(_req, _res)
     raise
   end
 end
@@ -107,7 +107,7 @@ end
 class ErrorCallAction < Hanami::Action
   config.handle_exception RuntimeError => 500
 
-  def handle(_req, _res)
+  def call(_req, _res)
     raise
   end
 end
@@ -116,7 +116,7 @@ class MyCustomError < StandardError; end
 class ErrorCallFromInheritedErrorClass < Hanami::Action
   config.handle_exception StandardError => :handler
 
-  def handle(*)
+  def call(*)
     raise MyCustomError
   end
 
@@ -132,7 +132,7 @@ class ErrorCallFromInheritedErrorClassStack < Hanami::Action
   config.handle_exception StandardError => :standard_handler
   config.handle_exception MyCustomError => :handler
 
-  def handle(*)
+  def call(*)
     raise MyCustomError
   end
 
@@ -152,7 +152,7 @@ end
 class ErrorCallWithSymbolMethodNameAsHandlerAction < Hanami::Action
   config.handle_exception StandardError => :handler
 
-  def handle(*)
+  def call(*)
     raise StandardError
   end
 
@@ -167,7 +167,7 @@ end
 class ErrorCallWithStringMethodNameAsHandlerAction < Hanami::Action
   config.handle_exception StandardError => "standard_error_handler"
 
-  def handle(*)
+  def call(*)
     raise StandardError
   end
 
@@ -182,7 +182,7 @@ end
 class ErrorCallWithUnsetStatusResponse < Hanami::Action
   config.handle_exception ArgumentError => "arg_error_handler"
 
-  def handle(*)
+  def call(*)
     raise ArgumentError
   end
 
@@ -198,7 +198,7 @@ class ErrorCallWithSpecifiedStatusCodeAction < Hanami::Action
   configuration.handle_exception StandardError => 422
   puts "done"
 
-  def handle(_req, _res)
+  def call(_req, _res)
     raise StandardError
   end
 end
@@ -208,7 +208,7 @@ class BeforeMethodAction < Hanami::Action
   append_before :add_first_name_to_logger, :add_last_name_to_logger
   prepend_before :add_title_to_logger
 
-  def handle(req, res)
+  def call(req, res)
   end
 
   private
@@ -286,7 +286,7 @@ class BeforeBlockAction < Hanami::Action
   before { |_, res|   res[:article].reverse! }
   before { |req, res| res[:arguments] = [req.class.name, res.class.name] }
 
-  def handle(req, res)
+  def call(req, res)
   end
 end
 
@@ -299,7 +299,7 @@ class AfterMethodAction < Hanami::Action
   append_after :add_first_name_to_logger, :add_last_name_to_logger
   prepend_after :add_title_to_logger
 
-  def handle(*)
+  def call(*)
   end
 
   private
@@ -337,25 +337,25 @@ class AfterBlockAction < Hanami::Action
   after { |_, res| res[:egg].reverse! }
   after { |req, res| res[:arguments] = [req.class.name, res.class.name] }
 
-  def handle(*)
+  def call(*)
   end
 end
 
 class YieldAfterBlockAction < AfterBlockAction
   after { |req, res| res[:meaning_of_life_params] = req.params }
 
-  def handle(*)
+  def call(*)
   end
 end
 
 class MissingSessionAction < Hanami::Action
-  def handle(*)
+  def call(*)
     session
   end
 end
 
 class MissingFlashAction < Hanami::Action
-  def handle(*)
+  def call(*)
     flash
   end
 end
@@ -363,32 +363,32 @@ end
 class SessionAction < Hanami::Action
   include Hanami::Action::Session
 
-  def handle(req, res)
+  def call(req, res)
   end
 end
 
 class FlashAction < Hanami::Action
   include Hanami::Action::Session
 
-  def handle(*, res)
+  def call(*, res)
     res.flash[:error] = "ouch"
   end
 end
 
 class RedirectAction < Hanami::Action
-  def handle(*, res)
+  def call(*, res)
     res.redirect_to "/destination"
   end
 end
 
 class StatusRedirectAction < Hanami::Action
-  def handle(*, res)
+  def call(*, res)
     res.redirect_to "/destination", status: 301
   end
 end
 
 class SafeStringRedirectAction < Hanami::Action
-  def handle(*, res)
+  def call(*, res)
     location = Hanami::Utils::Escape::SafeString.new("/destination")
     res.redirect_to location
   end
@@ -397,7 +397,7 @@ end
 class GetCookiesAction < Hanami::Action
   include Hanami::Action::Cookies
 
-  def handle(*, res)
+  def call(*, res)
     res.body = res.cookies[:foo]
   end
 end
@@ -405,7 +405,7 @@ end
 class ChangeCookiesAction < Hanami::Action
   include Hanami::Action::Cookies
 
-  def handle(*, res)
+  def call(*, res)
     res.body = res.cookies[:foo]
     res.cookies[:foo] = "baz"
   end
@@ -416,7 +416,7 @@ class GetDefaultCookiesAction < Hanami::Action
 
   config.cookies = { domain: "hanamirb.org", path: "/controller", secure: true, httponly: true }
 
-  def handle(*, res)
+  def call(*, res)
     res.body          = ""
     res.cookies[:bar] = "foo"
   end
@@ -427,7 +427,7 @@ class GetOverwrittenCookiesAction < Hanami::Action
 
   config.cookies = { domain: "hanamirb.org", path: "/controller", secure: true, httponly: true }
 
-  def handle(*, res)
+  def call(*, res)
     res.body          = ""
     res.cookies[:bar] = { value: "foo", domain: "hanamirb.com", path: "/action", secure: false, httponly: false }
   end
@@ -436,7 +436,7 @@ end
 class GetAutomaticallyExpiresCookiesAction < Hanami::Action
   include Hanami::Action::Cookies
 
-  def handle(*, res)
+  def call(*, res)
     res.cookies[:bar] = { value: "foo", max_age: 120 }
   end
 end
@@ -444,7 +444,7 @@ end
 class SetCookiesAction < Hanami::Action
   include Hanami::Action::Cookies
 
-  def handle(*, res)
+  def call(*, res)
     res.body          = "yo"
     res.cookies[:foo] = "yum!"
   end
@@ -457,7 +457,7 @@ class SetCookiesWithOptionsAction < Hanami::Action
     @expires = expires
   end
 
-  def handle(*, res)
+  def call(*, res)
     res.cookies[:kukki] = { value: "yum!", domain: "hanamirb.org", path: "/controller", expires: @expires, secure: true, httponly: true }
   end
 end
@@ -465,7 +465,7 @@ end
 class RemoveCookiesAction < Hanami::Action
   include Hanami::Action::Cookies
 
-  def handle(*, res)
+  def call(*, res)
     res.cookies[:rm] = nil
   end
 end
@@ -473,7 +473,7 @@ end
 class IterateCookiesAction < Hanami::Action
   include Hanami::Action::Cookies
 
-  def handle(*, res)
+  def call(*, res)
     result = []
     res.cookies.each do |key, value|
       result << "'#{key}' has value '#{value}'"
@@ -484,13 +484,13 @@ class IterateCookiesAction < Hanami::Action
 end
 
 class ThrowCodeAction < Hanami::Action
-  def handle(req, *)
+  def call(req, *)
     halt req.params[:status].to_i, req.params[:message]
   end
 end
 
 class CatchAndThrowSymbolAction < Hanami::Action
-  def handle(_req, _res)
+  def call(_req, _res)
     catch :done do
       throw :done, 1
       raise "This code shouldn't be reachable"
@@ -502,7 +502,7 @@ class ThrowBeforeMethodAction < Hanami::Action
   before :authorize!
   before :set_body
 
-  def handle(_req, res)
+  def call(_req, res)
     res.body = "Hello!"
   end
 
@@ -521,7 +521,7 @@ class ThrowBeforeBlockAction < Hanami::Action
   before { halt 401 }
   before { res.body = "Hi!" }
 
-  def handle(_req, res)
+  def call(_req, res)
     res.body = "Hello!"
   end
 end
@@ -530,7 +530,7 @@ class ThrowAfterMethodAction < Hanami::Action
   after :raise_timeout!
   after :set_body
 
-  def handle(_req, res)
+  def call(_req, res)
     res.body = "Hello!"
   end
 
@@ -549,7 +549,7 @@ class ThrowAfterBlockAction < Hanami::Action
   after { halt 408 }
   after { res.body = "Later!" }
 
-  def handle(_req, res)
+  def call(_req, res)
     res.body = "Hello!"
   end
 end
@@ -557,7 +557,7 @@ end
 class HandledExceptionAction < Hanami::Action
   config.handle_exception RecordNotFound => 404
 
-  def handle(_req, _res)
+  def call(_req, _res)
     raise RecordNotFound.new
   end
 end
@@ -568,19 +568,19 @@ end
 class GlobalHandledExceptionAction < Hanami::Action
   config.handle_exception DomainLogicException => 400
 
-  def handle(_req, _res)
+  def call(_req, _res)
     raise DomainLogicException.new
   end
 end
 
 class UnhandledExceptionAction < Hanami::Action
-  def handle(_req, _res)
+  def call(_req, _res)
     raise RecordNotFound.new
   end
 end
 
 class ParamsAction < Hanami::Action
-  def handle(req, res)
+  def call(req, res)
     res.body = req.params.to_h.inspect
   end
 end
@@ -602,7 +602,7 @@ class WhitelistedParamsAction < Hanami::Action
 
   params Params
 
-  def handle(req, res)
+  def call(req, res)
     res.body = req.params.to_h.inspect
   end
 end
@@ -612,7 +612,7 @@ class WhitelistedDslAction < Hanami::Action
     required(:username).filled
   end
 
-  def handle(req, res)
+  def call(req, res)
     res.body = req.params.to_h.inspect
   end
 end
@@ -627,7 +627,7 @@ class WhitelistedUploadDslAction < Hanami::Action
     required(:upload).filled
   end
 
-  def handle(req, res)
+  def call(req, res)
     res.body = req.params.to_h.inspect
   end
 end
@@ -637,7 +637,7 @@ class ParamsValidationAction < Hanami::Action
     required(:email).filled(:str?)
   end
 
-  def handle(req, *)
+  def call(req, *)
     halt 400 unless req.params.valid?
   end
 end
@@ -689,7 +689,7 @@ class NestedParams < Hanami::Action::Params
 end
 
 class Root < Hanami::Action
-  def handle(req, res)
+  def call(req, res)
     res.body = req.params.to_h.inspect
     res.headers.merge!("X-Test" => "test")
   end
@@ -697,14 +697,14 @@ end
 
 module About
   class Team < Hanami::Action
-    def handle(req, res)
+    def call(req, res)
       res.body = req.params.to_h.inspect
       res.headers.merge!("X-Test" => "test")
     end
   end
 
   class Contacts < Hanami::Action
-    def handle(req, res)
+    def call(req, res)
       res.body = req.params.to_h.inspect
     end
   end
@@ -712,37 +712,37 @@ end
 
 module Identity
   class Show < Hanami::Action
-    def handle(req, res)
+    def call(req, res)
       res.body = req.params.to_h.inspect
     end
   end
 
   class New < Hanami::Action
-    def handle(req, res)
+    def call(req, res)
       res.body = req.params.to_h.inspect
     end
   end
 
   class Create < Hanami::Action
-    def handle(req, res)
+    def call(req, res)
       res.body = req.params.to_h.inspect
     end
   end
 
   class Edit < Hanami::Action
-    def handle(req, res)
+    def call(req, res)
       res.body = req.params.to_h.inspect
     end
   end
 
   class Update < Hanami::Action
-    def handle(req, res)
+    def call(req, res)
       res.body = req.params.to_h.inspect
     end
   end
 
   class Destroy < Hanami::Action
-    def handle(req, res)
+    def call(req, res)
       res.body = req.params.to_h.inspect
     end
   end
@@ -750,43 +750,43 @@ end
 
 module Flowers
   class Index < Hanami::Action
-    def handle(req, res)
+    def call(req, res)
       res.body = req.params.to_h.inspect
     end
   end
 
   class Show < Hanami::Action
-    def handle(req, res)
+    def call(req, res)
       res.body = req.params.to_h.inspect
     end
   end
 
   class New < Hanami::Action
-    def handle(req, res)
+    def call(req, res)
       res.body = req.params.to_h.inspect
     end
   end
 
   class Create < Hanami::Action
-    def handle(req, res)
+    def call(req, res)
       res.body = req.params.to_h.inspect
     end
   end
 
   class Edit < Hanami::Action
-    def handle(req, res)
+    def call(req, res)
       res.body = req.params.to_h.inspect
     end
   end
 
   class Update < Hanami::Action
-    def handle(req, res)
+    def call(req, res)
       res.body = req.params.to_h.inspect
     end
   end
 
   class Destroy < Hanami::Action
-    def handle(req, res)
+    def call(req, res)
       res.body = req.params.to_h.inspect
     end
   end
@@ -808,7 +808,7 @@ module Painters
       end
     end
 
-    def handle(req, res)
+    def call(req, res)
       res.body = req.params.to_h.inspect
     end
   end
@@ -819,7 +819,7 @@ module Dashboard
     include Hanami::Action::Session
     before :authenticate!
 
-    def handle(*, res)
+    def call(*, res)
       res.body = "User ID from session: #{res.session[:user_id]}"
     end
 
@@ -839,7 +839,7 @@ module Sessions
   class Create < Hanami::Action
     include Hanami::Action::Session
 
-    def handle(*, res)
+    def call(*, res)
       res.session[:user_id] = 23
       res.redirect_to "/"
     end
@@ -848,7 +848,7 @@ module Sessions
   class Destroy < Hanami::Action
     include Hanami::Action::Session
 
-    def handle(*, res)
+    def call(*, res)
       res.session[:user_id] = nil
     end
   end
@@ -857,7 +857,7 @@ end
 class StandaloneSession < Hanami::Action
   include Hanami::Action::Session
 
-  def handle(*, res)
+  def call(*, res)
     res.session[:age] = Time.now.year - 1982
   end
 end
@@ -866,7 +866,7 @@ module Glued
   class SendFile < Hanami::Action
     include Hanami::Action::Glue
 
-    def handle(_req, _res)
+    def call(_req, _res)
       send_file "test.txt"
     end
   end
@@ -882,7 +882,7 @@ module App
   class StandaloneAction < Hanami::Action
     config.handle_exception App::CustomError => 400
 
-    def handle(_req, _res)
+    def call(_req, _res)
       raise App::CustomError
     end
   end
@@ -896,7 +896,7 @@ module App2
     class Index < Hanami::Action
       config.handle_exception App2::CustomError => 400
 
-      def handle(_req, _res)
+      def call(_req, _res)
         raise App2::CustomError
       end
     end
@@ -927,7 +927,7 @@ module MusicPlayer
         include Hanami::Action::Session
         include MusicPlayer::Controllers::Authentication
 
-        def handle(_req, res)
+        def call(_req, res)
           res.body = "Muzic!"
           res.headers["X-Frame-Options"] = "ALLOW FROM https://example.org"
         end
@@ -938,7 +938,7 @@ module MusicPlayer
         include Hanami::Action::Session
         include MusicPlayer::Controllers::Authentication
 
-        def handle(_req, _res)
+        def call(_req, _res)
           raise ArgumentError
         end
       end
@@ -950,7 +950,7 @@ module MusicPlayer
         include Hanami::Action::Session
         include MusicPlayer::Controllers::Authentication
 
-        def handle(_req, res)
+        def call(_req, res)
           res.body = current_user
         end
       end
@@ -962,7 +962,7 @@ module MusicPlayer
 
         config.handle_exception ArtistNotFound => 404
 
-        def handle(_req, _res)
+        def call(_req, _res)
           raise ArtistNotFound
         end
       end
@@ -974,7 +974,7 @@ module MusicPlayer
     include Hanami::Action::Session
     include MusicPlayer::Controllers::Authentication
 
-    def handle(_req, _res)
+    def call(_req, _res)
       raise ArgumentError
     end
   end
@@ -995,7 +995,7 @@ class VisibilityAction < Hanami::Action
   include Hanami::Action::Cookies
   include Hanami::Action::Session
 
-  def handle(*, res)
+  def call(*, res)
     res.body   = "x"
     res.status = 201
     res.format = :json
@@ -1008,7 +1008,7 @@ end
 module SendFileTest
   module Files
     class Show < Hanami::Action
-      def handle(req, res)
+      def call(req, res)
         id = req.params[:id]
 
         # This if statement is only for testing purpose
@@ -1055,44 +1055,44 @@ module SendFileTest
     end
 
     class UnsafeLocal < Hanami::Action
-      def handle(*, res)
+      def call(*, res)
         res.unsafe_send_file "Gemfile"
       end
     end
 
     class UnsafePublic < Hanami::Action
-      def handle(*, res)
+      def call(*, res)
         res.unsafe_send_file "spec/support/fixtures/test.txt"
       end
     end
 
     class UnsafeAbsolute < Hanami::Action
-      def handle(*, res)
+      def call(*, res)
         res.unsafe_send_file Pathname.new("Gemfile").realpath
       end
     end
 
     class UnsafeMissingLocal < Hanami::Action
-      def handle(*, res)
+      def call(*, res)
         res.unsafe_send_file "missing"
       end
     end
 
     class UnsafeMissingAbsolute < Hanami::Action
-      def handle(_req, res)
+      def call(_req, res)
         res.unsafe_send_file Pathname.new(".").join("missing")
       end
     end
 
     class Flow < Hanami::Action
-      def handle(*, res)
+      def call(*, res)
         res.send_file Pathname.new("test.txt")
         res.redirect_to "/"
       end
     end
 
     class Glob < Hanami::Action
-      def handle(*)
+      def call(*)
         halt 202
       end
     end
@@ -1100,7 +1100,7 @@ module SendFileTest
     class BeforeCallback < Hanami::Action
       before :before_callback
 
-      def handle(*, res)
+      def call(*, res)
         res.send_file Pathname.new("test.txt")
       end
 
@@ -1114,7 +1114,7 @@ module SendFileTest
     class AfterCallback < Hanami::Action
       after :after_callback
 
-      def handle(*, res)
+      def call(*, res)
         res.send_file Pathname.new("test.txt")
       end
 
@@ -1163,7 +1163,7 @@ module HeadTest
       include Hanami::Action::Glue
       include Hanami::Action::Session
 
-      def handle(_req, res)
+      def call(_req, res)
         res.body = "index"
       end
     end
@@ -1173,7 +1173,7 @@ module HeadTest
       include Hanami::Action::Glue
       include Hanami::Action::Session
 
-      def handle(req, res)
+      def call(req, res)
         content = "code"
 
         res.headers.merge!(
@@ -1196,7 +1196,7 @@ module HeadTest
       include Hanami::Action::Glue
       include Hanami::Action::Session
 
-      def handle(_req, res)
+      def call(_req, res)
         res.headers.merge!(
           "Last-Modified" => "Fri, 27 Nov 2015 13:32:36 GMT",
           "X-Rate-Limit"  => "4000",
@@ -1248,7 +1248,7 @@ module FullStack
         include Hanami::Action::Session
         include Inspector
 
-        def handle(*, res)
+        def call(*, res)
           res[:greeting] = "Hello"
         end
       end
@@ -1258,7 +1258,7 @@ module FullStack
         include Hanami::Action::Session
         include Inspector
 
-        def handle(*, res)
+        def call(*, res)
           res.body = "foo"
         end
       end
@@ -1270,7 +1270,7 @@ module FullStack
         include Hanami::Action::Session
         include Inspector
 
-        def handle(*)
+        def call(*)
         end
       end
 
@@ -1283,7 +1283,7 @@ module FullStack
           required(:title).filled(:str?)
         end
 
-        def handle(req, res)
+        def call(req, res)
           req.params.valid?
 
           res.redirect_to "/books"
@@ -1311,7 +1311,7 @@ module FullStack
           end
         end
 
-        def handle(req, res)
+        def call(req, res)
           valid = req.params.valid?
 
           res.status = 201
@@ -1330,7 +1330,7 @@ module FullStack
         include Hanami::Action::Session
         include Inspector
 
-        def handle(*)
+        def call(*)
         end
       end
 
@@ -1339,7 +1339,7 @@ module FullStack
         include Hanami::Action::Session
         include Inspector
 
-        def handle(*, res)
+        def call(*, res)
           res.flash[:message] = "Saved!"
           res.redirect_to "/settings"
         end
@@ -1352,7 +1352,7 @@ module FullStack
         include Hanami::Action::Session
         include Inspector
 
-        def handle(*, res)
+        def call(*, res)
           res.redirect_to "/poll/1"
         end
       end
@@ -1362,7 +1362,7 @@ module FullStack
         include Hanami::Action::Session
         include Inspector
 
-        def handle(req, res)
+        def call(req, res)
           if req.env["REQUEST_METHOD"] == "GET"
             res.flash[:notice] = "Start the poll"
           else
@@ -1377,7 +1377,7 @@ module FullStack
         include Hanami::Action::Session
         include Inspector
 
-        def handle(req, res)
+        def call(req, res)
           if req.env["REQUEST_METHOD"] == "POST"
             res.flash[:notice] = "Poll completed"
             res.redirect_to "/"
@@ -1395,7 +1395,7 @@ module FullStack
         before :redirect_to_root
         after :set_body
 
-        def handle(*, res)
+        def call(*, res)
           res.body = "call method shouldn't be called"
         end
 
@@ -1450,7 +1450,7 @@ module FullStack
 end
 
 class MethodInspectionAction < Hanami::Action
-  def handle(req, res)
+  def call(req, res)
     res.body = req.request_method
   end
 end
@@ -1459,7 +1459,7 @@ class RackExceptionAction < Hanami::Action
   class TestException < ::StandardError
   end
 
-  def handle(_req, _res)
+  def call(_req, _res)
     raise TestException.new
   end
 end
@@ -1470,7 +1470,7 @@ class HandledRackExceptionAction < Hanami::Action
 
   config.handle_exception TestException => 500
 
-  def handle(_req, _res)
+  def call(_req, _res)
     raise TestException.new
   end
 end
@@ -1484,7 +1484,7 @@ class HandledRackExceptionSubclassAction < Hanami::Action
 
   config.handle_exception TestException => 500
 
-  def handle(_req, _res)
+  def call(_req, _res)
     raise TestSubclassException.new
   end
 end
@@ -1497,7 +1497,7 @@ module SessionWithCookies
         include Hanami::Action::Session
         include Hanami::Action::Cookies
 
-        def handle(req, res)
+        def call(req, res)
         end
       end
     end
@@ -1532,7 +1532,7 @@ module SessionsWithoutCookies
         include Hanami::Action::Session
         include Inspector
 
-        def handle(*)
+        def call(*)
         end
       end
     end
@@ -1559,20 +1559,20 @@ end
 
 module Mimes
   class Default < Hanami::Action
-    def handle(_req, res)
+    def call(_req, res)
       res.body, = *format(res.content_type)
     end
   end
 
   class Custom < Hanami::Action
-    def handle(_req, res)
+    def call(_req, res)
       res.format = format(:xml)
       res.body   = res.format
     end
   end
 
   class Latin < Hanami::Action
-    def handle(_req, res)
+    def call(_req, res)
       res.charset = "latin1"
       res.format  = format(:html)
       res.body    = res.format
@@ -1580,7 +1580,7 @@ module Mimes
   end
 
   class Accept < Hanami::Action
-    def handle(req, res)
+    def call(req, res)
       res.headers["X-AcceptDefault"] = req.accept?("application/octet-stream").to_s
       res.headers["X-AcceptHtml"]    = req.accept?("text/html").to_s
       res.headers["X-AcceptXml"]     = req.accept?("application/xml").to_s
@@ -1593,7 +1593,7 @@ module Mimes
   class CustomFromAccept < Hanami::Action
     accept :json, :custom
 
-    def handle(*, res)
+    def call(*, res)
       res.body, = *format(res.content_type)
     end
   end
@@ -1601,19 +1601,19 @@ module Mimes
   class Restricted < Hanami::Action
     accept :html, :json, :custom
 
-    def handle(_req, res)
+    def call(_req, res)
       res.body, = *format(res.content_type)
     end
   end
 
   class NoContent < Hanami::Action
-    def handle(_req, res)
+    def call(_req, res)
       res.status = 204
     end
   end
 
   class OverrideDefaultResponse < Hanami::Action
-    def handle(*, res)
+    def call(*, res)
       res.format = format(:xml)
     end
 
@@ -1627,7 +1627,7 @@ module Mimes
   class Strict < Hanami::Action
     accept :json
 
-    def handle(_req, res)
+    def call(_req, res)
       res.body, = *format(res.content_type)
     end
   end
@@ -1661,7 +1661,7 @@ module MimesWithDefault
   class Default < Hanami::Action
     accept :json
 
-    def handle(*, res)
+    def call(*, res)
       res.body, = *format(res.content_type)
     end
   end
@@ -1760,7 +1760,7 @@ module Flash
       class Index < Hanami::Action
         include Hanami::Action::Session
 
-        def handle(req, res)
+        def call(req, res)
           res.flash[:hello] = "world"
 
           if req.env["REQUEST_METHOD"] == "GET"
@@ -1774,7 +1774,7 @@ module Flash
       class Books < Hanami::Action
         include Hanami::Action::Session
 
-        def handle(_, res)
+        def call(_, res)
           res.body = "flash_empty: #{res.flash.empty?} flash: #{res.flash.inspect}"
         end
       end
@@ -1782,7 +1782,7 @@ module Flash
       class Print < Hanami::Action
         include Hanami::Action::Session
 
-        def handle(_, res)
+        def call(_, res)
           res.body = res.flash[:hello]
         end
       end
@@ -1790,7 +1790,7 @@ module Flash
       class EachRedirect < Hanami::Action
         include Hanami::Action::Session
 
-        def handle(_, res)
+        def call(_, res)
           res.flash[:hello] = "world"
           res.redirect_to "/each"
         end
@@ -1799,7 +1799,7 @@ module Flash
       class Each < Hanami::Action
         include Hanami::Action::Session
 
-        def handle(_, res)
+        def call(_, res)
           each_result = []
           res.flash.each { |type, message| each_result << [type, message] }
           res.body = "flash_each: #{each_result}"
@@ -1809,7 +1809,7 @@ module Flash
       class MapRedirect < Hanami::Action
         include Hanami::Action::Session
 
-        def handle(_, res)
+        def call(_, res)
           res.flash[:hello] = "world"
           res.redirect_to "/map"
         end
@@ -1818,7 +1818,7 @@ module Flash
       class Map < Hanami::Action
         include Hanami::Action::Session
 
-        def handle(_, res)
+        def call(_, res)
           res.body = "flash_map: #{res.flash.map { |type, message| [type, message] }}"
         end
       end
@@ -1890,13 +1890,13 @@ module Inheritance
       end
 
       class Show < RestfulAction
-        def handle(*, res)
+        def call(*, res)
           res[:found] = true
         end
       end
 
       class Destroy < Show
-        def handle(*, res)
+        def call(*, res)
           super
           res[:destroyed] = true
         end

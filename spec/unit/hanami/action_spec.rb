@@ -157,7 +157,7 @@ RSpec.describe Hanami::Action do
   describe "request" do
     it "gets a Rack-like request object" do
       action_class = Class.new(Hanami::Action) do
-        def handle(req, res)
+        def call(req, res)
           res[:request] = req
         end
       end
