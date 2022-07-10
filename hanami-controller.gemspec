@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = Hanami::Controller::VERSION
   spec.authors       = ["Luca Guidi"]
   spec.email         = ["me@lucaguidi.com"]
-  spec.description   = %q{Complete, fast and testable actions for Rack}
-  spec.summary       = %q{Complete, fast and testable actions for Rack and Hanami}
+  spec.description   = %q(Complete, fast and testable actions for Rack)
+  spec.summary       = %q(Complete, fast and testable actions for Rack and Hanami)
   spec.homepage      = "http://hanamirb.org"
   spec.license       = "MIT"
 

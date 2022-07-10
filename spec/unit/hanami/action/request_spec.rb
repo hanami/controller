@@ -82,7 +82,7 @@ RSpec.describe Hanami::Action::Request do
   describe "request method boolean methods" do
     it "answers correctly" do
       request = build_request
-      %i(delete? head? options? patch? post? put? trace? xhr?).each do |method|
+      %i[delete? head? options? patch? post? put? trace? xhr?].each do |method|
         expect(request.send(method)).to be(false)
       end
       expect(request.get?).to be(true)
