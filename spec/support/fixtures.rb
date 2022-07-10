@@ -414,7 +414,7 @@ end
 class GetDefaultCookiesAction < Hanami::Action
   include Hanami::Action::Cookies
 
-  config.cookies = { domain: "hanamirb.org", path: "/controller", secure: true, httponly: true }
+  config.cookies = {domain: "hanamirb.org", path: "/controller", secure: true, httponly: true}
 
   def handle(*, res)
     res.body          = ""
@@ -425,11 +425,11 @@ end
 class GetOverwrittenCookiesAction < Hanami::Action
   include Hanami::Action::Cookies
 
-  config.cookies = { domain: "hanamirb.org", path: "/controller", secure: true, httponly: true }
+  config.cookies = {domain: "hanamirb.org", path: "/controller", secure: true, httponly: true}
 
   def handle(*, res)
     res.body          = ""
-    res.cookies[:bar] = { value: "foo", domain: "hanamirb.com", path: "/action", secure: false, httponly: false }
+    res.cookies[:bar] = {value: "foo", domain: "hanamirb.com", path: "/action", secure: false, httponly: false}
   end
 end
 
@@ -437,7 +437,7 @@ class GetAutomaticallyExpiresCookiesAction < Hanami::Action
   include Hanami::Action::Cookies
 
   def handle(*, res)
-    res.cookies[:bar] = { value: "foo", max_age: 120 }
+    res.cookies[:bar] = {value: "foo", max_age: 120}
   end
 end
 
@@ -458,7 +458,7 @@ class SetCookiesWithOptionsAction < Hanami::Action
   end
 
   def handle(*, res)
-    res.cookies[:kukki] = { value: "yum!", domain: "hanamirb.org", path: "/controller", expires: @expires, secure: true, httponly: true }
+    res.cookies[:kukki] = {value: "yum!", domain: "hanamirb.org", path: "/controller", expires: @expires, secure: true, httponly: true}
   end
 end
 

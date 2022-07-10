@@ -63,13 +63,13 @@ module Hanami
           # @api private
           def initialize(amount, *values)
             @amount = amount
-            @cache_control = Hanami::Action::Cache::CacheControl::Directives.new(*(values << { max_age: amount }))
+            @cache_control = Hanami::Action::Cache::CacheControl::Directives.new(*(values << {max_age: amount}))
           end
 
           # @since 0.3.0
           # @api private
           def headers
-            { HEADER => time.httpdate }.merge(@cache_control.headers)
+            {HEADER => time.httpdate}.merge(@cache_control.headers)
           end
 
           private

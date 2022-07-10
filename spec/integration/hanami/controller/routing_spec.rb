@@ -50,7 +50,7 @@ RSpec.describe "Hanami::Router integration" do
     end
 
     it "calls POST create" do
-      response = app.post("/identity", params: { identity: { avatar: { image: "jodosha.png" } } })
+      response = app.post("/identity", params: {identity: {avatar: {image: "jodosha.png"}}})
 
       expect(response.status).to be(200)
       expect(response.body).to   eq(%({:identity=>{:avatar=>{:image=>\"jodosha.png\"}}}))
@@ -64,7 +64,7 @@ RSpec.describe "Hanami::Router integration" do
     end
 
     it "calls PATCH update" do
-      response = app.request("PATCH", "/identity", params: { identity: { avatar: { image: "jodosha-2x.png" } } })
+      response = app.request("PATCH", "/identity", params: {identity: {avatar: {image: "jodosha-2x.png"}}})
 
       expect(response.status).to be(200)
       expect(response.body).to   eq(%({:identity=>{:avatar=>{:image=>\"jodosha-2x.png\"}}}))
@@ -101,7 +101,7 @@ RSpec.describe "Hanami::Router integration" do
     end
 
     it "calls POST create" do
-      response = app.post("/flowers", params: { flower: { name: "Sakura" } })
+      response = app.post("/flowers", params: {flower: {name: "Sakura"}})
 
       expect(response.status).to be(200)
       expect(response.body).to   eq(%({:flower=>{:name=>"Sakura"}}))
@@ -115,7 +115,7 @@ RSpec.describe "Hanami::Router integration" do
     end
 
     it "calls PATCH update" do
-      response = app.request("PATCH", "/flowers/23", params: { flower: { name: "Sakura!" } })
+      response = app.request("PATCH", "/flowers/23", params: {flower: {name: "Sakura!"}})
 
       expect(response.status).to be(200)
       expect(response.body).to   eq(%({:flower=>{:name=>"Sakura!"}, :id=>"23"}))
@@ -130,14 +130,14 @@ RSpec.describe "Hanami::Router integration" do
 
     context "with validations" do
       it "automatically whitelists params from router" do
-        response = app.request("PATCH", "/painters/23", params: { painter: { first_name: "Gustav", last_name: "Klimt" } })
+        response = app.request("PATCH", "/painters/23", params: {painter: {first_name: "Gustav", last_name: "Klimt"}})
 
         expect(response.status).to be(200)
         expect(response.body).to   eq(%({:id=>"23", :painter=>{:first_name=>"Gustav", :last_name=>"Klimt"}}))
       end
 
       it "doesn't replace parsed params with router params" do
-        json     = { painter: { first_name: "Gustav", last_name: "Klimt", paintings: [{ name: "The Kiss" }, { name: "The Maiden" }] } }.to_json
+        json     = {painter: {first_name: "Gustav", last_name: "Klimt", paintings: [{name: "The Kiss"}, {name: "The Maiden"}]}}.to_json
         response = app.request("PATCH", "/painters/23", "CONTENT_TYPE" => "application/json", input: json)
 
         expect(response.status).to be(200)

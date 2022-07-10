@@ -169,7 +169,7 @@ module Hanami
         cookies_options = if value.is_a?(::Hash)
           value.merge! _add_expires_option(value)
         else
-          { value: value }
+          {value: value}
         end
         @default_options.merge cookies_options
       end
@@ -180,7 +180,7 @@ module Hanami
       # @api private
       def _add_expires_option(value)
         if value.has_key?(:max_age) && !value.has_key?(:expires)
-          { expires: (Time.now + value[:max_age]) }
+          {expires: (Time.now + value[:max_age])}
         else
           {}
         end

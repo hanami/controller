@@ -78,7 +78,7 @@ RSpec.describe Hanami::Action::Params do
       context "in a Rack context" do
         it "returns all the params as they are" do
           # Rack params are always stringified
-          response = Rack::MockRequest.new(action).request("PATCH", "?id=23", params: { "x" => { "foo" => "bar" } })
+          response = Rack::MockRequest.new(action).request("PATCH", "?id=23", params: {"x" => {"foo" => "bar"}})
           expect(response.body).to match(%({:id=>"23", :x=>{:foo=>"bar"}}))
         end
       end
@@ -86,7 +86,7 @@ RSpec.describe Hanami::Action::Params do
       context "with Hanami::Router" do
         it "returns all the params as they are" do
           # Hanami::Router params are always symbolized
-          response = action.call("router.params" => { id: "23" })
+          response = action.call("router.params" => {id: "23"})
           expect(response.body).to eq([%({:id=>"23"})])
         end
       end
@@ -100,7 +100,7 @@ RSpec.describe Hanami::Action::Params do
         # params with symbolized keys.
         context "in testing mode" do
           it "returns only the listed params" do
-            response = action.call(id: 23, unknown: 4, article: { foo: "bar", tags: [:cool] })
+            response = action.call(id: 23, unknown: 4, article: {foo: "bar", tags: [:cool]})
             expect(response.body).to eq([%({:id=>23, :article=>{:tags=>[:cool]}})])
           end
 
@@ -112,12 +112,12 @@ RSpec.describe Hanami::Action::Params do
 
         context "in a Rack context" do
           it "returns only the listed params" do
-            response = Rack::MockRequest.new(action).request("PATCH", "?id=23", params: { x: { foo: "bar" } })
+            response = Rack::MockRequest.new(action).request("PATCH", "?id=23", params: {x: {foo: "bar"}})
             expect(response.body).to match(%({:id=>23}))
           end
 
           it "doesn't filter _csrf_token" do
-            response = Rack::MockRequest.new(action).request("PATCH", "?id=1", params: { _csrf_token: "def", x: { foo: "bar" } })
+            response = Rack::MockRequest.new(action).request("PATCH", "?id=1", params: {_csrf_token: "def", x: {foo: "bar"}})
             expect(response.body).to match(%(:_csrf_token=>"def"))
             expect(response.body).to match(%(:id=>1))
           end
@@ -125,7 +125,7 @@ RSpec.describe Hanami::Action::Params do
 
         context "with Hanami::Router" do
           it "returns all the params coming from the router, even if NOT whitelisted" do
-            response = action.call("router.params" => { id: 23, another: "x" })
+            response = action.call("router.params" => {id: 23, another: "x"})
             expect(response.body).to eq([%({:id=>23, :another=>"x"})])
           end
         end
@@ -148,14 +148,14 @@ RSpec.describe Hanami::Action::Params do
 
         context "in a Rack context" do
           it "returns only the listed params" do
-            response = Rack::MockRequest.new(action).request("PATCH", "?username=jodosha", params: { x: { foo: "bar" } })
+            response = Rack::MockRequest.new(action).request("PATCH", "?username=jodosha", params: {x: {foo: "bar"}})
             expect(response.body).to match(%({:username=>"jodosha"}))
           end
         end
 
         context "with Hanami::Router" do
           it "returns all the router params, even if NOT whitelisted" do
-            response = action.call("router.params" => { username: "jodosha", y: "x" })
+            response = action.call("router.params" => {username: "jodosha", y: "x"})
             expect(response.body).to eq([%({:username=>"jodosha", :y=>"x"})])
           end
         end
@@ -213,7 +213,7 @@ RSpec.describe Hanami::Action::Params do
     end
 
     it "has input available through the hash accessor" do
-      params = TestParams.new(name: "John", age: "1", address: { line_one: "10 High Street" })
+      params = TestParams.new(name: "John", age: "1", address: {line_one: "10 High Street"})
 
       expect(params[:name]).to               eq("John")
       expect(params[:age]).to                be(1)
@@ -221,7 +221,7 @@ RSpec.describe Hanami::Action::Params do
     end
 
     it "allows nested hash access via symbols" do
-      params = TestParams.new(name: "John", address: { line_one: "10 High Street", deep: { deep_attr: 1 } })
+      params = TestParams.new(name: "John", address: {line_one: "10 High Street", deep: {deep_attr: 1}})
       expect(params[:name]).to                       eq("John")
       expect(params[:address][:line_one]).to         eq("10 High Street")
       expect(params[:address][:deep][:deep_attr]).to be(1)
@@ -233,8 +233,8 @@ RSpec.describe Hanami::Action::Params do
       let(:params) do
         TestParams.new(
           name: "John",
-          address: { line_one: "10 High Street", deep: { deep_attr: 1 } },
-          array: [{ name: "Lennon" }, { name: "Wayne" }]
+          address: {line_one: "10 High Street", deep: {deep_attr: 1}},
+          array: [{name: "Lennon"}, {name: "Wayne"}]
         )
       end
 
@@ -446,7 +446,7 @@ RSpec.describe Hanami::Action::Params do
       end
 
       it "does not stringify values" do
-        input  = { "name" => 123 }
+        input  = {"name" => 123}
         params = TestParams.new(input)
 
         expect(params[:name]).to be(123)
@@ -465,7 +465,7 @@ RSpec.describe Hanami::Action::Params do
       end
     end
 
-    let(:params) { klass.new(book: { code: "abc" }) }
+    let(:params) { klass.new(book: {code: "abc"}) }
 
     it "returns Hanami::Action::Params::Errors" do
       expect(params.errors).to be_kind_of(Hanami::Action::Params::Errors)

@@ -25,7 +25,7 @@ RSpec.describe Hanami::Action::Flash do
   end
 
   describe "#now" do
-    let(:input_hash) { { a: "val" } }
+    let(:input_hash) { {a: "val"} }
 
     it "returns raw data for the current request" do
       expect(flash.now).to be(input_hash)

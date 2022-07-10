@@ -69,7 +69,7 @@ module Hanami
           # @api private
           def headers
             if @directives.any?
-              { HEADER => @directives.join(", ") }
+              {HEADER => @directives.join(", ")}
             else
               {}
             end
