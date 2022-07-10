@@ -1,4 +1,4 @@
-require 'rspec'
+require "rspec"
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|
@@ -16,7 +16,7 @@ RSpec.configure do |config|
 
   config.warnings = true
 
-  config.default_formatter = 'doc' if config.files_to_run.one?
+  config.default_formatter = "doc" if config.files_to_run.one?
 
   config.profile_examples = 10
 

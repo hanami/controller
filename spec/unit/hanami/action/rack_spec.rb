@@ -3,7 +3,7 @@ RSpec.describe Hanami::Action::Rack do
 
   %w(GET POST PATCH PUT DELETE TRACE OPTIONS).each do |verb|
     it "returns current request method (#{verb})" do
-      env = Rack::MockRequest.env_for('/', method: verb)
+      env = Rack::MockRequest.env_for("/", method: verb)
       response = action.call(env)
 
       expect(response.body).to eq([verb])

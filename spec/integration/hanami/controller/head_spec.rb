@@ -1,5 +1,5 @@
-require 'rack/test'
-require 'rack/utils'
+require "rack/test"
+require "rack/utils"
 
 RSpec.describe "HTTP HEAD" do
   include Rack::Test::Methods

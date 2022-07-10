@@ -5,23 +5,23 @@ module Hanami
     module Cache
       # @since 0.3.0
       # @api private
-      IF_NONE_MATCH = 'HTTP_IF_NONE_MATCH'.freeze
+      IF_NONE_MATCH = "HTTP_IF_NONE_MATCH".freeze
 
       # The HTTP header for ETag
       #
       # @since 0.3.0
       # @api private
-      ETAG          = 'ETag'.freeze
+      ETAG          = "ETag".freeze
 
       # @since 0.3.0
       # @api private
-      IF_MODIFIED_SINCE = 'HTTP_IF_MODIFIED_SINCE'.freeze
+      IF_MODIFIED_SINCE = "HTTP_IF_MODIFIED_SINCE".freeze
 
       # The HTTP header for Last-Modified
       #
       # @since 0.3.0
       # @api private
-      LAST_MODIFIED = 'Last-Modified'.freeze
+      LAST_MODIFIED = "Last-Modified".freeze
 
       # ETag value object
       #

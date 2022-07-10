@@ -3,7 +3,7 @@ module Inspector
     action.class_eval do
       after do |req, res|
         res[:params] = req.params.to_h
-        req.env['hanami.response'] = res
+        req.env["hanami.response"] = res
       end
     end
   end
@@ -11,8 +11,8 @@ end
 
 class Renderer
   def render(env, response)
-    action   = env.delete('hanami.action')
-    response = env.delete('hanami.response') || response
+    action   = env.delete("hanami.action")
+    response = env.delete("hanami.response") || response
 
     handle_hanami_response(env, action, response) ||
       handle_rack_response(env, action, response)

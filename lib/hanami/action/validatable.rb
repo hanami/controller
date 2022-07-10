@@ -1,4 +1,4 @@
-require 'hanami/action/params'
+require "hanami/action/params"
 
 module Hanami
   class Action
@@ -7,7 +7,7 @@ module Hanami
       #
       # @api private
       # @since 0.3.0
-      PARAMS_CLASS_NAME = 'Params'.freeze
+      PARAMS_CLASS_NAME = "Params".freeze
 
       # @api private
       # @since 0.1.0

@@ -1,4 +1,4 @@
-require 'hanami/router'
+require "hanami/router"
 
 class ExceptionHandler
   def initialize(app)
@@ -81,14 +81,14 @@ module Errors
   class Application
     def initialize
       routes = Hanami::Router.new do
-        get '/without_message',     to: Errors::WithoutMessage.new
-        get '/with_message',        to: Errors::WithMessage.new
-        get '/with_custom_message', to: Errors::WithCustomMessage.new
+        get "/without_message",     to: Errors::WithoutMessage.new
+        get "/with_message",        to: Errors::WithMessage.new
+        get "/with_custom_message", to: Errors::WithCustomMessage.new
 
-        get '/action_handled',                 to: Errors::ActionHandled.new
-        get '/action_handled_subclass',        to: Errors::ActionHandledSubclass.new
-        get '/configuration_handled',          to: Errors::ConfigurationHandled.new
-        get '/configuration_handled_subclass', to: Errors::ConfigurationHandledSubclass.new
+        get "/action_handled",                 to: Errors::ActionHandled.new
+        get "/action_handled_subclass",        to: Errors::ActionHandledSubclass.new
+        get "/configuration_handled",          to: Errors::ConfigurationHandled.new
+        get "/configuration_handled_subclass", to: Errors::ConfigurationHandledSubclass.new
       end
 
       @app = Rack::Builder.new do

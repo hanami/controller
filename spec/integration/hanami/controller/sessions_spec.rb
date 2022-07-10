@@ -1,15 +1,15 @@
-require 'rack/test'
-require 'hanami/router'
-require 'hanami'
+require "rack/test"
+require "hanami/router"
+require "hanami"
 
 RSpec.describe "HTTP sessions" do
   include Rack::Test::Methods
 
   let(:router) do
     Hanami::Router.new do
-      get    '/',       to: Dashboard::Index.new
-      post   '/login',  to: Sessions::Create.new
-      delete '/logout', to: Sessions::Destroy.new
+      get    "/",       to: Dashboard::Index.new
+      post   "/login",  to: Sessions::Create.new
+      delete "/logout", to: Sessions::Destroy.new
     end
   end
 

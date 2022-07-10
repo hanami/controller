@@ -1,5 +1,5 @@
-require 'rack/request'
-require 'securerandom'
+require "rack/request"
+require "securerandom"
 
 module Hanami
   class Action
@@ -48,7 +48,7 @@ module Hanami
       # @since 0.3.1
       # @api private
       def content_type
-        raise NoMethodError, 'Please use Action#content_type'
+        raise NoMethodError, "Please use Action#content_type"
       end
 
       # @raise [NoMethodError]
@@ -56,7 +56,7 @@ module Hanami
       # @since 0.3.1
       # @api private
       def update_param(*)
-        raise NoMethodError, 'Please use params passed to Action#call'
+        raise NoMethodError, "Please use params passed to Action#call"
       end
 
       # @raise [NoMethodError]
@@ -64,7 +64,7 @@ module Hanami
       # @since 0.3.1
       # @api private
       def delete_param(*)
-        raise NoMethodError, 'Please use params passed to Action#call'
+        raise NoMethodError, "Please use params passed to Action#call"
       end
 
       # @raise [NoMethodError]
@@ -72,7 +72,7 @@ module Hanami
       # @since 0.3.1
       # @api private
       def [](*)
-        raise NoMethodError, 'Please use params passed to Action#call'
+        raise NoMethodError, "Please use params passed to Action#call"
       end
 
       # @raise [NoMethodError]
@@ -80,7 +80,7 @@ module Hanami
       # @since 0.3.1
       # @api private
       def []=(*)
-        raise NoMethodError, 'Please use params passed to Action#call'
+        raise NoMethodError, "Please use params passed to Action#call"
       end
 
       # @raise [NoMethodError]
@@ -88,7 +88,7 @@ module Hanami
       # @since 0.3.1
       # @api private
       def values_at(*)
-        raise NoMethodError, 'Please use params passed to Action#call'
+        raise NoMethodError, "Please use params passed to Action#call"
       end
     end
   end

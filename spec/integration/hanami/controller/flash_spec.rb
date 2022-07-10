@@ -22,7 +22,7 @@ RSpec.describe "Flash application" do
     expect(last_response.body).to match(/world/)
   end
 
-  describe '#each' do
+  describe "#each" do
     it "iterates through data even after redirect" do
       get "/each_redirect"
       follow_redirect!
@@ -31,7 +31,7 @@ RSpec.describe "Flash application" do
     end
   end
 
-  describe '#map' do
+  describe "#map" do
     it "iterates through data even after redirect" do
       get "/map_redirect"
       follow_redirect!

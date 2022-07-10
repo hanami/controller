@@ -1,6 +1,6 @@
-require 'hanami/action'
-require 'hanami/controller/version'
-require 'hanami/controller/error'
+require "hanami/action"
+require "hanami/controller/version"
+require "hanami/controller/error"
 
 # Hanami
 #

@@ -1,4 +1,4 @@
-require 'rack/test'
+require "rack/test"
 
 RSpec.describe "Sessions without cookies application" do
   include Rack::Test::Methods

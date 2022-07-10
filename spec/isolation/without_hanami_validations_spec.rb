@@ -1,6 +1,6 @@
-require_relative '../support/isolation_spec_helper'
+require_relative "../support/isolation_spec_helper"
 
-RSpec.describe 'Without validations' do
+RSpec.describe "Without validations" do
   it "doesn't load Hanami::Validations" do
     expect(defined?(Hanami::Validations)).to be(nil)
   end

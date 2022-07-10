@@ -63,7 +63,7 @@ module Hanami
         # @since 0.3.0
         # @api private
         def to_str
-          @name.to_s.tr('_', '-')
+          @name.to_s.tr("_", "-")
         end
 
         # @since 0.3.0

@@ -5,79 +5,79 @@ require "rack/mime"
 module Hanami
   class Action
     module Mime
-      DEFAULT_CONTENT_TYPE = 'application/octet-stream'.freeze
-      DEFAULT_CHARSET      = 'utf-8'.freeze
+      DEFAULT_CONTENT_TYPE = "application/octet-stream".freeze
+      DEFAULT_CHARSET      = "utf-8".freeze
 
       # The key that returns content mime type from the Rack env
       #
       # @since 2.0.0
       # @api private
-      HTTP_CONTENT_TYPE    = 'CONTENT_TYPE'.freeze
+      HTTP_CONTENT_TYPE    = "CONTENT_TYPE".freeze
 
       # The header key to set the mime type of the response
       #
       # @since 0.1.0
       # @api private
-      CONTENT_TYPE         = 'Content-Type'.freeze
+      CONTENT_TYPE         = "Content-Type".freeze
 
       # Most commom MIME Types used for responses
       #
       # @since 1.0.0
       # @api private
       TYPES = {
-        txt: 'text/plain',
-        html: 'text/html',
-        json: 'application/json',
-        manifest: 'text/cache-manifest',
-        atom: 'application/atom+xml',
-        avi: 'video/x-msvideo',
-        bmp: 'image/bmp',
-        bz: 'application/x-bzip',
-        bz2: 'application/x-bzip2',
-        chm: 'application/vnd.ms-htmlhelp',
-        css: 'text/css',
-        csv: 'text/csv',
-        flv: 'video/x-flv',
-        gif: 'image/gif',
-        gz: 'application/x-gzip',
-        h264: 'video/h264',
-        ico: 'image/vnd.microsoft.icon',
-        ics: 'text/calendar',
-        jpg: 'image/jpeg',
-        js: 'application/javascript',
-        mp4: 'video/mp4',
-        mov: 'video/quicktime',
-        mp3: 'audio/mpeg',
-        mp4a: 'audio/mp4',
-        mpg: 'video/mpeg',
-        oga: 'audio/ogg',
-        ogg: 'application/ogg',
-        ogv: 'video/ogg',
-        pdf: 'application/pdf',
-        pgp: 'application/pgp-encrypted',
-        png: 'image/png',
-        psd: 'image/vnd.adobe.photoshop',
-        rss: 'application/rss+xml',
-        rtf: 'application/rtf',
-        sh: 'application/x-sh',
-        svg: 'image/svg+xml',
-        swf: 'application/x-shockwave-flash',
-        tar: 'application/x-tar',
-        torrent: 'application/x-bittorrent',
-        tsv: 'text/tab-separated-values',
-        uri: 'text/uri-list',
-        vcs: 'text/x-vcalendar',
-        wav: 'audio/x-wav',
-        webm: 'video/webm',
-        wmv: 'video/x-ms-wmv',
-        woff: 'application/font-woff',
-        woff2: 'application/font-woff2',
-        wsdl: 'application/wsdl+xml',
-        xhtml: 'application/xhtml+xml',
-        xml: 'application/xml',
-        xslt: 'application/xslt+xml',
-        yml: 'text/yaml',
-        zip: 'application/zip'
+        txt: "text/plain",
+        html: "text/html",
+        json: "application/json",
+        manifest: "text/cache-manifest",
+        atom: "application/atom+xml",
+        avi: "video/x-msvideo",
+        bmp: "image/bmp",
+        bz: "application/x-bzip",
+        bz2: "application/x-bzip2",
+        chm: "application/vnd.ms-htmlhelp",
+        css: "text/css",
+        csv: "text/csv",
+        flv: "video/x-flv",
+        gif: "image/gif",
+        gz: "application/x-gzip",
+        h264: "video/h264",
+        ico: "image/vnd.microsoft.icon",
+        ics: "text/calendar",
+        jpg: "image/jpeg",
+        js: "application/javascript",
+        mp4: "video/mp4",
+        mov: "video/quicktime",
+        mp3: "audio/mpeg",
+        mp4a: "audio/mp4",
+        mpg: "video/mpeg",
+        oga: "audio/ogg",
+        ogg: "application/ogg",
+        ogv: "video/ogg",
+        pdf: "application/pdf",
+        pgp: "application/pgp-encrypted",
+        png: "image/png",
+        psd: "image/vnd.adobe.photoshop",
+        rss: "application/rss+xml",
+        rtf: "application/rtf",
+        sh: "application/x-sh",
+        svg: "image/svg+xml",
+        swf: "application/x-shockwave-flash",
+        tar: "application/x-tar",
+        torrent: "application/x-bittorrent",
+        tsv: "text/tab-separated-values",
+        uri: "text/uri-list",
+        vcs: "text/x-vcalendar",
+        wav: "audio/x-wav",
+        webm: "video/webm",
+        wmv: "video/x-ms-wmv",
+        woff: "application/font-woff",
+        woff2: "application/font-woff2",
+        wsdl: "application/wsdl+xml",
+        xhtml: "application/xhtml+xml",
+        xml: "application/xml",
+        xslt: "application/xslt+xml",
+        yml: "text/yaml",
+        zip: "application/zip"
       }.freeze
 
       def self.content_type_with_charset(content_type, charset)
@@ -245,7 +245,7 @@ module Hanami
         # @since 1.0.1
         # @api private
         def calculate_priority(mime)
-          @priority ||= (mime.split('/'.freeze, 2).count('*'.freeze) * -10) + quality
+          @priority ||= (mime.split("/".freeze, 2).count("*".freeze) * -10) + quality
         end
       end
     end

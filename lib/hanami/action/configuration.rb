@@ -90,9 +90,9 @@ module Hanami
       # @since 0.2.0
       # @api private
       DEFAULT_FORMATS = {
-        'application/octet-stream' => :all,
-        '*/*'                      => :all,
-        'text/html'                => :html
+        "application/octet-stream" => :all,
+        "*/*"                      => :all,
+        "text/html"                => :html
       }.freeze
 
       # @!method formats=(formats)
@@ -375,7 +375,7 @@ module Hanami
       # @since 1.0.0
       #
       # @api private
-      DEFAULT_PUBLIC_DIRECTORY = 'public'.freeze
+      DEFAULT_PUBLIC_DIRECTORY = "public".freeze
 
       # @!method public_directory=(directory)
       #

@@ -1,4 +1,4 @@
-require 'rack/file'
+require "rack/file"
 
 module Hanami
   class Action

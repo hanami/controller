@@ -1,5 +1,5 @@
-require 'rack/request'
-require 'hanami/utils/hash'
+require "rack/request"
+require "hanami/utils/hash"
 
 module Hanami
   class Action
@@ -8,14 +8,14 @@ module Hanami
       #
       # @since 0.7.0
       # @api private
-      RACK_INPUT    = 'rack.input'.freeze
+      RACK_INPUT    = "rack.input".freeze
 
       # The key that returns router params from the Rack env
       # This is a builtin integration for Hanami::Router
       #
       # @since 0.7.0
       # @api private
-      ROUTER_PARAMS = 'router.params'.freeze
+      ROUTER_PARAMS = "router.params".freeze
 
       # The key that returns Rack session params from the Rack env
       # Please note that this is used only when an action is unit tested.
@@ -27,19 +27,19 @@ module Hanami
       #   # action unit test
       #   action.call('rack.session' => { 'foo' => 'bar' })
       #   action.session[:foo] # => "bar"
-      RACK_SESSION = 'rack.session'.freeze
+      RACK_SESSION = "rack.session".freeze
 
       # HTTP request method for Rack env
       #
       # @since 1.1.1
       # @api private
-      REQUEST_METHOD = 'REQUEST_METHOD'.freeze
+      REQUEST_METHOD = "REQUEST_METHOD".freeze
 
       # Default HTTP request method for Rack env
       #
       # @since 1.1.1
       # @api private
-      DEFAULT_REQUEST_METHOD = 'GET'.freeze
+      DEFAULT_REQUEST_METHOD = "GET".freeze
 
       # @attr_reader env [Hash] the Rack env
       #

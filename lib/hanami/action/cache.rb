@@ -1,6 +1,6 @@
-require 'hanami/action/cache/cache_control'
-require 'hanami/action/cache/expires'
-require 'hanami/action/cache/conditional_get'
+require "hanami/action/cache/cache_control"
+require "hanami/action/cache/expires"
+require "hanami/action/cache/conditional_get"
 
 module Hanami
   class Action

@@ -1,5 +1,5 @@
-require 'hanami/action/base_params'
-require 'hanami/validations/form'
+require "hanami/action/base_params"
+require "hanami/validations/form"
 
 module Hanami
   class Action

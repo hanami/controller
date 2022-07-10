@@ -12,7 +12,7 @@ module Hanami
       #
       # @api private
       # @since 0.3.0
-      ENV_KEY = 'hanami.action'.freeze
+      ENV_KEY = "hanami.action".freeze
 
       protected
 

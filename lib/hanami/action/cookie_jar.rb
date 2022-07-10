@@ -1,4 +1,4 @@
-require 'hanami/utils/hash'
+require "hanami/utils/hash"
 
 module Hanami
   class Action
@@ -14,7 +14,7 @@ module Hanami
       #
       # @since 0.1.0
       # @api private
-      HTTP_HEADER       = 'HTTP_COOKIE'.freeze
+      HTTP_HEADER       = "HTTP_COOKIE".freeze
 
       # The key used by Rack to set the session cookie
       #
@@ -33,17 +33,17 @@ module Hanami
       #
       # @since 0.1.0
       # @api private
-      COOKIE_HASH_KEY   = 'rack.request.cookie_hash'.freeze
+      COOKIE_HASH_KEY   = "rack.request.cookie_hash".freeze
 
       # The key used by Rack to set the cookies as a String in the env
       #
       # @since 0.1.0
       # @api private
-      COOKIE_STRING_KEY = 'rack.request.cookie_string'.freeze
+      COOKIE_STRING_KEY = "rack.request.cookie_string".freeze
 
       # @since 0.4.5
       # @api private
-      COOKIE_SEPARATOR = ';,'.freeze
+      COOKIE_SEPARATOR = ";,".freeze
 
       # Initialize the CookieJar
       #

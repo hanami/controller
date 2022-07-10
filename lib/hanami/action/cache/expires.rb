@@ -1,4 +1,4 @@
-require 'hanami/action/cache/cache_control'
+require "hanami/action/cache/cache_control"
 
 module Hanami
   class Action
@@ -12,7 +12,7 @@ module Hanami
         #
         # @since 0.3.0
         # @api private
-        HEADER = 'Expires'.freeze
+        HEADER = "Expires".freeze
 
         # @since 0.3.0
         # @api private

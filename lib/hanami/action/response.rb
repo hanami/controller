@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
-require 'rack'
-require 'rack/response'
-require 'hanami/utils/kernel'
-require 'hanami/action/flash'
-require 'hanami/action/halt'
-require 'hanami/action/cookie_jar'
-require 'hanami/action/cache/cache_control'
-require 'hanami/action/cache/expires'
-require 'hanami/action/cache/conditional_get'
+require "rack"
+require "rack/response"
+require "hanami/utils/kernel"
+require "hanami/action/flash"
+require "hanami/action/halt"
+require "hanami/action/cookie_jar"
+require "hanami/action/cache/cache_control"
+require "hanami/action/cache/expires"
+require "hanami/action/cache/conditional_get"
 
 module Hanami
   class Action
@@ -55,7 +55,7 @@ module Hanami
         @request = request
         @action = action
         @configuration = configuration
-        @charset = ::Rack::MediaType.params(content_type).fetch('charset', nil)
+        @charset = ::Rack::MediaType.params(content_type).fetch("charset", nil)
         @exposures = {}
         @env = env
         @view_options = view_options || DEFAULT_VIEW_OPTIONS

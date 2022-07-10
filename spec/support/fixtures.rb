@@ -10,7 +10,7 @@ require "hanami/action/cache"
 require "hanami/action/glue"
 require_relative "./renderer"
 
-require_relative './validations'
+require_relative "./validations"
 
 HTTP_TEST_STATUSES_WITHOUT_BODY = Set.new((100..199).to_a << 204 << 304).freeze
 HTTP_TEST_STATUSES = {

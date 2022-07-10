@@ -1,23 +1,23 @@
 begin
-  require 'hanami/validations'
-  require 'hanami/action/validatable'
+  require "hanami/validations"
+  require "hanami/action/validatable"
 rescue LoadError
 end
 
-require 'hanami/utils/class_attribute'
-require 'hanami/utils/callbacks'
-require 'hanami/utils'
-require 'hanami/utils/string'
-require 'hanami/utils/kernel'
-require 'rack/utils'
+require "hanami/utils/class_attribute"
+require "hanami/utils/callbacks"
+require "hanami/utils"
+require "hanami/utils/string"
+require "hanami/utils/kernel"
+require "rack/utils"
 
-require_relative 'action/base_params'
-require_relative 'action/configuration'
-require_relative 'action/halt'
-require_relative 'action/mime'
-require_relative 'action/rack/file'
-require_relative 'action/request'
-require_relative 'action/response'
+require_relative "action/base_params"
+require_relative "action/configuration"
+require_relative "action/halt"
+require_relative "action/mime"
+require_relative "action/rack/file"
+require_relative "action/request"
+require_relative "action/response"
 
 module Hanami
   # An HTTP endpoint
@@ -79,69 +79,69 @@ module Hanami
     # @see http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.5
     # @see http://www.w3.org/Protocols/rfc2616/rfc2616-sec7.html
     ENTITY_HEADERS = {
-      'Allow'            => true,
-      'Content-Encoding' => true,
-      'Content-Language' => true,
-      'Content-Location' => true,
-      'Content-MD5'      => true,
-      'Content-Range'    => true,
-      'Expires'          => true,
-      'Last-Modified'    => true,
-      'extension-header' => true
+      "Allow"            => true,
+      "Content-Encoding" => true,
+      "Content-Language" => true,
+      "Content-Location" => true,
+      "Content-MD5"      => true,
+      "Content-Range"    => true,
+      "Expires"          => true,
+      "Last-Modified"    => true,
+      "extension-header" => true
     }.freeze
 
     # The request method
     #
     # @since 0.3.2
     # @api private
-    REQUEST_METHOD = 'REQUEST_METHOD'.freeze
+    REQUEST_METHOD = "REQUEST_METHOD".freeze
 
     # The Content-Length HTTP header
     #
     # @since 1.0.0
     # @api private
-    CONTENT_LENGTH = 'Content-Length'.freeze
+    CONTENT_LENGTH = "Content-Length".freeze
 
     # The non-standard HTTP header to pass the control over when a resource
     # cannot be found by the current endpoint
     #
     # @since 1.0.0
     # @api private
-    X_CASCADE = 'X-Cascade'.freeze
+    X_CASCADE = "X-Cascade".freeze
 
     # HEAD request
     #
     # @since 0.3.2
     # @api private
-    HEAD = 'HEAD'.freeze
+    HEAD = "HEAD".freeze
 
     # The key that returns accepted mime types from the Rack env
     #
     # @since 0.1.0
     # @api private
-    HTTP_ACCEPT          = 'HTTP_ACCEPT'.freeze
+    HTTP_ACCEPT          = "HTTP_ACCEPT".freeze
 
     # The header key to set the mime type of the response
     #
     # @since 0.1.0
     # @api private
-    CONTENT_TYPE         = 'Content-Type'.freeze
+    CONTENT_TYPE         = "Content-Type".freeze
 
     # The default mime type for an incoming HTTP request
     #
     # @since 0.1.0
     # @api private
-    DEFAULT_ACCEPT       = '*/*'.freeze
+    DEFAULT_ACCEPT       = "*/*".freeze
 
     # The default mime type that is returned in the response
     #
     # @since 0.1.0
     # @api private
-    DEFAULT_CONTENT_TYPE = 'application/octet-stream'.freeze
+    DEFAULT_CONTENT_TYPE = "application/octet-stream".freeze
 
     # @since 0.2.0
     # @api private
-    RACK_ERRORS = 'rack.errors'.freeze
+    RACK_ERRORS = "rack.errors".freeze
 
     # This isn't part of Rack SPEC
     #
@@ -154,13 +154,13 @@ module Hanami
     # @see Hanami::Action::Throwable::RACK_ERRORS
     # @see http://www.rubydoc.info/github/rack/rack/file/SPEC#The_Error_Stream
     # @see https://github.com/hanami/controller/issues/133
-    RACK_EXCEPTION = 'rack.exception'.freeze
+    RACK_EXCEPTION = "rack.exception".freeze
 
     # The HTTP header for redirects
     #
     # @since 0.2.0
     # @api private
-    LOCATION = 'Location'.freeze
+    LOCATION = "Location".freeze
 
     # Override Ruby's hook for modules.
     # It includes basic Hanami::Action modules to the given class.
@@ -184,7 +184,7 @@ module Hanami
         end
       end
 
-      subclass.instance_variable_set '@configuration', configuration.dup
+      subclass.instance_variable_set "@configuration", configuration.dup
     end
 
     def self.configuration
