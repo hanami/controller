@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "hanami/utils/blank"
 
 module Hanami
@@ -5,23 +7,23 @@ module Hanami
     module Cache
       # @since 0.3.0
       # @api private
-      IF_NONE_MATCH = "HTTP_IF_NONE_MATCH".freeze
+      IF_NONE_MATCH = "HTTP_IF_NONE_MATCH"
 
       # The HTTP header for ETag
       #
       # @since 0.3.0
       # @api private
-      ETAG          = "ETag".freeze
+      ETAG          = "ETag"
 
       # @since 0.3.0
       # @api private
-      IF_MODIFIED_SINCE = "HTTP_IF_MODIFIED_SINCE".freeze
+      IF_MODIFIED_SINCE = "HTTP_IF_MODIFIED_SINCE"
 
       # The HTTP header for Last-Modified
       #
       # @since 0.3.0
       # @api private
-      LAST_MODIFIED = "Last-Modified".freeze
+      LAST_MODIFIED = "Last-Modified"
 
       # ETag value object
       #
@@ -78,7 +80,7 @@ module Hanami
         # @since 0.3.0
         # @api private
         def header
-          {LAST_MODIFIED => @value.httpdate} if @value && @value.respond_to?(:httpdate)
+          {LAST_MODIFIED => @value.httpdate} if @value.respond_to?(:httpdate)
         end
 
         private

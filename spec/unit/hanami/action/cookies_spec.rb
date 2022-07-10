@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Hanami::Action do
   describe "#cookies" do
     it "gets cookies" do

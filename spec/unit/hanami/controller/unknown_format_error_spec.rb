@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Hanami::Controller::UnknownFormatError do
   it "inheriths from Hanami::Controller::Error" do
     expect(Hanami::Controller::UnknownFormatError.superclass).to eq(Hanami::Controller::Error)

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Hanami::Action::Configuration do
   subject(:configuration) { described_class.new }
 

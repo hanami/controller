@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "hanami/action/cache/directives"
 
 module Hanami
@@ -12,7 +14,7 @@ module Hanami
         #
         # @since 0.3.0
         # @api private
-        HEADER = "Cache-Control".freeze
+        HEADER = "Cache-Control"
 
         # @since 0.3.0
         # @api private

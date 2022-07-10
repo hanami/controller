@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rack/request"
 require "securerandom"
 
@@ -10,9 +12,9 @@ module Hanami
     #
     # @see http://www.rubydoc.info/gems/rack/Rack/Request
     class Request < ::Rack::Request
-      HTTP_ACCEPT = "HTTP_ACCEPT".freeze
-      REQUEST_ID  = "hanami.request_id".freeze
-      DEFAULT_ACCEPT = "*/*".freeze
+      HTTP_ACCEPT = "HTTP_ACCEPT"
+      REQUEST_ID  = "hanami.request_id"
+      DEFAULT_ACCEPT = "*/*"
       DEFAULT_ID_LENGTH = 16
 
       attr_reader :params

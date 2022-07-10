@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "hanami/utils/blank"
 require "rack/utils"
 require "securerandom"

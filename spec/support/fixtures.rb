@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "json"
 require "digest/md5"
 require "hanami/router"
@@ -219,7 +221,7 @@ class BeforeMethodAction < Hanami::Action
   end
 
   def reverse_article(*, res)
-    res[:article].reverse!
+    res[:article] = res[:article].reverse
   end
 
   def log_request(req, res)
@@ -284,7 +286,7 @@ end
 
 class BeforeBlockAction < Hanami::Action
   before { |_, res|   res[:article] = "Good morning!" }
-  before { |_, res|   res[:article].reverse! }
+  before { |_, res|   res[:article] = res[:article].reverse }
   before { |req, res| res[:arguments] = [req.class.name, res.class.name] }
 
   def handle(req, res)
@@ -335,7 +337,7 @@ end
 
 class AfterBlockAction < Hanami::Action
   after { |_, res| res[:egg] = "Coque" }
-  after { |_, res| res[:egg].reverse! }
+  after { |_, res| res[:egg] = res[:egg].reverse }
   after { |req, res| res[:arguments] = [req.class.name, res.class.name] }
 
   def handle(*)
@@ -1014,13 +1016,14 @@ module SendFileTest
         id = req.params[:id]
 
         # This if statement is only for testing purpose
-        if id == "1"
+        case id
+        when "1"
           res.send_file Pathname.new("test.txt")
-        elsif id == "2"
+        when "2"
           res.send_file Pathname.new("hanami.png")
-        elsif id == "3"
+        when "3"
           res.send_file Pathname.new("Gemfile")
-        elsif id == "100"
+        when "100"
           res.send_file Pathname.new("unknown.txt")
         else
           # a more realistic example of globbing ':id(.:format)'
@@ -1685,8 +1688,6 @@ module MimesWithDefault
     end
   end
 end
-
-require "hanami/middleware/body_parser"
 
 module RouterIntegration
   class Application

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "hanami/action/cache/cache_control"
 
 module Hanami
@@ -12,7 +14,7 @@ module Hanami
         #
         # @since 0.3.0
         # @api private
-        HEADER = "Expires".freeze
+        HEADER = "Expires"
 
         # @since 0.3.0
         # @api private

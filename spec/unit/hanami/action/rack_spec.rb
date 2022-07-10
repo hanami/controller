@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Hanami::Action::Rack do
   let(:action) { MethodInspectionAction.new }
 

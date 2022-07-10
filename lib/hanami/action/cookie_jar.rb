@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "hanami/utils/hash"
 
 module Hanami
@@ -14,7 +16,7 @@ module Hanami
       #
       # @since 0.1.0
       # @api private
-      HTTP_HEADER = "HTTP_COOKIE".freeze
+      HTTP_HEADER = "HTTP_COOKIE"
 
       # The key used by Rack to set the session cookie
       #
@@ -33,17 +35,17 @@ module Hanami
       #
       # @since 0.1.0
       # @api private
-      COOKIE_HASH_KEY   = "rack.request.cookie_hash".freeze
+      COOKIE_HASH_KEY   = "rack.request.cookie_hash"
 
       # The key used by Rack to set the cookies as a String in the env
       #
       # @since 0.1.0
       # @api private
-      COOKIE_STRING_KEY = "rack.request.cookie_string".freeze
+      COOKIE_STRING_KEY = "rack.request.cookie_string"
 
       # @since 0.4.5
       # @api private
-      COOKIE_SEPARATOR = ";,".freeze
+      COOKIE_SEPARATOR = ";,"
 
       # Initialize the CookieJar
       #
@@ -182,7 +184,7 @@ module Hanami
       # @since 0.4.3
       # @api private
       def _add_expires_option(value)
-        if value.has_key?(:max_age) && !value.has_key?(:expires)
+        if value.key?(:max_age) && !value.key?(:expires)
           {expires: (Time.now + value[:max_age])}
         else
           {}

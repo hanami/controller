@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "hanami/utils"
 require "rack/utils"
 require "rack/mime"
@@ -5,20 +7,20 @@ require "rack/mime"
 module Hanami
   class Action
     module Mime
-      DEFAULT_CONTENT_TYPE = "application/octet-stream".freeze
-      DEFAULT_CHARSET      = "utf-8".freeze
+      DEFAULT_CONTENT_TYPE = "application/octet-stream"
+      DEFAULT_CHARSET      = "utf-8"
 
       # The key that returns content mime type from the Rack env
       #
       # @since 2.0.0
       # @api private
-      HTTP_CONTENT_TYPE    = "CONTENT_TYPE".freeze
+      HTTP_CONTENT_TYPE    = "CONTENT_TYPE"
 
       # The header key to set the mime type of the response
       #
       # @since 0.1.0
       # @api private
-      CONTENT_TYPE         = "Content-Type".freeze
+      CONTENT_TYPE         = "Content-Type"
 
       # Most commom MIME Types used for responses
       #
@@ -249,7 +251,7 @@ module Hanami
         # @since 1.0.1
         # @api private
         def calculate_priority(mime)
-          @priority ||= (mime.split("/".freeze, 2).count("*".freeze) * -10) + quality
+          @priority ||= (mime.split("/", 2).count("*") * -10) + quality
         end
       end
     end

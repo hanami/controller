@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe "Hanami::Router integration" do
   let(:app) { Rack::MockRequest.new(RouterIntegration::Application.new) }
 

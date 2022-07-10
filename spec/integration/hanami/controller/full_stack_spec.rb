@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rack/test"
 
 RSpec.describe "Full stack application" do

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 if defined?(Hanami::Action::CookieJar)
   Hanami::Action::CookieJar.class_eval do
     def include?(hash)

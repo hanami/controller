@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 begin
   require "hanami/validations"
   require "hanami/action/validatable"
@@ -94,54 +96,54 @@ module Hanami
     #
     # @since 0.3.2
     # @api private
-    REQUEST_METHOD = "REQUEST_METHOD".freeze
+    REQUEST_METHOD = "REQUEST_METHOD"
 
     # The Content-Length HTTP header
     #
     # @since 1.0.0
     # @api private
-    CONTENT_LENGTH = "Content-Length".freeze
+    CONTENT_LENGTH = "Content-Length"
 
     # The non-standard HTTP header to pass the control over when a resource
     # cannot be found by the current endpoint
     #
     # @since 1.0.0
     # @api private
-    X_CASCADE = "X-Cascade".freeze
+    X_CASCADE = "X-Cascade"
 
     # HEAD request
     #
     # @since 0.3.2
     # @api private
-    HEAD = "HEAD".freeze
+    HEAD = "HEAD"
 
     # The key that returns accepted mime types from the Rack env
     #
     # @since 0.1.0
     # @api private
-    HTTP_ACCEPT          = "HTTP_ACCEPT".freeze
+    HTTP_ACCEPT          = "HTTP_ACCEPT"
 
     # The header key to set the mime type of the response
     #
     # @since 0.1.0
     # @api private
-    CONTENT_TYPE         = "Content-Type".freeze
+    CONTENT_TYPE         = "Content-Type"
 
     # The default mime type for an incoming HTTP request
     #
     # @since 0.1.0
     # @api private
-    DEFAULT_ACCEPT       = "*/*".freeze
+    DEFAULT_ACCEPT       = "*/*"
 
     # The default mime type that is returned in the response
     #
     # @since 0.1.0
     # @api private
-    DEFAULT_CONTENT_TYPE = "application/octet-stream".freeze
+    DEFAULT_CONTENT_TYPE = "application/octet-stream"
 
     # @since 0.2.0
     # @api private
-    RACK_ERRORS = "rack.errors".freeze
+    RACK_ERRORS = "rack.errors"
 
     # This isn't part of Rack SPEC
     #
@@ -154,13 +156,13 @@ module Hanami
     # @see Hanami::Action::Throwable::RACK_ERRORS
     # @see http://www.rubydoc.info/github/rack/rack/file/SPEC#The_Error_Stream
     # @see https://github.com/hanami/controller/issues/133
-    RACK_EXCEPTION = "rack.exception".freeze
+    RACK_EXCEPTION = "rack.exception"
 
     # The HTTP header for redirects
     #
     # @since 0.2.0
     # @api private
-    LOCATION = "Location".freeze
+    LOCATION = "Location"
 
     # Override Ruby's hook for modules.
     # It includes basic Hanami::Action modules to the given class.

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "hanami/action/cache/cache_control"
 require "hanami/action/cache/expires"
 require "hanami/action/cache/conditional_get"
