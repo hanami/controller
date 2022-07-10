@@ -43,52 +43,52 @@ module Hanami
         @accept ||= @env[HTTP_ACCEPT] || DEFAULT_ACCEPT
       end
 
-      # @raise [NotImplementedError]
+      # @raise [NoMethodError]
       #
       # @since 0.3.1
       # @api private
       def content_type
-        raise NotImplementedError, 'Please use Action#content_type'
+        raise NoMethodError, 'Please use Action#content_type'
       end
 
-      # @raise [NotImplementedError]
+      # @raise [NoMethodError]
       #
       # @since 0.3.1
       # @api private
       def update_param(*)
-        raise NotImplementedError, 'Please use params passed to Action#call'
+        raise NoMethodError, 'Please use params passed to Action#call'
       end
 
-      # @raise [NotImplementedError]
+      # @raise [NoMethodError]
       #
       # @since 0.3.1
       # @api private
       def delete_param(*)
-        raise NotImplementedError, 'Please use params passed to Action#call'
+        raise NoMethodError, 'Please use params passed to Action#call'
       end
 
-      # @raise [NotImplementedError]
+      # @raise [NoMethodError]
       #
       # @since 0.3.1
       # @api private
       def [](*)
-        raise NotImplementedError, 'Please use params passed to Action#call'
+        raise NoMethodError, 'Please use params passed to Action#call'
       end
 
-      # @raise [NotImplementedError]
+      # @raise [NoMethodError]
       #
       # @since 0.3.1
       # @api private
       def []=(*)
-        raise NotImplementedError, 'Please use params passed to Action#call'
+        raise NoMethodError, 'Please use params passed to Action#call'
       end
 
-      # @raise [NotImplementedError]
+      # @raise [NoMethodError]
       #
       # @since 0.3.1
       # @api private
       def values_at(*)
-        raise NotImplementedError, 'Please use params passed to Action#call'
+        raise NoMethodError, 'Please use params passed to Action#call'
       end
     end
   end

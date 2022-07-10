@@ -149,7 +149,7 @@ RSpec.describe Hanami::Action::Request do
   end
 
   describe 'request methods that are implemented elsewhere' do
-    it 'should reject with a NotImplementedError' do
+    it 'should reject with a NoMethodError' do
       methods = %i(
         content_type
         update_param
@@ -160,7 +160,7 @@ RSpec.describe Hanami::Action::Request do
       )
       request = described_class.new({}, {})
       methods.each do |method|
-        expect { request.send(method) }.to raise_error(NotImplementedError)
+        expect { request.send(method) }.to raise_error(NoMethodError)
       end
     end
   end
