@@ -18,7 +18,7 @@ RSpec.describe Hanami::Action::Flash do
       let(:input_hash) { {1 => 2} }
 
       it "assigns the hash as the now hash" do
-        expect(flash.now).to eq(1=>2)
+        expect(flash.now).to eq(1 => 2)
         expect(flash.next).to eq({})
       end
     end

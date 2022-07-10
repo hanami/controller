@@ -37,7 +37,7 @@ module Hanami
           def cache_control_directives
             @cache_control_directives || Object.new.tap do |null_object|
               def null_object.headers
-                ::Hash.new
+                {}
               end
             end
           end

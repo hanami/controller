@@ -76,7 +76,7 @@ HTTP_TEST_STATUSES = {
   508 => "Loop Detected",
   509 => "Bandwidth Limit Exceeded",
   510 => "Not Extended",
-  511 => "Network Authentication Required",
+  511 => "Network Authentication Required"
 }.freeze
 
 class RecordNotFound < StandardError
@@ -113,6 +113,7 @@ class ErrorCallAction < Hanami::Action
 end
 
 class MyCustomError < StandardError; end
+
 class ErrorCallFromInheritedErrorClass < Hanami::Action
   config.handle_exception StandardError => :handler
 
@@ -458,7 +459,8 @@ class SetCookiesWithOptionsAction < Hanami::Action
   end
 
   def handle(*, res)
-    res.cookies[:kukki] = {value: "yum!", domain: "hanamirb.org", path: "/controller", expires: @expires, secure: true, httponly: true}
+    res.cookies[:kukki] =
+      {value: "yum!", domain: "hanamirb.org", path: "/controller", expires: @expires, secure: true, httponly: true}
   end
 end
 
@@ -1050,6 +1052,7 @@ module SendFileTest
 
       def repository_dot_find_by_id(id)
         return nil unless id =~ /^\d+$/
+
         Model.new(id.to_i, "resource-#{id}")
       end
     end
@@ -1177,14 +1180,14 @@ module HeadTest
         content = "code"
 
         res.headers.merge!(
-          "Allow"            => "GET, HEAD",
+          "Allow" => "GET, HEAD",
           "Content-Encoding" => "identity",
           "Content-Language" => "en",
-          "Content-Length"   => content.length,
+          "Content-Length" => content.length,
           "Content-Location" => "relativeURI",
-          "Content-MD5"      => Digest::MD5.hexdigest(content),
-          "Expires"          => "Thu, 01 Dec 1994 16:00:00 GMT",
-          "Last-Modified"    => "Wed, 21 Jan 2015 11:32:10 GMT"
+          "Content-MD5" => Digest::MD5.hexdigest(content),
+          "Expires" => "Thu, 01 Dec 1994 16:00:00 GMT",
+          "Last-Modified" => "Wed, 21 Jan 2015 11:32:10 GMT"
         )
 
         res.status = req.params[:code].to_i
@@ -1199,8 +1202,8 @@ module HeadTest
       def handle(_req, res)
         res.headers.merge!(
           "Last-Modified" => "Fri, 27 Nov 2015 13:32:36 GMT",
-          "X-Rate-Limit"  => "4000",
-          "X-No-Pass"     => "true"
+          "X-Rate-Limit" => "4000",
+          "X-No-Pass" => "true"
         )
 
         res.status = 204
@@ -1826,9 +1829,9 @@ module Flash
   end
 
   class Application
-    def initialize # rubocop:disable Metrics/MethodLength
+    def initialize
       configuration = Hanami::Action::Configuration.new
-      routes   = Hanami::Router.new do
+      routes = Hanami::Router.new do
         get "/",      to: Flash::Controllers::Home::Index.new
         post "/",     to: Flash::Controllers::Home::Index.new
         get "/print", to: Flash::Controllers::Home::Print.new

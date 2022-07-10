@@ -99,7 +99,7 @@ module Hanami
         # @since 0.3.0
         # @api private
         def initialize(env, options)
-          @validations = [ ETag.new(env, options[:etag]), LastModified.new(env, options[:last_modified]) ]
+          @validations = [ETag.new(env, options[:etag]), LastModified.new(env, options[:last_modified])]
         end
 
         # @since 0.3.0
@@ -111,7 +111,7 @@ module Hanami
         # @since 0.3.0
         # @api private
         def headers
-          @validations.map(&:header).compact.reduce Hash.new, :merge
+          @validations.map(&:header).compact.reduce({}, :merge)
         end
       end
     end

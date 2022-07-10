@@ -7,8 +7,8 @@ class ExceptionHandler
 
   def call(env)
     @app.call(env)
-  rescue => e
-    [500, {}, [e.message]]
+  rescue StandardError => exception
+    [500, {}, [exception.message]]
   end
 end
 

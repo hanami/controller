@@ -118,7 +118,7 @@ module Hanami
       #
       # @api private
       # @since 0.8.0
-      alias dig get
+      alias_method :dig, :get
 
       # Provide a common interface with Params
       #
@@ -172,7 +172,7 @@ module Hanami
       # @api private
       def _router_params(fallback = {})
         env.fetch(ROUTER_PARAMS) do
-          if session = fallback.delete(RACK_SESSION) # rubocop:disable Lint/AssignmentInCondition
+          if session = fallback.delete(RACK_SESSION)
             fallback[RACK_SESSION] = Utils::Hash.deep_symbolize(session)
           end
 

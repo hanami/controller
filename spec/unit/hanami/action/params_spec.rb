@@ -106,7 +106,7 @@ RSpec.describe Hanami::Action::Params do
 
           it "doesn't filter _csrf_token" do
             response = action.call(_csrf_token: "abc")
-            expect(response.body).to eq( [%({:_csrf_token=>"abc"})])
+            expect(response.body).to eq([%({:_csrf_token=>"abc"})])
           end
         end
 

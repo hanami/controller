@@ -65,7 +65,7 @@ RSpec.describe Hanami::Action::CSRFProtection do
           Class.new(Hanami::Action) {
             include Hanami::Action::CSRFProtection
 
-            def verify_csrf_token?(req, res)
+            def verify_csrf_token?(_req, _res)
               false
             end
           }.new

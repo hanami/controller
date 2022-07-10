@@ -23,7 +23,7 @@ module Hanami
       end
 
       def id
-        # FIXME make this number configurable and document the probabilities of clashes
+        # FIXME: make this number configurable and document the probabilities of clashes
         @id ||= @env[REQUEST_ID] = SecureRandom.hex(DEFAULT_ID_LENGTH)
       end
 

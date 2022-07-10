@@ -130,6 +130,7 @@ module Hanami
       # @return [Symbol, nil]
       def self.detect_format(content_type, configuration)
         return if content_type.nil?
+
         ct = content_type.split(";").first
         configuration.format_for(ct) || format_for(ct)
       end
@@ -155,6 +156,7 @@ module Hanami
         accepted_mime_types = mime_types & configuration.mime_types
 
         return if accepted_mime_types.empty?
+
         accepted_mime_types
       end
 
@@ -197,6 +199,7 @@ module Hanami
         ::Rack::Utils.q_values(q_value_header).each_with_index.map do |(req_mime, quality), index|
           match = available_mimes.find { |am| ::Rack::Mime.match?(am, req_mime) }
           next unless match
+
           RequestMimeWeight.new(req_mime, quality, index, match)
         end.compact.max&.format
       end
@@ -237,6 +240,7 @@ module Hanami
         # @api private
         def <=>(other)
           return priority <=> other.priority unless priority == other.priority
+
           other.index <=> index
         end
 

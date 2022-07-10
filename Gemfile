@@ -15,7 +15,8 @@ gem "hanami-utils",  "~> 2.0.alpha", require: false, git: "https://github.com/ha
 gem "hanami-router", "~> 2.0.alpha", require: false, git: "https://github.com/hanami/router.git", branch: "main"
 
 group :validations do
-  gem "hanami-validations", "~> 2.0.alpha", require: false, git: "https://github.com/hanami/validations.git", branch: "main"
+  gem "hanami-validations", "~> 2.0.alpha", require: false, git: "https://github.com/hanami/validations.git",
+                                            branch: "main"
 end
 
 group :test do

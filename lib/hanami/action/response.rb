@@ -13,7 +13,7 @@ require "hanami/action/cache/conditional_get"
 module Hanami
   class Action
     class Response < ::Rack::Response
-      DEFAULT_VIEW_OPTIONS = -> * { {} }.freeze
+      DEFAULT_VIEW_OPTIONS = -> (*) { {} }.freeze
 
       REQUEST_METHOD = "REQUEST_METHOD"
       HTTP_ACCEPT = "HTTP_ACCEPT"
@@ -174,7 +174,7 @@ module Hanami
         !@sending_file
       end
 
-      alias to_ary to_a
+      alias_method :to_ary, :to_a
 
       def head?
         env[REQUEST_METHOD] == HEAD

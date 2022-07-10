@@ -22,7 +22,7 @@ class Renderer
 
   private
 
-  def handle_hanami_response(env, action, response)
+  def handle_hanami_response(_env, action, response)
     return unless response.respond_to?(:status)
 
     if response.status == 200
@@ -34,7 +34,9 @@ class Renderer
 
   def handle_rack_response(env, action, response)
     if response[0] == 200
-      response[2] = "#{action.class.name} params: #{env['router.params'].to_h} flash: #{env['rack.session'].fetch('flash', nil).inspect}"
+      response[2] =
+        "#{action.class.name} params: #{env['router.params'].to_h} flash: #{env['rack.session'].fetch('flash',
+                                                                                                      nil).inspect}"
     end
   end
 end

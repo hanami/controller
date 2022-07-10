@@ -35,7 +35,6 @@ RSpec.describe Hanami::Action::Mime::RequestMimeWeight do
     let(:html) { described_class.new("text/html", 1, 4) }
     let(:json) { described_class.new("application/json", 1, 1) }
 
-
     it "checks priority first" do
       expect(anything <=> json).to eq(-1)
       expect(any_text <=> anything).to eq(1)

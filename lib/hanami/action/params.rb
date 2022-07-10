@@ -149,7 +149,7 @@ module Hanami
       #     end
       #   end
       def self.params(&blk)
-        validations(&blk || ->() {})
+        validations(&blk || -> {})
       end
 
       # Initialize the params and freeze them.
@@ -203,10 +203,10 @@ module Hanami
           k = Utils::String.titleize(key)
 
           _messages = if messages.is_a?(::Hash)
-            error_messages(messages)
-          else
-            messages.map { |message| "#{k} #{message}" }
-          end
+                        error_messages(messages)
+                      else
+                        messages.map { |message| "#{k} #{message}" }
+                      end
 
           result.concat(_messages)
         end

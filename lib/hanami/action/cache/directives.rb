@@ -85,7 +85,7 @@ module Hanami
         def initialize(*values)
           @directives = []
           values.each do |directive_key|
-            if directive_key.kind_of? Hash
+            if directive_key.is_a? Hash
               directive_key.each { |name, value| self.<< ValueDirective.new(name, value) }
             else
               self.<< NonValueDirective.new(directive_key)
@@ -95,8 +95,8 @@ module Hanami
 
         # @since 0.3.0
         # @api private
-        def each
-          @directives.each { |d| yield d }
+        def each(&block)
+          @directives.each(&block)
         end
 
         # @since 0.3.0

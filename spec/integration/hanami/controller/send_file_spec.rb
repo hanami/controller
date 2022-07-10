@@ -87,10 +87,10 @@ RSpec.describe "Full stack application" do
     xit "doesn't send file in case of HEAD request" do
       head "/files/1", {}
 
-      expect(response.status).to      be(200)
+      expect(response.status).to be(200)
       expect(response.headers.keys).to_not include("Content-Length")
       expect(response.headers.keys).to_not include("Content-Type")
-      expect(response.body).to        be_empty
+      expect(response.body).to be_empty
     end
 
     it "doesn't send file outside of public directory" do

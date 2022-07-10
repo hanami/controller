@@ -37,7 +37,7 @@ module Hanami
           def expires_directives
             @expires_directives || Object.new.tap do |null_object|
               def null_object.headers
-                Hash.new
+                {}
               end
             end
           end

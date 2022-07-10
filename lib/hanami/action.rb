@@ -79,14 +79,14 @@ module Hanami
     # @see http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.5
     # @see http://www.w3.org/Protocols/rfc2616/rfc2616-sec7.html
     ENTITY_HEADERS = {
-      "Allow"            => true,
+      "Allow" => true,
       "Content-Encoding" => true,
       "Content-Language" => true,
       "Content-Location" => true,
-      "Content-MD5"      => true,
-      "Content-Range"    => true,
-      "Expires"          => true,
-      "Last-Modified"    => true,
+      "Content-MD5" => true,
+      "Content-Range" => true,
+      "Expires" => true,
+      "Last-Modified" => true,
       "extension-header" => true
     }.freeze
 
@@ -222,7 +222,7 @@ module Hanami
     #
     # @api private
     # @since 2.0.0
-    def self.params(klass = nil, &blk)
+    def self.params(_klass = nil)
       raise NoMethodError,
             "To use `params`, please add 'hanami/validations' gem to your Gemfile"
     end
@@ -289,8 +289,8 @@ module Hanami
     #   # 1. authentication
     #   # 2. set the article
     #   # 3. #call
-    def self.append_before(*callbacks, &blk)
-      before_callbacks.append(*callbacks, &blk)
+    def self.append_before(...)
+      before_callbacks.append(...)
     end
 
     class << self
@@ -313,8 +313,8 @@ module Hanami
     # @since 0.3.2
     #
     # @see Hanami::Action::Callbacks::ClassMethods#append_before
-    def self.append_after(*callbacks, &blk)
-      after_callbacks.append(*callbacks, &blk)
+    def self.append_after(...)
+      after_callbacks.append(...)
     end
 
     class << self
@@ -337,8 +337,8 @@ module Hanami
     # @since 0.3.2
     #
     # @see Hanami::Action::Callbacks::ClassMethods#prepend_after
-    def self.prepend_before(*callbacks, &blk)
-      before_callbacks.prepend(*callbacks, &blk)
+    def self.prepend_before(...)
+      before_callbacks.prepend(...)
     end
 
     # Define a callback for an Action.
@@ -356,8 +356,8 @@ module Hanami
     # @since 0.3.2
     #
     # @see Hanami::Action::Callbacks::ClassMethods#prepend_before
-    def self.prepend_after(*callbacks, &blk)
-      after_callbacks.prepend(*callbacks, &blk)
+    def self.prepend_after(...)
+      after_callbacks.prepend(...)
     end
 
     # Restrict the access to the specified mime type symbols.
@@ -437,24 +437,22 @@ module Hanami
       response = nil
 
       halted = catch :halt do
-        begin
-          params   = self.class.params_class.new(env)
-          request  = build_request(env, params)
-          response = build_response(
-            request: request,
-            action: name,
-            configuration: configuration,
-            content_type: Mime.calculate_content_type_with_charset(configuration, request, accepted_mime_types),
-            env: env,
-            headers: configuration.default_headers
-          )
+        params   = self.class.params_class.new(env)
+        request  = build_request(env, params)
+        response = build_response(
+          request: request,
+          action: name,
+          configuration: configuration,
+          content_type: Mime.calculate_content_type_with_charset(configuration, request, accepted_mime_types),
+          env: env,
+          headers: configuration.default_headers
+        )
 
-          _run_before_callbacks(request, response)
-          handle(request, response)
-          _run_after_callbacks(request, response)
-        rescue => exception
-          _handle_exception(request, response, exception)
-        end
+        _run_before_callbacks(request, response)
+        handle(request, response)
+        _run_after_callbacks(request, response)
+      rescue StandardError => exception
+        _handle_exception(request, response, exception)
       end
 
       finish(request, response, halted)
@@ -544,7 +542,7 @@ module Hanami
 
     def exception_handler(exception)
       configuration.handled_exceptions.each do |exception_class, handler|
-        return handler if exception.kind_of?(exception_class)
+        return handler if exception.is_a?(exception_class)
       end
 
       nil
