@@ -1,6 +1,8 @@
-require 'hanami/action'
-require 'hanami/controller/version'
-require 'hanami/controller/error'
+# frozen_string_literal: true
+
+require "hanami/action"
+require "hanami/controller/version"
+require "hanami/controller/error"
 
 # Hanami
 #
@@ -41,7 +43,7 @@ module Hanami
       # @since 0.2.0
       # @api private
       def initialize(format)
-        super("Cannot find a corresponding Mime type for '#{ format }'. Please configure it with Hanami::Controller::Configuration#format.")
+        super("Cannot find a corresponding Mime type for '#{format}'. Please configure it with Hanami::Controller::Configuration#format.") # rubocop:disable Layout/LineLength
       end
     end
   end

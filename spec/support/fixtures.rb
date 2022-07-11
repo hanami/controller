@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "json"
 require "digest/md5"
 require "hanami/router"
@@ -10,7 +12,7 @@ require "hanami/action/cache"
 require "hanami/action/glue"
 require_relative "./renderer"
 
-require_relative './validations'
+require_relative "./validations"
 
 HTTP_TEST_STATUSES_WITHOUT_BODY = Set.new((100..199).to_a << 204 << 304).freeze
 HTTP_TEST_STATUSES = {
@@ -76,7 +78,7 @@ HTTP_TEST_STATUSES = {
   508 => "Loop Detected",
   509 => "Bandwidth Limit Exceeded",
   510 => "Not Extended",
-  511 => "Network Authentication Required",
+  511 => "Network Authentication Required"
 }.freeze
 
 class RecordNotFound < StandardError
@@ -113,6 +115,7 @@ class ErrorCallAction < Hanami::Action
 end
 
 class MyCustomError < StandardError; end
+
 class ErrorCallFromInheritedErrorClass < Hanami::Action
   config.handle_exception StandardError => :handler
 
@@ -218,7 +221,7 @@ class BeforeMethodAction < Hanami::Action
   end
 
   def reverse_article(*, res)
-    res[:article].reverse!
+    res[:article] = res[:article].reverse
   end
 
   def log_request(req, res)
@@ -283,7 +286,7 @@ end
 
 class BeforeBlockAction < Hanami::Action
   before { |_, res|   res[:article] = "Good morning!" }
-  before { |_, res|   res[:article].reverse! }
+  before { |_, res|   res[:article] = res[:article].reverse }
   before { |req, res| res[:arguments] = [req.class.name, res.class.name] }
 
   def handle(req, res)
@@ -334,7 +337,7 @@ end
 
 class AfterBlockAction < Hanami::Action
   after { |_, res| res[:egg] = "Coque" }
-  after { |_, res| res[:egg].reverse! }
+  after { |_, res| res[:egg] = res[:egg].reverse }
   after { |req, res| res[:arguments] = [req.class.name, res.class.name] }
 
   def handle(*)
@@ -414,7 +417,7 @@ end
 class GetDefaultCookiesAction < Hanami::Action
   include Hanami::Action::Cookies
 
-  config.cookies = { domain: "hanamirb.org", path: "/controller", secure: true, httponly: true }
+  config.cookies = {domain: "hanamirb.org", path: "/controller", secure: true, httponly: true}
 
   def handle(*, res)
     res.body          = ""
@@ -425,11 +428,11 @@ end
 class GetOverwrittenCookiesAction < Hanami::Action
   include Hanami::Action::Cookies
 
-  config.cookies = { domain: "hanamirb.org", path: "/controller", secure: true, httponly: true }
+  config.cookies = {domain: "hanamirb.org", path: "/controller", secure: true, httponly: true}
 
   def handle(*, res)
     res.body          = ""
-    res.cookies[:bar] = { value: "foo", domain: "hanamirb.com", path: "/action", secure: false, httponly: false }
+    res.cookies[:bar] = {value: "foo", domain: "hanamirb.com", path: "/action", secure: false, httponly: false}
   end
 end
 
@@ -437,7 +440,7 @@ class GetAutomaticallyExpiresCookiesAction < Hanami::Action
   include Hanami::Action::Cookies
 
   def handle(*, res)
-    res.cookies[:bar] = { value: "foo", max_age: 120 }
+    res.cookies[:bar] = {value: "foo", max_age: 120}
   end
 end
 
@@ -454,11 +457,13 @@ class SetCookiesWithOptionsAction < Hanami::Action
   include Hanami::Action::Cookies
 
   def initialize(expires: Time.now.utc)
+    super()
     @expires = expires
   end
 
   def handle(*, res)
-    res.cookies[:kukki] = { value: "yum!", domain: "hanamirb.org", path: "/controller", expires: @expires, secure: true, httponly: true }
+    res.cookies[:kukki] =
+      {value: "yum!", domain: "hanamirb.org", path: "/controller", expires: @expires, secure: true, httponly: true}
   end
 end
 
@@ -493,7 +498,8 @@ class CatchAndThrowSymbolAction < Hanami::Action
   def handle(_req, _res)
     catch :done do
       throw :done, 1
-      raise "This code shouldn't be reachable"
+
+      raise "This code shouldn't be reachable" # rubocop:disable Lint/UnreachableCode
     end
   end
 end
@@ -981,7 +987,7 @@ module MusicPlayer
 
   class Application
     def initialize
-      configuration = Hanami::Action::Configuration.new do |config|
+      Hanami::Action::Configuration.new do |config|
         config.handle_exception ArgumentError => 400
         config.default_headers(
           "X-Frame-Options" => "DENY"
@@ -1012,13 +1018,14 @@ module SendFileTest
         id = req.params[:id]
 
         # This if statement is only for testing purpose
-        if id == "1"
+        case id
+        when "1"
           res.send_file Pathname.new("test.txt")
-        elsif id == "2"
+        when "2"
           res.send_file Pathname.new("hanami.png")
-        elsif id == "3"
+        when "3"
           res.send_file Pathname.new("Gemfile")
-        elsif id == "100"
+        when "100"
           res.send_file Pathname.new("unknown.txt")
         else
           # a more realistic example of globbing ':id(.:format)'
@@ -1050,6 +1057,7 @@ module SendFileTest
 
       def repository_dot_find_by_id(id)
         return nil unless id =~ /^\d+$/
+
         Model.new(id.to_i, "resource-#{id}")
       end
     end
@@ -1128,7 +1136,7 @@ module SendFileTest
 
   class Application
     def initialize
-      configuration = Hanami::Action::Configuration.new do |config|
+      Hanami::Action::Configuration.new do |config|
         config.public_directory = "spec/support/fixtures"
       end
 
@@ -1177,14 +1185,14 @@ module HeadTest
         content = "code"
 
         res.headers.merge!(
-          "Allow"            => "GET, HEAD",
+          "Allow" => "GET, HEAD",
           "Content-Encoding" => "identity",
           "Content-Language" => "en",
-          "Content-Length"   => content.length,
+          "Content-Length" => content.length,
           "Content-Location" => "relativeURI",
-          "Content-MD5"      => Digest::MD5.hexdigest(content),
-          "Expires"          => "Thu, 01 Dec 1994 16:00:00 GMT",
-          "Last-Modified"    => "Wed, 21 Jan 2015 11:32:10 GMT"
+          "Content-MD5" => Digest::MD5.hexdigest(content),
+          "Expires" => "Thu, 01 Dec 1994 16:00:00 GMT",
+          "Last-Modified" => "Wed, 21 Jan 2015 11:32:10 GMT"
         )
 
         res.status = req.params[:code].to_i
@@ -1199,8 +1207,8 @@ module HeadTest
       def handle(_req, res)
         res.headers.merge!(
           "Last-Modified" => "Fri, 27 Nov 2015 13:32:36 GMT",
-          "X-Rate-Limit"  => "4000",
-          "X-No-Pass"     => "true"
+          "X-Rate-Limit" => "4000",
+          "X-No-Pass" => "true"
         )
 
         res.status = 204
@@ -1216,7 +1224,7 @@ module HeadTest
 
   class Application
     def initialize
-      configuration = Hanami::Action::Configuration.new do |config|
+      Hanami::Action::Configuration.new do |config|
         config.default_headers = {
           "X-Frame-Options" => "DENY"
         }
@@ -1683,12 +1691,10 @@ module MimesWithDefault
   end
 end
 
-require "hanami/middleware/body_parser"
-
 module RouterIntegration
   class Application
     def initialize
-      configuration = Hanami::Action::Configuration.new
+      Hanami::Action::Configuration.new
 
       routes = Hanami::Router.new do
         get "/",         to: Root.new
@@ -1716,8 +1722,8 @@ end
 module SessionIntegration
   class Application
     def initialize
-      configuration = Hanami::Action::Configuration.new
-      resolver      = EndpointResolver.new
+      Hanami::Action::Configuration.new
+      resolver = EndpointResolver.new
 
       routes = Hanami::Router.new(resolver: resolver) do
         get    "/",       to: Dashboard::Index.new
@@ -1826,9 +1832,9 @@ module Flash
   end
 
   class Application
-    def initialize # rubocop:disable Metrics/MethodLength
-      configuration = Hanami::Action::Configuration.new
-      routes   = Hanami::Router.new do
+    def initialize
+      Hanami::Action::Configuration.new
+      routes = Hanami::Router.new do
         get "/",      to: Flash::Controllers::Home::Index.new
         post "/",     to: Flash::Controllers::Home::Index.new
         get "/print", to: Flash::Controllers::Home::Print.new
@@ -1906,7 +1912,7 @@ module Inheritance
 
   class Application
     def initialize
-      configuration = Hanami::Action::Configuration.new
+      Hanami::Action::Configuration.new
       @routes = Hanami::Router.new do
         resources :books, only: %i[show destroy]
       end

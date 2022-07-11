@@ -90,9 +90,9 @@ module Hanami
       # @since 0.2.0
       # @api private
       DEFAULT_FORMATS = {
-        'application/octet-stream' => :all,
-        '*/*'                      => :all,
-        'text/html'                => :html
+        "application/octet-stream" => :all,
+        "*/*" => :all,
+        "text/html" => :html
       }.freeze
 
       # @!method formats=(formats)
@@ -211,7 +211,7 @@ module Hanami
       #   @see default_request_format=
       #
       #   @since 0.5.0
-      setting :default_request_format, constructor: -> format {
+      setting :default_request_format, constructor: -> (format) {
         Utils::Kernel.Symbol(format) unless format.nil?
       }
 
@@ -243,7 +243,7 @@ module Hanami
       #   @see default_request_format=
       #
       #   @since 0.5.0
-      setting :default_response_format, constructor: -> format {
+      setting :default_response_format, constructor: -> (format) {
         Utils::Kernel.Symbol(format) unless format.nil?
       }
 
@@ -299,7 +299,7 @@ module Hanami
       #   @since 0.4.0
       #
       #   @see default_headers=
-      setting :default_headers, default: {}, constructor: -> headers { headers.compact }
+      setting :default_headers, default: {}, constructor: -> (headers) { headers.compact }
 
       # @!method cookies=(cookie_options)
       #
@@ -330,7 +330,7 @@ module Hanami
       #   @since 0.4.0
       #
       #   @see cookies=
-      setting :cookies, default: {}, constructor: -> cookie_options {
+      setting :cookies, default: {}, constructor: -> (cookie_options) {
         # Call `to_h` here to permit `ApplicationConfiguration::Cookies` object to be
         # provided when application actions are configured
         cookie_options.to_h.compact
@@ -362,7 +362,7 @@ module Hanami
       #   @since 1.0.0
       #
       #   @api private
-      setting :root_directory, constructor: -> dir {
+      setting :root_directory, constructor: -> (dir) {
         dir ||= Dir.pwd
 
         Pathname(dir).realpath
@@ -375,7 +375,7 @@ module Hanami
       # @since 1.0.0
       #
       # @api private
-      DEFAULT_PUBLIC_DIRECTORY = 'public'.freeze
+      DEFAULT_PUBLIC_DIRECTORY = "public"
 
       # @!method public_directory=(directory)
       #

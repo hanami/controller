@@ -1,4 +1,6 @@
-require 'hanami/action/flash'
+# frozen_string_literal: true
+
+require "hanami/action/flash"
 
 module Hanami
   class Action
@@ -26,9 +28,9 @@ module Hanami
       # @see Hanami::Action#finish
       def finish(req, res, *)
         if (next_flash = res.flash.next).any?
-          res.session['_flash'] = next_flash
+          res.session["_flash"] = next_flash
         else
-          res.session.delete('_flash')
+          res.session.delete("_flash")
         end
 
         super

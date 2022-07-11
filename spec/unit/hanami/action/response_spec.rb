@@ -12,7 +12,7 @@ RSpec.describe Hanami::Action::Response do
     }
 
     let(:request) { double(:request) }
-    let(:env) { { "REQUEST_METHOD" => "GET" } }
+    let(:env) { {"REQUEST_METHOD" => "GET"} }
 
     let(:view) { spy(:view) }
 
@@ -82,7 +82,7 @@ RSpec.describe Hanami::Action::Response do
         configuration: Hanami::Action::Configuration.new, env: env
       )
     }
-    let(:env) { { "REQUEST_METHOD" => "GET" } }
+    let(:env) { {"REQUEST_METHOD" => "GET"} }
 
     context "when body isn't set" do
       it "returns true" do
@@ -100,7 +100,7 @@ RSpec.describe Hanami::Action::Response do
       end
 
       context "and HEAD request" do
-        let(:env) { { "REQUEST_METHOD" => "HEAD" } }
+        let(:env) { {"REQUEST_METHOD" => "HEAD"} }
 
         it "returns false" do
           expect(subject.renderable?).to be(false)
@@ -109,7 +109,7 @@ RSpec.describe Hanami::Action::Response do
     end
 
     context "when HEAD request" do
-      let(:env) { { "REQUEST_METHOD" => "HEAD" } }
+      let(:env) { {"REQUEST_METHOD" => "HEAD"} }
 
       it "returns false" do
         expect(subject.renderable?).to be(false)
@@ -142,7 +142,7 @@ RSpec.describe Hanami::Action::Response do
         configuration: Hanami::Action::Configuration.new, env: env
       )
     }
-    let(:env) { { "REQUEST_METHOD" => "GET" } }
+    let(:env) { {"REQUEST_METHOD" => "GET"} }
 
     context "when body isn't set" do
       it "returns true" do

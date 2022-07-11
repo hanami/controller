@@ -1,4 +1,6 @@
-require 'rack/utils'
+# frozen_string_literal: true
+
+require "rack/utils"
 
 module Hanami
   module Http

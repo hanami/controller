@@ -1,4 +1,6 @@
-require 'hanami/action/cache/directives'
+# frozen_string_literal: true
+
+require "hanami/action/cache/directives"
 
 module Hanami
   class Action
@@ -12,7 +14,7 @@ module Hanami
         #
         # @since 0.3.0
         # @api private
-        HEADER = 'Cache-Control'.freeze
+        HEADER = "Cache-Control"
 
         # @since 0.3.0
         # @api private
@@ -37,7 +39,7 @@ module Hanami
           def cache_control_directives
             @cache_control_directives || Object.new.tap do |null_object|
               def null_object.headers
-                ::Hash.new
+                {}
               end
             end
           end
@@ -69,7 +71,7 @@ module Hanami
           # @api private
           def headers
             if @directives.any?
-              { HEADER => @directives.join(', ') }
+              {HEADER => @directives.join(", ")}
             else
               {}
             end

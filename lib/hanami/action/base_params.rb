@@ -1,5 +1,7 @@
-require 'rack/request'
-require 'hanami/utils/hash'
+# frozen_string_literal: true
+
+require "rack/request"
+require "hanami/utils/hash"
 
 module Hanami
   class Action
@@ -8,14 +10,14 @@ module Hanami
       #
       # @since 0.7.0
       # @api private
-      RACK_INPUT    = 'rack.input'.freeze
+      RACK_INPUT    = "rack.input"
 
       # The key that returns router params from the Rack env
       # This is a builtin integration for Hanami::Router
       #
       # @since 0.7.0
       # @api private
-      ROUTER_PARAMS = 'router.params'.freeze
+      ROUTER_PARAMS = "router.params"
 
       # The key that returns Rack session params from the Rack env
       # Please note that this is used only when an action is unit tested.
@@ -27,19 +29,19 @@ module Hanami
       #   # action unit test
       #   action.call('rack.session' => { 'foo' => 'bar' })
       #   action.session[:foo] # => "bar"
-      RACK_SESSION = 'rack.session'.freeze
+      RACK_SESSION = "rack.session"
 
       # HTTP request method for Rack env
       #
       # @since 1.1.1
       # @api private
-      REQUEST_METHOD = 'REQUEST_METHOD'.freeze
+      REQUEST_METHOD = "REQUEST_METHOD"
 
       # Default HTTP request method for Rack env
       #
       # @since 1.1.1
       # @api private
-      DEFAULT_REQUEST_METHOD = 'GET'.freeze
+      DEFAULT_REQUEST_METHOD = "GET"
 
       # @attr_reader env [Hash] the Rack env
       #
@@ -118,7 +120,7 @@ module Hanami
       #
       # @api private
       # @since 0.8.0
-      alias dig get
+      alias_method :dig, :get
 
       # Provide a common interface with Params
       #
@@ -172,7 +174,7 @@ module Hanami
       # @api private
       def _router_params(fallback = {})
         env.fetch(ROUTER_PARAMS) do
-          if session = fallback.delete(RACK_SESSION) # rubocop:disable Lint/AssignmentInCondition
+          if session = fallback.delete(RACK_SESSION)
             fallback[RACK_SESSION] = Utils::Hash.deep_symbolize(session)
           end
 

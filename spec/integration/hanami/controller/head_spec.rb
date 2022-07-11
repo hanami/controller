@@ -1,5 +1,7 @@
-require 'rack/test'
-require 'rack/utils'
+# frozen_string_literal: true
+
+require "rack/test"
+require "rack/utils"
 
 RSpec.describe "HTTP HEAD" do
   include Rack::Test::Methods
@@ -19,7 +21,7 @@ RSpec.describe "HTTP HEAD" do
     expect(response.status).to be(200)
     expect(response.body.to_s).to be_empty
     expect(headers).to include(["Content-Type", "application/octet-stream; charset=utf-8"])
-    expect(headers).to include(["Content-Length", "5"])
+    expect(headers).to include(%w[Content-Length 5])
   end
 
   it "allows to bypass restriction on custom headers" do
@@ -30,9 +32,9 @@ RSpec.describe "HTTP HEAD" do
 
     headers = response.headers.to_a
     expect(headers).to include(["Last-Modified", "Fri, 27 Nov 2015 13:32:36 GMT"])
-    expect(headers).to include(["X-Rate-Limit", "4000"])
+    expect(headers).to include(%w[X-Rate-Limit 4000])
 
-    expect(headers).to_not include(["X-No-Pass",    "true"])
+    expect(headers).to_not include(%w[X-No-Pass true])
     expect(headers).to_not include(["Content-Type", "application/octet-stream; charset=utf-8"])
   end
 
@@ -44,7 +46,7 @@ RSpec.describe "HTTP HEAD" do
 
           expect(response.status).to           be(code)
           expect(response.body).to             eq("")
-          expect(response.headers.to_a).to_not include(["X-Frame-Options", "DENY"])
+          expect(response.headers.to_a).to_not include(%w[X-Frame-Options DENY])
         end
 
         it "doesn't send Content-Length header" do
@@ -59,7 +61,7 @@ RSpec.describe "HTTP HEAD" do
 
           expect(response.status).to           be(code)
           expect(response.body).to_not         be_empty
-          expect(response.headers.to_a).to_not include(["X-Frame-Options", "DENY"])
+          expect(response.headers.to_a).to_not include(%w[X-Frame-Options DENY])
         end
 
         it "does send Content-Length header" do
@@ -94,14 +96,14 @@ RSpec.describe "HTTP HEAD" do
       it "doesn't send Content-Length header" do
         get "/code/#{code}"
 
-        expect(response.status).to      be(code)
+        expect(response.status).to be(code)
         expect(response.headers.keys).to_not include("Content-Length")
       end
 
       it "doesn't send Content-Type header" do
         get "/code/#{code}"
 
-        expect(response.status).to      be(code)
+        expect(response.status).to be(code)
         expect(response.headers.keys).to_not include("Content-Type")
       end
 

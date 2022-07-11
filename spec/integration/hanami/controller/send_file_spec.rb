@@ -1,4 +1,6 @@
-require 'rack/test'
+# frozen_string_literal: true
+
+require "rack/test"
 
 RSpec.describe "Full stack application" do
   include Rack::Test::Methods
@@ -87,10 +89,10 @@ RSpec.describe "Full stack application" do
     xit "doesn't send file in case of HEAD request" do
       head "/files/1", {}
 
-      expect(response.status).to      be(200)
+      expect(response.status).to be(200)
       expect(response.headers.keys).to_not include("Content-Length")
       expect(response.headers.keys).to_not include("Content-Type")
-      expect(response.body).to        be_empty
+      expect(response.body).to be_empty
     end
 
     it "doesn't send file outside of public directory" do
@@ -174,9 +176,9 @@ RSpec.describe "Full stack application" do
     end
   end
 
-  context 'bytes range' do
+  context "bytes range" do
     xit "sends ranged contents" do
-      get '/files/1', {}, 'HTTP_RANGE' => 'bytes=5-13'
+      get "/files/1", {}, "HTTP_RANGE" => "bytes=5-13"
 
       expect(response.status).to                    be(206)
       expect(response.headers["Content-Length"]).to eq("9")

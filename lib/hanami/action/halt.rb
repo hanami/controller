@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "hanami/http/status"
 
 module Hanami

@@ -1,5 +1,7 @@
-require 'hanami/action/base_params'
-require 'hanami/validations/form'
+# frozen_string_literal: true
+
+require "hanami/action/base_params"
+require "hanami/validations/form"
 
 module Hanami
   class Action
@@ -149,7 +151,7 @@ module Hanami
       #     end
       #   end
       def self.params(&blk)
-        validations(&blk || ->() {})
+        validations(&blk || -> {})
       end
 
       # Initialize the params and freeze them.
@@ -186,7 +188,13 @@ module Hanami
       #
       # @example
       #   params.errors
-      #     # => {:email=>["is missing", "is in invalid format"], :name=>["is missing"], :tos=>["is missing"], :age=>["is missing"], :address=>["is missing"]}
+      #     # => {
+      #            :email=>["is missing", "is in invalid format"],
+      #            :name=>["is missing"],
+      #            :tos=>["is missing"],
+      #            :age=>["is missing"],
+      #            :address=>["is missing"]
+      #          }
       attr_reader :errors
 
       # Returns flat collection of full error messages
@@ -197,18 +205,25 @@ module Hanami
       #
       # @example
       #   params.error_messages
-      #     # => ["Email is missing", "Email is in invalid format", "Name is missing", "Tos is missing", "Age is missing", "Address is missing"]
+      #     # => [
+      #            "Email is missing",
+      #            "Email is in invalid format",
+      #            "Name is missing",
+      #            "Tos is missing",
+      #            "Age is missing",
+      #            "Address is missing"
+      #          ]
       def error_messages(error_set = errors)
         error_set.each_with_object([]) do |(key, messages), result|
           k = Utils::String.titleize(key)
 
-          _messages = if messages.is_a?(::Hash)
-            error_messages(messages)
-          else
-            messages.map { |message| "#{k} #{message}" }
-          end
+          msgs = if messages.is_a?(::Hash)
+                   error_messages(messages)
+                 else
+                   messages.map { |message| "#{k} #{message}" }
+                 end
 
-          result.concat(_messages)
+          result.concat(msgs)
         end
       end
 

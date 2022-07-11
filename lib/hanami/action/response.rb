@@ -1,19 +1,19 @@
 # frozen_string_literal: true
 
-require 'rack'
-require 'rack/response'
-require 'hanami/utils/kernel'
-require 'hanami/action/flash'
-require 'hanami/action/halt'
-require 'hanami/action/cookie_jar'
-require 'hanami/action/cache/cache_control'
-require 'hanami/action/cache/expires'
-require 'hanami/action/cache/conditional_get'
+require "rack"
+require "rack/response"
+require "hanami/utils/kernel"
+require "hanami/action/flash"
+require "hanami/action/halt"
+require "hanami/action/cookie_jar"
+require "hanami/action/cache/cache_control"
+require "hanami/action/cache/expires"
+require "hanami/action/cache/conditional_get"
 
 module Hanami
   class Action
     class Response < ::Rack::Response
-      DEFAULT_VIEW_OPTIONS = -> * { {} }.freeze
+      DEFAULT_VIEW_OPTIONS = -> (*) { {} }.freeze
 
       REQUEST_METHOD = "REQUEST_METHOD"
       HTTP_ACCEPT = "HTTP_ACCEPT"
@@ -48,14 +48,14 @@ module Hanami
         end
       end
 
-      def initialize(request:, action:, configuration:, content_type: nil, env: {}, headers: {}, view_options: nil)
+      def initialize(request:, action:, configuration:, content_type: nil, env: {}, headers: {}, view_options: nil) # rubocop:disable Metrics/ParameterLists
         super([], 200, headers.dup)
         set_header("Content-Type", content_type)
 
         @request = request
         @action = action
         @configuration = configuration
-        @charset = ::Rack::MediaType.params(content_type).fetch('charset', nil)
+        @charset = ::Rack::MediaType.params(content_type).fetch("charset", nil)
         @exposures = {}
         @env = env
         @view_options = view_options || DEFAULT_VIEW_OPTIONS
@@ -158,7 +158,7 @@ module Hanami
         end
       end
 
-      def set_format(value)
+      def set_format(value) # rubocop:disable Naming/AccessorMethodName
         @format = value
       end
 
@@ -174,7 +174,7 @@ module Hanami
         !@sending_file
       end
 
-      alias to_ary to_a
+      alias_method :to_ary, :to_a
 
       def head?
         env[REQUEST_METHOD] == HEAD
