@@ -10,12 +10,6 @@ module Hanami
       # @since 0.3.0
       # @api private
       module Expires
-        # The HTTP header for Expires
-        #
-        # @since 0.3.0
-        # @api private
-        HEADER = "Expires"
-
         # @since 0.3.0
         # @api private
         def self.included(base)
@@ -52,7 +46,10 @@ module Hanami
         #
         # @see Hanami::Action#finish
         def finish(_, res, _)
-          res.headers.merge!(self.class.expires_directives.headers) unless res.headers.include? HEADER
+          unless res.headers.include?(Action::EXPIRES)
+            res.headers.merge!(self.class.expires_directives.headers)
+          end
+
           super
         end
 
@@ -71,7 +68,7 @@ module Hanami
           # @since 0.3.0
           # @api private
           def headers
-            {HEADER => time.httpdate}.merge(@cache_control.headers)
+            {Action::EXPIRES => time.httpdate}.merge(@cache_control.headers)
           end
 
           private

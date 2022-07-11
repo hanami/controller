@@ -150,23 +150,6 @@ RSpec.describe Hanami::Action::Request do
     end
   end
 
-  describe "request methods that are implemented elsewhere" do
-    it "should reject with a NoMethodError" do
-      methods = %i(
-        content_type
-        update_param
-        delete_param
-        []
-        []=
-        values_at
-      )
-      request = described_class.new({}, {})
-      methods.each do |method|
-        expect { request.send(method) }.to raise_error(NoMethodError)
-      end
-    end
-  end
-
   private
 
   def build_request(attributes = {})

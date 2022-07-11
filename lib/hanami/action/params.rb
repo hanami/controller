@@ -50,45 +50,41 @@ module Hanami
         # @example Basic usage
         #   require "hanami/controller"
         #
-        #   class MyAction
-        #     include Hanami::Action
-        #
+        #   class MyAction < Hanami::Action
         #     params do
         #       required(:book).schema do
         #         required(:isbn).filled(:str?)
         #       end
         #     end
         #
-        #     def call(params)
+        #     def handle(req, res)
         #       # 1. Don't try to save the record if the params aren't valid
-        #       return unless params.valid?
+        #       return unless req.params.valid?
         #
-        #       BookRepository.new.create(params[:book])
+        #       BookRepository.new.create(req.params[:book])
         #     rescue Hanami::Model::UniqueConstraintViolationError
         #       # 2. Add an error in case the record wasn't unique
-        #       params.errors.add(:book, :isbn, "is not unique")
+        #       req.params.errors.add(:book, :isbn, "is not unique")
         #     end
         #   end
         #
         # @example Invalid argument
         #   require "hanami/controller"
         #
-        #   class MyAction
-        #     include Hanami::Action
-        #
+        #   class MyAction < Hanami::Action
         #     params do
         #       required(:book).schema do
         #         required(:title).filled(:str?)
         #       end
         #     end
         #
-        #     def call(params)
-        #       puts params.to_h   # => {}
-        #       puts params.valid? # => false
-        #       puts params.error_messages # => ["Book is missing"]
-        #       puts params.errors         # => {:book=>["is missing"]}
+        #     def handle(req, *)
+        #       puts req.params.to_h   # => {}
+        #       puts req.params.valid? # => false
+        #       puts req.params.error_messages # => ["Book is missing"]
+        #       puts req.params.errors         # => {:book=>["is missing"]}
         #
-        #       params.errors.add(:book, :isbn, "is not unique") # => ArgumentError
+        #       req.params.errors.add(:book, :isbn, "is not unique") # => ArgumentError
         #     end
         #   end
         def add(*args)
@@ -131,9 +127,8 @@ module Hanami
       # @see https://guides.hanamirb.org/validations/overview
       #
       # @example
-      #   class Signup
+      #   class Signup < Hanami::Action
       #     MEGABYTE = 1024 ** 2
-      #     include Hanami::Action
       #
       #     params do
       #       required(:first_name).filled(:str?)
@@ -145,8 +140,8 @@ module Hanami
       #       optional(:avatar).filled(size?: 1..(MEGABYTE * 3))
       #     end
       #
-      #     def call(params)
-      #       halt 400 unless params.valid?
+      #     def handle(req, *)
+      #       halt 400 unless req.params.valid?
       #       # ...
       #     end
       #   end

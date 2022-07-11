@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "rack/utils"
 require "hanami/utils/hash"
 
 module Hanami
@@ -12,37 +13,6 @@ module Hanami
     #
     # @see Hanami::Action::Cookies#cookies
     class CookieJar
-      # The key that returns raw cookies from the Rack env
-      #
-      # @since 0.1.0
-      # @api private
-      HTTP_HEADER = "HTTP_COOKIE"
-
-      # The key used by Rack to set the session cookie
-      #
-      # We let CookieJar to NOT take care of this cookie, but it leaves the
-      # responsibility to the Rack middleware that handle sessions.
-      #
-      # This prevents <tt>Set-Cookie</tt> to be sent twice.
-      #
-      # @since 0.5.1
-      # @api private
-      #
-      # @see https://github.com/hanami/controller/issues/138
-      RACK_SESSION_KEY = :"rack.session"
-
-      # The key used by Rack to set the cookies as an Hash in the env
-      #
-      # @since 0.1.0
-      # @api private
-      COOKIE_HASH_KEY   = "rack.request.cookie_hash"
-
-      # The key used by Rack to set the cookies as a String in the env
-      #
-      # @since 0.1.0
-      # @api private
-      COOKIE_STRING_KEY = "rack.request.cookie_string"
-
       # @since 0.4.5
       # @api private
       COOKIE_SEPARATOR = ";,"
@@ -70,7 +40,7 @@ module Hanami
       #
       # @see Hanami::Action::Cookies#finish
       def finish
-        @cookies.delete(RACK_SESSION_KEY)
+        @cookies.delete(Action::RACK_SESSION)
         if changed?
           @cookies.each do |k, v|
             next unless changed?(k)
@@ -127,12 +97,12 @@ module Hanami
       #
       # @example
       #   require "hanami/controller"
-      #   class MyAction
-      #     include Hanami::Action
+      #   class MyAction < Hanami::Action
       #     include Hanami::Action::Cookies
       #
-      #     def call(params)
-      #       cookies.each do |key, value|
+      #     def handle(req, res)
+      #       # read cookies
+      #       req.cookies.each do |key, value|
       #         # ...
       #       end
       #     end
@@ -198,10 +168,10 @@ module Hanami
       # @since 0.1.0
       # @api private
       def extract(env)
-        hash   = env[COOKIE_HASH_KEY] ||= {}
-        string = env[HTTP_HEADER]
+        hash   = env[Action::COOKIE_HASH_KEY] ||= {}
+        string = env[Action::HTTP_COOKIE]
 
-        return hash if string == env[COOKIE_STRING_KEY]
+        return hash if string == env[Action::COOKIE_STRING_KEY]
 
         # TODO: Next Rack 1.7.x ?? version will have ::Rack::Utils.parse_cookies
         # We can then replace the following lines.
@@ -220,7 +190,7 @@ module Hanami
           end
         }
         cookies.each { |k, v| hash[k] = v.is_a?(Array) ? v.first : v }
-        env[COOKIE_STRING_KEY] = string
+        env[Action::COOKIE_STRING_KEY] = string
         hash
       end
 

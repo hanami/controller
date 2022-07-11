@@ -28,9 +28,9 @@ module Hanami
       # @see Hanami::Action#finish
       def finish(req, res, *)
         if (next_flash = res.flash.next).any?
-          res.session["_flash"] = next_flash
+          res.session[Flash::KEY] = next_flash
         else
-          res.session.delete("_flash")
+          res.session.delete(Flash::KEY)
         end
 
         super

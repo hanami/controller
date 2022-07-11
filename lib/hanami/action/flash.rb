@@ -18,6 +18,10 @@ module Hanami
     # @since 0.3.0
     # @api public
     class Flash
+      # @since 2.0.0
+      # @api private
+      KEY = "_flash"
+
       # @return [Hash] The flash hash for the next request, written to by {#[]=}.
       #
       # @see #[]=

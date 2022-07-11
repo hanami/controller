@@ -288,7 +288,7 @@ module Hanami
       #   @see default_headers
       #
       #   @example
-      #     configuration.default_headers = {'X-Frame-Options' => 'DENY'}
+      #     configuration.default_headers = {"X-Frame-Options" => "DENY"}
       #
       # @!method default_headers
       #
@@ -315,8 +315,8 @@ module Hanami
       #
       #   @example
       #     configuration.cookies = {
-      #       domain: 'hanamirb.org',
-      #       path: '/controller',
+      #       domain: "hanamirb.org",
+      #       path: "/controller",
       #       secure: true,
       #       httponly: true
       #     }
@@ -389,6 +389,8 @@ module Hanami
       #
       #   @return [void]
       #
+      #   @since 2.0.0
+      #
       #   @see root_directory
       #   @see public_directory
       setting :public_directory, default: DEFAULT_PUBLIC_DIRECTORY
@@ -403,6 +405,8 @@ module Hanami
       #   configuration.public_directory
       #   # => "/path/to/root/public"
       #
+      # @since 2.0.0
+      #
       # @see public_directory=
       # @see root_directory=
       def public_directory
@@ -412,6 +416,8 @@ module Hanami
 
       private
 
+      # @since 2.0.0
+      # @api private
       def method_missing(name, *args, &block)
         if config.respond_to?(name)
           config.public_send(name, *args, &block)
@@ -420,6 +426,8 @@ module Hanami
         end
       end
 
+      # @since 2.0.0
+      # @api private
       def respond_to_missing?(name, _incude_all = false)
         config.respond_to?(name) || super
       end

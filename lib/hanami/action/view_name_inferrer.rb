@@ -2,13 +2,19 @@
 
 module Hanami
   class Action
+    # @since 2.0.0
+    # @api private
     class ViewNameInferrer
+      # @since 2.0.0
+      # @api private
       ALTERNATIVE_NAMES = {
         "create" => "new",
         "update" => "edit"
       }.freeze
 
       class << self
+        # @since 2.0.0
+        # @api private
         def call(action_name:, provider:)
           application = provider.respond_to?(:application) ? provider.application : Hanami.application
 
@@ -24,6 +30,8 @@ module Hanami
 
         private
 
+        # @since 2.0.0
+        # @api private
         def action_identifier_name(action_name, provider, name_base)
           provider
             .inflector
@@ -33,6 +41,8 @@ module Hanami
             .gsub("/", ".")
         end
 
+        # @since 2.0.0
+        # @api private
         def alternative_view_name(view_name)
           parts = view_name.split(".")
 

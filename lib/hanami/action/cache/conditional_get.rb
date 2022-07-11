@@ -5,26 +5,6 @@ require "hanami/utils/blank"
 module Hanami
   class Action
     module Cache
-      # @since 0.3.0
-      # @api private
-      IF_NONE_MATCH = "HTTP_IF_NONE_MATCH"
-
-      # The HTTP header for ETag
-      #
-      # @since 0.3.0
-      # @api private
-      ETAG          = "ETag"
-
-      # @since 0.3.0
-      # @api private
-      IF_MODIFIED_SINCE = "HTTP_IF_MODIFIED_SINCE"
-
-      # The HTTP header for Last-Modified
-      #
-      # @since 0.3.0
-      # @api private
-      LAST_MODIFIED = "Last-Modified"
-
       # ETag value object
       #
       # @since 0.3.0
@@ -45,7 +25,7 @@ module Hanami
         # @since 0.3.0
         # @api private
         def header
-          {ETAG => @value} if @value
+          {Action::ETAG => @value} if @value
         end
 
         private
@@ -53,7 +33,7 @@ module Hanami
         # @since 0.3.0
         # @api private
         def none_match
-          @env[IF_NONE_MATCH]
+          @env[Action::IF_NONE_MATCH]
         end
       end
 
@@ -80,7 +60,7 @@ module Hanami
         # @since 0.3.0
         # @api private
         def header
-          {LAST_MODIFIED => @value.httpdate} if @value.respond_to?(:httpdate)
+          {Action::LAST_MODIFIED => @value.httpdate} if @value.respond_to?(:httpdate)
         end
 
         private
@@ -88,7 +68,7 @@ module Hanami
         # @since 0.3.0
         # @api private
         def modified_since
-          @env[IF_MODIFIED_SINCE]
+          @env[Action::IF_MODIFIED_SINCE]
         end
       end
 

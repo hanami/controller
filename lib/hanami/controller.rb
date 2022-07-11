@@ -15,18 +15,14 @@ module Hanami
   # @see Hanami::Action
   #
   # @example
-  #   require 'hanami/controller'
+  #   require "hanami/controller"
   #
   #   module Articles
-  #     class Index
-  #       include Hanami::Action
-  #
+  #     class Index < Hanami::Action
   #       # ...
   #     end
   #
-  #     class Show
-  #       include Hanami::Action
-  #
+  #     class Show < Hanami::Action
   #       # ...
   #     end
   #   end
@@ -34,7 +30,7 @@ module Hanami
     # Unknown format error
     #
     # This error is raised when a action sets a format that it isn't recognized
-    # both by `Hanami::Controller::Configuration` and the list of Rack mime types
+    # both by `Hanami::Action::Configuration` and the list of Rack mime types
     #
     # @since 0.2.0
     #

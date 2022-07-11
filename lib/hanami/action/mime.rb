@@ -7,21 +7,6 @@ require "rack/mime"
 module Hanami
   class Action
     module Mime # rubocop:disable Metrics/ModuleLength
-      DEFAULT_CONTENT_TYPE = "application/octet-stream"
-      DEFAULT_CHARSET      = "utf-8"
-
-      # The key that returns content mime type from the Rack env
-      #
-      # @since 2.0.0
-      # @api private
-      HTTP_CONTENT_TYPE    = "CONTENT_TYPE"
-
-      # The header key to set the mime type of the response
-      #
-      # @since 0.1.0
-      # @api private
-      CONTENT_TYPE         = "Content-Type"
-
       # Most commom MIME Types used for responses
       #
       # @since 1.0.0
@@ -82,6 +67,8 @@ module Hanami
         zip: "application/zip"
       }.freeze
 
+      # @since 2.0.0
+      # @api private
       def self.content_type_with_charset(content_type, charset)
         "#{content_type}; charset=#{charset}"
       end
@@ -94,27 +81,38 @@ module Hanami
       # lastly it will fallback to DEFAULT_CONTENT_TYPE
       #
       # @return [String]
+      #
+      # @since 2.0.0
+      # @api private
       def self.content_type(configuration, request, accepted_mime_types)
         if request.accept_header?
           type = best_q_match(request.accept, accepted_mime_types)
           return type if type
         end
 
-        default_response_type(configuration) || default_content_type(configuration) || DEFAULT_CONTENT_TYPE
+        default_response_type(configuration) || default_content_type(configuration) || Action::DEFAULT_CONTENT_TYPE
       end
 
+      # @since 2.0.0
+      # @api private
       def self.charset(default_charset)
-        default_charset || DEFAULT_CHARSET
+        default_charset || Action::DEFAULT_CHARSET
       end
 
+      # @since 2.0.0
+      # @api private
       def self.default_response_type(configuration)
         format_to_mime_type(configuration.default_response_format, configuration)
       end
 
+      # @since 2.0.0
+      # @api private
       def self.default_content_type(configuration)
         format_to_mime_type(configuration.default_request_format, configuration)
       end
 
+      # @since 2.0.0
+      # @api private
       def self.format_to_mime_type(format, configuration)
         return if format.nil?
 
@@ -130,6 +128,9 @@ module Hanami
       #   detect_format("text/html; charset=utf-8", configuration)  #=> :html
       #
       # @return [Symbol, nil]
+      #
+      # @since 2.0.0
+      # @api private
       def self.detect_format(content_type, configuration)
         return if content_type.nil?
 
@@ -137,6 +138,8 @@ module Hanami
         configuration.format_for(ct) || format_for(ct)
       end
 
+      # @since 2.0.0
+      # @api private
       def self.format_for(content_type)
         TYPES.key(content_type)
       end
@@ -148,6 +151,9 @@ module Hanami
       # @return [Array<String>, nil]
       #
       # @raise [Hanami::Controller::UnknownFormatError] if the format is invalid
+      #
+      # @since 2.0.0
+      # @api private
       def self.restrict_mime_types(configuration, accepted_formats)
         return if accepted_formats.empty?
 
@@ -168,8 +174,13 @@ module Hanami
       # If no Content-Type is sent in the request it will check the default_request_format
       #
       # @return [TrueClass, FalseClass]
+      #
+      # @since 2.0.0
+      # @api private
       def self.accepted_mime_type?(request, accepted_mime_types, configuration)
-        mime_type = request.env[HTTP_CONTENT_TYPE] || default_content_type(configuration) || DEFAULT_CONTENT_TYPE
+        mime_type = request.env[Action::HTTP_CONTENT_TYPE] ||
+                    default_content_type(configuration) ||
+                    Action::DEFAULT_CONTENT_TYPE
 
         !accepted_mime_types.find { |mt| ::Rack::Mime.match?(mt, mime_type) }.nil?
       end
@@ -179,6 +190,9 @@ module Hanami
       # @see Hanami::Action::Mime#call
       #
       # @return [String]
+      #
+      # @since 2.0.0
+      # @api private
       def self.calculate_content_type_with_charset(configuration, request, accepted_mime_types)
         charset      = self.charset(configuration.default_charset)
         content_type = self.content_type(configuration, request, accepted_mime_types)
@@ -209,6 +223,16 @@ module Hanami
       # @since 1.0.1
       # @api private
       class RequestMimeWeight
+        # @since 2.0.0
+        # @api private
+        MIME_SEPARATOR = "/"
+        private_constant :MIME_SEPARATOR
+
+        # @since 2.0.0
+        # @api private
+        MIME_WILDCARD = "*"
+        private_constant :MIME_WILDCARD
+
         include Comparable
 
         # @since 1.0.1
@@ -251,7 +275,7 @@ module Hanami
         # @since 1.0.1
         # @api private
         def calculate_priority(mime)
-          @priority ||= (mime.split("/", 2).count("*") * -10) + quality
+          @priority ||= (mime.split(MIME_SEPARATOR, 2).count(MIME_WILDCARD) * -10) + quality
         end
       end
     end

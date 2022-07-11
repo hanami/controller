@@ -55,28 +55,26 @@ module Hanami
         # @see https://guides.hanamirb.org//validations/overview
         #
         # @example Anonymous Block
-        #   require 'hanami/controller'
+        #   require "hanami/controller"
         #
-        #   class Signup
-        #     include Hanami::Action
-        #
+        #   class Signup < Hanami::Action
         #     params do
         #       required(:first_name)
         #       required(:last_name)
         #       required(:email)
         #     end
         #
-        #     def call(params)
-        #       puts params.class            # => Signup::Params
-        #       puts params.class.superclass # => Hanami::Action::Params
+        #     def handle(req, *)
+        #       puts req.params.class            # => Signup::Params
+        #       puts req.params.class.superclass # => Hanami::Action::Params
         #
-        #       puts params[:first_name]     # => "Luca"
-        #       puts params[:admin]          # => nil
+        #       puts req.params[:first_name]     # => "Luca"
+        #       puts req.params[:admin]          # => nil
         #     end
         #   end
         #
         # @example Concrete class
-        #   require 'hanami/controller'
+        #   require "hanami/controller"
         #
         #   class SignupParams < Hanami::Action::Params
         #     required(:first_name)
@@ -84,16 +82,15 @@ module Hanami
         #     required(:email)
         #   end
         #
-        #   class Signup
-        #     include Hanami::Action
+        #   class Signup < Hanami::Action
         #     params SignupParams
         #
-        #     def call(params)
-        #       puts params.class            # => SignupParams
-        #       puts params.class.superclass # => Hanami::Action::Params
+        #     def handle(req, *)
+        #       puts req.params.class            # => SignupParams
+        #       puts req.params.class.superclass # => Hanami::Action::Params
         #
-        #       params[:first_name]          # => "Luca"
-        #       params[:admin]               # => nil
+        #       req.params[:first_name]          # => "Luca"
+        #       req.params[:admin]               # => nil
         #     end
         #   end
         def params(klass = nil, &blk)

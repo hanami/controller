@@ -9,7 +9,6 @@ require "hanami/action/params"
 require "hanami/action/cookies"
 require "hanami/action/session"
 require "hanami/action/cache"
-require "hanami/action/glue"
 require_relative "./renderer"
 
 require_relative "./validations"
@@ -196,10 +195,7 @@ class ErrorCallWithUnsetStatusResponse < Hanami::Action
 end
 
 class ErrorCallWithSpecifiedStatusCodeAction < Hanami::Action
-  puts "ErrorCallWithSpecifiedStatusCodeAction"
-  puts "config.handle_exception StandardError => 422"
   configuration.handle_exception StandardError => 422
-  puts "done"
 
   def handle(_req, _res)
     raise StandardError
@@ -870,8 +866,6 @@ end
 
 module Glued
   class SendFile < Hanami::Action
-    include Hanami::Action::Glue
-
     def handle(_req, _res)
       send_file "test.txt"
     end
@@ -1168,7 +1162,6 @@ end
 module HeadTest
   module Home
     class Index < Hanami::Action
-      include Hanami::Action::Glue
       include Hanami::Action::Session
 
       def handle(_req, res)
@@ -1178,7 +1171,6 @@ module HeadTest
 
     class Code < Hanami::Action
       include Hanami::Action::Cache
-      include Hanami::Action::Glue
       include Hanami::Action::Session
 
       def handle(req, res)
@@ -1201,7 +1193,6 @@ module HeadTest
     end
 
     class Override < Hanami::Action
-      include Hanami::Action::Glue
       include Hanami::Action::Session
 
       def handle(_req, res)
@@ -1252,7 +1243,6 @@ module FullStack
   module Controllers
     module Home
       class Index < Hanami::Action
-        include Hanami::Action::Glue
         include Hanami::Action::Session
         include Inspector
 
@@ -1262,7 +1252,6 @@ module FullStack
       end
 
       class Head < Hanami::Action
-        include Hanami::Action::Glue
         include Hanami::Action::Session
         include Inspector
 
@@ -1274,7 +1263,6 @@ module FullStack
 
     module Books
       class Index < Hanami::Action
-        include Hanami::Action::Glue
         include Hanami::Action::Session
         include Inspector
 
@@ -1283,7 +1271,6 @@ module FullStack
       end
 
       class Create < Hanami::Action
-        include Hanami::Action::Glue
         include Hanami::Action::Session
         include Inspector
 
@@ -1299,7 +1286,6 @@ module FullStack
       end
 
       class Update < Hanami::Action
-        include Hanami::Action::Glue
         include Hanami::Action::Session
         include Inspector
 
@@ -1334,7 +1320,6 @@ module FullStack
 
     module Settings
       class Index < Hanami::Action
-        include Hanami::Action::Glue
         include Hanami::Action::Session
         include Inspector
 
@@ -1343,7 +1328,6 @@ module FullStack
       end
 
       class Create < Hanami::Action
-        include Hanami::Action::Glue
         include Hanami::Action::Session
         include Inspector
 
@@ -1356,7 +1340,6 @@ module FullStack
 
     module Poll
       class Start < Hanami::Action
-        include Hanami::Action::Glue
         include Hanami::Action::Session
         include Inspector
 
@@ -1366,7 +1349,6 @@ module FullStack
       end
 
       class Step1 < Hanami::Action
-        include Hanami::Action::Glue
         include Hanami::Action::Session
         include Inspector
 
@@ -1381,7 +1363,6 @@ module FullStack
       end
 
       class Step2 < Hanami::Action
-        include Hanami::Action::Glue
         include Hanami::Action::Session
         include Inspector
 
@@ -1396,7 +1377,6 @@ module FullStack
 
     module Users
       class Show < Hanami::Action
-        include Hanami::Action::Glue
         include Hanami::Action::Session
         include Inspector
 
@@ -1501,7 +1481,6 @@ module SessionWithCookies
   module Controllers
     module Home
       class Index < Hanami::Action
-        include Hanami::Action::Glue
         include Hanami::Action::Session
         include Hanami::Action::Cookies
 
@@ -1536,7 +1515,6 @@ module SessionsWithoutCookies
   module Controllers
     module Home
       class Index < Hanami::Action
-        include Hanami::Action::Glue
         include Hanami::Action::Session
         include Inspector
 
