@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "hanami/action/blank"
+require "hanami/utils/blank"
 require "rack/utils"
 require "securerandom"
 
@@ -146,7 +146,7 @@ module Hanami
       #
       # @api private
       def missing_csrf_token?(req, _res)
-        Hanami::Action::Blank.blank?(req.params[CSRF_TOKEN])
+        Hanami::Utils::Blank.blank?(req.params[CSRF_TOKEN])
       end
 
       # Generates a random CSRF Token
