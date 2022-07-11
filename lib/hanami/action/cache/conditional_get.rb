@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "hanami/utils/blank"
+require "hanami/action/blank"
 
 module Hanami
   class Action
@@ -71,8 +71,8 @@ module Hanami
         # @since 0.3.0
         # @api private
         def fresh?
-          return false if Hanami::Utils::Blank.blank?(modified_since)
-          return false if Hanami::Utils::Blank.blank?(@value)
+          return false if Hanami::Action::Blank.blank?(modified_since)
+          return false if Hanami::Action::Blank.blank?(@value)
 
           Time.httpdate(modified_since).to_i >= @value.to_time.to_i
         end
