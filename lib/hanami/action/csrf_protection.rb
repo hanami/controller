@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "hanami/utils/blank"
+require "hanami/controller/error"
 require "rack/utils"
 require "securerandom"
 
