@@ -85,8 +85,8 @@ module Hanami
 
     # @!scope instance
 
-    # Override Ruby's hook for modules.
-    # It includes basic Hanami::Action modules to the given class.
+    # Overrides Ruby's hook for modules.
+    # It includes basic {Hanami::Action} modules to the given class.
     #
     # @param subclass [Class] the target action
     #
@@ -109,10 +109,10 @@ module Hanami
     # Returns the class which defines the params
     #
     # Returns the class which has been provided to define the
-    # params. By default this will be Hanami::Action::Params.
+    # params. By default this will be {Hanami::Action::Params Hanami::Action::Params}.
     #
     # @return [Class] A params class (when whitelisted) or
-    #   Hanami::Action::Params
+    #   {Hanami::Action::Params Hanami::Action::Params}
     #
     # @api private
     # @since 0.7.0
@@ -133,21 +133,23 @@ module Hanami
             "To use `params`, please add 'hanami/validations' gem to your Gemfile"
     end
 
-    # Define a callback for an Action.
-    # The callback will be executed **before** the action is called, in the
+    # Defines a callback for an Action.
+    # Callbacks defined using this method will be executed **before** the action is called, in the
     # order they are added.
     #
-    # @param callbacks [Symbol, Array<Symbol>] a single or multiple symbol(s)
-    #   each of them is representing a name of a method available in the
-    #   context of the Action.
+    # @overload append_before(callbacks, blk)
+    #   @param callbacks [Symbol, Array<Symbol>] a single or multiple symbol(s)
+    #     each of them is representing a name of a method available in the
+    #     context of the Action.
     #
-    # @param blk [Proc] an anonymous function to be executed
+    #   @param blk [Proc] an anonymous function to be executed
     #
     # @return [void]
     #
     # @since 0.3.2
     #
-    # @see Hanami::Action::Callbacks::ClassMethods#append_after
+    # @see Hanami::Action.append_after
+    # @see Hanami::Action.prepend_before
     #
     # @example Method names (symbols)
     #   require "hanami/controller"
@@ -200,21 +202,23 @@ module Hanami
       alias_method :before, :append_before
     end
 
-    # Define a callback for an Action.
-    # The callback will be executed **after** the action is called, in the
+    # Defines a callback for an Action.
+    # Callbacks defined using this method will be executed **after** the action is called, in the
     # order they are added.
     #
-    # @param callbacks [Symbol, Array<Symbol>] a single or multiple symbol(s)
-    #   each of them is representing a name of a method available in the
-    #   context of the Action.
+    # @overload append_after(callbacks, blk)
+    #   @param callbacks [Symbol, Array<Symbol>] a single or multiple symbol(s)
+    #     each of them is representing a name of a method available in the
+    #     context of the Action.
     #
-    # @param blk [Proc] an anonymous function to be executed
+    #   @param blk [Proc] an anonymous function to be executed
     #
     # @return [void]
     #
     # @since 0.3.2
     #
-    # @see Hanami::Action::Callbacks::ClassMethods#append_before
+    # @see Hanami::Action.append_before
+    # @see Hanami::Action.prepend_after
     def self.append_after(...)
       config.after_callbacks.append(...)
     end
@@ -224,45 +228,52 @@ module Hanami
       alias_method :after, :append_after
     end
 
-    # Define a callback for an Action.
-    # The callback will be executed **before** the action is called.
-    # It will add the callback at the beginning of the callbacks' chain.
+    # Defines a callback for an Action.
+    # Callbacks defined using this method will be executed **before** the action is called.
+    # It will add the callback at the beginning of the callbacks chain.
+    # @overload prepend_before(callbacks, blk)
+    #   @param callbacks [Symbol, Array<Symbol>] a single or multiple symbol(s)
+    #     each of them is representing a name of a method available in the
+    #     context of the Action.
     #
-    # @param callbacks [Symbol, Array<Symbol>] a single or multiple symbol(s)
-    #   each of them is representing a name of a method available in the
-    #   context of the Action.
-    #
-    # @param blk [Proc] an anonymous function to be executed
+    #   @param blk [Proc] an anonymous function to be executed
     #
     # @return [void]
     #
     # @since 0.3.2
     #
-    # @see Hanami::Action::Callbacks::ClassMethods#prepend_after
+    # @see Hanami::Action.prepend_after
+    # @see Hanami::Action.append_before
     def self.prepend_before(...)
       config.before_callbacks.prepend(...)
     end
 
-    # Define a callback for an Action.
-    # The callback will be executed **after** the action is called.
-    # It will add the callback at the beginning of the callbacks' chain.
+    # Defines a callback for an Action.
+    # Callbacks defined using this method will be executed **after** the action is called.
+    # It will add the callback at the beginning of the callbacks chain.
     #
-    # @param callbacks [Symbol, Array<Symbol>] a single or multiple symbol(s)
-    #   each of them is representing a name of a method available in the
-    #   context of the Action.
+    # @overload prepend_after(callbacks, blk)
+    #   @param callbacks [Symbol, Array<Symbol>] a single or multiple symbol(s)
+    #     each of them is representing a name of a method available in the
+    #     context of the Action.
     #
-    # @param blk [Proc] an anonymous function to be executed
+    #   @param blk [Proc] an anonymous function to be executed
     #
     # @return [void]
     #
     # @since 0.3.2
     #
-    # @see Hanami::Action::Callbacks::ClassMethods#prepend_before
+    # @see Hanami::Action.prepend_before
+    # @see Hanami::Action.append_after
     def self.prepend_after(...)
       config.after_callbacks.prepend(...)
     end
 
-    # Restrict the access to the specified mime type symbols.
+    # Restricts the access to the specified mime type symbols. Halts processing the request
+    # and returns HTTP 406 (Not Acceptable) if the action is called without acceptable mime type.
+    #
+    # The list of acceptable values is keys of {Hanami::Action::Mime::TYPES} hash. If one of the
+    # arguments to +accept+ method is not recognized, {Hanami::Controller::UnknownFormatError} will be raised.
     #
     # @param formats[Array<Symbol>] one or more symbols representing mime type(s)
     #
@@ -349,6 +360,9 @@ module Hanami
 
     # Hook for subclasses to apply behavior as part of action invocation
     #
+    # This is a method where actuall logic of an action should be placed. It is invoked by {call}
+    # method (which is a part of the private API) after running before-hooks and before running after-hooks.
+    #
     # @param request [Hanami::Action::Request]
     # @param response [Hanami::Action::Response]
     #
@@ -357,7 +371,7 @@ module Hanami
     def handle(request, response)
     end
 
-    # Halt the action execution with the given HTTP status code and message.
+    # Halts the action execution with given HTTP status code and message.
     #
     # When used, the execution of a callback or of an action is interrupted
     # and the control returns to the framework, that decides how to handle
@@ -365,7 +379,7 @@ module Hanami
     #
     # If a message is provided, it sets the response body with the message.
     # Otherwise, it sets the response body with the default message associated
-    # to the code (eg 404 will set `"Not Found"`).
+    # with the code (e.g. 404 will set +"Not Found"+).
     #
     # @param status [Fixnum] a valid HTTP status code
     # @param body [String] the response body
@@ -374,8 +388,8 @@ module Hanami
     #
     # @since 0.2.0
     #
-    # @see Hanami::Action::Throwable#handle_exception
-    # @see Hanami::Http::Status:ALL
+    # @see Hanami::Action::Configuration#handle_exception
+    # @see Hanami::Http::Status::ALL
     #
     # @example Basic usage
     #   require "hanami/controller"

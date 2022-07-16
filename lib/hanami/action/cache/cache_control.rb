@@ -39,7 +39,7 @@ module Hanami
           end
         end
 
-        # Finalize the response including default cache headers into the response
+        # Finalizes the response including default cache headers into the response
         #
         # @since 0.3.0
         # @api private

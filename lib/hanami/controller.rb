@@ -13,19 +13,6 @@ module Hanami
   # @since 0.1.0
   #
   # @see Hanami::Action
-  #
-  # @example
-  #   require "hanami/controller"
-  #
-  #   module Articles
-  #     class Index < Hanami::Action
-  #       # ...
-  #     end
-  #
-  #     class Show < Hanami::Action
-  #       # ...
-  #     end
-  #   end
   module Controller
     # Unknown format error
     #

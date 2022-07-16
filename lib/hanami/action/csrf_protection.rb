@@ -14,17 +14,16 @@ module Hanami
     class InvalidCSRFTokenError < Controller::Error
     end
 
-    # CSRF Protection
-    #
+    # Module providing CSRF Protection for actions.
     # This security mechanism is enabled automatically if sessions are turned on.
     #
-    # It stores a "challenge" token in session. For each "state changing request"
+    # It stores a "challenge" token in the session. For each "state changing request"
     # (eg. <tt>POST</tt>, <tt>PATCH</tt> etc..), we should send a special param:
     # <tt>_csrf_token</tt>.
     #
     # If the param matches with the challenge token, the flow can continue.
-    # Otherwise the application detects an attack attempt, it reset the session
-    # and <tt>Hanami::Action::InvalidCSRFTokenError</tt> is raised.
+    # Otherwise the application detects an attack attempt, resets the session
+    # and {Hanami::Action::InvalidCSRFTokenError} is raised.
     #
     # We can specify a custom handling strategy, by overriding <tt>#handle_invalid_csrf_token</tt>.
     #
@@ -36,8 +35,8 @@ module Hanami
     #
     # @since 0.4.0
     #
-    # @see https://www.owasp.org/index.php/Cross-Site_Request_Forgery_%28CSRF%29
-    # @see https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)_Prevention_Cheat_Sheet
+    # @see https://owasp.org/www-community/attacks/csrf
+    # @see https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html
     #
     # @example Custom Handling
     #   module Web::Controllers::Books

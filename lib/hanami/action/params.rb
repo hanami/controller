@@ -10,9 +10,9 @@ module Hanami
     # It's able to extract the relevant params from a Rack env of from an Hash.
     #
     # There are three scenarios:
-    #   * When used with Hanami::Router: it contains only the params from the request
-    #   * When used standalone: it contains all the Rack env
-    #   * Default: it returns the given hash as it is. It's useful for testing purposes.
+    # * When used with Hanami::Router: it contains only the params from the request
+    # * When used standalone: it contains all the Rack env
+    # * Default: it returns the given hash as it is. It's useful for testing purposes.
     #
     # @since 0.1.0
     class Params < BaseParams
@@ -28,7 +28,7 @@ module Hanami
           super(errors.dup)
         end
 
-        # Add an error to the param validations
+        # Adds an error to the param validations
         #
         # This has a semantic similar to `Hash#dig` where you use a set of keys
         # to get a nested value, here you use a set of keys to set a nested
@@ -149,7 +149,7 @@ module Hanami
         validations(&blk || -> {})
       end
 
-      # Initialize the params and freeze them.
+      # Initializes the params and freeze them.
       #
       # @param env [Hash] a Rack env or an hash of params.
       #
@@ -235,7 +235,7 @@ module Hanami
         errors.empty?
       end
 
-      # Serialize validated params to Hash
+      # Serializes validated params to Hash
       #
       # @return [::Hash]
       #

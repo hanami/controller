@@ -178,8 +178,8 @@ module Hanami
     # @since 0.5.0
     # @api private
     #
-    # @see Hanami::Action::Throwable::RACK_ERRORS
-    # @see http://www.rubydoc.info/github/rack/rack/file/SPEC#The_Error_Stream
+    # @see Hanami::Action::RACK_ERRORS
+    # @see https://www.rubydoc.info/github/rack/rack/file/SPEC.rdoc#label-The+Error+Stream
     # @see https://github.com/hanami/controller/issues/133
     RACK_EXCEPTION = "rack.exception"
 
@@ -189,7 +189,8 @@ module Hanami
     # @api private
     LOCATION = "Location"
 
-    # The key that returns Rack session params from the Rack env
+    # The key that returns Rack session params from the Rack env.
+    #
     # Please note that this is used only when an action is unit tested.
     #
     # @since 2.0.0

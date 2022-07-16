@@ -10,11 +10,11 @@ module Hanami
     #
     # @since 0.3.0
     #
-    # @see Hanami::Action::Cache::ClassMethods#cache_control
-    # @see Hanami::Action::Cache::ClassMethods#expires
-    # @see Hanami::Action::Cache::ClassMethods#fresh
+    # @see Hanami::Action::Cache::CacheControl::ClassMethods#cache_control
+    # @see Hanami::Action::Cache::Expires::ClassMethods#expires
+    # @see Hanami::Action::Cache::ETag#fresh?
     module Cache
-      # Override Ruby's hook for modules.
+      # Overrides Ruby's hook for modules.
       # It includes exposures logic
       #
       # @param base [Class] the target action
@@ -22,7 +22,7 @@ module Hanami
       # @since 0.3.0
       # @api private
       #
-      # @see http://www.ruby-doc.org/core/Module.html#method-i-included
+      # @see https://www.ruby-doc.org/core/Module.html#method-i-included
       def self.included(base)
         base.class_eval do
           include CacheControl, Expires

@@ -10,7 +10,7 @@ module Hanami
       # @since 0.4.3
       # @api private
       #
-      # @see Hanami::Action::Rack#send_file
+      # @see Hanami::Action::Response#send_file
       class File
         # @param path [String,Pathname] file path
         #

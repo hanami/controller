@@ -7,12 +7,10 @@ module Hanami
     # This module isn't included by default.
     #
     # @since 0.1.0
-    #
-    # @see Hanami::Action::Cookies#cookies
     module Cookies
       private
 
-      # Finalize the response by flushing cookies into the response
+      # Finalizes the response by flushing cookies into the response
       #
       # @since 0.1.0
       # @api private

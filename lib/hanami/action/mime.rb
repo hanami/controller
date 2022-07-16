@@ -6,8 +6,11 @@ require "rack/mime"
 
 module Hanami
   class Action
+    # Module containing logic related to MIME types
+    #
+    # @api private
     module Mime # rubocop:disable Metrics/ModuleLength
-      # Most commom MIME Types used for responses
+      # Most common MIME Types used for responses
       #
       # @since 1.0.0
       # @api private

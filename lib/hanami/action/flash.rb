@@ -41,7 +41,7 @@ module Hanami
         @next = {}
       end
 
-      # @return [Hash] The flash hash for the current request
+      # @return [Hash] the flash hash for the current request
       #
       # @since 2.0.0
       # @api public
@@ -94,7 +94,7 @@ module Hanami
         @flash.map(&block)
       end
 
-      # Returns `true` if the current hash contains no elements.
+      # Returns +true+ if the current hash contains no elements.
       #
       # @return [Boolean]
       #
@@ -104,7 +104,7 @@ module Hanami
         @flash.empty?
       end
 
-      # Returns `true` if the given key is present in the current hash.
+      # Returns +true+ if the given key is present in the current hash.
       #
       # @return [Boolean]
       #

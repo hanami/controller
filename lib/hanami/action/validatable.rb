@@ -22,7 +22,7 @@ module Hanami
       # @since 0.1.0
       # @api private
       module ClassMethods
-        # Whitelist valid parameters to be passed to Hanami::Action#call.
+        # Whitelists valid parameters to be passed to {Hanami::Action#handle}.
         #
         # This feature isn't mandatory, but higly recommended for security
         # reasons.
@@ -38,11 +38,11 @@ module Hanami
         #
         # It accepts an anonymous block where all the params can be listed.
         # It internally creates an inner class which inherits from
-        # Hanami::Action::Params.
+        # {Hanami::Action::Params}.
         #
         #
         # Alternatively, it accepts an concrete class that should inherit from
-        # Hanami::Action::Params.
+        # +Hanami::Action::Params+.
         #
         # @param klass [Class,nil] a Hanami::Action::Params subclass
         # @param blk [Proc] a block which defines the whitelisted params
@@ -52,7 +52,6 @@ module Hanami
         # @since 0.3.0
         #
         # @see Hanami::Action::Params
-        # @see https://guides.hanamirb.org//validations/overview
         #
         # @example Anonymous Block
         #   require "hanami/controller"

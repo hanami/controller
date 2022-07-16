@@ -18,7 +18,7 @@ module Hanami
       # @api private
       attr_reader :raw
 
-      # Initialize the params and freeze them.
+      # Initializes the params and freezes them.
       #
       # @param env [Hash] a Rack env or an hash of params.
       #
@@ -44,7 +44,7 @@ module Hanami
         @params[key]
       end
 
-      # Get an attribute value associated with the given key.
+      # Gets an attribute value associated with the given key.
       # Nested attributes are reached by listing all the keys to get to the value.
       #
       # @param keys [Array<Symbol,Integer>] the key
@@ -77,13 +77,13 @@ module Hanami
         @params.dig(*keys)
       end
 
-      # This is for compatibility with Hanami::Helpers::FormHelper::Values
+      # This is for compatibility with +Hanami::Helpers::FormHelper::Values+
       #
       # @api private
       # @since 0.8.0
       alias_method :dig, :get
 
-      # Provide a common interface with Params
+      # Provides a common interface with Params
       #
       # @return [TrueClass] always returns true
       #
@@ -94,7 +94,7 @@ module Hanami
         true
       end
 
-      # Serialize params to Hash
+      # Serializes params to a +Hash+
       #
       # @return [::Hash]
       #

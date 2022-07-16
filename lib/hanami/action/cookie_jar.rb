@@ -10,14 +10,12 @@ module Hanami
     # It acts as an Hash
     #
     # @since 0.1.0
-    #
-    # @see Hanami::Action::Cookies#cookies
     class CookieJar
       # @since 0.4.5
       # @api private
       COOKIE_SEPARATOR = ";,"
 
-      # Initialize the CookieJar
+      # Initializes the CookieJar
       #
       # @param env [Hash] a raw Rack env
       # @param headers [Hash] the response headers
@@ -31,7 +29,7 @@ module Hanami
         @default_options = default_options
       end
 
-      # Finalize itself, by setting the proper headers to add and remove
+      # Finalizes itself, by setting the proper headers to add and remove
       # cookies, before the response is returned to the webserver.
       #
       # @return [void]
@@ -61,7 +59,7 @@ module Hanami
         @cookies[key]
       end
 
-      # Associate the given value with the given key and store them
+      # Associates the given value with the given key and store them
       #
       # @param key [Symbol] the key
       # @param value [#to_s,Hash] value that can be serialized as a string or
