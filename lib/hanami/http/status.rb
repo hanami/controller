@@ -42,7 +42,7 @@ module Hanami
       # @api private
       #
       # @example
-      #   require 'hanami/http/status'
+      #   require "hanami/http/status"
       #
       #   Hanami::Http::Status.message_for(409) # => "Conflict"
       def self.message_for(code)
