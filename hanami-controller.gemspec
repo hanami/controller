@@ -20,7 +20,7 @@ Gem::Specification.new do |spec|
   spec.metadata["rubygems_mfa_required"] = "true"
   spec.required_ruby_version = ">= 3.0"
 
-  spec.add_dependency "rack",         "~> 2.0"
+  spec.add_dependency "rack",         "~> 3.0"
   spec.add_dependency "hanami-utils", "~> 2.0.beta"
   spec.add_dependency "dry-configurable", "~> 0.13", ">= 0.13.0"
 
