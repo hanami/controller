@@ -58,7 +58,7 @@ RSpec.describe "HTTP Standalone Sessions" do
   include Rack::Test::Methods
 
   let(:app) do
-    Hanami::Action::Configuration.new
+    # Hanami::Action::Configuration.new
 
     Rack::Builder.new do
       use Rack::Session::Cookie, secret: SecureRandom.hex(16)

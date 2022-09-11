@@ -131,11 +131,11 @@ module Hanami
       #
       # @since 2.0.0
       # @api private
-      def self.detect_format(content_type, configuration)
+      def self.detect_format(content_type, config)
         return if content_type.nil?
 
         ct = content_type.split(";").first
-        configuration.format_for(ct) || format_for(ct)
+        config.format_for(ct) || format_for(ct)
       end
 
       # @since 2.0.0

@@ -1,11 +1,15 @@
 # frozen_string_literal: true
 
 begin
+  require "dry/core"
+  require "dry/configurable"
+  require "dry/types"
   require "hanami/validations"
   require "hanami/action/validatable"
 rescue LoadError # rubocop:disable Lint/SuppressedException
 end
 
+require "dry/configurable"
 require "hanami/utils/class_attribute"
 require "hanami/utils/callbacks"
 require "hanami/utils"
@@ -14,9 +18,9 @@ require "hanami/utils/kernel"
 require "rack"
 require "rack/utils"
 
+require_relative "action/config"
 require_relative "action/constants"
 require_relative "action/base_params"
-require_relative "action/configuration"
 require_relative "action/halt"
 require_relative "action/mime"
 require_relative "action/rack/file"
@@ -37,6 +41,265 @@ module Hanami
   #     end
   #   end
   class Action
+    extend Dry::Configurable(config_class: Config)
+
+    # @!method handled_exceptions=(exceptions)
+    #
+    #   Specifies how to handle exceptions with an HTTP status
+    #
+    #   Raised exceptions will return the corresponding HTTP status
+    #
+    #   @param exceptions [Hash{Exception=>Integer}] exception classes as
+    #     keys and HTTP statuses as values
+    #
+    #   @return [void]
+    #
+    #   @since 0.2.0
+    #
+    #   @example
+    #     configuration.handled_exceptions = {ArgumentError => 400}
+    #
+    # @!method handled_exceptions
+    #
+    #   Returns the configured handled exceptions
+    #
+    #   @return [Hash{Exception=>Integer}]
+    #
+    #   @see handled_exceptions=
+    #
+    #   @since 0.2.0
+    setting :handled_exceptions, default: {}
+
+    # @!method formats=(formats)
+    #
+    #   Specifies the MIME type to format mapping
+    #
+    #   @param formats [Hash{String=>Symbol}] MIME type strings as keys and
+    #     format symbols as values
+    #
+    #   @return [void]
+    #
+    #   @since 0.2.0
+    #
+    #   @see format
+    #   @see Hanami::Action::Mime
+    #
+    #   @example
+    #     configuration.formats = {"text/html" => :html}
+    #
+    # @!method formats
+    #
+    #   Returns the configured MIME type to format mapping
+    #
+    #   @return [Symbol,nil] the corresponding format, if present
+    #
+    #   @see format
+    #   @see formats=
+    #
+    #   @since 0.2.0
+    setting :formats, default: Config::DEFAULT_FORMATS
+
+    # @!method default_request_format=(format)
+    #
+    #   Sets a format as default fallback for all the requests without a strict
+    #   requirement for the MIME type.
+    #
+    #   The given format must be coercible to a symbol, and be a valid MIME
+    #   type alias. If it isn't, at runtime the framework will raise an
+    #   `Hanami::Controller::UnknownFormatError`.
+    #
+    #   By default, this value is nil.
+    #
+    #   @param format [Symbol]
+    #
+    #   @return [void]
+    #
+    #   @since 0.5.0
+    #
+    #   @see Hanami::Action::Mime
+    #
+    # @!method default_request_format
+    #
+    #   Returns the configured default request format
+    #
+    #   @return [Symbol] format
+    #
+    #   @see default_request_format=
+    #
+    #   @since 0.5.0
+    setting :default_request_format, constructor: -> (format) {
+      Utils::Kernel.Symbol(format) unless format.nil?
+    }
+
+    # @!method default_response_format=(format)
+    #
+    #   Sets a format to be used for all responses regardless of the request
+    #   type.
+    #
+    #   The given format must be coercible to a symbol, and be a valid MIME
+    #   type alias. If it isn't, at the runtime the framework will raise an
+    #   `Hanami::Controller::UnknownFormatError`.
+    #
+    #   By default, this value is nil.
+    #
+    #   @param format [Symbol]
+    #
+    #   @return [void]
+    #
+    #   @since 0.5.0
+    #
+    #   @see Hanami::Action::Mime
+    #
+    # @!method default_response_format
+    #
+    #   Returns the configured default response format
+    #
+    #   @return [Symbol] format
+    #
+    #   @see default_request_format=
+    #
+    #   @since 0.5.0
+    setting :default_response_format, constructor: -> (format) {
+      Utils::Kernel.Symbol(format) unless format.nil?
+    }
+
+    # @!method default_charset=(charset)
+    #
+    #   Sets a charset (character set) as default fallback for all the requests
+    #   without a strict requirement for the charset.
+    #
+    #   By default, this value is nil.
+    #
+    #   @param charset [String]
+    #
+    #   @return [void]
+    #
+    #   @since 0.3.0
+    #
+    #   @see Hanami::Action::Mime
+    #
+    # @!method default_charset
+    #
+    #   Returns the configured default charset.
+    #
+    #   @return [String,nil] the charset, if present
+    #
+    #   @see default_charset=
+    #
+    #   @since 0.3.0
+    setting :default_charset
+
+    # @!method default_headers=(headers)
+    #
+    #   Sets default headers for all responses.
+    #
+    #   By default, this is an empty hash.
+    #
+    #   @param headers [Hash{String=>String}] the headers
+    #
+    #   @return [void]
+    #
+    #   @since 0.4.0
+    #
+    #   @see default_headers
+    #
+    #   @example
+    #     configuration.default_headers = {"X-Frame-Options" => "DENY"}
+    #
+    # @!method default_headers
+    #
+    #   Returns the configured headers
+    #
+    #   @return [Hash{String=>String}] the headers
+    #
+    #   @since 0.4.0
+    #
+    #   @see default_headers=
+    setting :default_headers, default: {}, constructor: -> (headers) { headers.compact }
+
+    # @!method cookies=(cookie_options)
+    #
+    #   Sets default cookie options for all responses.
+    #
+    #   By default this, is an empty hash.
+    #
+    #   @param cookie_options [Hash{Symbol=>String}] the cookie options
+    #
+    #   @return [void]
+    #
+    #   @since 0.4.0
+    #
+    #   @example
+    #     configuration.cookies = {
+    #       domain: "hanamirb.org",
+    #       path: "/controller",
+    #       secure: true,
+    #       httponly: true
+    #     }
+    #
+    # @!method cookies
+    #
+    #   Returns the configured cookie options
+    #
+    #   @return [Hash{Symbol=>String}]
+    #
+    #   @since 0.4.0
+    #
+    #   @see cookies=
+    setting :cookies, default: {}, constructor: -> (cookie_options) {
+      # Call `to_h` here to permit `ApplicationConfiguration::Cookies` object to be
+      # provided when application actions are configured
+      cookie_options.to_h.compact
+    }
+
+    # @!method root_directory=(dir)
+    #
+    #   Sets the the for the public directory, which is used for file downloads.
+    #   This must be an existent directory.
+    #
+    #   Defaults to the current working directory.
+    #
+    #   @param dir [String] the directory path
+    #
+    #   @return [void]
+    #
+    #   @since 1.0.0
+    #
+    #   @api private
+    #
+    # @!method root_directory
+    #
+    #   Returns the configured root directory
+    #
+    #   @return [String] the directory path
+    #
+    #   @see root_directory=
+    #
+    #   @since 1.0.0
+    #
+    #   @api private
+    setting :root_directory, constructor: -> (dir) {
+      Pathname(File.expand_path(dir || Dir.pwd)).realpath
+    }
+
+    # @!method public_directory=(directory)
+    #
+    #   Sets the path to public directory. This directory is used for file downloads.
+    #
+    #   This given directory will be appended onto the root directory.
+    #
+    #   By default, the public directory is "public".
+    #
+    #   @param directory [String] the public directory path
+    #
+    #   @return [void]
+    #
+    #   @since 2.0.0
+    #
+    #   @see root_directory
+    #   @see public_directory
+    setting :public_directory, default: Config::DEFAULT_PUBLIC_DIRECTORY
+
     # Override Ruby's hook for modules.
     # It includes basic Hanami::Action modules to the given class.
     #
@@ -60,20 +323,6 @@ module Hanami
           include Validatable if defined?(Validatable)
         end
       end
-
-      subclass.instance_variable_set "@configuration", configuration.dup
-    end
-
-    # @since 2.0.0
-    # @api private
-    def self.configuration
-      @configuration ||= Configuration.new
-    end
-
-    class << self
-      # @since 2.0.0
-      # @api private
-      alias_method :config, :configuration
     end
 
     # Returns the class which defines the params
@@ -280,10 +529,10 @@ module Hanami
     # @return [Hanami::Action] Action object
     #
     # @since 2.0.0
-    def self.new(*args, configuration: self.configuration, **kwargs, &block)
+    def self.new(*args, config: self.config, **kwargs, &block)
       allocate.tap do |obj|
-        obj.instance_variable_set(:@configuration, configuration.dup.finalize!)
-        obj.instance_variable_set(:@accepted_mime_types, Mime.restrict_mime_types(configuration, accepted_formats))
+        obj.instance_variable_set(:@config, config)
+        obj.instance_variable_set(:@accepted_mime_types, Mime.restrict_mime_types(config, accepted_formats))
         obj.send(:initialize, *args, **kwargs, &block)
         obj.freeze
       end
@@ -302,10 +551,10 @@ module Hanami
         request  = build_request(env, params)
         response = build_response(
           request: request,
-          configuration: configuration,
-          content_type: Mime.calculate_content_type_with_charset(configuration, request, accepted_mime_types),
+          config: config,
+          content_type: Mime.calculate_content_type_with_charset(config, request, accepted_mime_types),
           env: env,
-          headers: configuration.default_headers
+          headers: config.default_headers
         )
 
         _run_before_callbacks(request, response)
@@ -395,24 +644,24 @@ module Hanami
 
     # @since 2.0.0
     # @api private
-    attr_reader :configuration
+    attr_reader :config
 
     # @since 2.0.0
     # @api private
     def accepted_mime_types
-      @accepted_mime_types || configuration.mime_types
+      @accepted_mime_types || config.mime_types
     end
 
     # @since 2.0.0
     # @api private
     def enforce_accepted_mime_types(req, *)
-      Mime.accepted_mime_type?(req, accepted_mime_types, configuration) or halt 415
+      Mime.accepted_mime_type?(req, accepted_mime_types, config) or halt 415
     end
 
     # @since 2.0.0
     # @api private
     def exception_handler(exception)
-      configuration.handled_exceptions.each do |exception_class, handler|
+      config.handled_exceptions.each do |exception_class, handler|
         return handler if exception.is_a?(exception_class)
       end
 
@@ -563,9 +812,9 @@ module Hanami
       case value
       when Symbol
         format = Utils::Kernel.Symbol(value)
-        [format, Action::Mime.format_to_mime_type(format, configuration)]
+        [format, Action::Mime.format_to_mime_type(format, config)]
       when String
-        [Action::Mime.detect_format(value, configuration), value]
+        [Action::Mime.detect_format(value, config), value]
       else
         raise Hanami::Controller::UnknownFormatError.new(value)
       end
@@ -588,7 +837,7 @@ module Hanami
       _empty_headers(res) if _requires_empty_headers?(res)
       _empty_body(res) if res.head?
 
-      res.set_format(Action::Mime.detect_format(res.content_type, configuration))
+      res.set_format(Action::Mime.detect_format(res.content_type, config))
       res[:params] = req.params
       res[:format] = res.format
       res

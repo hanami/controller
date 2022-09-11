@@ -6,49 +6,6 @@ RSpec.describe Hanami::Action do
   let(:action_class) { Class.new(described_class) }
   subject(:action) { action_class.new }
 
-  describe ".configuration" do
-    subject(:configuration) { action_class.configuration }
-
-    it "returns an Action::Configuration object" do
-      is_expected.to be_an_instance_of(Hanami::Action::Configuration)
-    end
-
-    it "is not frozen" do
-      is_expected.not_to be_frozen
-    end
-
-    context "when inherited" do
-      let(:superclass) { action_class }
-      let(:subclass) { Class.new(action_class) }
-
-      let(:superclass_configuration) { superclass.configuration }
-      let(:subclass_configuration) { subclass.configuration }
-
-      before do
-        superclass_configuration.formats = {"text/html" => :html}
-      end
-
-      it "inherits the configuration from the superclass" do
-        expect(subclass_configuration.formats).to eq("text/html" => :html)
-      end
-
-      it "can be changed on the subclass without affecting the superclass" do
-        subclass_configuration.formats = {"custom/format" => :custom}
-
-        expect(subclass_configuration.formats).to eq("custom/format" => :custom)
-        expect(superclass_configuration.formats).to eq("text/html" => :html)
-      end
-    end
-  end
-
-  describe ".config" do
-    subject(:config) { action_class.config }
-
-    it "is an alias for the configuration" do
-      is_expected.to be action_class.configuration
-    end
-  end
-
   describe ".new" do
     let(:action_class) {
       Class.new(Hanami::Action) do

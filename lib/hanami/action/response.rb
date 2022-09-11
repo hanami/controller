@@ -36,7 +36,7 @@ module Hanami
       # @since 2.0.0
       # @api private
       def self.build(status, env)
-        new(configuration: nil, content_type: Mime.best_q_match(env[Action::HTTP_ACCEPT]), env: env).tap do |r| # rubocop:disable Layout/LineLength
+        new(config: nil, content_type: Mime.best_q_match(env[Action::HTTP_ACCEPT]), env: env).tap do |r|
           r.status = status
           r.body   = Http::Status.message_for(status)
           r.set_format(Mime.format_for(r.content_type))
@@ -45,12 +45,12 @@ module Hanami
 
       # @since 2.0.0
       # @api private
-      def initialize(request:, configuration:, content_type: nil, env: {}, headers: {}, view_options: nil) # rubocop:disable Metrics/ParameterLists
+      def initialize(request:, config:, content_type: nil, env: {}, headers: {}, view_options: nil) # rubocop:disable Metrics/ParameterLists
         super([], 200, headers.dup)
         set_header(Action::CONTENT_TYPE, content_type)
 
         @request = request
-        @configuration = configuration
+        @config = config
         @charset = ::Rack::MediaType.params(content_type).fetch("charset", nil)
         @exposures = {}
         @env = env
@@ -108,7 +108,7 @@ module Hanami
       # @since 2.0.0
       # @api public
       def cookies
-        @cookies ||= CookieJar.new(env.dup, headers, @configuration.cookies)
+        @cookies ||= CookieJar.new(env.dup, headers, @config.cookies)
       end
 
       # @since 2.0.0
@@ -130,7 +130,7 @@ module Hanami
       # @api public
       def send_file(path)
         _send_file(
-          Rack::File.new(path, @configuration.public_directory).call(env)
+          Rack::File.new(path, @config.public_directory).call(env)
         )
       end
 
@@ -138,7 +138,7 @@ module Hanami
       # @api public
       def unsafe_send_file(path)
         directory = if Pathname.new(path).relative?
-                      @configuration.root_directory
+                      @config.root_directory
                     else
                       FILE_SYSTEM_ROOT
                     end

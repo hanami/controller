@@ -195,7 +195,7 @@ class ErrorCallWithUnsetStatusResponse < Hanami::Action
 end
 
 class ErrorCallWithSpecifiedStatusCodeAction < Hanami::Action
-  configuration.handle_exception StandardError => 422
+  config.handle_exception StandardError => 422
 
   def handle(_req, _res)
     raise StandardError
@@ -981,7 +981,7 @@ module MusicPlayer
 
   class Application
     def initialize
-      Hanami::Action::Configuration.new do |config|
+      Hanami::Action.configure do |config|
         config.handle_exception ArgumentError => 400
         config.default_headers(
           "X-Frame-Options" => "DENY"
@@ -1130,7 +1130,7 @@ module SendFileTest
 
   class Application
     def initialize
-      Hanami::Action::Configuration.new do |config|
+      Hanami::Action.configure do |config|
         config.public_directory = "spec/support/fixtures"
       end
 
@@ -1215,7 +1215,7 @@ module HeadTest
 
   class Application
     def initialize
-      Hanami::Action::Configuration.new do |config|
+      Hanami::Action.configure do |config|
         config.default_headers = {
           "X-Frame-Options" => "DENY"
         }
@@ -1672,7 +1672,7 @@ end
 module RouterIntegration
   class Application
     def initialize
-      Hanami::Action::Configuration.new
+      # Hanami::Action::Configuration.new
 
       routes = Hanami::Router.new do
         get "/",         to: Root.new
@@ -1700,7 +1700,7 @@ end
 module SessionIntegration
   class Application
     def initialize
-      Hanami::Action::Configuration.new
+      # Hanami::Action::Configuration.new
       resolver = EndpointResolver.new
 
       routes = Hanami::Router.new(resolver: resolver) do
@@ -1811,7 +1811,7 @@ module Flash
 
   class Application
     def initialize
-      Hanami::Action::Configuration.new
+      # Hanami::Action::Configuration.new
       routes = Hanami::Router.new do
         get "/",      to: Flash::Controllers::Home::Index.new
         post "/",     to: Flash::Controllers::Home::Index.new
@@ -1890,7 +1890,7 @@ module Inheritance
 
   class Application
     def initialize
-      Hanami::Action::Configuration.new
+      # Hanami::Action::Configuration.new
       @routes = Hanami::Router.new do
         resources :books, only: %i[show destroy]
       end

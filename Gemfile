@@ -2,9 +2,9 @@
 
 source "http://rubygems.org"
 
-git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
-
 gemspec
+
+gem "dry-configurable", github: "dry-rb/dry-configurable"
 
 unless ENV["CI"]
   gem "byebug", require: false, platforms: :mri
@@ -26,6 +26,11 @@ group :test do
   gem "hanami-view", github: "hanami/view", branch: "main"
   gem "hanami",      github: "hanami/hanami", branch: "main"
   gem "slim"
+end
+
+group :benchmarks do
+  gem "benchmark-memory"
+  gem "memory_profiler"
 end
 
 gem "hanami-devtools", github: "hanami/devtools", branch: "main"
