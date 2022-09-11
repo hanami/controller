@@ -282,37 +282,12 @@ module Hanami
     # @since 2.0.0
     def self.new(*args, configuration: self.configuration, **kwargs, &block)
       allocate.tap do |obj|
-        obj.instance_variable_set(:@name, Name[name])
         obj.instance_variable_set(:@configuration, configuration.dup.finalize!)
         obj.instance_variable_set(:@accepted_mime_types, Mime.restrict_mime_types(configuration, accepted_formats))
         obj.send(:initialize, *args, **kwargs, &block)
         obj.freeze
       end
     end
-
-    # @since 2.0.0
-    # @api private
-    module Name
-      # @since 2.0.0
-      # @api private
-      MODULE_SEPARATOR_TRANSFORMER = [:gsub, "::", "."].freeze
-
-      # @since 2.0.0
-      # @api private
-      def self.call(name)
-        Utils::String.transform(name, MODULE_SEPARATOR_TRANSFORMER, :underscore) unless name.nil?
-      end
-
-      class << self
-        # @since 2.0.0
-        # @api private
-        alias_method :[], :call
-      end
-    end
-
-    # @since 2.0.0
-    # @api private
-    attr_reader :name
 
     # Implements the Rack/Hanami::Action protocol
     #
@@ -327,7 +302,6 @@ module Hanami
         request  = build_request(env, params)
         response = build_response(
           request: request,
-          action: name,
           configuration: configuration,
           content_type: Mime.calculate_content_type_with_charset(configuration, request, accepted_mime_types),
           env: env,

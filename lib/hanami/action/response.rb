@@ -27,7 +27,7 @@ module Hanami
 
       # @since 2.0.0
       # @api private
-      attr_reader :request, :action, :exposures, :format, :env, :view_options
+      attr_reader :request, :exposures, :format, :env, :view_options
 
       # @since 2.0.0
       # @api private
@@ -36,7 +36,7 @@ module Hanami
       # @since 2.0.0
       # @api private
       def self.build(status, env)
-        new(action: "", configuration: nil, content_type: Mime.best_q_match(env[Action::HTTP_ACCEPT]), env: env).tap do |r| # rubocop:disable Layout/LineLength
+        new(configuration: nil, content_type: Mime.best_q_match(env[Action::HTTP_ACCEPT]), env: env).tap do |r| # rubocop:disable Layout/LineLength
           r.status = status
           r.body   = Http::Status.message_for(status)
           r.set_format(Mime.format_for(r.content_type))
@@ -45,12 +45,11 @@ module Hanami
 
       # @since 2.0.0
       # @api private
-      def initialize(request:, action:, configuration:, content_type: nil, env: {}, headers: {}, view_options: nil) # rubocop:disable Metrics/ParameterLists
+      def initialize(request:, configuration:, content_type: nil, env: {}, headers: {}, view_options: nil) # rubocop:disable Metrics/ParameterLists
         super([], 200, headers.dup)
         set_header(Action::CONTENT_TYPE, content_type)
 
         @request = request
-        @action = action
         @configuration = configuration
         @charset = ::Rack::MediaType.params(content_type).fetch("charset", nil)
         @exposures = {}
