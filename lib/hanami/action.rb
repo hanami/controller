@@ -10,7 +10,6 @@ rescue LoadError # rubocop:disable Lint/SuppressedException
 end
 
 require "dry/configurable"
-require "hanami/utils/class_attribute"
 require "hanami/utils/callbacks"
 require "hanami/utils"
 require "hanami/utils/string"
@@ -299,6 +298,8 @@ module Hanami
     #   @see root_directory
     #   @see public_directory
     setting :public_directory, default: Config::DEFAULT_PUBLIC_DIRECTORY
+    setting :before_callbacks, default: Utils::Callbacks::Chain.new, cloneable: true
+    setting :after_callbacks, default: Utils::Callbacks::Chain.new, cloneable: true
 
     # Override Ruby's hook for modules.
     # It includes basic Hanami::Action modules to the given class.
@@ -312,14 +313,6 @@ module Hanami
 
       if subclass.superclass == Action
         subclass.class_eval do
-          include Utils::ClassAttribute
-
-          class_attribute :before_callbacks
-          self.before_callbacks = Utils::Callbacks::Chain.new
-
-          class_attribute :after_callbacks
-          self.after_callbacks = Utils::Callbacks::Chain.new
-
           include Validatable if defined?(Validatable)
         end
       end
@@ -416,7 +409,7 @@ module Hanami
     #   # 2. set the article
     #   # 3. `#handle`
     def self.append_before(...)
-      before_callbacks.append(...)
+      config.before_callbacks.append(...)
     end
 
     class << self
@@ -440,7 +433,7 @@ module Hanami
     #
     # @see Hanami::Action::Callbacks::ClassMethods#append_before
     def self.append_after(...)
-      after_callbacks.append(...)
+      config.after_callbacks.append(...)
     end
 
     class << self
@@ -464,7 +457,7 @@ module Hanami
     #
     # @see Hanami::Action::Callbacks::ClassMethods#prepend_after
     def self.prepend_before(...)
-      before_callbacks.prepend(...)
+      config.before_callbacks.prepend(...)
     end
 
     # Define a callback for an Action.
@@ -483,7 +476,7 @@ module Hanami
     #
     # @see Hanami::Action::Callbacks::ClassMethods#prepend_before
     def self.prepend_after(...)
-      after_callbacks.prepend(...)
+      config.after_callbacks.prepend(...)
     end
 
     # Restrict the access to the specified mime type symbols.
@@ -730,14 +723,14 @@ module Hanami
     # @since 0.1.0
     # @api private
     def _run_before_callbacks(*args)
-      self.class.before_callbacks.run(self, *args)
+      config.before_callbacks.run(self, *args)
       nil
     end
 
     # @since 0.1.0
     # @api private
     def _run_after_callbacks(*args)
-      self.class.after_callbacks.run(self, *args)
+      config.after_callbacks.run(self, *args)
       nil
     end
 
