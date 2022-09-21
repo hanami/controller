@@ -25,7 +25,7 @@ module Hanami
         # @since 1.1.0
         # @api private
         def initialize(errors = {})
-          super(errors)
+          super(errors.dup)
         end
 
         # Add an error to the param validations
