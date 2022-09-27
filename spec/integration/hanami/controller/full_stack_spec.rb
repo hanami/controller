@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rack/test"
 
 RSpec.describe "Full stack application" do
@@ -91,7 +93,7 @@ RSpec.describe "Full stack application" do
     }
     result = JSON.parse(last_response.body, symbolize_names: true)
     expect(result[:valid]).to  be(false)
-    expect(result[:errors]).to eq(book: { author: ["is missing"] })
+    expect(result[:errors]).to eq(book: {author: ["is missing"]})
   end
 
   it "redirect in before action and call action method is not called" do

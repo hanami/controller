@@ -1,4 +1,6 @@
-require 'rack/file'
+# frozen_string_literal: true
+
+require "rack/file"
 
 module Hanami
   class Action
@@ -10,12 +12,6 @@ module Hanami
       #
       # @see Hanami::Action::Rack#send_file
       class File
-        # The key that returns path info from the Rack env
-        #
-        # @since 1.0.0
-        # @api private
-        PATH_INFO = "PATH_INFO".freeze
-
         # @param path [String,Pathname] file path
         #
         # @since 0.4.3
@@ -29,11 +25,11 @@ module Hanami
         # @api private
         def call(env)
           env = env.dup
-          env[PATH_INFO] = @path
+          env[Action::PATH_INFO] = @path
 
           @file.get(env)
         rescue Errno::ENOENT
-          [404, {}, nil]
+          [Action::NOT_FOUND, {}, nil]
         end
       end
     end

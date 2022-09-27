@@ -25,18 +25,18 @@ RSpec.describe Hanami::Action do
       let(:subclass_configuration) { subclass.configuration }
 
       before do
-        superclass_configuration.formats = {'text/html' => :html}
+        superclass_configuration.formats = {"text/html" => :html}
       end
 
       it "inherits the configuration from the superclass" do
-        expect(subclass_configuration.formats).to eq('text/html' => :html)
+        expect(subclass_configuration.formats).to eq("text/html" => :html)
       end
 
       it "can be changed on the subclass without affecting the superclass" do
-        subclass_configuration.formats = {'custom/format' => :custom}
+        subclass_configuration.formats = {"custom/format" => :custom}
 
-        expect(subclass_configuration.formats).to eq('custom/format' => :custom)
-        expect(superclass_configuration.formats).to eq('text/html' => :html)
+        expect(subclass_configuration.formats).to eq("custom/format" => :custom)
+        expect(superclass_configuration.formats).to eq("text/html" => :html)
       end
     end
   end

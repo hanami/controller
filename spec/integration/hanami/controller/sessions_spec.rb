@@ -1,15 +1,17 @@
-require 'rack/test'
-require 'hanami/router'
-require 'hanami'
+# frozen_string_literal: true
+
+require "rack/test"
+require "hanami/router"
+require "hanami"
 
 RSpec.describe "HTTP sessions" do
   include Rack::Test::Methods
 
   let(:router) do
     Hanami::Router.new do
-      get    '/',       to: Dashboard::Index.new
-      post   '/login',  to: Sessions::Create.new
-      delete '/logout', to: Sessions::Destroy.new
+      get    "/",       to: Dashboard::Index.new
+      post   "/login",  to: Sessions::Create.new
+      delete "/logout", to: Sessions::Destroy.new
     end
   end
 
@@ -56,7 +58,8 @@ RSpec.describe "HTTP Standalone Sessions" do
   include Rack::Test::Methods
 
   let(:app) do
-    configuration = Hanami::Action::Configuration.new
+    Hanami::Action::Configuration.new
+
     Rack::Builder.new do
       use Rack::Session::Cookie, secret: SecureRandom.hex(16)
       run StandaloneSession.new

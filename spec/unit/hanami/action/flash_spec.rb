@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "hanami/action/flash"
 
 RSpec.describe Hanami::Action::Flash do
@@ -18,14 +20,14 @@ RSpec.describe Hanami::Action::Flash do
       let(:input_hash) { {1 => 2} }
 
       it "assigns the hash as the now hash" do
-        expect(flash.now).to eq(1=>2)
+        expect(flash.now).to eq(1 => 2)
         expect(flash.next).to eq({})
       end
     end
   end
 
   describe "#now" do
-    let(:input_hash) { { a: "val" } }
+    let(:input_hash) { {a: "val"} }
 
     it "returns raw data for the current request" do
       expect(flash.now).to be(input_hash)

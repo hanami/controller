@@ -1,5 +1,7 @@
-require 'hanami/router'
-require 'hanami/action/cache'
+# frozen_string_literal: true
+
+require "hanami/router"
+require "hanami/action/cache"
 
 module CacheControl
   class Default < Hanami::Action
@@ -56,12 +58,12 @@ module CacheControl
   class Application
     def initialize
       routes = Hanami::Router.new do
-        get '/default',            to: CacheControl::Default.new
-        get '/overriding',         to: CacheControl::Overriding.new
-        get '/symbol',             to: CacheControl::Symbol.new
-        get '/symbols',            to: CacheControl::Symbols.new
-        get '/hash',               to: CacheControl::Hash.new
-        get '/private-and-public', to: CacheControl::PrivatePublic.new
+        get "/default",            to: CacheControl::Default.new
+        get "/overriding",         to: CacheControl::Overriding.new
+        get "/symbol",             to: CacheControl::Symbol.new
+        get "/symbols",            to: CacheControl::Symbols.new
+        get "/hash",               to: CacheControl::Hash.new
+        get "/private-and-public", to: CacheControl::PrivatePublic.new
       end
 
       @app = Rack::Builder.new do
@@ -145,11 +147,11 @@ module Expires
   class Application
     def initialize
       routes = Hanami::Router.new do
-        get '/default',              to: Expires::Default.new
-        get '/overriding',           to: Expires::Overriding.new
-        get '/symbol',               to: Expires::Symbol.new
-        get '/symbols',              to: Expires::Symbols.new
-        get '/hash',                 to: Expires::Hash.new
+        get "/default",              to: Expires::Default.new
+        get "/overriding",           to: Expires::Overriding.new
+        get "/symbol",               to: Expires::Symbol.new
+        get "/symbols",              to: Expires::Symbols.new
+        get "/hash",                 to: Expires::Hash.new
       end
 
       @app = Rack::Builder.new do
@@ -169,7 +171,7 @@ module ConditionalGet
     include Hanami::Action::Cache
 
     def handle(_, res)
-      res.fresh etag: 'updated'
+      res.fresh etag: "updated"
     end
   end
 
@@ -185,18 +187,18 @@ module ConditionalGet
     include Hanami::Action::Cache
 
     def handle(_, res)
-      res.fresh etag: 'updated', last_modified: Time.now
+      res.fresh etag: "updated", last_modified: Time.now
     end
   end
 
   class Application
     def initialize
       routes = Hanami::Router.new do
-        get '/etag',                    to: ConditionalGet::Etag.new
-        get '/last-modified',           to: ConditionalGet::LastModified.new
-        get '/etag-last-modified',      to: ConditionalGet::EtagLastModified.new
-        get '/last-modified-nil-value', to: ConditionalGet::LastModifiedNilValue.new
-        get '/etag-nil-value',          to: ConditionalGet::EtagNilValue.new
+        get "/etag",                    to: ConditionalGet::Etag.new
+        get "/last-modified",           to: ConditionalGet::LastModified.new
+        get "/etag-last-modified",      to: ConditionalGet::EtagLastModified.new
+        get "/last-modified-nil-value", to: ConditionalGet::LastModifiedNilValue.new
+        get "/etag-nil-value",          to: ConditionalGet::EtagNilValue.new
       end
 
       @app = Rack::Builder.new do

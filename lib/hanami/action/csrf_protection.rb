@@ -1,4 +1,7 @@
+# frozen_string_literal: true
+
 require "hanami/utils/blank"
+require "hanami/controller/error"
 require "rack/utils"
 require "securerandom"
 
@@ -8,7 +11,7 @@ module Hanami
     # Invalid CSRF Token
     #
     # @since 0.4.0
-    class InvalidCSRFTokenError < ::StandardError
+    class InvalidCSRFTokenError < Controller::Error
     end
 
     # CSRF Protection
@@ -38,10 +41,8 @@ module Hanami
     #
     # @example Custom Handling
     #   module Web::Controllers::Books
-    #     class Create
-    #       include Web::Action
-    #
-    #       def call(params)
+    #     class Create < Web::Action
+    #       def handl(*)
     #         # ...
     #       end
     #
@@ -56,16 +57,14 @@ module Hanami
     #
     # @example Bypass Security Check
     #   module Web::Controllers::Books
-    #     class Create
-    #       include Web::Action
-    #
-    #       def call(params)
+    #     class Create < Web::Action
+    #       def handle(*)
     #         # ...
     #       end
     #
     #       private
     #
-    #       def verify_csrf_token?
+    #       def verify_csrf_token?(req, res)
     #         false
     #       end
     #     end
@@ -87,18 +86,20 @@ module Hanami
       # @since 0.4.0
       # @api private
       IDEMPOTENT_HTTP_METHODS = Hash[
-        "GET" => true,
-        "HEAD" => true,
-        "TRACE" => true,
-        "OPTIONS" => true
+        Action::GET => true,
+        Action::HEAD => true,
+        Action::TRACE => true,
+        Action::OPTIONS => true
       ].freeze
 
       # @since 0.4.0
       # @api private
       def self.included(action)
-        action.class_eval do
-          before :set_csrf_token, :verify_csrf_token
-        end unless Hanami.respond_to?(:env?) && Hanami.env?(:test)
+        unless Hanami.respond_to?(:env?) && Hanami.env?(:test)
+          action.class_eval do
+            before :set_csrf_token, :verify_csrf_token
+          end
+        end
       end
 
       private
@@ -107,7 +108,7 @@ module Hanami
       #
       # @since 0.4.0
       # @api private
-      def set_csrf_token(req, res)
+      def set_csrf_token(_req, res)
         res.session[CSRF_TOKEN] ||= generate_csrf_token
       end
 
@@ -141,7 +142,7 @@ module Hanami
       # Verify the CSRF token was passed in params.
       #
       # @api private
-      def missing_csrf_token?(req, res)
+      def missing_csrf_token?(req, *)
         Hanami::Utils::Blank.blank?(req.params[CSRF_TOKEN])
       end
 
@@ -161,21 +162,19 @@ module Hanami
       #
       # @example
       #   module Web::Controllers::Books
-      #     class Create
-      #       include Web::Action
-      #
-      #       def call(params)
+      #     class Create < Web::Action
+      #       def call(*)
       #         # ...
       #       end
       #
       #       private
       #
-      #       def verify_csrf_token?
+      #       def verify_csrf_token?(req, res)
       #         false
       #       end
       #     end
       #   end
-      def verify_csrf_token?(req, res)
+      def verify_csrf_token?(req, *)
         !IDEMPOTENT_HTTP_METHODS[req.request_method]
       end
 
@@ -191,21 +190,19 @@ module Hanami
       #
       # @example
       #   module Web::Controllers::Books
-      #     class Create
-      #       include Web::Action
-      #
-      #       def call(params)
+      #     class Create < Web::Action
+      #       def call(*)
       #         # ...
       #       end
       #
       #       private
       #
-      #       def handle_invalid_csrf_token
+      #       def handle_invalid_csrf_token(req, res)
       #         # custom invalid CSRF management goes here
       #       end
       #     end
       #   end
-      def handle_invalid_csrf_token(req, res)
+      def handle_invalid_csrf_token(*, res)
         res.session.clear
         raise InvalidCSRFTokenError
       end

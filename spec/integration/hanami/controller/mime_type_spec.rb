@@ -1,4 +1,6 @@
-RSpec.describe 'MIME Type' do
+# frozen_string_literal: true
+
+RSpec.describe "MIME Type" do
   describe "Content type" do
     let(:app) { Rack::MockRequest.new(Mimes::Application.new) }
 
@@ -32,7 +34,7 @@ RSpec.describe 'MIME Type' do
       expect(response.body).to        eq("")
     end
 
-    context 'when ACCEPT header is set and no accept macro is use' do
+    context "when ACCEPT header is set and no accept macro is use" do
       xit 'sets "Content-Type" header according to wildcard value' do
         response = app.get("/", "HTTP_ACCEPT" => "*/*")
         expect(response.headers["Content-Type"]).to eq("application/octet-stream; charset=utf-8")
@@ -41,7 +43,7 @@ RSpec.describe 'MIME Type' do
     end
 
     context "when no ACCEPT or Content-Type are sent but there is a restriction using the accept macro" do
-      xit 'sets the status to 406' do
+      xit "sets the status to 406" do
         response = app.get("/custom_from_accept")
         expect(response.status).to eq 406
       end
@@ -54,7 +56,7 @@ RSpec.describe 'MIME Type' do
         expect(response.body).to                    eq("all")
       end
 
-      xit 'sets status to 406 if Content-Type do not match' do
+      xit "sets status to 406 if Content-Type do not match" do
         response = app.get("/custom_from_accept", "Content-Type" => "application/xml")
         expect(response.status).to eq(406)
       end
@@ -102,7 +104,7 @@ RSpec.describe 'MIME Type' do
 
       xit "defaults to the accepted format" do
         expect(response.status).to be(200)
-        expect(response.body).to eq('html')
+        expect(response.body).to eq("html")
       end
     end
 
@@ -174,7 +176,7 @@ RSpec.describe 'MIME Type' do
         end
       end
 
-      context 'applies the weighting mechanism for media ranges' do
+      context "applies the weighting mechanism for media ranges" do
         let(:accept) { "text/*,application/json,text/html,*/*" }
 
         xit "accepts selected mime types" do

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Hanami::Action do
   describe "#cookies" do
     it "gets cookies" do
@@ -27,7 +29,7 @@ RSpec.describe Hanami::Action do
     end
 
     it "sets cookies with options" do
-      tomorrow = Time.now + 60 * 60 * 24
+      tomorrow = Time.now + (60 * 60 * 24)
       action   = SetCookiesWithOptionsAction.new(expires: tomorrow)
       response = action.call({})
 

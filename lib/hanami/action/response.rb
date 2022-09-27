@@ -1,61 +1,58 @@
 # frozen_string_literal: true
 
-require 'rack'
-require 'rack/response'
-require 'hanami/utils/kernel'
-require 'hanami/action/flash'
-require 'hanami/action/halt'
-require 'hanami/action/cookie_jar'
-require 'hanami/action/cache/cache_control'
-require 'hanami/action/cache/expires'
-require 'hanami/action/cache/conditional_get'
+require "rack"
+require "rack/response"
+require "hanami/utils/kernel"
+require "hanami/action/flash"
+require "hanami/action/halt"
+require "hanami/action/cookie_jar"
+require "hanami/action/cache/cache_control"
+require "hanami/action/cache/expires"
+require "hanami/action/cache/conditional_get"
 
 module Hanami
   class Action
     class Response < ::Rack::Response
-      DEFAULT_VIEW_OPTIONS = -> * { {} }.freeze
+      # @since 2.0.0
+      # @api private
+      DEFAULT_VIEW_OPTIONS = -> (*) { {} }.freeze
 
-      REQUEST_METHOD = "REQUEST_METHOD"
-      HTTP_ACCEPT = "HTTP_ACCEPT"
-      SESSION_KEY = "rack.session"
-      REQUEST_ID  = "hanami.request_id"
-      LOCATION    = "Location"
-
-      X_CASCADE = "X-Cascade"
-      CONTENT_LENGTH = "Content-Length"
-      NOT_FOUND = 404
-
-      RACK_STATUS  = 0
-      RACK_HEADERS = 1
-      RACK_BODY    = 2
-
-      HEAD = "HEAD"
-
-      FLASH_SESSION_KEY = "_flash"
-
+      # @since 2.0.0
+      # @api private
       EMPTY_BODY = [].freeze
 
+      # @since 2.0.0
+      # @api private
       FILE_SYSTEM_ROOT = Pathname.new("/").freeze
 
+      # @since 2.0.0
+      # @api private
       attr_reader :request, :action, :exposures, :format, :env, :view_options
+
+      # @since 2.0.0
+      # @api private
       attr_accessor :charset
 
+      # @since 2.0.0
+      # @api private
       def self.build(status, env)
-        new(action: "", configuration: nil, content_type: Mime.best_q_match(env[HTTP_ACCEPT]), env: env).tap do |r|
+        new(action: "", configuration: nil, content_type: Mime.best_q_match(env[Action::HTTP_ACCEPT]), env: env).tap do |r| # rubocop:disable Layout/LineLength
           r.status = status
           r.body   = Http::Status.message_for(status)
           r.set_format(Mime.format_for(r.content_type))
         end
       end
 
-      def initialize(request:, action:, configuration:, content_type: nil, env: {}, headers: {}, view_options: nil)
+      # @since 2.0.0
+      # @api private
+      def initialize(request:, action:, configuration:, content_type: nil, env: {}, headers: {}, view_options: nil) # rubocop:disable Metrics/ParameterLists
         super([], 200, headers.dup)
-        set_header("Content-Type", content_type)
+        set_header(Action::CONTENT_TYPE, content_type)
 
         @request = request
         @action = action
         @configuration = configuration
-        @charset = ::Rack::MediaType.params(content_type).fetch('charset', nil)
+        @charset = ::Rack::MediaType.params(content_type).fetch("charset", nil)
         @exposures = {}
         @env = env
         @view_options = view_options || DEFAULT_VIEW_OPTIONS
@@ -63,6 +60,8 @@ module Hanami
         @sending_file = false
       end
 
+      # @since 2.0.0
+      # @api public
       def body=(str)
         @length = 0
         @body   = EMPTY_BODY.dup
@@ -75,49 +74,69 @@ module Hanami
         end
       end
 
+      # @since 2.0.0
+      # @api public
       def render(view, **options)
         self.body = view.(**view_options.(request, self), **exposures.merge(options)).to_str
       end
 
+      # @since 2.0.0
+      # @api public
       def format=(args)
         @format, content_type = *args
         content_type = Action::Mime.content_type_with_charset(content_type, charset)
         set_header("Content-Type", content_type)
       end
 
+      # @since 2.0.0
+      # @api public
       def [](key)
         @exposures.fetch(key)
       end
 
+      # @since 2.0.0
+      # @api public
       def []=(key, value)
         @exposures[key] = value
       end
 
+      # @since 2.0.0
+      # @api public
       def session
-        env[SESSION_KEY] ||= {}
+        env[Action::RACK_SESSION] ||= {}
       end
 
+      # @since 2.0.0
+      # @api public
       def cookies
         @cookies ||= CookieJar.new(env.dup, headers, @configuration.cookies)
       end
 
+      # @since 2.0.0
+      # @api public
       def flash
-        @flash ||= Flash.new(session[FLASH_SESSION_KEY])
+        @flash ||= Flash.new(session[Flash::KEY])
       end
 
+      # @since 2.0.0
+      # @api public
       def redirect_to(url, status: 302)
-        return unless renderable?
+        return unless allow_redirect?
 
         redirect(::String.new(url), status)
         Halt.call(status)
       end
 
+      # @since 2.0.0
+      # @api public
       def send_file(path)
         _send_file(
           Rack::File.new(path, @configuration.public_directory).call(env)
         )
       end
 
+      # @since 2.0.0
+      # @api public
       def unsafe_send_file(path)
         directory = if Pathname.new(path).relative?
                       @configuration.root_directory
@@ -130,16 +149,22 @@ module Hanami
         )
       end
 
+      # @since 2.0.0
+      # @api public
       def cache_control(*values)
         directives = Cache::CacheControl::Directives.new(*values)
         headers.merge!(directives.headers)
       end
 
+      # @since 2.0.0
+      # @api public
       def expires(amount, *values)
         directives = Cache::Expires::Directives.new(amount, *values)
         headers.merge!(directives.headers)
       end
 
+      # @since 2.0.0
+      # @api public
       def fresh(options)
         conditional_get = Cache::ConditionalGet.new(env, options)
 
@@ -150,41 +175,59 @@ module Hanami
         end
       end
 
+      # @since 2.0.0
       # @api private
       def request_id
-        env.fetch(REQUEST_ID) do
+        env.fetch(Action::REQUEST_ID) do
           # FIXME: raise a meaningful error, by inviting devs to include Hanami::Action::Session
           raise "Can't find request ID"
         end
       end
 
-      def set_format(value)
+      # @since 2.0.0
+      # @api public
+      def set_format(value) # rubocop:disable Naming/AccessorMethodName
         @format = value
       end
 
+      # @since 2.0.0
+      # @api private
       def renderable?
         return !head? && body.empty? if body.respond_to?(:empty?)
 
         !@sending_file && !head?
       end
 
-      alias to_ary to_a
+      # @since 2.0.0
+      # @api private
+      def allow_redirect?
+        return body.empty? if body.respond_to?(:empty?)
 
-      def head?
-        env[REQUEST_METHOD] == HEAD
+        !@sending_file
       end
 
+      # @since 2.0.0
+      # @api private
+      alias_method :to_ary, :to_a
+
+      # @since 2.0.0
+      # @api public
+      def head?
+        env[Action::REQUEST_METHOD] == Action::HEAD
+      end
+
+      # @since 2.0.0
       # @api private
       def _send_file(send_file_response)
-        headers.merge!(send_file_response[RACK_HEADERS])
+        headers.merge!(send_file_response[Action::RESPONSE_HEADERS])
 
-        if send_file_response[RACK_STATUS] == NOT_FOUND
-          headers.delete(X_CASCADE)
-          headers.delete(CONTENT_LENGTH)
-          Halt.call(NOT_FOUND)
+        if send_file_response[Action::RESPONSE_CODE] == Action::NOT_FOUND
+          headers.delete(Action::X_CASCADE)
+          headers.delete(Action::CONTENT_LENGTH)
+          Halt.call(Action::NOT_FOUND)
         else
-          self.status = send_file_response[RACK_STATUS]
-          self.body = send_file_response[RACK_BODY]
+          self.status = send_file_response[Action::RESPONSE_CODE]
+          self.body = send_file_response[Action::RESPONSE_BODY]
           @sending_file = true
         end
       end

@@ -1,23 +1,27 @@
+# frozen_string_literal: true
+
 begin
-  require 'hanami/validations'
-  require 'hanami/action/validatable'
-rescue LoadError
+  require "hanami/validations"
+  require "hanami/action/validatable"
+rescue LoadError # rubocop:disable Lint/SuppressedException
 end
 
-require 'hanami/utils/class_attribute'
-require 'hanami/utils/callbacks'
-require 'hanami/utils'
-require 'hanami/utils/string'
-require 'hanami/utils/kernel'
-require 'rack/utils'
+require "hanami/utils/class_attribute"
+require "hanami/utils/callbacks"
+require "hanami/utils"
+require "hanami/utils/string"
+require "hanami/utils/kernel"
+require "rack"
+require "rack/utils"
 
-require_relative 'action/base_params'
-require_relative 'action/configuration'
-require_relative 'action/halt'
-require_relative 'action/mime'
-require_relative 'action/rack/file'
-require_relative 'action/request'
-require_relative 'action/response'
+require_relative "action/constants"
+require_relative "action/base_params"
+require_relative "action/configuration"
+require_relative "action/halt"
+require_relative "action/mime"
+require_relative "action/rack/file"
+require_relative "action/request"
+require_relative "action/response"
 
 module Hanami
   # An HTTP endpoint
@@ -25,143 +29,14 @@ module Hanami
   # @since 0.1.0
   #
   # @example
-  #   require 'hanami/controller'
+  #   require "hanami/controller"
   #
-  #   class Show
-  #     include Hanami::Action
-  #
-  #     def call(params)
+  #   class Show < Hanami::Action
+  #     def handle(req, res)
   #       # ...
   #     end
   #   end
   class Action
-    # Rack SPEC response code
-    #
-    # @since 1.0.0
-    # @api private
-    RESPONSE_CODE = 0
-
-    # Rack SPEC response headers
-    #
-    # @since 1.0.0
-    # @api private
-    RESPONSE_HEADERS = 1
-
-    # Rack SPEC response body
-    #
-    # @since 1.0.0
-    # @api private
-    RESPONSE_BODY = 2
-
-    DEFAULT_ERROR_CODE = 500
-
-    # Status codes that by RFC must not include a message body
-    #
-    # @since 0.3.2
-    # @api private
-    HTTP_STATUSES_WITHOUT_BODY = Set.new((100..199).to_a << 204 << 205 << 304).freeze
-
-    # Not Found
-    #
-    # @since 1.0.0
-    # @api private
-    NOT_FOUND = 404
-
-    # Entity headers allowed in blank body responses, according to
-    # RFC 2616 - Section 10 (HTTP 1.1).
-    #
-    # "The response MAY include new or updated metainformation in the form
-    #   of entity-headers".
-    #
-    # @since 0.4.0
-    # @api private
-    #
-    # @see http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.5
-    # @see http://www.w3.org/Protocols/rfc2616/rfc2616-sec7.html
-    ENTITY_HEADERS = {
-      'Allow'            => true,
-      'Content-Encoding' => true,
-      'Content-Language' => true,
-      'Content-Location' => true,
-      'Content-MD5'      => true,
-      'Content-Range'    => true,
-      'Expires'          => true,
-      'Last-Modified'    => true,
-      'extension-header' => true
-    }.freeze
-
-    # The request method
-    #
-    # @since 0.3.2
-    # @api private
-    REQUEST_METHOD = 'REQUEST_METHOD'.freeze
-
-    # The Content-Length HTTP header
-    #
-    # @since 1.0.0
-    # @api private
-    CONTENT_LENGTH = 'Content-Length'.freeze
-
-    # The non-standard HTTP header to pass the control over when a resource
-    # cannot be found by the current endpoint
-    #
-    # @since 1.0.0
-    # @api private
-    X_CASCADE = 'X-Cascade'.freeze
-
-    # HEAD request
-    #
-    # @since 0.3.2
-    # @api private
-    HEAD = 'HEAD'.freeze
-
-    # The key that returns accepted mime types from the Rack env
-    #
-    # @since 0.1.0
-    # @api private
-    HTTP_ACCEPT          = 'HTTP_ACCEPT'.freeze
-
-    # The header key to set the mime type of the response
-    #
-    # @since 0.1.0
-    # @api private
-    CONTENT_TYPE         = 'Content-Type'.freeze
-
-    # The default mime type for an incoming HTTP request
-    #
-    # @since 0.1.0
-    # @api private
-    DEFAULT_ACCEPT       = '*/*'.freeze
-
-    # The default mime type that is returned in the response
-    #
-    # @since 0.1.0
-    # @api private
-    DEFAULT_CONTENT_TYPE = 'application/octet-stream'.freeze
-
-    # @since 0.2.0
-    # @api private
-    RACK_ERRORS = 'rack.errors'.freeze
-
-    # This isn't part of Rack SPEC
-    #
-    # Exception notifiers use <tt>rack.exception</tt> instead of
-    # <tt>rack.errors</tt>, so we need to support it.
-    #
-    # @since 0.5.0
-    # @api private
-    #
-    # @see Hanami::Action::Throwable::RACK_ERRORS
-    # @see http://www.rubydoc.info/github/rack/rack/file/SPEC#The_Error_Stream
-    # @see https://github.com/hanami/controller/issues/133
-    RACK_EXCEPTION = 'rack.exception'.freeze
-
-    # The HTTP header for redirects
-    #
-    # @since 0.2.0
-    # @api private
-    LOCATION = 'Location'.freeze
-
     # Override Ruby's hook for modules.
     # It includes basic Hanami::Action modules to the given class.
     #
@@ -170,6 +45,8 @@ module Hanami
     # @since 0.1.0
     # @api private
     def self.inherited(subclass)
+      super
+
       if subclass.superclass == Action
         subclass.class_eval do
           include Utils::ClassAttribute
@@ -184,14 +61,18 @@ module Hanami
         end
       end
 
-      subclass.instance_variable_set '@configuration', configuration.dup
+      subclass.instance_variable_set "@configuration", configuration.dup
     end
 
+    # @since 2.0.0
+    # @api private
     def self.configuration
       @configuration ||= Configuration.new
     end
 
     class << self
+      # @since 2.0.0
+      # @api private
       alias_method :config, :configuration
     end
 
@@ -214,6 +95,19 @@ module Hanami
       @accepted_formats ||= []
     end
 
+    # Placeholder implementation for params class method
+    #
+    # Raises a developer friendly error to include `hanami/validations`.
+    #
+    # @raise [NoMethodError]
+    #
+    # @api private
+    # @since 2.0.0
+    def self.params(_klass = nil)
+      raise NoMethodError,
+            "To use `params`, please add 'hanami/validations' gem to your Gemfile"
+    end
+
     # Define a callback for an Action.
     # The callback will be executed **before** the action is called, in the
     # order they are added.
@@ -231,14 +125,12 @@ module Hanami
     # @see Hanami::Action::Callbacks::ClassMethods#append_after
     #
     # @example Method names (symbols)
-    #   require 'hanami/controller'
+    #   require "hanami/controller"
     #
-    #   class Show
-    #     include Hanami::Action
-    #
+    #   class Show < Hanami::Action
     #     before :authenticate, :set_article
     #
-    #     def call(params)
+    #     def handle(req, res)
     #     end
     #
     #     private
@@ -259,15 +151,13 @@ module Hanami
     #   # 3. #call
     #
     # @example Anonymous functions (Procs)
-    #   require 'hanami/controller'
+    #   require "hanami/controller"
     #
-    #   class Show
-    #     include Hanami::Action
-    #
+    #   class Show < Hanami::Action
     #     before { ... } # 1 do some authentication stuff
-    #     before {|params| @article = Article.find params[:id] } # 2
+    #     before {|req, res| @article = Article.find params[:id] } # 2
     #
-    #     def call(params)
+    #     def handle(req, res)
     #     end
     #   end
     #
@@ -275,9 +165,9 @@ module Hanami
     #   #
     #   # 1. authentication
     #   # 2. set the article
-    #   # 3. #call
-    def self.append_before(*callbacks, &blk)
-      before_callbacks.append(*callbacks, &blk)
+    #   # 3. `#handle`
+    def self.append_before(...)
+      before_callbacks.append(...)
     end
 
     class << self
@@ -300,8 +190,8 @@ module Hanami
     # @since 0.3.2
     #
     # @see Hanami::Action::Callbacks::ClassMethods#append_before
-    def self.append_after(*callbacks, &blk)
-      after_callbacks.append(*callbacks, &blk)
+    def self.append_after(...)
+      after_callbacks.append(...)
     end
 
     class << self
@@ -324,8 +214,8 @@ module Hanami
     # @since 0.3.2
     #
     # @see Hanami::Action::Callbacks::ClassMethods#prepend_after
-    def self.prepend_before(*callbacks, &blk)
-      before_callbacks.prepend(*callbacks, &blk)
+    def self.prepend_before(...)
+      before_callbacks.prepend(...)
     end
 
     # Define a callback for an Action.
@@ -343,8 +233,8 @@ module Hanami
     # @since 0.3.2
     #
     # @see Hanami::Action::Callbacks::ClassMethods#prepend_before
-    def self.prepend_after(*callbacks, &blk)
-      after_callbacks.prepend(*callbacks, &blk)
+    def self.prepend_after(...)
+      after_callbacks.prepend(...)
     end
 
     # Restrict the access to the specified mime type symbols.
@@ -356,16 +246,15 @@ module Hanami
     #
     # @since 0.1.0
     #
-    # @see Hanami::Controller::Configuration#format
+    # @see Hanami::Action::Configuration#format
     #
     # @example
-    #   require 'hanami/controller'
+    #   require "hanami/controller"
     #
-    #   class Show
-    #     include Hanami::Action
+    #   class Show < Hanami::Action
     #     accept :html, :json
     #
-    #     def call(params)
+    #     def handle(req, res)
     #       # ...
     #     end
     #   end
@@ -385,7 +274,7 @@ module Hanami
     #   @param deps [Hash] action dependencies
     #
     # @overload new(configuration:, **deps, ...)
-    #   @param configuration [Hanami::Controller::Configuration] action configuration
+    #   @param configuration [Hanami::Action::Configuration] action configuration
     #   @param deps [Hash] action dependencies
     #
     # @return [Hanami::Action] Action object
@@ -401,18 +290,28 @@ module Hanami
       end
     end
 
+    # @since 2.0.0
+    # @api private
     module Name
+      # @since 2.0.0
+      # @api private
       MODULE_SEPARATOR_TRANSFORMER = [:gsub, "::", "."].freeze
 
+      # @since 2.0.0
+      # @api private
       def self.call(name)
         Utils::String.transform(name, MODULE_SEPARATOR_TRANSFORMER, :underscore) unless name.nil?
       end
 
       class << self
+        # @since 2.0.0
+        # @api private
         alias_method :[], :call
       end
     end
 
+    # @since 2.0.0
+    # @api private
     attr_reader :name
 
     # Implements the Rack/Hanami::Action protocol
@@ -424,29 +323,29 @@ module Hanami
       response = nil
 
       halted = catch :halt do
-        begin
-          params   = self.class.params_class.new(env)
-          request  = build_request(env, params)
-          response = build_response(
-            request: request,
-            action: name,
-            configuration: configuration,
-            content_type: Mime.calculate_content_type_with_charset(configuration, request, accepted_mime_types),
-            env: env,
-            headers: configuration.default_headers
-          )
+        params   = self.class.params_class.new(env)
+        request  = build_request(env, params)
+        response = build_response(
+          request: request,
+          action: name,
+          configuration: configuration,
+          content_type: Mime.calculate_content_type_with_charset(configuration, request, accepted_mime_types),
+          env: env,
+          headers: configuration.default_headers
+        )
 
-          _run_before_callbacks(request, response)
-          handle(request, response)
-          _run_after_callbacks(request, response)
-        rescue => exception
-          _handle_exception(request, response, exception)
-        end
+        _run_before_callbacks(request, response)
+        handle(request, response)
+        _run_after_callbacks(request, response)
+      rescue StandardError => exception
+        _handle_exception(request, response, exception)
       end
 
       finish(request, response, halted)
     end
 
+    # @since 2.0.0
+    # @api public
     def initialize(**deps)
       @_deps = deps
     end
@@ -459,6 +358,7 @@ module Hanami
     # @param response [Hanami::Action::Response]
     #
     # @since 2.0.0
+    # @api public
     def handle(request, response)
     end
 
@@ -483,10 +383,10 @@ module Hanami
     # @see Hanami::Http::Status:ALL
     #
     # @example Basic usage
-    #   require 'hanami/controller'
+    #   require "hanami/controller"
     #
-    #   class Show
-    #     def call(params)
+    #   class Show < Hanami::Action
+    #     def handle(*)
     #       halt 404
     #     end
     #   end
@@ -494,10 +394,10 @@ module Hanami
     #   # => [404, {}, ["Not Found"]]
     #
     # @example Custom message
-    #   require 'hanami/controller'
+    #   require "hanami/controller"
     #
-    #   class Show
-    #     def call(params)
+    #   class Show < Hanami::Action
+    #     def handle(*)
     #       halt 404, "This is not the droid you're looking for."
     #     end
     #   end
@@ -515,34 +415,44 @@ module Hanami
 
     # @since 2.0.0
     # @api private
-    def _requires_empty_headers?(res)
-      _requires_no_body?(res) || res.head?
-    end
+    alias_method :_requires_empty_headers?, :_requires_no_body?
 
     private
 
+    # @since 2.0.0
+    # @api private
     attr_reader :configuration
 
+    # @since 2.0.0
+    # @api private
     def accepted_mime_types
       @accepted_mime_types || configuration.mime_types
     end
 
+    # @since 2.0.0
+    # @api private
     def enforce_accepted_mime_types(req, *)
       Mime.accepted_mime_type?(req, accepted_mime_types, configuration) or halt 406
     end
 
+    # @since 2.0.0
+    # @api private
     def exception_handler(exception)
       configuration.handled_exceptions.each do |exception_class, handler|
-        return handler if exception.kind_of?(exception_class)
+        return handler if exception.is_a?(exception_class)
       end
 
       nil
     end
 
+    # @since 2.0.0
+    # @api private
     def build_request(env, params)
       Request.new(env, params)
     end
 
+    # @since 2.0.0
+    # @api private
     def build_response(**options)
       Response.new(**options)
     end
@@ -628,28 +538,26 @@ module Hanami
     # @see Hanami::Action#_requires_no_body?
     #
     # @example
-    #   require 'hanami/controller'
+    #   require "hanami/controller"
     #
     #   module Books
-    #     class Destroy
-    #       include Hanami::Action
-    #
-    #       def call(params)
+    #     class Destroy < Hanami::Action
+    #       def handle(*, res)
     #         # ...
-    #         self.headers.merge!(
-    #           'Last-Modified' => 'Fri, 27 Nov 2015 13:32:36 GMT',
-    #           'X-Rate-Limit'  => '4000',
-    #           'Content-Type'  => 'application/json',
-    #           'X-No-Pass'     => 'true'
+    #         res.headers.merge!(
+    #           "Last-Modified" => "Fri, 27 Nov 2015 13:32:36 GMT",
+    #           "X-Rate-Limit"  => "4000",
+    #           "Content-Type"  => "application/json",
+    #           "X-No-Pass"     => "true"
     #         )
     #
-    #         self.status = 204
+    #         res.status = 204
     #       end
     #
     #       private
     #
     #       def keep_response_header?(header)
-    #         super || header == 'X-Rate-Limit'
+    #         super || header == "X-Rate-Limit"
     #       end
     #     end
     #   end
@@ -669,6 +577,14 @@ module Hanami
       res.headers.select! { |header, _| keep_response_header?(header) }
     end
 
+    # @since 2.0.0
+    # @api private
+    def _empty_body(res)
+      res.body = Response::EMPTY_BODY
+    end
+
+    # @since 2.0.0
+    # @api private
     def format(value)
       case value
       when Symbol
@@ -696,6 +612,7 @@ module Hanami
       res.status, res.body = *halted unless halted.nil?
 
       _empty_headers(res) if _requires_empty_headers?(res)
+      _empty_body(res) if res.head?
 
       res.set_format(Action::Mime.detect_format(res.content_type, configuration))
       res[:params] = req.params

@@ -1,5 +1,7 @@
-require 'hanami/action/base_params'
-require 'hanami/validations/form'
+# frozen_string_literal: true
+
+require "hanami/action/base_params"
+require "hanami/validations/form"
 
 module Hanami
   class Action
@@ -23,7 +25,7 @@ module Hanami
         # @since 1.1.0
         # @api private
         def initialize(errors = {})
-          super(errors)
+          super(errors.dup)
         end
 
         # Add an error to the param validations
@@ -48,45 +50,41 @@ module Hanami
         # @example Basic usage
         #   require "hanami/controller"
         #
-        #   class MyAction
-        #     include Hanami::Action
-        #
+        #   class MyAction < Hanami::Action
         #     params do
         #       required(:book).schema do
         #         required(:isbn).filled(:str?)
         #       end
         #     end
         #
-        #     def call(params)
+        #     def handle(req, res)
         #       # 1. Don't try to save the record if the params aren't valid
-        #       return unless params.valid?
+        #       return unless req.params.valid?
         #
-        #       BookRepository.new.create(params[:book])
+        #       BookRepository.new.create(req.params[:book])
         #     rescue Hanami::Model::UniqueConstraintViolationError
         #       # 2. Add an error in case the record wasn't unique
-        #       params.errors.add(:book, :isbn, "is not unique")
+        #       req.params.errors.add(:book, :isbn, "is not unique")
         #     end
         #   end
         #
         # @example Invalid argument
         #   require "hanami/controller"
         #
-        #   class MyAction
-        #     include Hanami::Action
-        #
+        #   class MyAction < Hanami::Action
         #     params do
         #       required(:book).schema do
         #         required(:title).filled(:str?)
         #       end
         #     end
         #
-        #     def call(params)
-        #       puts params.to_h   # => {}
-        #       puts params.valid? # => false
-        #       puts params.error_messages # => ["Book is missing"]
-        #       puts params.errors         # => {:book=>["is missing"]}
+        #     def handle(req, *)
+        #       puts req.params.to_h   # => {}
+        #       puts req.params.valid? # => false
+        #       puts req.params.error_messages # => ["Book is missing"]
+        #       puts req.params.errors         # => {:book=>["is missing"]}
         #
-        #       params.errors.add(:book, :isbn, "is not unique") # => ArgumentError
+        #       req.params.errors.add(:book, :isbn, "is not unique") # => ArgumentError
         #     end
         #   end
         def add(*args)
@@ -129,9 +127,8 @@ module Hanami
       # @see https://guides.hanamirb.org/validations/overview
       #
       # @example
-      #   class Signup
+      #   class Signup < Hanami::Action
       #     MEGABYTE = 1024 ** 2
-      #     include Hanami::Action
       #
       #     params do
       #       required(:first_name).filled(:str?)
@@ -143,13 +140,13 @@ module Hanami
       #       optional(:avatar).filled(size?: 1..(MEGABYTE * 3))
       #     end
       #
-      #     def call(params)
-      #       halt 400 unless params.valid?
+      #     def handle(req, *)
+      #       halt 400 unless req.params.valid?
       #       # ...
       #     end
       #   end
       def self.params(&blk)
-        validations(&blk || ->() {})
+        validations(&blk || -> {})
       end
 
       # Initialize the params and freeze them.
@@ -186,7 +183,13 @@ module Hanami
       #
       # @example
       #   params.errors
-      #     # => {:email=>["is missing", "is in invalid format"], :name=>["is missing"], :tos=>["is missing"], :age=>["is missing"], :address=>["is missing"]}
+      #     # => {
+      #            :email=>["is missing", "is in invalid format"],
+      #            :name=>["is missing"],
+      #            :tos=>["is missing"],
+      #            :age=>["is missing"],
+      #            :address=>["is missing"]
+      #          }
       attr_reader :errors
 
       # Returns flat collection of full error messages
@@ -197,18 +200,25 @@ module Hanami
       #
       # @example
       #   params.error_messages
-      #     # => ["Email is missing", "Email is in invalid format", "Name is missing", "Tos is missing", "Age is missing", "Address is missing"]
+      #     # => [
+      #            "Email is missing",
+      #            "Email is in invalid format",
+      #            "Name is missing",
+      #            "Tos is missing",
+      #            "Age is missing",
+      #            "Address is missing"
+      #          ]
       def error_messages(error_set = errors)
         error_set.each_with_object([]) do |(key, messages), result|
           k = Utils::String.titleize(key)
 
-          _messages = if messages.is_a?(::Hash)
-            error_messages(messages)
-          else
-            messages.map { |message| "#{k} #{message}" }
-          end
+          msgs = if messages.is_a?(::Hash)
+                   error_messages(messages)
+                 else
+                   messages.map { |message| "#{k} #{message}" }
+                 end
 
-          result.concat(_messages)
+          result.concat(msgs)
         end
       end
 

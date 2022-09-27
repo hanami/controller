@@ -1,4 +1,6 @@
-require 'hanami/action/cache/directives'
+# frozen_string_literal: true
+
+require "hanami/action/cache/directives"
 
 module Hanami
   class Action
@@ -8,12 +10,6 @@ module Hanami
       # @since 0.3.0
       # @api private
       module CacheControl
-        # The HTTP header for Cache-Control
-        #
-        # @since 0.3.0
-        # @api private
-        HEADER = 'Cache-Control'.freeze
-
         # @since 0.3.0
         # @api private
         def self.included(base)
@@ -37,7 +33,7 @@ module Hanami
           def cache_control_directives
             @cache_control_directives || Object.new.tap do |null_object|
               def null_object.headers
-                ::Hash.new
+                {}
               end
             end
           end
@@ -50,7 +46,10 @@ module Hanami
         #
         # @see Hanami::Action#finish
         def finish(_, res, _)
-          res.headers.merge!(self.class.cache_control_directives.headers) unless res.headers.include? HEADER
+          unless res.headers.include?(Action::CACHE_CONTROL)
+            res.headers.merge!(self.class.cache_control_directives.headers)
+          end
+
           super
         end
 
@@ -59,6 +58,11 @@ module Hanami
         # @since 0.3.0
         # @api private
         class Directives
+          # @since 2.0.0
+          # @api private
+          SEPARATOR = ", "
+          private_constant :SEPARATOR
+
           # @since 0.3.0
           # @api private
           def initialize(*values)
@@ -69,7 +73,7 @@ module Hanami
           # @api private
           def headers
             if @directives.any?
-              { HEADER => @directives.join(', ') }
+              {Action::CACHE_CONTROL => @directives.join(SEPARATOR)}
             else
               {}
             end

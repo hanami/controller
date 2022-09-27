@@ -1,4 +1,6 @@
-require 'hanami/action/cache/cache_control'
+# frozen_string_literal: true
+
+require "hanami/action/cache/cache_control"
 
 module Hanami
   class Action
@@ -8,12 +10,6 @@ module Hanami
       # @since 0.3.0
       # @api private
       module Expires
-        # The HTTP header for Expires
-        #
-        # @since 0.3.0
-        # @api private
-        HEADER = 'Expires'.freeze
-
         # @since 0.3.0
         # @api private
         def self.included(base)
@@ -37,7 +33,7 @@ module Hanami
           def expires_directives
             @expires_directives || Object.new.tap do |null_object|
               def null_object.headers
-                Hash.new
+                {}
               end
             end
           end
@@ -50,7 +46,10 @@ module Hanami
         #
         # @see Hanami::Action#finish
         def finish(_, res, _)
-          res.headers.merge!(self.class.expires_directives.headers) unless res.headers.include? HEADER
+          unless res.headers.include?(Action::EXPIRES)
+            res.headers.merge!(self.class.expires_directives.headers)
+          end
+
           super
         end
 
@@ -63,13 +62,13 @@ module Hanami
           # @api private
           def initialize(amount, *values)
             @amount = amount
-            @cache_control = Hanami::Action::Cache::CacheControl::Directives.new(*(values << { max_age: amount }))
+            @cache_control = Hanami::Action::Cache::CacheControl::Directives.new(*(values << {max_age: amount}))
           end
 
           # @since 0.3.0
           # @api private
           def headers
-            { HEADER => time.httpdate }.merge(@cache_control.headers)
+            {Action::EXPIRES => time.httpdate}.merge(@cache_control.headers)
           end
 
           private

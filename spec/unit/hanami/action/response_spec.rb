@@ -12,7 +12,7 @@ RSpec.describe Hanami::Action::Response do
     }
 
     let(:request) { double(:request) }
-    let(:env) { { "REQUEST_METHOD" => "GET" } }
+    let(:env) { {"REQUEST_METHOD" => "GET"} }
 
     let(:view) { spy(:view) }
 
@@ -82,7 +82,7 @@ RSpec.describe Hanami::Action::Response do
         configuration: Hanami::Action::Configuration.new, env: env
       )
     }
-    let(:env) { { "REQUEST_METHOD" => "GET" } }
+    let(:env) { {"REQUEST_METHOD" => "GET"} }
 
     context "when body isn't set" do
       it "returns true" do
@@ -100,7 +100,7 @@ RSpec.describe Hanami::Action::Response do
       end
 
       context "and HEAD request" do
-        let(:env) { { "REQUEST_METHOD" => "HEAD" } }
+        let(:env) { {"REQUEST_METHOD" => "HEAD"} }
 
         it "returns false" do
           expect(subject.renderable?).to be(false)
@@ -109,7 +109,7 @@ RSpec.describe Hanami::Action::Response do
     end
 
     context "when HEAD request" do
-      let(:env) { { "REQUEST_METHOD" => "HEAD" } }
+      let(:env) { {"REQUEST_METHOD" => "HEAD"} }
 
       it "returns false" do
         expect(subject.renderable?).to be(false)
@@ -120,6 +120,43 @@ RSpec.describe Hanami::Action::Response do
           subject.unsafe_send_file(__FILE__)
           expect(subject.renderable?).to be(false)
         end
+      end
+    end
+
+    context "when sending file" do
+      before do
+        subject.unsafe_send_file(__FILE__)
+      end
+
+      it "returns false" do
+        expect(subject.renderable?).to be(false)
+      end
+    end
+  end
+
+  describe "#allow_redirect?" do
+    subject {
+      described_class.new(
+        request: double(:request),
+        action: "action",
+        configuration: Hanami::Action::Configuration.new, env: env
+      )
+    }
+    let(:env) { {"REQUEST_METHOD" => "GET"} }
+
+    context "when body isn't set" do
+      it "returns true" do
+        expect(subject.allow_redirect?).to be(true)
+      end
+    end
+
+    context "when body is set" do
+      before do
+        subject.body = "OK"
+      end
+
+      it "returns false" do
+        expect(subject.allow_redirect?).to be(false)
       end
     end
 
