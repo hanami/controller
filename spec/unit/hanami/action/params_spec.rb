@@ -127,7 +127,7 @@ RSpec.describe Hanami::Action::Params do
 
         context "with Hanami::Router" do
           it "returns only the listed params" do
-            response = action.call('router.params' => { id: 23, another: 'x' })
+            response = action.call("router.params" => {id: 23, another: "x"})
             expect(response.body).to eq([%({:id=>23})])
           end
         end
@@ -157,7 +157,7 @@ RSpec.describe Hanami::Action::Params do
 
         context "with Hanami::Router" do
           it "returns only the listed params" do
-            response = action.call('router.params' => { username: 'jodosha', y: 'x' })
+            response = action.call("router.params" => {username: "jodosha", y: "x"})
             expect(response.body).to eq([%({:username=>"jodosha"})])
           end
         end
