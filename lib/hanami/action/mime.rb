@@ -146,7 +146,7 @@ module Hanami
 
       # Transforms symbols to MIME Types
       # @example
-      #   restrict_mime_types(configuration, [:json])  #=> ["application/json"]
+      #   restrict_mime_types(config, [:json])  #=> ["application/json"]
       #
       # @return [Array<String>, nil]
       #
@@ -154,14 +154,14 @@ module Hanami
       #
       # @since 2.0.0
       # @api private
-      def self.restrict_mime_types(configuration, accepted_formats)
-        return if accepted_formats.empty?
+      def self.restrict_mime_types(config)
+        return if config.accepted_formats.empty?
 
-        mime_types = accepted_formats.map do |format|
-          format_to_mime_type(format, configuration)
+        mime_types = config.accepted_formats.map do |format|
+          format_to_mime_type(format, config)
         end
 
-        accepted_mime_types = mime_types & configuration.mime_types
+        accepted_mime_types = mime_types & config.mime_types
 
         return if accepted_mime_types.empty?
 

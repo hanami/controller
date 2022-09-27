@@ -109,6 +109,12 @@ module Hanami
         formats.key(format)
       end
 
+      # @since 2.0.0
+      # @api private
+      def accepted_mime_types
+        accepted_formats.any? ? Mime.restrict_mime_types(self) : mime_types
+      end
+
       # Returns the configured public directory, appended onto the root directory.
       #
       # @return [String] the fill directory path

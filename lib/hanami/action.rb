@@ -162,6 +162,8 @@ module Hanami
       Utils::Kernel.Symbol(format) unless format.nil?
     }
 
+    setting :accepted_formats, default: []
+
     # @!method default_charset=(charset)
     #
     #   Sets a charset (character set) as default fallback for all the requests
@@ -330,11 +332,6 @@ module Hanami
     # @since 0.7.0
     def self.params_class
       @params_class ||= BaseParams
-    end
-
-    # FIXME: make this thread-safe
-    def self.accepted_formats
-      @accepted_formats ||= []
     end
 
     # Placeholder implementation for params class method
@@ -506,29 +503,16 @@ module Hanami
     #   # When called with "application/json" => 200
     #   # When called with "application/xml"  => 415
     def self.accept(*formats)
-      @accepted_formats = *formats
-      before :enforce_accepted_mime_types
+      config.accepted_formats = *formats
     end
 
     # Returns a new action
     #
-    # @overload new(**deps, ...)
-    #   @param deps [Hash] action dependencies
-    #
-    # @overload new(configuration:, **deps, ...)
-    #   @param configuration [Hanami::Action::Configuration] action configuration
-    #   @param deps [Hash] action dependencies
-    #
-    # @return [Hanami::Action] Action object
-    #
     # @since 2.0.0
-    def self.new(*args, config: self.config, **kwargs, &block)
-      allocate.tap do |obj|
-        obj.instance_variable_set(:@config, config)
-        obj.instance_variable_set(:@accepted_mime_types, Mime.restrict_mime_types(config, accepted_formats))
-        obj.send(:initialize, *args, **kwargs, &block)
-        obj.freeze
-      end
+    # @api public
+    def initialize(config: self.class.config)
+      @config = config
+      freeze
     end
 
     # Implements the Rack/Hanami::Action protocol
@@ -545,10 +529,12 @@ module Hanami
         response = build_response(
           request: request,
           config: config,
-          content_type: Mime.calculate_content_type_with_charset(config, request, accepted_mime_types),
+          content_type: Mime.calculate_content_type_with_charset(config, request, config.accepted_mime_types),
           env: env,
           headers: config.default_headers
         )
+
+        enforce_accepted_mime_types(request)
 
         _run_before_callbacks(request, response)
         handle(request, response)
@@ -558,12 +544,6 @@ module Hanami
       end
 
       finish(request, response, halted)
-    end
-
-    # @since 2.0.0
-    # @api public
-    def initialize(**deps)
-      @_deps = deps
     end
 
     protected
@@ -641,14 +621,10 @@ module Hanami
 
     # @since 2.0.0
     # @api private
-    def accepted_mime_types
-      @accepted_mime_types || config.mime_types
-    end
+    def enforce_accepted_mime_types(request)
+      return unless config.accepted_formats.any?
 
-    # @since 2.0.0
-    # @api private
-    def enforce_accepted_mime_types(req, *)
-      Mime.accepted_mime_type?(req, accepted_mime_types, config) or halt 415
+      Mime.accepted_mime_type?(request, config.accepted_mime_types, config) or halt 415
     end
 
     # @since 2.0.0

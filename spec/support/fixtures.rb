@@ -453,8 +453,8 @@ class SetCookiesWithOptionsAction < Hanami::Action
   include Hanami::Action::Cookies
 
   def initialize(expires: Time.now.utc)
-    super()
     @expires = expires
+    super()
   end
 
   def handle(*, res)
