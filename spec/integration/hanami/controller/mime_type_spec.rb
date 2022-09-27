@@ -118,7 +118,7 @@ RSpec.describe "MIME Type" do
 
       it "does not accept an unmatched format" do
         response = app.get("/strict", "HTTP_ACCEPT" => "application/xml", "CONTENT_TYPE" => "application/xml")
-        expect(response.status).to be(406)
+        expect(response.status).to be(415)
       end
     end
   end

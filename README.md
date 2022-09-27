@@ -771,7 +771,7 @@ end
 # When called with "\*/\*"            => 200
 # When called with "text/html"        => 200
 # When called with "application/json" => 200
-# When called with "application/xml"  => 406
+# When called with "application/xml"  => 415
 ```
 
 You can check if the requested MIME type is accepted by the client.
