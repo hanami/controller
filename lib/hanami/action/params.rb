@@ -160,9 +160,9 @@ module Hanami
       def initialize(env)
         @env = env
         super(_extract_params)
-        @result = validate
-        @params = _params
-        @errors = Errors.new(@result.messages)
+        validation = validate
+        @params = validation.to_h
+        @errors = Errors.new(validation.messages)
         freeze
       end
 
@@ -235,7 +235,7 @@ module Hanami
         errors.empty?
       end
 
-      # Serialize params to Hash
+      # Serialize validated params to Hash
       #
       # @return [::Hash]
       #
@@ -244,13 +244,6 @@ module Hanami
         @params
       end
       alias_method :to_hash, :to_h
-
-      private
-
-      # @api private
-      def _params
-        _router_params.merge(@result.output)
-      end
     end
   end
 end

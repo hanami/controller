@@ -126,9 +126,9 @@ RSpec.describe Hanami::Action::Params do
         end
 
         context "with Hanami::Router" do
-          it "returns all the params coming from the router, even if NOT whitelisted" do
-            response = action.call("router.params" => {id: 23, another: "x"})
-            expect(response.body).to eq([%({:id=>23, :another=>"x"})])
+          it "returns only the listed params" do
+            response = action.call('router.params' => { id: 23, another: 'x' })
+            expect(response.body).to eq([%({:id=>23})])
           end
         end
       end
@@ -156,9 +156,9 @@ RSpec.describe Hanami::Action::Params do
         end
 
         context "with Hanami::Router" do
-          it "returns all the router params, even if NOT whitelisted" do
-            response = action.call("router.params" => {username: "jodosha", y: "x"})
-            expect(response.body).to eq([%({:username=>"jodosha", :y=>"x"})])
+          it "returns only the listed params" do
+            response = action.call('router.params' => { username: 'jodosha', y: 'x' })
+            expect(response.body).to eq([%({:username=>"jodosha"})])
           end
         end
       end
