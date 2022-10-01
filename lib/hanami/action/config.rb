@@ -25,6 +25,19 @@ module Hanami
       # @api private
       DEFAULT_PUBLIC_DIRECTORY = "public"
 
+      # @!attribute [rw] handled_exceptions
+      #
+      #   Specifies how to handle exceptions with an HTTP status.
+      #
+      #   Raised exceptions will return the corresponding HTTP status.
+      #
+      #   @return [Hash{Exception=>Integer}] exception classes as keys and HTTP statuses as values
+      #
+      #   @example
+      #     config.handled_exceptions = {ArgumentError => 400}
+      #
+      #   @since 0.2.0
+
       # Specifies how to handle exceptions with an HTTP status
       #
       # Raised exceptions will return the corresponding HTTP status
@@ -37,18 +50,32 @@ module Hanami
       #
       # @return [void]
       #
-      # @since 0.2.0
-      #
-      # @see handled_exceptions=
-      #
       # @example
-      #   configuration.handle_exceptions(ArgumentError => 400}
+      #   config.handle_exceptions(ArgumentError => 400}
+      #
+      # @see handled_exceptions
+      #
+      # @since 0.2.0
       def handle_exception(exceptions)
         self.handled_exceptions = handled_exceptions
           .merge(exceptions)
           .sort { |(ex1, _), (ex2, _)| ex1.ancestors.include?(ex2) ? -1 : 1 }
           .to_h
       end
+
+      # @!attribute [rw] formats
+      #
+      #   Specifies the MIME type to format mapping
+      #
+      #   @return [Hash{String=>Symbol}] MIME type strings as keys and format symbols as values
+      #
+      #   @see format
+      #   @see Hanami::Action::Mime
+      #
+      #   @example
+      #     config.formats = {"text/html" => :html}
+      #
+      #   @since 0.2.0
 
       # Registers a MIME type to format mapping
       #
@@ -57,11 +84,13 @@ module Hanami
       #
       # @return [void]
       #
-      # @since 0.2.0
-      #
+      # @see formats
       # @see Hanami::Action::Mime
       #
-      # @example configuration.format html: "text/html"
+      # @example
+      #   config.format html: "text/html"
+      #
+      # @since 0.2.0
       def format(hash)
         symbol, mime_type = *Utils::Kernel.Array(hash)
         formats[Utils::Kernel.String(mime_type)] = Utils::Kernel.Symbol(symbol)
@@ -115,20 +144,115 @@ module Hanami
         accepted_formats.any? ? Mime.restrict_mime_types(self) : mime_types
       end
 
-      # Returns the configured public directory, appended onto the root directory.
+      # @!attribute [rw] default_request_format
       #
-      # @return [String] the fill directory path
+      #   Sets a format as default fallback for all the requests without a strict
+      #   requirement for the MIME type.
+      #
+      #   The given format must be coercible to a symbol, and be a valid MIME
+      #   type alias. If it isn't, at runtime the framework will raise an
+      #   `Hanami::Controller::UnknownFormatError`.
+      #
+      #   By default, this value is nil.
+      #
+      #   @return [Symbol]
+      #
+      #   @see Hanami::Action::Mime
+      #
+      #   @since 0.5.0
+
+      # @!attribute [rw] default_response_format
+      #
+      #   Sets a format to be used for all responses regardless of the request
+      #   type.
+      #
+      #   The given format must be coercible to a symbol, and be a valid MIME
+      #   type alias. If it isn't, at the runtime the framework will raise an
+      #   `Hanami::Controller::UnknownFormatError`.
+      #
+      #   By default, this value is nil.
+      #
+      #   @return [Symbol]
+      #
+      #   @see Hanami::Action::Mime
+      #
+      #   @since 0.5.0
+
+      # @!attribute [rw] default_charset
+      #
+      #   Sets a charset (character set) as default fallback for all the requests
+      #   without a strict requirement for the charset.
+      #
+      #   By default, this value is nil.
+      #
+      #   @return [String]
+      #
+      #   @see Hanami::Action::Mime
+      #
+      #   @since 0.3.0
+
+      # @!attribute [rw] default_headers
+      #
+      #   Sets default headers for all responses.
+      #
+      #   By default, this is an empty hash.
+      #
+      #   @return [Hash{String=>String}] the headers
+      #
+      #   @example
+      #     config.default_headers = {"X-Frame-Options" => "DENY"}
+      #
+      #   @see default_headers
+      #
+      #   @since 0.4.0
+
+      # @!attribute [rw] cookies
+      #
+      #   Sets default cookie options for all responses.
+      #
+      #   By default this, is an empty hash.
+      #
+      #   @return [Hash{Symbol=>String}] the cookie options
+      #
+      #   @example
+      #     config.cookies = {
+      #       domain: "hanamirb.org",
+      #       path: "/controller",
+      #       secure: true,
+      #       httponly: true
+      #     }
+      #
+      #   @since 0.4.0
+
+      # @!attribute [rw] root_directory
+      #
+      #   Sets the the for the public directory, which is used for file downloads.
+      #   This must be an existent directory.
+      #
+      #   Defaults to the current working directory.
+      #
+      #   @return [String] the directory path
+      #
+      #   @api private
+      #
+      #   @since 1.0.0
+
+      # @!attribute [rw] public_directory
+      #
+      # Sets the path to public directory. This directory is used for file downloads.
+      #
+      # This given directory will be appended onto the root directory.
+      #
+      # By default, the public directory is `"public"`.
+      # @return [String] the public directory path
       #
       # @example
-      #   configuration.public_directory = "public"
+      #   config.public_directory = "public"
+      #   config.public_directory # => "/path/to/root/public"
       #
-      #   configuration.public_directory
-      #   # => "/path/to/root/public"
+      # @see root_directory
       #
       # @since 2.0.0
-      #
-      # @see public_directory=
-      # @see root_directory=
       def public_directory
         # This must be a string, for Rack compatibility
         root_directory.join(super).to_s
