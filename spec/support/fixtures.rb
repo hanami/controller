@@ -1672,8 +1672,6 @@ end
 module RouterIntegration
   class Application
     def initialize
-      # Hanami::Action::Configuration.new
-
       routes = Hanami::Router.new do
         get "/",         to: Root.new
         get "/team",     to: About::Team.new
@@ -1700,7 +1698,6 @@ end
 module SessionIntegration
   class Application
     def initialize
-      # Hanami::Action::Configuration.new
       resolver = EndpointResolver.new
 
       routes = Hanami::Router.new(resolver: resolver) do
@@ -1811,7 +1808,6 @@ module Flash
 
   class Application
     def initialize
-      # Hanami::Action::Configuration.new
       routes = Hanami::Router.new do
         get "/",      to: Flash::Controllers::Home::Index.new
         post "/",     to: Flash::Controllers::Home::Index.new
@@ -1890,7 +1886,6 @@ module Inheritance
 
   class Application
     def initialize
-      # Hanami::Action::Configuration.new
       @routes = Hanami::Router.new do
         resources :books, only: %i[show destroy]
       end
