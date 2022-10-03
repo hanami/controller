@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Hanami
   class Action
     # @since 2.0.0
@@ -6,7 +8,7 @@ module Hanami
 
     # Missing session error
     #
-    # This error is raised when `session` or `flash` is accessed/set on request/response objects 
+    # This error is raised when `session` or `flash` is accessed/set on request/response objects
     # in actions which do not include `Hanami::Action::Session`.
     #
     # @since 2.0.0

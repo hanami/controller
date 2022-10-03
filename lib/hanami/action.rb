@@ -22,7 +22,7 @@ require_relative "action/mime"
 require_relative "action/rack/file"
 require_relative "action/request"
 require_relative "action/response"
-require_relative 'action/error'
+require_relative "action/error"
 
 module Hanami
   # An HTTP endpoint
@@ -332,7 +332,7 @@ module Hanami
           configuration: configuration,
           content_type: Mime.calculate_content_type_with_charset(configuration, request, accepted_mime_types),
           env: env,
-          headers: configuration.default_headers
+          headers: configuration.default_headers,
           sessions_enabled: sessions_enabled
         )
 

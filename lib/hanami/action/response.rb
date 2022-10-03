@@ -45,7 +45,9 @@ module Hanami
 
       # @since 2.0.0
       # @api private
-      def initialize(request:, action:, configuration:, content_type: nil, env: {}, headers: {}, view_options: nil, sessions_enabled: false) # rubocop:disable Metrics/ParameterLists
+      def initialize(request:, action:, configuration:, # rubocop:disable Metrics/ParameterLists
+                     content_type: nil, env: {}, headers: {}, view_options: nil,
+                     sessions_enabled: false)
         super([], 200, headers.dup)
         set_header(Action::CONTENT_TYPE, content_type)
 
@@ -190,7 +192,7 @@ module Hanami
         env.fetch(Action::REQUEST_ID) do
           # FIXME: raise a meaningful error, by inviting devs to include Hanami::Action::Session
           # raise "Can't find request ID"
-          raise Hanami::Action::MissingSessionError.new('request_id')
+          raise Hanami::Action::MissingSessionError.new("request_id")
         end
       end
 
