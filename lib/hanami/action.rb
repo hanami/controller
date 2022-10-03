@@ -2,7 +2,6 @@
 
 begin
   require "dry/core"
-  require "dry/configurable"
   require "dry/types"
   require "hanami/validations"
   require "hanami/action/validatable"
