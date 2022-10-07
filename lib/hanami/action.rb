@@ -1,12 +1,14 @@
 # frozen_string_literal: true
 
 begin
+  require "dry/core"
+  require "dry/types"
   require "hanami/validations"
   require "hanami/action/validatable"
 rescue LoadError # rubocop:disable Lint/SuppressedException
 end
 
-require "hanami/utils/class_attribute"
+require "dry/configurable"
 require "hanami/utils/callbacks"
 require "hanami/utils"
 require "hanami/utils/string"
@@ -14,9 +16,9 @@ require "hanami/utils/kernel"
 require "rack"
 require "rack/utils"
 
+require_relative "action/config"
 require_relative "action/constants"
 require_relative "action/base_params"
-require_relative "action/configuration"
 require_relative "action/halt"
 require_relative "action/mime"
 require_relative "action/rack/file"
@@ -36,7 +38,52 @@ module Hanami
   #       # ...
   #     end
   #   end
+  #
+  # @api public
   class Action
+    extend Dry::Configurable(config_class: Config)
+
+    # See {Config} for individual setting accessor API docs
+    setting :handled_exceptions, default: {}
+    setting :formats, default: Config::DEFAULT_FORMATS
+    setting :default_request_format, constructor: -> (format) {
+      Utils::Kernel.Symbol(format) unless format.nil?
+    }
+    setting :default_response_format, constructor: -> (format) {
+      Utils::Kernel.Symbol(format) unless format.nil?
+    }
+    setting :accepted_formats, default: []
+    setting :default_charset
+    setting :default_headers, default: {}, constructor: -> (headers) { headers.compact }
+    setting :cookies, default: {}, constructor: -> (cookie_options) {
+      # Call `to_h` here to permit `ApplicationConfiguration::Cookies` object to be
+      # provided when application actions are configured
+      cookie_options.to_h.compact
+    }
+    setting :root_directory, constructor: -> (dir) {
+      Pathname(File.expand_path(dir || Dir.pwd)).realpath
+    }
+    setting :public_directory, default: Config::DEFAULT_PUBLIC_DIRECTORY
+    setting :before_callbacks, default: Utils::Callbacks::Chain.new, cloneable: true
+    setting :after_callbacks, default: Utils::Callbacks::Chain.new, cloneable: true
+
+    # @!scope class
+
+    # @!method config
+    #   Returns the action's config. Use this to configure your action.
+    #
+    #   @example Access inside class body
+    #     class Show < Hanami::Action
+    #       config.default_response_format = :json
+    #     end
+    #
+    #   @return [Config]
+    #
+    #   @api public
+    #   @since 2.0.0
+
+    # @!scope instance
+
     # Override Ruby's hook for modules.
     # It includes basic Hanami::Action modules to the given class.
     #
@@ -49,31 +96,9 @@ module Hanami
 
       if subclass.superclass == Action
         subclass.class_eval do
-          include Utils::ClassAttribute
-
-          class_attribute :before_callbacks
-          self.before_callbacks = Utils::Callbacks::Chain.new
-
-          class_attribute :after_callbacks
-          self.after_callbacks = Utils::Callbacks::Chain.new
-
           include Validatable if defined?(Validatable)
         end
       end
-
-      subclass.instance_variable_set "@configuration", configuration.dup
-    end
-
-    # @since 2.0.0
-    # @api private
-    def self.configuration
-      @configuration ||= Configuration.new
-    end
-
-    class << self
-      # @since 2.0.0
-      # @api private
-      alias_method :config, :configuration
     end
 
     # Returns the class which defines the params
@@ -88,11 +113,6 @@ module Hanami
     # @since 0.7.0
     def self.params_class
       @params_class ||= BaseParams
-    end
-
-    # FIXME: make this thread-safe
-    def self.accepted_formats
-      @accepted_formats ||= []
     end
 
     # Placeholder implementation for params class method
@@ -167,7 +187,7 @@ module Hanami
     #   # 2. set the article
     #   # 3. `#handle`
     def self.append_before(...)
-      before_callbacks.append(...)
+      config.before_callbacks.append(...)
     end
 
     class << self
@@ -191,7 +211,7 @@ module Hanami
     #
     # @see Hanami::Action::Callbacks::ClassMethods#append_before
     def self.append_after(...)
-      after_callbacks.append(...)
+      config.after_callbacks.append(...)
     end
 
     class << self
@@ -215,7 +235,7 @@ module Hanami
     #
     # @see Hanami::Action::Callbacks::ClassMethods#prepend_after
     def self.prepend_before(...)
-      before_callbacks.prepend(...)
+      config.before_callbacks.prepend(...)
     end
 
     # Define a callback for an Action.
@@ -234,7 +254,7 @@ module Hanami
     #
     # @see Hanami::Action::Callbacks::ClassMethods#prepend_before
     def self.prepend_after(...)
-      after_callbacks.prepend(...)
+      config.after_callbacks.prepend(...)
     end
 
     # Restrict the access to the specified mime type symbols.
@@ -264,55 +284,17 @@ module Hanami
     #   # When called with "application/json" => 200
     #   # When called with "application/xml"  => 415
     def self.accept(*formats)
-      @accepted_formats = *formats
-      before :enforce_accepted_mime_types
+      config.accepted_formats = *formats
     end
 
     # Returns a new action
     #
-    # @overload new(**deps, ...)
-    #   @param deps [Hash] action dependencies
-    #
-    # @overload new(configuration:, **deps, ...)
-    #   @param configuration [Hanami::Action::Configuration] action configuration
-    #   @param deps [Hash] action dependencies
-    #
-    # @return [Hanami::Action] Action object
-    #
     # @since 2.0.0
-    def self.new(*args, configuration: self.configuration, **kwargs, &block)
-      allocate.tap do |obj|
-        obj.instance_variable_set(:@name, Name[name])
-        obj.instance_variable_set(:@configuration, configuration.dup.finalize!)
-        obj.instance_variable_set(:@accepted_mime_types, Mime.restrict_mime_types(configuration, accepted_formats))
-        obj.send(:initialize, *args, **kwargs, &block)
-        obj.freeze
-      end
+    # @api public
+    def initialize(config: self.class.config)
+      @config = config
+      freeze
     end
-
-    # @since 2.0.0
-    # @api private
-    module Name
-      # @since 2.0.0
-      # @api private
-      MODULE_SEPARATOR_TRANSFORMER = [:gsub, "::", "."].freeze
-
-      # @since 2.0.0
-      # @api private
-      def self.call(name)
-        Utils::String.transform(name, MODULE_SEPARATOR_TRANSFORMER, :underscore) unless name.nil?
-      end
-
-      class << self
-        # @since 2.0.0
-        # @api private
-        alias_method :[], :call
-      end
-    end
-
-    # @since 2.0.0
-    # @api private
-    attr_reader :name
 
     # Implements the Rack/Hanami::Action protocol
     #
@@ -327,12 +309,13 @@ module Hanami
         request  = build_request(env, params)
         response = build_response(
           request: request,
-          action: name,
-          configuration: configuration,
-          content_type: Mime.calculate_content_type_with_charset(configuration, request, accepted_mime_types),
+          config: config,
+          content_type: Mime.calculate_content_type_with_charset(config, request, config.accepted_mime_types),
           env: env,
-          headers: configuration.default_headers
+          headers: config.default_headers
         )
+
+        enforce_accepted_mime_types(request)
 
         _run_before_callbacks(request, response)
         handle(request, response)
@@ -342,12 +325,6 @@ module Hanami
       end
 
       finish(request, response, halted)
-    end
-
-    # @since 2.0.0
-    # @api public
-    def initialize(**deps)
-      @_deps = deps
     end
 
     protected
@@ -421,24 +398,20 @@ module Hanami
 
     # @since 2.0.0
     # @api private
-    attr_reader :configuration
+    attr_reader :config
 
     # @since 2.0.0
     # @api private
-    def accepted_mime_types
-      @accepted_mime_types || configuration.mime_types
-    end
+    def enforce_accepted_mime_types(request)
+      return unless config.accepted_formats.any?
 
-    # @since 2.0.0
-    # @api private
-    def enforce_accepted_mime_types(req, *)
-      Mime.accepted_mime_type?(req, accepted_mime_types, configuration) or halt 415
+      Mime.accepted_mime_type?(request, config.accepted_mime_types, config) or halt 415
     end
 
     # @since 2.0.0
     # @api private
     def exception_handler(exception)
-      configuration.handled_exceptions.each do |exception_class, handler|
+      config.handled_exceptions.each do |exception_class, handler|
         return handler if exception.is_a?(exception_class)
       end
 
@@ -507,14 +480,14 @@ module Hanami
     # @since 0.1.0
     # @api private
     def _run_before_callbacks(*args)
-      self.class.before_callbacks.run(self, *args)
+      config.before_callbacks.run(self, *args)
       nil
     end
 
     # @since 0.1.0
     # @api private
     def _run_after_callbacks(*args)
-      self.class.after_callbacks.run(self, *args)
+      config.after_callbacks.run(self, *args)
       nil
     end
 
@@ -589,9 +562,9 @@ module Hanami
       case value
       when Symbol
         format = Utils::Kernel.Symbol(value)
-        [format, Action::Mime.format_to_mime_type(format, configuration)]
+        [format, Action::Mime.format_to_mime_type(format, config)]
       when String
-        [Action::Mime.detect_format(value, configuration), value]
+        [Action::Mime.detect_format(value, config), value]
       else
         raise Hanami::Controller::UnknownFormatError.new(value)
       end
@@ -614,7 +587,7 @@ module Hanami
       _empty_headers(res) if _requires_empty_headers?(res)
       _empty_body(res) if res.head?
 
-      res.set_format(Action::Mime.detect_format(res.content_type, configuration))
+      res.set_format(Action::Mime.detect_format(res.content_type, config))
       res[:params] = req.params
       res[:format] = res.format
       res

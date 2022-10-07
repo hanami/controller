@@ -5,8 +5,7 @@ RSpec.describe Hanami::Action::Response do
     subject(:response) {
       described_class.new(
         request: request,
-        action: "action",
-        configuration: Hanami::Action::Configuration.new, env: env,
+        config: Hanami::Action.config.dup, env: env,
         view_options: view_options
       )
     }
@@ -78,8 +77,7 @@ RSpec.describe Hanami::Action::Response do
     subject {
       described_class.new(
         request: double(:request),
-        action: "action",
-        configuration: Hanami::Action::Configuration.new, env: env
+        config: Hanami::Action.config.dup, env: env
       )
     }
     let(:env) { {"REQUEST_METHOD" => "GET"} }
@@ -138,8 +136,7 @@ RSpec.describe Hanami::Action::Response do
     subject {
       described_class.new(
         request: double(:request),
-        action: "action",
-        configuration: Hanami::Action::Configuration.new, env: env
+        config: Hanami::Action.config.dup, env: env
       )
     }
     let(:env) { {"REQUEST_METHOD" => "GET"} }

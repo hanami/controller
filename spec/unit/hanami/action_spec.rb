@@ -6,72 +6,9 @@ RSpec.describe Hanami::Action do
   let(:action_class) { Class.new(described_class) }
   subject(:action) { action_class.new }
 
-  describe ".configuration" do
-    subject(:configuration) { action_class.configuration }
-
-    it "returns an Action::Configuration object" do
-      is_expected.to be_an_instance_of(Hanami::Action::Configuration)
-    end
-
-    it "is not frozen" do
-      is_expected.not_to be_frozen
-    end
-
-    context "when inherited" do
-      let(:superclass) { action_class }
-      let(:subclass) { Class.new(action_class) }
-
-      let(:superclass_configuration) { superclass.configuration }
-      let(:subclass_configuration) { subclass.configuration }
-
-      before do
-        superclass_configuration.formats = {"text/html" => :html}
-      end
-
-      it "inherits the configuration from the superclass" do
-        expect(subclass_configuration.formats).to eq("text/html" => :html)
-      end
-
-      it "can be changed on the subclass without affecting the superclass" do
-        subclass_configuration.formats = {"custom/format" => :custom}
-
-        expect(subclass_configuration.formats).to eq("custom/format" => :custom)
-        expect(superclass_configuration.formats).to eq("text/html" => :html)
-      end
-    end
-  end
-
-  describe ".config" do
-    subject(:config) { action_class.config }
-
-    it "is an alias for the configuration" do
-      is_expected.to be action_class.configuration
-    end
-  end
-
   describe ".new" do
-    let(:action_class) {
-      Class.new(Hanami::Action) do
-        attr_reader :args, :kwargs, :block
-
-        def initialize(*args, **kwargs, &block)
-          @args = args
-          @kwargs = kwargs
-          @block = block
-        end
-      end
-    }
-
     it "instantiates a frozen action" do
       expect(action).to be_frozen
-    end
-
-    it "forwards arguments to `#initialize`" do
-      action = action_class.new(1, 2, 3, a: 4, b: 5) { 6 }
-
-      expect(action.args).to eq([1, 2, 3])
-      expect(action.kwargs).to eq({a: 4, b: 5})
-      expect(action.block.call).to eq(6)
     end
   end
 
@@ -139,18 +76,6 @@ RSpec.describe Hanami::Action do
         expect(response.status).to eq(200)
         expect(response.body).to   eq([])
       end
-    end
-  end
-
-  describe "#name" do
-    it "returns action name" do
-      subject = FullStack::Controllers::Home::Index.new
-      expect(subject.name).to eq("full_stack.controllers.home.index")
-    end
-
-    it "returns nil for anonymous classes" do
-      subject = Class.new(Hanami::Action).new
-      expect(subject.name).to be(nil)
     end
   end
 
