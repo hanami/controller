@@ -71,11 +71,14 @@ module Hanami
 
     # @!method config
     #   Returns the action's config. Use this to configure your action.
+    #
     #   @example Access inside class body
     #     class Show < Hanami::Action
     #       config.default_response_format = :json
     #     end
+    #
     #   @return [Config]
+    #
     #   @api public
     #   @since 2.0.0
 
