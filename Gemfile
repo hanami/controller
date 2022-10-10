@@ -4,8 +4,6 @@ source "http://rubygems.org"
 
 gemspec
 
-gem "dry-configurable", github: "dry-rb/dry-configurable"
-
 unless ENV["CI"]
   gem "byebug", require: false, platforms: :mri
   gem "yard",   require: false
