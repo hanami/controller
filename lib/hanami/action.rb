@@ -284,7 +284,7 @@ module Hanami
     #   # When called with "application/json" => 200
     #   # When called with "application/xml"  => 415
     def self.accept(*formats)
-      config.accepted_formats = *formats
+      config.accepted_formats = formats
     end
 
     # Returns a new action
