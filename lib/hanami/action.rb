@@ -266,7 +266,7 @@ module Hanami
     #
     # @since 0.1.0
     #
-    # @see Hanami::Action::Configuration#format
+    # @see Config#format
     #
     # @example
     #   require "hanami/controller"
