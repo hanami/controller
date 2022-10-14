@@ -49,7 +49,7 @@ module Errors
 
   # Handled
   class ActionHandled < Hanami::Action
-    config.handle_exception HandledException => 400
+    handle_exception HandledException => 400
 
     def handle(*)
       raise HandledException
@@ -57,7 +57,7 @@ module Errors
   end
 
   class ActionHandledSubclass < Hanami::Action
-    config.handle_exception HandledException => 400
+    handle_exception HandledException => 400
 
     def handle(*)
       raise HandledExceptionSubclass
@@ -65,7 +65,7 @@ module Errors
   end
 
   class ConfigurationHandled < Hanami::Action
-    config.handle_exception ConfigurationHandledException => 500
+    handle_exception ConfigurationHandledException => 500
 
     def handle(*)
       raise ConfigurationHandledException
@@ -73,7 +73,7 @@ module Errors
   end
 
   class ConfigurationHandledSubclass < Hanami::Action
-    config.handle_exception ConfigurationHandledException => 500
+    handle_exception ConfigurationHandledException => 500
 
     def handle(*)
       raise ConfigurationHandledExceptionSubclass
@@ -137,12 +137,12 @@ RSpec.describe 'Reference exception in "rack.errors"' do
       expect(response.errors).to be_empty
     end
 
-    xit "doesn't dump exception in rack.errors if it's handled by the configuration" do
+    it "doesn't dump exception in rack.errors if it's handled by the configuration" do
       response = app.get("/configuration_handled")
       expect(response.errors).to be_empty
     end
 
-    xit "doesn't dump exception in rack.errors if its superclass is handled by the configuration" do
+    it "doesn't dump exception in rack.errors if its superclass is handled by the configuration" do
       response = app.get("/configuration_handled_subclass")
       expect(response.errors).to be_empty
     end

@@ -287,6 +287,14 @@ module Hanami
       config.accepted_formats = formats
     end
 
+    # @see Config#handle_exception
+    #
+    # @since 2.0.0
+    # @api public
+    def self.handle_exception(...)
+      config.handle_exception(...)
+    end
+
     # Returns a new action
     #
     # @since 2.0.0
