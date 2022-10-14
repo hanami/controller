@@ -99,6 +99,10 @@ module Hanami
           include Validatable if defined?(Validatable)
         end
       end
+
+      if instance_variable_defined?(:@params_class)
+        subclass.instance_variable_set(:@params_class, @params_class)
+      end
     end
 
     # Returns the class which defines the params
@@ -112,7 +116,7 @@ module Hanami
     # @api private
     # @since 0.7.0
     def self.params_class
-      @params_class ||= BaseParams
+      @params_class || BaseParams
     end
 
     # Placeholder implementation for params class method
