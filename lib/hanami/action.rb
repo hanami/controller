@@ -99,6 +99,10 @@ module Hanami
           include Validatable if defined?(Validatable)
         end
       end
+
+      if instance_variable_defined?(:@params_class)
+        subclass.instance_variable_set(:@params_class, @params_class)
+      end
     end
 
     # Returns the class which defines the params
@@ -112,7 +116,7 @@ module Hanami
     # @api private
     # @since 0.7.0
     def self.params_class
-      @params_class ||= BaseParams
+      @params_class || BaseParams
     end
 
     # Placeholder implementation for params class method
@@ -266,7 +270,7 @@ module Hanami
     #
     # @since 0.1.0
     #
-    # @see Hanami::Action::Configuration#format
+    # @see Config#format
     #
     # @example
     #   require "hanami/controller"
@@ -284,7 +288,15 @@ module Hanami
     #   # When called with "application/json" => 200
     #   # When called with "application/xml"  => 415
     def self.accept(*formats)
-      config.accepted_formats = *formats
+      config.accepted_formats = formats
+    end
+
+    # @see Config#handle_exception
+    #
+    # @since 2.0.0
+    # @api public
+    def self.handle_exception(...)
+      config.handle_exception(...)
     end
 
     # Returns a new action

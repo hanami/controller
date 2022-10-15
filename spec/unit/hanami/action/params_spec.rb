@@ -498,4 +498,13 @@ RSpec.describe Hanami::Action::Params do
       expect { params.errors.add(:book, :code, "is invalid") }.to raise_error(ArgumentError, %(Can't add :book, :code, "is invalid" to {:book=>["is missing"]}))
     end
   end
+
+  describe "inheritance" do
+    let(:action) { Class.new(WhitelistedParamsAction).new }
+
+    it "uses the params defined in the parent class" do
+      response = action.call(id: 23, unknown: 4, article: {foo: "bar", tags: [:cool]})
+      expect(response.body).to eq([%({:id=>23, :article=>{:tags=>[:cool]}})])
+    end
+  end
 end
