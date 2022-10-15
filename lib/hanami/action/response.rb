@@ -27,7 +27,7 @@ module Hanami
 
       # @since 2.0.0
       # @api private
-      attr_reader :request, :exposures, :format, :env, :view_options, :sessions_enabled
+      attr_reader :request, :exposures, :format, :env, :view_options
 
       # @since 2.0.0
       # @api private
@@ -103,7 +103,7 @@ module Hanami
       # @since 2.0.0
       # @api public
       def session
-        unless sessions_enabled
+        unless @sessions_enabled
           raise Hanami::Action::MissingSessionError.new("Hanami::Action::Response#session")
         end
 
@@ -119,7 +119,7 @@ module Hanami
       # @since 2.0.0
       # @api public
       def flash
-        unless sessions_enabled
+        unless @sessions_enabled
           raise Hanami::Action::MissingSessionError.new("Hanami::Action::Response#flash")
         end
 
