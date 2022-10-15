@@ -13,14 +13,14 @@ module Hanami
       def self.included(base)
         base.class_eval do
           before { |req, _| req.id }
-
-          def sessions_enabled
-            true
-          end
         end
       end
 
       private
+
+      def sessions_enabled
+        true
+      end
 
       # Finalize the response
       #
