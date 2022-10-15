@@ -499,7 +499,7 @@ RSpec.describe Hanami::Action::Params do
     end
   end
 
-  describe "inhertiance" do
+  describe "inheritance" do
     let(:action) { Class.new(WhitelistedParamsAction).new }
 
     it "uses the params defined in the parent class" do
