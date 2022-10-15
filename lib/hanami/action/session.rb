@@ -18,7 +18,7 @@ module Hanami
 
       private
 
-      def sessions_enabled
+      def sessions_enabled?
         true
       end
 
