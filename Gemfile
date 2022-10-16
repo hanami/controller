@@ -22,7 +22,7 @@ group :test do
 
   gem "hanami-cli",  github: "hanami/cli", branch: "main"
   gem "hanami-view", github: "hanami/view", branch: "main"
-  gem "hanami",      github: "hanami/hanami", branch: "main"
+  gem "hanami",      github: "hanami/hanami", branch: "zeitwerkified-dry-system"
   gem "slim"
 end
 
