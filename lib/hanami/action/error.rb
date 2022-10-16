@@ -19,7 +19,22 @@ module Hanami
     # @see Hanami::Action::Response#flash
     class MissingSessionError < Error
       def initialize(session_method)
-        super("To use `#{session_method}`, add `include Hanami::Action::Session`.")
+        super(<<~TEXT)
+          Sessions are not enabled. To use `#{session_method}`:
+
+          Configure sessions in your Hanami app, e.g.
+
+            module MyApp
+              class App < Hanami::App
+                # See Rack::Session::Cookie for options
+                config.sessions = :cookie, {**cookie_session_options}
+              end
+            end
+
+          Or include session support directly in your action class:
+
+            include Hanami::Action::Session
+        TEXT
       end
     end
   end

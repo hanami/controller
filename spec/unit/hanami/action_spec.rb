@@ -83,7 +83,7 @@ RSpec.describe Hanami::Action do
         expected = Hanami::Action::MissingSessionError
         expect { MissingResponseSessionAction.new.call({}) }.to raise_error(
           expected,
-          "To use `Hanami::Action::Response#session`, add `include Hanami::Action::Session`."
+          /Hanami::Action::Response#session/
         )
       end
     end
@@ -93,7 +93,7 @@ RSpec.describe Hanami::Action do
         expected = Hanami::Action::MissingSessionError
         expect { MissingResponseFlashAction.new.call({}) }.to raise_error(
           expected,
-          "To use `Hanami::Action::Response#flash`, add `include Hanami::Action::Session`."
+          /Hanami::Action::Response#flash/
         )
       end
     end
@@ -103,7 +103,7 @@ RSpec.describe Hanami::Action do
         expected = Hanami::Action::MissingSessionError
         expect { MissingRequestSessionAction.new.call({}) }.to raise_error(
           expected,
-          "To use `Hanami::Action::Request#session`, add `include Hanami::Action::Session`."
+          /Hanami::Action::Request#session/
         )
       end
     end

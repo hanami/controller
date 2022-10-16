@@ -57,7 +57,7 @@ RSpec.describe "HTTP sessions" do
   context "when sessions not enabled" do
     it "raises Hanami::Action::MissingSessionError" do
       expected = Hanami::Action::MissingSessionError
-      expect { get "/disabled" }.to raise_error(expected, "To use `Hanami::Action::Response#session`, add `include Hanami::Action::Session`.")
+      expect { get "/disabled" }.to raise_error(expected, /Hanami::Action::Response#session/)
     end
   end
 end
