@@ -41,4 +41,13 @@ RSpec.describe "Flash application" do
       expect(last_response.body).to match(/flash_map: \[\[:hello, "world"\]\]/)
     end
   end
+
+  context "when sessions not enabled" do
+    it "raises Hanami::Action::MissingSessionError" do
+      expect { get "/disabled" }.to raise_error(
+        Hanami::Action::MissingSessionError,
+        /Hanami::Action::Response#flash/
+      )
+    end
+  end
 end

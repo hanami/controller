@@ -24,6 +24,7 @@ require_relative "action/mime"
 require_relative "action/rack/file"
 require_relative "action/request"
 require_relative "action/response"
+require_relative "action/error"
 
 module Hanami
   # An HTTP endpoint
@@ -318,13 +319,14 @@ module Hanami
 
       halted = catch :halt do
         params   = self.class.params_class.new(env)
-        request  = build_request(env, params)
+        request  = build_request(env: env, params: params, sessions_enabled: sessions_enabled?)
         response = build_response(
           request: request,
           config: config,
           content_type: Mime.calculate_content_type_with_charset(config, request, config.accepted_mime_types),
           env: env,
-          headers: config.default_headers
+          headers: config.default_headers,
+          sessions_enabled: sessions_enabled?
         )
 
         enforce_accepted_mime_types(request)
@@ -430,10 +432,17 @@ module Hanami
       nil
     end
 
+    # @see Session#sessions_enabled?
     # @since 2.0.0
     # @api private
-    def build_request(env, params)
-      Request.new(env, params)
+    def sessions_enabled?
+      false
+    end
+
+    # @since 2.0.0
+    # @api private
+    def build_request(**options)
+      Request.new(**options)
     end
 
     # @since 2.0.0

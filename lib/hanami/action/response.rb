@@ -45,7 +45,7 @@ module Hanami
 
       # @since 2.0.0
       # @api private
-      def initialize(request:, config:, content_type: nil, env: {}, headers: {}, view_options: nil) # rubocop:disable Metrics/ParameterLists
+      def initialize(request:, config:, content_type: nil, env: {}, headers: {}, view_options: nil, sessions_enabled: false) # rubocop:disable Layout/LineLength, Metrics/ParameterLists
         super([], 200, headers.dup)
         set_header(Action::CONTENT_TYPE, content_type)
 
@@ -56,6 +56,7 @@ module Hanami
         @env = env
         @view_options = view_options || DEFAULT_VIEW_OPTIONS
 
+        @sessions_enabled = sessions_enabled
         @sending_file = false
       end
 
@@ -102,6 +103,10 @@ module Hanami
       # @since 2.0.0
       # @api public
       def session
+        unless @sessions_enabled
+          raise Hanami::Action::MissingSessionError.new("Hanami::Action::Response#session")
+        end
+
         env[Action::RACK_SESSION] ||= {}
       end
 
@@ -114,6 +119,10 @@ module Hanami
       # @since 2.0.0
       # @api public
       def flash
+        unless @sessions_enabled
+          raise Hanami::Action::MissingSessionError.new("Hanami::Action::Response#flash")
+        end
+
         @flash ||= Flash.new(session[Flash::KEY])
       end
 
@@ -179,7 +188,8 @@ module Hanami
       def request_id
         env.fetch(Action::REQUEST_ID) do
           # FIXME: raise a meaningful error, by inviting devs to include Hanami::Action::Session
-          raise "Can't find request ID"
+          # raise "Can't find request ID"
+          raise Hanami::Action::MissingSessionError.new("request_id")
         end
       end
 

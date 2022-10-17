@@ -18,6 +18,10 @@ module Hanami
 
       private
 
+      def sessions_enabled?
+        true
+      end
+
       # Finalize the response
       #
       # @return [void]
