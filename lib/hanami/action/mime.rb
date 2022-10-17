@@ -182,7 +182,7 @@ module Hanami
                     default_content_type(configuration) ||
                     Action::DEFAULT_CONTENT_TYPE
 
-        !accepted_mime_types.find { |mt| ::Rack::Mime.match?(mt, mime_type) }.nil?
+        accepted_mime_types.any? { |mt| ::Rack::Mime.match?(mt, mime_type) }
       end
 
       # Use for setting the content_type and charset if the response
