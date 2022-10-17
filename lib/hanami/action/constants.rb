@@ -114,13 +114,13 @@ module Hanami
     #
     # @since 0.1.0
     # @api private
-    HTTP_ACCEPT          = "HTTP_ACCEPT"
+    HTTP_ACCEPT = "HTTP_ACCEPT"
 
     # The header key to set the mime type of the response
     #
     # @since 0.1.0
     # @api private
-    CONTENT_TYPE         = ::Rack::CONTENT_TYPE
+    CONTENT_TYPE = ::Rack::CONTENT_TYPE
 
     # The default mime type for an incoming HTTP request
     #
@@ -152,7 +152,7 @@ module Hanami
     #
     # @since 2.0.0
     # @api private
-    ETAG          = ::Rack::ETAG
+    ETAG = ::Rack::ETAG
 
     # @since 2.0.0
     # @api private
@@ -221,7 +221,7 @@ module Hanami
     #
     # @since 2.0.0
     # @api private
-    COOKIE_HASH_KEY   = ::Rack::RACK_REQUEST_COOKIE_HASH
+    COOKIE_HASH_KEY = ::Rack::RACK_REQUEST_COOKIE_HASH
 
     # The key used by Rack to set the cookies as a String in the env
     #
@@ -233,7 +233,7 @@ module Hanami
     #
     # @since 2.0.0
     # @api private
-    RACK_INPUT    = ::Rack::RACK_INPUT
+    RACK_INPUT = ::Rack::RACK_INPUT
 
     # The key that returns router params from the Rack env
     # This is a builtin integration for Hanami::Router
@@ -250,6 +250,6 @@ module Hanami
 
     # @since 2.0.0
     # @api private
-    DEFAULT_CHARSET      = "utf-8"
+    DEFAULT_CHARSET = "utf-8"
   end
 end
