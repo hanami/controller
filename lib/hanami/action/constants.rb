@@ -251,11 +251,5 @@ module Hanami
     # @since 2.0.0
     # @api private
     DEFAULT_CHARSET      = "utf-8"
-
-    # The key that returns content mime type from the Rack env
-    #
-    # @since 2.0.0
-    # @api private
-    HTTP_CONTENT_TYPE    = "CONTENT_TYPE"
   end
 end
