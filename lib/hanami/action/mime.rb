@@ -179,6 +179,7 @@ module Hanami
       # @api private
       def self.accepted_mime_type?(request, accepted_mime_types, configuration)
         mime_type = request.content_type ||
+                    (request.accept if request.accept_header?) ||
                     default_content_type(configuration) ||
                     Action::DEFAULT_CONTENT_TYPE
 
