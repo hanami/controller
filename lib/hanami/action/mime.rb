@@ -84,13 +84,13 @@ module Hanami
       #
       # @since 2.0.0
       # @api private
-      def self.content_type(configuration, request, accepted_mime_types)
+      def self.content_type(config, request, accepted_mime_types)
         if request.accept_header?
           type = best_q_match(request.accept, accepted_mime_types)
           return type if type
         end
 
-        default_response_type(configuration) || default_content_type(configuration) || Action::DEFAULT_CONTENT_TYPE
+        default_response_type(config) || default_content_type(config) || Action::DEFAULT_CONTENT_TYPE
       end
 
       # @since 2.0.0
@@ -101,22 +101,22 @@ module Hanami
 
       # @since 2.0.0
       # @api private
-      def self.default_response_type(configuration)
-        format_to_mime_type(configuration.default_response_format, configuration)
+      def self.default_response_type(config)
+        format_to_mime_type(config.default_response_format, config)
       end
 
       # @since 2.0.0
       # @api private
-      def self.default_content_type(configuration)
-        format_to_mime_type(configuration.default_request_format, configuration)
+      def self.default_content_type(config)
+        format_to_mime_type(config.default_request_format, config)
       end
 
       # @since 2.0.0
       # @api private
-      def self.format_to_mime_type(format, configuration)
+      def self.format_to_mime_type(format, config)
         return if format.nil?
 
-        configuration.mime_type_for(format) ||
+        config.mime_type_for(format) ||
           TYPES.fetch(format) { raise Hanami::Controller::UnknownFormatError.new(format) }
       end
 
@@ -125,7 +125,7 @@ module Hanami
       #
       # @see Hanami::Action::Mime#finish
       # @example
-      #   detect_format("text/html; charset=utf-8", configuration)  #=> :html
+      #   detect_format("text/html; charset=utf-8", config)  #=> :html
       #
       # @return [Symbol, nil]
       #
@@ -232,9 +232,9 @@ module Hanami
       #
       # @since 2.0.0
       # @api private
-      def self.calculate_content_type_with_charset(configuration, request, accepted_mime_types)
-        charset      = self.charset(configuration.default_charset)
-        content_type = self.content_type(configuration, request, accepted_mime_types)
+      def self.calculate_content_type_with_charset(config, request, accepted_mime_types)
+        charset      = self.charset(config.default_charset)
+        content_type = self.content_type(config, request, accepted_mime_types)
         content_type_with_charset(content_type, charset)
       end
 
