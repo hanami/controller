@@ -64,19 +64,19 @@ RSpec.describe "MIME Type" do
 
     context "when ACCEPT and Content-Type are sent and we use the accept macro" do
       it 'sets "Content-Type" header according to exact value' do
-        response = app.get("/custom_from_accept", "HTTP_ACCEPT" => "application/custom", "CONTENT_TYPE" => "application/custom")
+        response = app.get("/custom_from_accept", "HTTP_ACCEPT" => "application/custom")
         expect(response.headers["Content-Type"]).to eq("application/custom; charset=utf-8")
         expect(response.body).to                    eq("custom")
       end
 
       it 'sets "Content-Type" header according to weighted value' do
-        response = app.get("/custom_from_accept", "HTTP_ACCEPT" => "application/custom;q=0.9,application/json;q=0.5", "CONTENT_TYPE" => "application/custom")
+        response = app.get("/custom_from_accept", "HTTP_ACCEPT" => "application/custom;q=0.9,application/json;q=0.5")
         expect(response.headers["Content-Type"]).to eq("application/custom; charset=utf-8")
         expect(response.body).to                    eq("custom")
       end
 
       it 'sets "Content-Type" header according to weighted, unordered value' do
-        response = app.get("/custom_from_accept", "HTTP_ACCEPT" => "application/custom;q=0.1, application/json;q=0.5", "CONTENT_TYPE" => "application/json")
+        response = app.get("/custom_from_accept", "HTTP_ACCEPT" => "application/custom;q=0.1, application/json;q=0.5")
         expect(response.headers["Content-Type"]).to eq("application/json; charset=utf-8")
         expect(response.body).to                    eq("json")
       end
@@ -84,13 +84,13 @@ RSpec.describe "MIME Type" do
 
     context "when ACCEPT and Content-Type are send and there are no restriction using accept macro" do
       it 'sets "Content-Type" header according to exact and weighted value' do
-        response = app.get("/", "HTTP_ACCEPT" => "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", "CONTENT_TYPE" => "application/xml")
+        response = app.get("/", "HTTP_ACCEPT" => "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
         expect(response.headers["Content-Type"]).to eq("text/html; charset=utf-8")
         expect(response.body).to                    eq("html")
       end
 
       it 'sets "Content-Type" header according to quality scale value' do
-        response = app.get("/", "HTTP_ACCEPT" => "application/json;q=0.6,application/xml;q=0.9,*/*;q=0.8", "CONTENT_TYPE" => "application/xml")
+        response = app.get("/", "HTTP_ACCEPT" => "application/json;q=0.6,application/xml;q=0.9,*/*;q=0.8")
         expect(response.headers["Content-Type"]).to eq("application/xml; charset=utf-8")
         expect(response.body).to                    eq("xml")
       end
