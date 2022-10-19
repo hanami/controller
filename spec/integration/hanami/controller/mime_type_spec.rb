@@ -43,9 +43,9 @@ RSpec.describe "MIME Type" do
     end
 
     context "when no ACCEPT or Content-Type are sent but there is a restriction using the accept macro" do
-      it "sets the status to 415" do
+      it "accepts the request and sets the status to 200" do
         response = app.get("/custom_from_accept")
-        expect(response.status).to eq 415 # FIXME: This should either be a 200 or a 406
+        expect(response.status).to eq 200
       end
     end
 
@@ -118,7 +118,7 @@ RSpec.describe "MIME Type" do
 
       it "does not accept an unmatched format" do
         response = app.get("/strict", "HTTP_ACCEPT" => "application/xml")
-        expect(response.status).to be(415)
+        expect(response.status).to be(406)
       end
     end
   end
