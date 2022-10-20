@@ -184,11 +184,8 @@ module Hanami
       def self.enforce_accept(request, config)
         return unless request.accept_header?
 
-        accept_mime_types = ::Rack::Utils.q_values(request.accept).map(&:first)
-
-        accept_mime_types.each do |mime_type|
-          return if accepted_mime_type?(mime_type, config) # rubocop:disable Lint/NonLocalExitFromIterator
-        end
+        accept_types = ::Rack::Utils.q_values(request.accept).map(&:first)
+        return if accept_types.any? { |mime_type| accepted_mime_type?(mime_type, config) }
 
         yield
       end
