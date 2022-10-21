@@ -230,7 +230,7 @@ module Hanami
       # @since 2.0.0
       # @api private
       def self.calculate_content_type_with_charset(config, request, accepted_mime_types)
-        charset      = self.charset(config.default_charset)
+        charset = self.charset(config.default_charset)
         content_type = self.content_type(config, request, accepted_mime_types)
         content_type_with_charset(content_type, charset)
       end
