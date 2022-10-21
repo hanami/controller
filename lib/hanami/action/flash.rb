@@ -176,7 +176,6 @@ module Hanami
       # @since 2.0.0
       # @api public
       def freeze
-        # TODO: deep freeze hashes
         @flash.freeze
         @next.freeze
 

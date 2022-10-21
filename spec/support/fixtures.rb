@@ -866,14 +866,6 @@ module Sessions
       res.session[:user_id] = 23
     end
   end
-
-  class ModifyingRequestSession < Hanami::Action
-    include Hanami::Action::Session
-
-    def handle(req, *)
-      req.session[:user_id] = 21
-    end
-  end
 end
 
 class StandaloneSession < Hanami::Action

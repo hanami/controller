@@ -13,7 +13,6 @@ RSpec.describe "HTTP sessions" do
       post "/login", to: Sessions::Create.new
       delete "/logout", to: Sessions::Destroy.new
       get "/disabled", to: Sessions::Disabled.new
-      get "/modifying", to: Sessions::ModifyingRequestSession.new
     end
   end
 
@@ -41,12 +40,6 @@ RSpec.describe "HTTP sessions" do
 
     expect(response.status).to be(200)
     expect(response.body).to   eq("User ID from session: 23")
-  end
-
-  it "raises when frozen request session is modified" do
-    post "/login"
-
-    expect { get "/modifying" }.to raise_error(FrozenError)
   end
 
   it "logs out" do
