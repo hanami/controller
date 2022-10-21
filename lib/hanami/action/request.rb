@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
-require "rack/utils"
+require "hanami/action/flash"
 require "rack/mime"
 require "rack/request"
+require "rack/utils"
 require "securerandom"
 
 module Hanami
@@ -53,7 +54,7 @@ module Hanami
           raise Hanami::Action::MissingSessionError.new("Hanami::Action::Request#flash")
         end
 
-        @flash ||= Flash.new(session[FLASH_SESSION_KEY]).freeze
+        @flash ||= Flash.new(session[Flash::KEY])
       end
 
       # @since 0.1.0
