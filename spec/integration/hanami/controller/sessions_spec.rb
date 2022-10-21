@@ -9,11 +9,11 @@ RSpec.describe "HTTP sessions" do
 
   let(:router) do
     Hanami::Router.new do
-      get    "/",       to: Dashboard::Index.new
-      post   "/login",  to: Sessions::Create.new
+      get "/", to: Dashboard::Index.new
+      post "/login", to: Sessions::Create.new
       delete "/logout", to: Sessions::Destroy.new
-      get    "/disabled", to: Sessions::Disabled.new
-      get    '/modifying', to: Sessions::ModifyingRequestSession.new
+      get "/disabled", to: Sessions::Disabled.new
+      get "/modifying", to: Sessions::ModifyingRequestSession.new
     end
   end
 
