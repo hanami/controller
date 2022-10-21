@@ -55,7 +55,7 @@ RSpec.describe "Hanami::Router integration" do
       response = app.post("/identity", params: {identity: {avatar: {image: "jodosha.png"}}})
 
       expect(response.status).to be(200)
-      expect(response.body).to   eq(%({:identity=>{:avatar=>{:image=>\"jodosha.png\"}}}))
+      expect(response.body).to   eq(%({:identity=>{:avatar=>{:image=>"jodosha.png"}}}))
     end
 
     it "calls GET edit" do
@@ -69,7 +69,7 @@ RSpec.describe "Hanami::Router integration" do
       response = app.request("PATCH", "/identity", params: {identity: {avatar: {image: "jodosha-2x.png"}}})
 
       expect(response.status).to be(200)
-      expect(response.body).to   eq(%({:identity=>{:avatar=>{:image=>\"jodosha-2x.png\"}}}))
+      expect(response.body).to   eq(%({:identity=>{:avatar=>{:image=>"jodosha-2x.png"}}}))
     end
 
     it "calls DELETE destroy" do
