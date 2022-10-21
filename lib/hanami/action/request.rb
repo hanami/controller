@@ -49,7 +49,7 @@ module Hanami
       end
 
       def flash
-        unless sessions_enabled
+        unless @sessions_enabled
           raise Hanami::Action::MissingSessionError.new("Hanami::Action::Request#flash")
         end
 
