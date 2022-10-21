@@ -26,7 +26,7 @@ RSpec.describe "Flash application" do
   end
 
   it "allows to access kept data on request object" do
-    post "/", {}, { "hanami.session_object" => "request" }
+    post "/", {}, {"hanami.session_object" => "request"}
     follow_redirect!
 
     expect(last_response.body).to match(/world/)

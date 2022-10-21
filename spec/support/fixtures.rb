@@ -1766,12 +1766,10 @@ module Flash
 
           if req.env["REQUEST_METHOD"] == "GET"
             res.redirect_to "/books"
+          elsif req.env["hanami.session_object"] == "request"
+            res.redirect_to "/print-req"
           else
-            if req.env["hanami.session_object"] == "request"
-              res.redirect_to "/print-req"
-            else
-              res.redirect_to "/print"
-            end
+            res.redirect_to "/print"
           end
         end
       end
