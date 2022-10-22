@@ -319,8 +319,12 @@ module Hanami
 
       halted = catch :halt do
         params   = self.class.params_class.new(env)
-        request  = build_request(env: env, params: params, sessions_enabled: sessions_enabled?)
-        response = build_response(
+        request  = Request.new(
+          env: env,
+          params: params,
+          sessions_enabled: sessions_enabled?
+        )
+        response = Response.new(
           request: request,
           config: config,
           content_type: Mime.calculate_content_type_with_charset(config, request, config.accepted_mime_types),
@@ -438,18 +442,6 @@ module Hanami
     # @api private
     def sessions_enabled?
       false
-    end
-
-    # @since 2.0.0
-    # @api private
-    def build_request(**options)
-      Request.new(**options)
-    end
-
-    # @since 2.0.0
-    # @api private
-    def build_response(**options)
-      Response.new(**options)
     end
 
     # @since 0.2.0
