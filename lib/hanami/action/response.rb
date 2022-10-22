@@ -183,16 +183,6 @@ module Hanami
       end
 
       # @since 2.0.0
-      # @api private
-      def request_id
-        env.fetch(Action::REQUEST_ID) do
-          # FIXME: raise a meaningful error, by inviting devs to include Hanami::Action::Session
-          # raise "Can't find request ID"
-          raise Hanami::Action::MissingSessionError.new("request_id")
-        end
-      end
-
-      # @since 2.0.0
       # @api public
       def set_format(value) # rubocop:disable Naming/AccessorMethodName
         @format = value
