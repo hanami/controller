@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Hanami::Action::Response do
+RSpec.describe Hanami::Action::Response, "view rendering" do
   describe "#render" do
     subject(:response) {
       described_class.new(

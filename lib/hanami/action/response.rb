@@ -3,7 +3,6 @@
 require "rack"
 require "rack/response"
 require "hanami/utils/kernel"
-require "hanami/action/flash"
 require "hanami/action/halt"
 require "hanami/action/cookie_jar"
 require "hanami/action/cache/cache_control"
@@ -107,7 +106,7 @@ module Hanami
           raise Hanami::Action::MissingSessionError.new("Hanami::Action::Response#session")
         end
 
-        env[Action::RACK_SESSION] ||= {}
+        request.session
       end
 
       # @since 2.0.0
@@ -123,7 +122,7 @@ module Hanami
           raise Hanami::Action::MissingSessionError.new("Hanami::Action::Response#flash")
         end
 
-        @flash ||= Flash.new(session[Flash::KEY])
+        request.flash
       end
 
       # @since 2.0.0
