@@ -111,18 +111,18 @@ module Hanami
 
       # @since 2.0.0
       # @api public
-      def cookies
-        @cookies ||= CookieJar.new(env.dup, headers, @config.cookies)
-      end
-
-      # @since 2.0.0
-      # @api public
       def flash
         unless @sessions_enabled
           raise Hanami::Action::MissingSessionError.new("Hanami::Action::Response#flash")
         end
 
         request.flash
+      end
+
+      # @since 2.0.0
+      # @api public
+      def cookies
+        @cookies ||= CookieJar.new(env.dup, headers, @config.cookies)
       end
 
       # @since 2.0.0
