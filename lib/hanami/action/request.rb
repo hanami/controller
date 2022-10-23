@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
-require "rack/utils"
+require "hanami/action/flash"
 require "rack/mime"
 require "rack/request"
+require "rack/utils"
 require "securerandom"
 
 module Hanami
@@ -34,6 +35,14 @@ module Hanami
         end
 
         super
+      end
+
+      def flash
+        unless @sessions_enabled
+          raise Hanami::Action::MissingSessionError.new("Hanami::Action::Request#flash")
+        end
+
+        @flash ||= Flash.new(session[Flash::KEY])
       end
 
       def accept?(mime_type)

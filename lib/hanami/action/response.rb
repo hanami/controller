@@ -3,7 +3,6 @@
 require "rack"
 require "rack/response"
 require "hanami/utils/kernel"
-require "hanami/action/flash"
 require "hanami/action/halt"
 require "hanami/action/cookie_jar"
 require "hanami/action/cache/cache_control"
@@ -107,13 +106,7 @@ module Hanami
           raise Hanami::Action::MissingSessionError.new("Hanami::Action::Response#session")
         end
 
-        env[Action::RACK_SESSION] ||= {}
-      end
-
-      # @since 2.0.0
-      # @api public
-      def cookies
-        @cookies ||= CookieJar.new(env.dup, headers, @config.cookies)
+        request.session
       end
 
       # @since 2.0.0
@@ -123,7 +116,13 @@ module Hanami
           raise Hanami::Action::MissingSessionError.new("Hanami::Action::Response#flash")
         end
 
-        @flash ||= Flash.new(session[Flash::KEY])
+        request.flash
+      end
+
+      # @since 2.0.0
+      # @api public
+      def cookies
+        @cookies ||= CookieJar.new(env.dup, headers, @config.cookies)
       end
 
       # @since 2.0.0
@@ -180,16 +179,6 @@ module Hanami
 
         conditional_get.fresh? do
           Halt.call(304)
-        end
-      end
-
-      # @since 2.0.0
-      # @api private
-      def request_id
-        env.fetch(Action::REQUEST_ID) do
-          # FIXME: raise a meaningful error, by inviting devs to include Hanami::Action::Session
-          # raise "Can't find request ID"
-          raise Hanami::Action::MissingSessionError.new("request_id")
         end
       end
 
