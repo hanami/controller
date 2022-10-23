@@ -2,6 +2,25 @@
 
 Complete, fast and testable actions for Rack
 
+## v2.0.0.beta4 - 2022-10-24
+
+### Added
+
+- [Tim Riley] Add `Response#flash`, and delgate to request object for both `Response#session` and `Response#flash`, ensuring the same objects are used when accessed via either request or response (#399)
+
+### Fixed
+
+- [Benjamin Klotz] When a params validation schema is provided (in a `params do` block), only return the validated params from `request.params` (#375)
+- [Sean Collins] Handle dry-schema's messages hash now being frozen by default (#391)
+
+### Changed
+
+- [Tim Riley] When `Action.accept` is declared (or `Action::Config.accepted_formats` configured), return a 406 error if an `Accept` request header is present but is not acceptable. In the absence of an `Accept` header, return a 415 error if a `Content-Type` header is present but not acceptable. If neither header is provided, accept the request. (#396)
+- [Tim Riley] Add `Action.handle_exception` class method as a shortcut for `Hanami::Action::Config#handle_exception` (#394)
+- [Tim Riley] Significantly reduce memory usage by leveraging recent dry-configurable changes, and relocating `accepted_formats`, `before_callbacks`, `after_callbacks` inheritable attributes to `config` (#392)
+- [Tim Riley] Make params validation schemas (defined in `params do` block) inheritable to subclasses (#394)
+- [Benhamin Klotz, Tim Riley] Raise `Hanami::Action::MissingSessionError` with a friendly message if `Request#session`, `Request#flash`, `Response#session` or `Response#flash` are called for an action that does not already include `Hanami::Action:Session` mixin (#379 via #395)
+
 ## v2.0.0.beta1 - 2022-07-20
 
 ### Fixed
