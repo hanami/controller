@@ -417,9 +417,10 @@ module Hanami
     # @since 2.0.0
     # @api private
     def enforce_accepted_mime_types(request)
-      return unless config.accepted_formats.any?
+      return if config.accepted_formats.empty?
 
-      Mime.accepted_mime_type?(request, config.accepted_mime_types, config) or halt 415
+      Mime.enforce_accept(request, config) { return halt 406 }
+      Mime.enforce_content_type(request, config) { return halt 415 }
     end
 
     # @since 2.0.0

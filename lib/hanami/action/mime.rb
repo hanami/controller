@@ -84,13 +84,13 @@ module Hanami
       #
       # @since 2.0.0
       # @api private
-      def self.content_type(configuration, request, accepted_mime_types)
+      def self.content_type(config, request, accepted_mime_types)
         if request.accept_header?
           type = best_q_match(request.accept, accepted_mime_types)
           return type if type
         end
 
-        default_response_type(configuration) || default_content_type(configuration) || Action::DEFAULT_CONTENT_TYPE
+        default_response_type(config) || default_content_type(config) || Action::DEFAULT_CONTENT_TYPE
       end
 
       # @since 2.0.0
@@ -101,22 +101,22 @@ module Hanami
 
       # @since 2.0.0
       # @api private
-      def self.default_response_type(configuration)
-        format_to_mime_type(configuration.default_response_format, configuration)
+      def self.default_response_type(config)
+        format_to_mime_type(config.default_response_format, config)
       end
 
       # @since 2.0.0
       # @api private
-      def self.default_content_type(configuration)
-        format_to_mime_type(configuration.default_request_format, configuration)
+      def self.default_content_type(config)
+        format_to_mime_type(config.default_request_format, config)
       end
 
       # @since 2.0.0
       # @api private
-      def self.format_to_mime_type(format, configuration)
+      def self.format_to_mime_type(format, config)
         return if format.nil?
 
-        configuration.mime_type_for(format) ||
+        config.mime_type_for(format) ||
           TYPES.fetch(format) { raise Hanami::Controller::UnknownFormatError.new(format) }
       end
 
@@ -125,7 +125,7 @@ module Hanami
       #
       # @see Hanami::Action::Mime#finish
       # @example
-      #   detect_format("text/html; charset=utf-8", configuration)  #=> :html
+      #   detect_format("text/html; charset=utf-8", config)  #=> :html
       #
       # @return [Symbol, nil]
       #
@@ -168,21 +168,57 @@ module Hanami
         accepted_mime_types
       end
 
-      # Use for checking the Content-Type header to make sure is valid based
-      # on the accepted_mime_types
+      # Yields if an action is configured with `accepted_formats`, the request has an `Accept`
+      # header, and none of the Accept types matches the accepted formats. The given block is
+      # expected to halt the request handling.
       #
-      # If no Content-Type is sent in the request it will check the default_request_format
+      # If any of these conditions are not met, then the request is acceptable and the method
+      # returns without yielding.
       #
-      # @return [TrueClass, FalseClass]
+      # @see Action#enforce_accepted_mime_types
+      # @see Action.accept
+      # @see Config#accepted_formats
       #
       # @since 2.0.0
       # @api private
-      def self.accepted_mime_type?(request, accepted_mime_types, configuration)
-        mime_type = request.env[Action::HTTP_CONTENT_TYPE] ||
-                    default_content_type(configuration) ||
-                    Action::DEFAULT_CONTENT_TYPE
+      def self.enforce_accept(request, config)
+        return unless request.accept_header?
 
-        !accepted_mime_types.find { |mt| ::Rack::Mime.match?(mt, mime_type) }.nil?
+        accept_types = ::Rack::Utils.q_values(request.accept).map(&:first)
+        return if accept_types.any? { |mime_type| accepted_mime_type?(mime_type, config) }
+
+        yield
+      end
+
+      # Yields if an action is configured with `accepted_formats`, the request has a `Content-Type`
+      # header (or a `default_requst_format` is configured), and the content type does not match the
+      # accepted formats. The given block is expected to halt the request handling.
+      #
+      # If any of these conditions are not met, then the request is acceptable and the method
+      # returns without yielding.
+      #
+      # @see Action#enforce_accepted_mime_types
+      # @see Action.accept
+      # @see Config#accepted_formats
+      #
+      # @since 2.0.0
+      # @api private
+      def self.enforce_content_type(request, config)
+        content_type = request.content_type || default_content_type(config)
+
+        return if content_type.nil?
+
+        return if accepted_mime_type?(content_type, config)
+
+        yield
+      end
+
+      # @since 2.0.0
+      # @api private
+      def self.accepted_mime_type?(mime_type, config)
+        config.accepted_mime_types.any? { |accepted_mime_type|
+          ::Rack::Mime.match?(accepted_mime_type, mime_type)
+        }
       end
 
       # Use for setting the content_type and charset if the response
@@ -193,13 +229,11 @@ module Hanami
       #
       # @since 2.0.0
       # @api private
-      def self.calculate_content_type_with_charset(configuration, request, accepted_mime_types)
-        charset      = self.charset(configuration.default_charset)
-        content_type = self.content_type(configuration, request, accepted_mime_types)
+      def self.calculate_content_type_with_charset(config, request, accepted_mime_types)
+        charset = self.charset(config.default_charset)
+        content_type = self.content_type(config, request, accepted_mime_types)
         content_type_with_charset(content_type, charset)
       end
-
-      # private
 
       # Patched version of <tt>Rack::Utils.best_q_match</tt>.
       #

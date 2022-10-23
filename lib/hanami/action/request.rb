@@ -28,6 +28,14 @@ module Hanami
         @id ||= @env[Action::REQUEST_ID] = SecureRandom.hex(Action::DEFAULT_ID_LENGTH)
       end
 
+      def session
+        unless @sessions_enabled
+          raise Hanami::Action::MissingSessionError.new("Hanami::Action::Request#session")
+        end
+
+        super
+      end
+
       def accept?(mime_type)
         !!::Rack::Utils.q_values(accept).find do |mime, _|
           ::Rack::Mime.match?(mime_type, mime)
@@ -36,14 +44,6 @@ module Hanami
 
       def accept_header?
         accept != Action::DEFAULT_ACCEPT
-      end
-
-      def session
-        unless @sessions_enabled
-          raise Hanami::Action::MissingSessionError.new("Hanami::Action::Request#session")
-        end
-
-        super
       end
 
       # @since 0.1.0

@@ -1589,6 +1589,8 @@ module Mimes
   end
 
   class CustomFromAccept < Hanami::Action
+    config.format custom: "application/custom"
+
     accept :json, :custom
 
     def handle(*, res)
@@ -1597,6 +1599,8 @@ module Mimes
   end
 
   class Restricted < Hanami::Action
+    config.format custom: "application/custom"
+
     accept :html, :json, :custom
 
     def handle(_req, res)
@@ -1632,19 +1636,15 @@ module Mimes
 
   class Application
     def initialize
-      # configuration = Hanami::Action::Configuration.new do |config|
-      #   config.format custom: "application/custom"
-      # end
-
       @router = Hanami::Router.new do
         get "/",                   to: Mimes::Default.new
-        # get "/custom",             to: Mimes::Custom.new
+        get "/custom",             to: Mimes::Custom.new
         get "/accept",             to: Mimes::Accept.new
-        # get "/restricted",         to: Mimes::Restricted.new
+        get "/restricted",         to: Mimes::Restricted.new
         get "/latin",              to: Mimes::Latin.new
         get "/nocontent",          to: Mimes::NoContent.new
         get "/overwritten_format", to: Mimes::OverrideDefaultResponse.new
-        # get "/custom_from_accept", to: Mimes::CustomFromAccept.new
+        get "/custom_from_accept", to: Mimes::CustomFromAccept.new
         get "/strict",             to: Mimes::Strict.new
       end
     end
@@ -1657,6 +1657,8 @@ end
 
 module MimesWithDefault
   class Default < Hanami::Action
+    config.default_response_format = :html
+
     accept :json
 
     def handle(*, res)
@@ -1666,10 +1668,6 @@ module MimesWithDefault
 
   class Application
     def initialize
-      # configuration = Hanami::Action::Configuration.new do |config|
-      #   config.default_response_format = :html
-      # end
-
       @router = Hanami::Router.new do
         get "/default_and_accept", to: MimesWithDefault::Default.new
       end
