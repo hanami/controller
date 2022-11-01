@@ -12,6 +12,8 @@ end
 gem "hanami-utils",  "~> 2.0.beta", require: false, git: "https://github.com/hanami/utils.git",  branch: "main"
 gem "hanami-router", "~> 2.0.beta", require: false, git: "https://github.com/hanami/router.git", branch: "main"
 
+gem "dry-configurable", github: "dry-rb/dry-configurable"
+
 group :validations do
   gem "hanami-validations", "~> 2.0.beta", require: false, git: "https://github.com/hanami/validations.git",
                                            branch: "main"
