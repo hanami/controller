@@ -5,6 +5,12 @@ require_relative "mime"
 
 module Hanami
   class Action
+    # Config for `Hanami::Action` classes.
+    #
+    # @see Hanami::Action.config
+    #
+    # @api public
+    # @since 2.0.0
     class Config < Dry::Configurable::Config
       # Default MIME type to format mapping
       #
