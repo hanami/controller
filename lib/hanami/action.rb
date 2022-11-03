@@ -133,64 +133,65 @@ module Hanami
             "To use `params`, please add 'hanami/validations' gem to your Gemfile"
     end
 
-    # Define a callback for an Action.
-    # The callback will be executed **before** the action is called, in the
-    # order they are added.
+    # @overload self.append_before(*callbacks, &block)
+    #   Define a callback for an Action.
+    #   The callback will be executed **before** the action is called, in the
+    #   order they are added.
     #
-    # @param callbacks [Symbol, Array<Symbol>] a single or multiple symbol(s)
-    #   each of them is representing a name of a method available in the
-    #   context of the Action.
+    #   @param callbacks [Symbol, Array<Symbol>] a single or multiple symbol(s)
+    #     each of them is representing a name of a method available in the
+    #     context of the Action.
     #
-    # @param blk [Proc] an anonymous function to be executed
+    #   @param blk [Proc] an anonymous function to be executed
     #
-    # @return [void]
+    #   @return [void]
     #
-    # @since 0.3.2
+    #   @since 0.3.2
     #
-    # @see Hanami::Action::Callbacks::ClassMethods#append_after
+    #   @see Hanami::Action::Callbacks::ClassMethods#append_after
     #
-    # @example Method names (symbols)
-    #   require "hanami/controller"
+    #   @example Method names (symbols)
+    #     require "hanami/controller"
     #
-    #   class Show < Hanami::Action
-    #     before :authenticate, :set_article
+    #     class Show < Hanami::Action
+    #       before :authenticate, :set_article
     #
-    #     def handle(req, res)
+    #       def handle(req, res)
+    #       end
+    #
+    #       private
+    #       def authenticate
+    #         # ...
+    #       end
+    #
+    #       # `params` in the method signature is optional
+    #       def set_article(params)
+    #         @article = Article.find params[:id]
+    #       end
     #     end
     #
-    #     private
-    #     def authenticate
-    #       # ...
+    #     # The order of execution will be:
+    #     #
+    #     # 1. #authenticate
+    #     # 2. #set_article
+    #     # 3. #call
+    #
+    #   @example Anonymous functions (Procs)
+    #     require "hanami/controller"
+    #
+    #     class Show < Hanami::Action
+    #       before { ... } # 1 do some authentication stuff
+    #       before {|req, res| @article = Article.find params[:id] } # 2
+    #
+    #       def handle(req, res)
+    #       end
     #     end
     #
-    #     # `params` in the method signature is optional
-    #     def set_article(params)
-    #       @article = Article.find params[:id]
-    #     end
-    #   end
-    #
-    #   # The order of execution will be:
-    #   #
-    #   # 1. #authenticate
-    #   # 2. #set_article
-    #   # 3. #call
-    #
-    # @example Anonymous functions (Procs)
-    #   require "hanami/controller"
-    #
-    #   class Show < Hanami::Action
-    #     before { ... } # 1 do some authentication stuff
-    #     before {|req, res| @article = Article.find params[:id] } # 2
-    #
-    #     def handle(req, res)
-    #     end
-    #   end
-    #
-    #   # The order of execution will be:
-    #   #
-    #   # 1. authentication
-    #   # 2. set the article
-    #   # 3. `#handle`
+    #     # The order of execution will be:
+    #     #
+    #     # 1. authentication
+    #     # 2. set the article
+    #     # 3. `#handle`
     def self.append_before(...)
       config.before_callbacks.append(...)
     end
@@ -200,21 +201,22 @@ module Hanami
       alias_method :before, :append_before
     end
 
-    # Define a callback for an Action.
-    # The callback will be executed **after** the action is called, in the
-    # order they are added.
+    # @overload self.append_after(*callbacks, &block)
+    #   Define a callback for an Action.
+    #   The callback will be executed **after** the action is called, in the
+    #   order they are added.
     #
-    # @param callbacks [Symbol, Array<Symbol>] a single or multiple symbol(s)
-    #   each of them is representing a name of a method available in the
-    #   context of the Action.
+    #   @param callbacks [Symbol, Array<Symbol>] a single or multiple symbol(s)
+    #     each of them is representing a name of a method available in the
+    #     context of the Action.
     #
-    # @param blk [Proc] an anonymous function to be executed
+    #   @param blk [Proc] an anonymous function to be executed
     #
-    # @return [void]
+    #   @return [void]
     #
-    # @since 0.3.2
+    #   @since 0.3.2
     #
-    # @see Hanami::Action::Callbacks::ClassMethods#append_before
+    #   @see Hanami::Action::Callbacks::ClassMethods#append_before
     def self.append_after(...)
       config.after_callbacks.append(...)
     end
@@ -224,40 +226,42 @@ module Hanami
       alias_method :after, :append_after
     end
 
-    # Define a callback for an Action.
-    # The callback will be executed **before** the action is called.
-    # It will add the callback at the beginning of the callbacks' chain.
+    # @overload self.prepend_before(*callbacks, &block)
+    #   Define a callback for an Action.
+    #   The callback will be executed **before** the action is called.
+    #   It will add the callback at the beginning of the callbacks' chain.
     #
-    # @param callbacks [Symbol, Array<Symbol>] a single or multiple symbol(s)
-    #   each of them is representing a name of a method available in the
-    #   context of the Action.
+    #   @param callbacks [Symbol, Array<Symbol>] a single or multiple symbol(s)
+    #     each of them is representing a name of a method available in the
+    #     context of the Action.
     #
-    # @param blk [Proc] an anonymous function to be executed
+    #   @param blk [Proc] an anonymous function to be executed
     #
-    # @return [void]
+    #   @return [void]
     #
-    # @since 0.3.2
+    #   @since 0.3.2
     #
-    # @see Hanami::Action::Callbacks::ClassMethods#prepend_after
+    #   @see Hanami::Action::Callbacks::ClassMethods#prepend_after
     def self.prepend_before(...)
       config.before_callbacks.prepend(...)
     end
 
-    # Define a callback for an Action.
-    # The callback will be executed **after** the action is called.
-    # It will add the callback at the beginning of the callbacks' chain.
+    # @overload self.prepend_after(*callbacks, &block)
+    #   Define a callback for an Action.
+    #   The callback will be executed **after** the action is called.
+    #   It will add the callback at the beginning of the callbacks' chain.
     #
-    # @param callbacks [Symbol, Array<Symbol>] a single or multiple symbol(s)
-    #   each of them is representing a name of a method available in the
-    #   context of the Action.
+    #   @param callbacks [Symbol, Array<Symbol>] a single or multiple symbol(s)
+    #     each of them is representing a name of a method available in the
+    #     context of the Action.
     #
-    # @param blk [Proc] an anonymous function to be executed
+    #   @param blk [Proc] an anonymous function to be executed
     #
-    # @return [void]
+    #   @return [void]
     #
-    # @since 0.3.2
+    #   @since 0.3.2
     #
-    # @see Hanami::Action::Callbacks::ClassMethods#prepend_before
+    #   @see Hanami::Action::Callbacks::ClassMethods#prepend_before
     def self.prepend_after(...)
       config.after_callbacks.prepend(...)
     end
