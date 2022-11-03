@@ -12,16 +12,18 @@ end
 gem "hanami-utils",  "~> 2.0.beta", require: false, git: "https://github.com/hanami/utils.git",  branch: "main"
 gem "hanami-router", "~> 2.0.beta", require: false, git: "https://github.com/hanami/router.git", branch: "main"
 
-gem "dry-auto_inject", github: "dry-rb/dry-auto_inject"
-gem "dry-configurable", github: "dry-rb/dry-configurable"
-gem "dry-core", github: "dry-rb/dry-core"
-gem "dry-events", github: "dry-rb/dry-events"
-gem "dry-logic", github: "dry-rb/dry-logic"
-gem "dry-monitor", github: "dry-rb/dry-monitor"
-gem "dry-schema", github: "dry-rb/dry-schema"
-gem "dry-system", github: "dry-rb/dry-system"
-gem "dry-types", github: "dry-rb/dry-types"
-gem "dry-validation", github: "dry-rb/dry-validation"
+gem "dry-auto_inject", github: "dry-rb/dry-auto_inject", branch: "main"
+gem "dry-configurable", github: "dry-rb/dry-configurable", branch: "main"
+gem "dry-cli", github: "dry-rb/dry-cli", branch: "main"
+gem "dry-core", github: "dry-rb/dry-core", branch: "main"
+gem "dry-events", github: "dry-rb/dry-events", branch: "main"
+gem "dry-inflector", github: "dry-rb/dry-inflector", branch: "main"
+gem "dry-logic", github: "dry-rb/dry-logic", branch: "main"
+gem "dry-monitor", github: "dry-rb/dry-monitor", branch: "main"
+gem "dry-schema", github: "dry-rb/dry-schema", branch: "main"
+gem "dry-system", github: "dry-rb/dry-system", branch: "main"
+gem "dry-types", github: "dry-rb/dry-types", branch: "main"
+gem "dry-validation", github: "dry-rb/dry-validation", branch: "main"
 
 group :validations do
   gem "hanami-validations", "~> 2.0.beta", require: false, git: "https://github.com/hanami/validations.git",
@@ -32,7 +34,7 @@ group :test do
   gem "dry-files", github: "dry-rb/dry-files", branch: "main"
 
   gem "hanami-cli",  github: "hanami/cli", branch: "main"
-  gem "hanami-view", github: "hanami/view", branch: "use-dry-rb-1.0.0rc"
+  gem "hanami-view", github: "hanami/view", branch: "main"
   gem "hanami",      github: "hanami/hanami", branch: "main"
   gem "slim"
 end
