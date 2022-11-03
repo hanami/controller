@@ -1,19 +1,19 @@
 # frozen_string_literal: true
 
+# The Hanami::Action::Flash implementation is derived from Roda's FlashHash, also released under the
+# MIT Licence:
+#
+# Copyright (c) 2014-2020 Jeremy Evans
+# Copyright (c) 2010-2014 Michel Martens, Damian Janowski and Cyril David
+# Copyright (c) 2008-2009 Christian Neukirchen
+
 module Hanami
   class Action
-    # A container to transport data with the HTTP session, with a lifespan of
-    # just one HTTP request or redirect.
+    # A container to transport data with the HTTP session, with a lifespan of just one HTTP request
+    # or redirect.
     #
-    # Behaves like a hash, returning entries for the current request, except for
-    # {#[]=}, which updates the hash for the next request.
-    #
-    # This implementation is derived from Roda's FlashHash, also released under
-    # the MIT Licence:
-    #
-    # Copyright (c) 2014-2020 Jeremy Evans
-    # Copyright (c) 2010-2014 Michel Martens, Damian Janowski and Cyril David
-    # Copyright (c) 2008-2009 Christian Neukirchen
+    # Behaves like a hash, returning entries for the current request, except for {#[]=}, which
+    # updates the hash for the next request.
     #
     # @since 0.3.0
     # @api public
@@ -30,9 +30,9 @@ module Hanami
       # @api public
       attr_reader :next
 
-      # Initializes a new flash instance
+      # Returns a new flash object.
       #
-      # @param hash [Hash, nil] the flash hash for the current request. nil will become an empty hash.
+      # @param hash [Hash, nil] the flash hash for the current request; `nil` will become an empty hash.
       #
       # @since 0.3.0
       # @api public
@@ -41,7 +41,9 @@ module Hanami
         @next = {}
       end
 
-      # @return [Hash] The flash hash for the current request
+      # Returns the flash hash for the current request.
+      #
+      # @return [Hash] the flash hash for the current request
       #
       # @since 2.0.0
       # @api public
@@ -49,7 +51,7 @@ module Hanami
         @flash
       end
 
-      # Returns the value for the given key in the current hash
+      # Returns the value for the given key in the current hash.
       #
       # @param key [Object] the key
       #
@@ -61,7 +63,7 @@ module Hanami
         @flash[key]
       end
 
-      # Updates the next hash with the given key and value
+      # Updates the next hash with the given key and value.
       #
       # @param key [Object] the key
       # @param value [Object] the value
@@ -72,9 +74,12 @@ module Hanami
         @next[key] = value
       end
 
-      # Calls the given block once for each element in the current hash
+      # Calls the given block once for each element in the current hash.
       #
-      # @param block [Proc]
+      # @yieldparam element [Array<(Object, Object)>] array containing the key and value from the
+      #   hash
+      #
+      # @return [now]
       #
       # @since 1.2.0
       # @api public
@@ -82,10 +87,12 @@ module Hanami
         @flash.each(&block)
       end
 
-      # Returns a new array with the results of running block once for every
-      # element in the current hash
+      # Returns an array of objects returned by the block, called once for each element in the
+      # current hash.
       #
-      # @param block [Proc]
+      # @yieldparam element [Array<(Object, Object)>] array containing the key and value from the
+      #   hash
+      #
       # @return [Array]
       #
       # @since 1.2.0
@@ -114,7 +121,7 @@ module Hanami
         @flash.key?(key)
       end
 
-      # Removes entries from the next hash
+      # Removes entries from the next hash.
       #
       # @overload discard(key)
       #   Removes the given key from the next hash
