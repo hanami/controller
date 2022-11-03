@@ -2,22 +2,28 @@
 
 module Hanami
   class Action
+    # Base class for all Action errors.
+    #
+    # @api public
     # @since 2.0.0
     class Error < ::StandardError
     end
 
-    # Missing session error
+    # Error raised when session is accessed but not enabled.
     #
     # This error is raised when `session` or `flash` is accessed/set on request/response objects
     # in actions which do not include `Hanami::Action::Session`.
-    #
-    # @since 2.0.0
     #
     # @see Hanami::Action::Session
     # @see Hanami::Action::Request#session
     # @see Hanami::Action::Response#session
     # @see Hanami::Action::Response#flash
+    #
+    # @api public
+    # @since 2.0.0
     class MissingSessionError < Error
+      # @api private
+      # @since 2.0.0
       def initialize(session_method)
         super(<<~TEXT)
           Sessions are not enabled. To use `#{session_method}`:
