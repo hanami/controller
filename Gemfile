@@ -5,8 +5,9 @@ source "http://rubygems.org"
 gemspec
 
 unless ENV["CI"]
-  gem "byebug", require: false, platforms: :mri
-  gem "yard",   require: false
+  gem "byebug", platforms: :mri
+  gem "yard"
+  gem "yard-junk"
 end
 
 gem "hanami-utils",  github: "hanami/utils", branch: "main"

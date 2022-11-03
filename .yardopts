@@ -1,5 +1,2 @@
---protected
--
-README.md
-LICENSE.md
-lib/**/*.rb
+--markup=markdown
+--plugin junk
