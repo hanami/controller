@@ -5,6 +5,7 @@ require "rack/mime"
 require "rack/request"
 require "rack/utils"
 require "securerandom"
+require_relative "errors"
 
 module Hanami
   class Action

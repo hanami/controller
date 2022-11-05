@@ -8,6 +8,7 @@ require "hanami/action/cookie_jar"
 require "hanami/action/cache/cache_control"
 require "hanami/action/cache/expires"
 require "hanami/action/cache/conditional_get"
+require_relative "errors"
 
 module Hanami
   class Action

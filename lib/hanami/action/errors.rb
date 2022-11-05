@@ -9,6 +9,22 @@ module Hanami
     class Error < ::StandardError
     end
 
+    # Unknown format error
+    #
+    # This error is raised when a action sets a format that it isn't recognized
+    # both by `Hanami::Action::Configuration` and the list of Rack mime types
+    #
+    # @since 2.0.0
+    #
+    # @see Hanami::Action::Mime#format=
+    class UnknownFormatError < Error
+      # @since 2.0.0
+      # @api private
+      def initialize(format)
+        super("Cannot find a corresponding Mime type for '#{format}'. Please configure it with Hanami::Controller::Configuration#format.") # rubocop:disable Layout/LineLength
+      end
+    end
+
     # Error raised when session is accessed but not enabled.
     #
     # This error is raised when `session` or `flash` is accessed/set on request/response objects
@@ -42,6 +58,12 @@ module Hanami
             include Hanami::Action::Session
         TEXT
       end
+    end
+
+    # Invalid CSRF Token
+    #
+    # @since 0.4.0
+    class InvalidCSRFTokenError < Error
     end
   end
 end

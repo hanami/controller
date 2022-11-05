@@ -24,7 +24,7 @@ require_relative "action/mime"
 require_relative "action/rack/file"
 require_relative "action/request"
 require_relative "action/response"
-require_relative "action/error"
+require_relative "action/errors"
 
 module Hanami
   # An HTTP endpoint
@@ -270,7 +270,7 @@ module Hanami
     #
     # @param formats[Array<Symbol>] one or more symbols representing mime type(s)
     #
-    # @raise [Hanami::Controller::UnknownFormatError] if the symbol cannot
+    # @raise [Hanami::Action::UnknownFormatError] if the symbol cannot
     #   be converted into a mime type
     #
     # @since 0.1.0
@@ -600,7 +600,7 @@ module Hanami
       when String
         [Action::Mime.detect_format(value, config), value]
       else
-        raise Hanami::Controller::UnknownFormatError.new(value)
+        raise Hanami::Action::UnknownFormatError.new(value)
       end
     end
 

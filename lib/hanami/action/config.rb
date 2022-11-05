@@ -157,7 +157,7 @@ module Hanami
       #
       #   The given format must be coercible to a symbol, and be a valid MIME
       #   type alias. If it isn't, at runtime the framework will raise an
-      #   `Hanami::Controller::UnknownFormatError`.
+      #   `Hanami::Action::UnknownFormatError`.
       #
       #   By default, this value is nil.
       #
@@ -174,7 +174,7 @@ module Hanami
       #
       #   The given format must be coercible to a symbol, and be a valid MIME
       #   type alias. If it isn't, at the runtime the framework will raise an
-      #   `Hanami::Controller::UnknownFormatError`.
+      #   `Hanami::Action::UnknownFormatError`.
       #
       #   By default, this value is nil.
       #

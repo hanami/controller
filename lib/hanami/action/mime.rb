@@ -3,6 +3,7 @@
 require "hanami/utils"
 require "rack/utils"
 require "rack/mime"
+require_relative "errors"
 
 module Hanami
   class Action
@@ -117,7 +118,7 @@ module Hanami
         return if format.nil?
 
         config.mime_type_for(format) ||
-          TYPES.fetch(format) { raise Hanami::Controller::UnknownFormatError.new(format) }
+          TYPES.fetch(format) { raise Hanami::Action::UnknownFormatError.new(format) }
       end
 
       # Transforms MIME Types to symbol
@@ -150,7 +151,7 @@ module Hanami
       #
       # @return [Array<String>, nil]
       #
-      # @raise [Hanami::Controller::UnknownFormatError] if the format is invalid
+      # @raise [Hanami::Action::UnknownFormatError] if the format is invalid
       #
       # @since 2.0.0
       # @api private
