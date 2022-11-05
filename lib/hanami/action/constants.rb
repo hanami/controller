@@ -116,12 +116,6 @@ module Hanami
     # @api private
     HTTP_ACCEPT = "HTTP_ACCEPT"
 
-    # The header key to set the mime type of the response
-    #
-    # @since 0.1.0
-    # @api private
-    CONTENT_TYPE = ::Rack::CONTENT_TYPE
-
     # The default mime type for an incoming HTTP request
     #
     # @since 0.1.0
