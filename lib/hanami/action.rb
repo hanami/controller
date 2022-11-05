@@ -126,7 +126,7 @@ module Hanami
     #
     # @raise [NoMethodError]
     #
-    # @api private
+    # @api public
     # @since 2.0.0
     def self.params(_klass = nil)
       raise NoMethodError,
