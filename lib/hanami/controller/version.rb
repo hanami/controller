@@ -2,9 +2,7 @@
 
 module Hanami
   module Controller
-    # Defines the version
-    #
-    # @since 0.1.0
-    VERSION = "2.0.0.beta4"
+    # @api public
+    VERSION = "2.0.0.rc1"
   end
 end
