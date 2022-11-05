@@ -12,6 +12,14 @@ require_relative "errors"
 
 module Hanami
   class Action
+    # The HTTP response for an action, given to {Action#handle}.
+    #
+    # Inherits from `Rack::Response`, providing compatibility with Rack functionality.
+    #
+    # @see http://www.rubydoc.info/gems/rack/Rack/Response
+    #
+    # @since 2.0.0
+    # @api private
     class Response < ::Rack::Response
       # @since 2.0.0
       # @api private
@@ -60,6 +68,10 @@ module Hanami
         @sending_file = false
       end
 
+      # Sets the response body.
+      #
+      # @param str [String] the body string
+      #
       # @since 2.0.0
       # @api public
       def body=(str)
@@ -74,8 +86,9 @@ module Hanami
         end
       end
 
-      # @since 2.0.0
-      # @api public
+      # This is NOT RELEASED with 2.0.0
+      #
+      # @api private
       def render(view, **options)
         self.body = view.(**view_options.(request, self), **exposures.merge(options)).to_str
       end
@@ -126,18 +139,43 @@ module Hanami
         @format = format
       end
 
+      # Returns the exposure value for the given key.
+      #
+      # @param key [Object]
+      #
+      # @return [Object] the exposure value, if found
+      #
+      # @raise [KeyError] if the exposure was not found
+      #
       # @since 2.0.0
       # @api public
       def [](key)
         @exposures.fetch(key)
       end
 
+      # Sets an exposure value for the given key.
+      #
+      # @param key [Object]
+      # @param value [Object]
+      #
+      # @return [Object] the value
+      #
       # @since 2.0.0
       # @api public
       def []=(key, value)
         @exposures[key] = value
       end
 
+      # Returns the session for the response.
+      #
+      # This is the same session object as the {Request}.
+      #
+      # @return [Hash] the session object
+      #
+      # @raise [MissingSessionError] if sessions are not enabled
+      #
+      # @see Request#session
+      #
       # @since 2.0.0
       # @api public
       def session
@@ -148,6 +186,16 @@ module Hanami
         request.session
       end
 
+      # Returns the flash for the request.
+      #
+      # This is the same flash object as the {Request}.
+      #
+      # @return [Flash]
+      #
+      # @raise [MissingSessionError] if sessions are not enabled
+      #
+      # @see Request#flash
+      #
       # @since 2.0.0
       # @api public
       def flash
@@ -158,12 +206,21 @@ module Hanami
         request.flash
       end
 
+      # Returns the set of cookies to be included in the response.
+      #
+      # @return [CookieJar]
+      #
       # @since 2.0.0
       # @api public
       def cookies
         @cookies ||= CookieJar.new(env.dup, headers, @config.cookies)
       end
 
+      # Sets the response to redirect to the given URL and halts further handling.
+      #
+      # @param url [String]
+      # @param status [Integer] the HTTP status to use for the redirect
+      #
       # @since 2.0.0
       # @api public
       def redirect_to(url, status: 302)
@@ -173,6 +230,22 @@ module Hanami
         Halt.call(status)
       end
 
+      # Sends the file at the given path as the response, for any file within the configured
+      # `public_directory`.
+      #
+      # Handles the following aspects for file responses:
+      #
+      # - Setting `Content-Type` and `Content-Length` headers
+      # - File Not Found responses (returns a 404)
+      # - Conditional GET (via `If-Modified-Since` header)
+      # - Range requests (via `Range` header)
+      #
+      # @param path [String] the file path
+      #
+      # @return [void]
+      #
+      # @see Config#public_directory
+      #
       # @since 2.0.0
       # @api public
       def send_file(path)
@@ -181,6 +254,14 @@ module Hanami
         )
       end
 
+      # Send the file at the given path as the response, for a file anywhere in the file system.
+      #
+      # @see #send_file
+      #
+      # @param path [String, Pathname] path to the file to be sent
+      #
+      # @return [void]
+      #
       # @since 2.0.0
       # @api public
       def unsafe_send_file(path)
@@ -195,6 +276,37 @@ module Hanami
         )
       end
 
+      # Specifies the response freshness policy for HTTP caches using the `Cache-Control` header.
+      #
+      # Any number of non-value directives (`:public`, `:private`, `:no_cache`, `:no_store`,
+      # `:must_revalidate`, `:proxy_revalidate`) may be passed along with a Hash of value directives
+      # (`:max_age`, `:min_stale`, `:s_max_age`).
+      #
+      # See [RFC 2616 / 14.9](http://tools.ietf.org/html/rfc2616#section-14.9.1) for more on
+      # standard cache control directives.
+      #
+      # @example
+      #   # Set Cache-Control directives
+      #   response.cache_control :public, max_age: 900, s_maxage: 86400
+      #
+      #   # Overwrite previous Cache-Control directives
+      #   response.cache_control :private, :no_cache, :no_store
+      #
+      #   response.get_header("Cache-Control") # => "private, no-store, max-age=900"
+      #
+      # @param values [Array<Symbol, Hash>] values to map to `Cache-Control` directives
+      # @option values [Symbol] :public
+      # @option values [Symbol] :private
+      # @option values [Symbol] :no_cache
+      # @option values [Symbol] :no_store
+      # @option values [Symbol] :must_validate
+      # @option values [Symbol] :proxy_revalidate
+      # @option values [Hash] :max_age
+      # @option values [Hash] :min_stale
+      # @option values [Hash] :s_max_age
+      #
+      # @return void
+      #
       # @since 2.0.0
       # @api public
       def cache_control(*values)
@@ -202,6 +314,28 @@ module Hanami
         headers.merge!(directives.headers)
       end
 
+      # Sets the `Expires` header and `Cache-Control`/`max-age` directive for the response.
+      #
+      # You can provide an integer number of seconds in the future, or a Time object indicating when
+      # the response should be considered "stale". The remaining arguments are passed to
+      # {#cache_control}.
+      #
+      # @example
+      #   # Set Cache-Control directives and Expires
+      #   response.expires 900, :public
+      #
+      #   # Overwrite Cache-Control directives and Expires
+      #   response.expires 300, :private, :no_cache, :no_store
+      #
+      #   response.get_header("Expires") # => "Thu, 26 Jun 2014 12:00:00 GMT"
+      #   response.get_header("Cache-Control") # => "private, no-cache, no-store max-age=300"
+      #
+      # @param amount [Integer, Time] number of seconds or point in time
+      # @param values [Array<Symbols>] values to map to `Cache-Control` directives via
+      #   {#cache_control}
+      #
+      # @return void
+      #
       # @since 2.0.0
       # @api public
       def expires(amount, *values)
@@ -209,6 +343,26 @@ module Hanami
         headers.merge!(directives.headers)
       end
 
+      # Sets the `etag` and/or `last_modified` headers on the response and halts with a `304 Not
+      # Modified` response if the request is still fresh according to the `IfNoneMatch` and
+      # `IfModifiedSince` request headers.
+      #
+      # @example
+      #   # Set etag header and halt 304 if request matches IF_NONE_MATCH header
+      #   response.fresh etag: some_resource.updated_at.to_i
+      #
+      #   # Set last_modified header and halt 304 if request matches IF_MODIFIED_SINCE
+      #   response.fresh last_modified: some_resource.updated_at
+      #
+      #   # Set etag and last_modified header and halt 304 if request matches IF_MODIFIED_SINCE and IF_NONE_MATCH
+      #   response.fresh last_modified: some_resource.updated_at
+      #
+      # @param options [Hash]
+      # @option options [Integer] :etag for testing IfNoneMatch conditions
+      # @option options [Date] :last_modified for testing IfModifiedSince conditions
+      #
+      # @return void
+      #
       # @since 2.0.0
       # @api public
       def fresh(options)
@@ -222,7 +376,7 @@ module Hanami
       end
 
       # @since 2.0.0
-      # @api public
+      # @api private
       def set_format(value) # rubocop:disable Naming/AccessorMethodName
         @format = value
       end
@@ -248,7 +402,7 @@ module Hanami
       alias_method :to_ary, :to_a
 
       # @since 2.0.0
-      # @api public
+      # @api private
       def head?
         env[Action::REQUEST_METHOD] == Action::HEAD
       end
