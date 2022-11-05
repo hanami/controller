@@ -96,7 +96,7 @@ module Hanami
       # Returns the format for the response.
       #
       # Returns nil if a format has not been assigned and also cannot be determined from the
-      # response's {#content_type}.
+      # response's `#content_type`.
       #
       # @example
       #   response.format # => :json
