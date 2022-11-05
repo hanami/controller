@@ -3,6 +3,8 @@
 require "rack/utils"
 
 module Hanami
+  # @since 0.1.0
+  # @api private
   module Http
     # An HTTP status
     #
