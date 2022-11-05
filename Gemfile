@@ -9,13 +9,9 @@ unless ENV["CI"]
   gem "yard",   require: false
 end
 
-gem "hanami-utils",  "~> 2.0.beta", require: false, git: "https://github.com/hanami/utils.git",  branch: "main"
-gem "hanami-router", "~> 2.0.beta", require: false, git: "https://github.com/hanami/router.git", branch: "main"
-
-group :validations do
-  gem "hanami-validations", "~> 2.0.beta", require: false, git: "https://github.com/hanami/validations.git",
-                                           branch: "main"
-end
+gem "hanami-utils",  github: "hanami/utils", branch: "main"
+gem "hanami-router", github: "hanami/router", branch: "main"
+gem "hanami-validations", github: "hanami/validations", branch: "main"
 
 group :test do
   gem "dry-files", github: "dry-rb/dry-files", branch: "main"
