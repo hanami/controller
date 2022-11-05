@@ -9,9 +9,9 @@ require_relative "errors"
 
 module Hanami
   class Action
-    # An HTTP request based on top of `Rack::Request`.
+    # The HTTP request for an action, given to {Action#handle}.
     #
-    # This provides backwards compatibility with with Rack.
+    # Inherits from `Rack::Request`, providing compatibility with Rack functionality.
     #
     # @see http://www.rubydoc.info/gems/rack/Rack/Request
     #
@@ -54,6 +54,8 @@ module Hanami
       #
       # @raise [MissingSessionError] if sessions are not enabled
       #
+      # @see Response#session
+      #
       # @since 2.0.0
       # @api public
       def session
@@ -69,6 +71,8 @@ module Hanami
       # @return [Flash]
       #
       # @raise [MissingSessionError] if sessions are not enabled
+      #
+      # @see Response#flash
       #
       # @since 2.0.0
       # @api public
