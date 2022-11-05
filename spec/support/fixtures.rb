@@ -1047,9 +1047,9 @@ module SendFileTest
             # we should have also checked #accept? but w/e
             res.body = ::File.read(Pathname.new("spec/support/fixtures/#{resource.asset_path}.html"))
             res.status = 200
-            res.format = format(:html)
+            res.format = :html
           when "json", nil
-            res.format = format(:json)
+            res.format = :json
             res.send_file Pathname.new("#{resource.asset_path}.json")
           else
             halt 406
@@ -1558,13 +1558,13 @@ end
 module Mimes
   class Default < Hanami::Action
     def handle(_req, res)
-      res.body, = *format(res.content_type)
+      res.body = res.format
     end
   end
 
   class Custom < Hanami::Action
     def handle(_req, res)
-      res.format = format(:xml)
+      res.format = :xml
       res.body   = res.format
     end
   end
@@ -1572,7 +1572,7 @@ module Mimes
   class Latin < Hanami::Action
     def handle(_req, res)
       res.charset = "latin1"
-      res.format  = format(:html)
+      res.format  = :html
       res.body    = res.format
     end
   end
@@ -1584,7 +1584,7 @@ module Mimes
       res.headers["X-AcceptXml"]     = req.accept?("application/xml").to_s
       res.headers["X-AcceptJson"]    = req.accept?("text/json").to_s
 
-      res.body, = *format(res.content_type)
+      res.body = res.format
     end
   end
 
@@ -1594,7 +1594,7 @@ module Mimes
     accept :json, :custom
 
     def handle(*, res)
-      res.body, = *format(res.content_type)
+      res.body = res.format
     end
   end
 
@@ -1604,7 +1604,7 @@ module Mimes
     accept :html, :json, :custom
 
     def handle(_req, res)
-      res.body, = *format(res.content_type)
+      res.body = res.format
     end
   end
 
@@ -1616,7 +1616,7 @@ module Mimes
 
   class OverrideDefaultResponse < Hanami::Action
     def handle(*, res)
-      res.format = format(:xml)
+      res.format = :xml
     end
 
     private
@@ -1630,7 +1630,7 @@ module Mimes
     accept :json
 
     def handle(_req, res)
-      res.body, = *format(res.content_type)
+      res.body = res.format
     end
   end
 
@@ -1662,7 +1662,7 @@ module MimesWithDefault
     accept :json
 
     def handle(*, res)
-      res.body, = *format(res.content_type)
+      res.body = res.format
     end
   end
 

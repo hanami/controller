@@ -744,7 +744,7 @@ However, you can force this value:
 class Show < Hanami::Action
   def handle(*, res)
     # ...
-    res.format = format(:json)
+    res.format = :json
   end
 end
 
@@ -820,7 +820,7 @@ response.format                                                   # => :custom
 class Show < Hanami::Action
   def handle(*, res)
     # ...
-    res.format = format(:custom)
+    res.format = :custom
   end
 end
 
@@ -841,7 +841,7 @@ end
 
 class Csv < Hanami::Action
   def handle(*, res)
-    res.format = format(:csv)
+    res.format = :csv
     res.body = Enumerator.new do |yielder|
       yielder << csv_header
 

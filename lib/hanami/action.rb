@@ -590,20 +590,6 @@ module Hanami
       res.body = Response::EMPTY_BODY
     end
 
-    # @since 2.0.0
-    # @api private
-    def format(value)
-      case value
-      when Symbol
-        format = Utils::Kernel.Symbol(value)
-        [format, Action::Mime.format_to_mime_type(format, config)]
-      when String
-        [Action::Mime.detect_format(value, config), value]
-      else
-        raise Hanami::Action::UnknownFormatError.new(value)
-      end
-    end
-
     # Finalize the response
     #
     # Prepare the data before the response will be returned to the webserver

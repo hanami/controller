@@ -12,7 +12,7 @@ RSpec.describe Hanami::Action do
         input = req.params[:format]
         input = input.to_sym unless input.nil?
 
-        res.format = format(input)
+        res.format = input
       end
     end
 

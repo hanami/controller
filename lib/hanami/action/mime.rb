@@ -145,6 +145,19 @@ module Hanami
         TYPES.key(content_type)
       end
 
+      # @since 2.0.0
+      # @api private
+      def self.detect_format_and_content_type(value, config)
+        case value
+        when Symbol
+          [value, format_to_mime_type(value, config)]
+        when String
+          [detect_format(value, config), value]
+        else
+          raise UnknownFormatError.new(value)
+        end
+      end
+
       # Transforms symbols to MIME Types
       # @example
       #   restrict_mime_types(config, [:json])  #=> ["application/json"]
@@ -223,8 +236,6 @@ module Hanami
       end
 
       # Use for setting the content_type and charset if the response
-      #
-      # @see Hanami::Action::Mime#call
       #
       # @return [String]
       #

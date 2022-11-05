@@ -27,7 +27,7 @@ module Hanami
 
       # @since 2.0.0
       # @api private
-      attr_reader :request, :exposures, :format, :env, :view_options
+      attr_reader :request, :exposures, :env, :view_options
 
       # @since 2.0.0
       # @api private
@@ -80,12 +80,50 @@ module Hanami
         self.body = view.(**view_options.(request, self), **exposures.merge(options)).to_str
       end
 
+      # Returns the format for the response.
+      #
+      # Returns nil if a format has not been assigned and also cannot be determined from the
+      # response's {#content_type}.
+      #
+      # @example
+      #   response.format # => :json
+      #
+      # @return [Symbol, nil]
+      #
       # @since 2.0.0
       # @api public
-      def format=(args)
-        @format, content_type = *args
-        content_type = Action::Mime.content_type_with_charset(content_type, charset)
-        set_header("Content-Type", content_type)
+      def format
+        @format ||= Mime.detect_format(content_type, @config)
+      end
+
+      # Sets the format and associated content type for the response.
+      #
+      # Either a format name (`:json`) or a content type string (`"application/json"`) may be given.
+      # In either case, the format or content type will be derived from the given value, and both
+      # will be set.
+      #
+      # @example Assigning via a format name symbol
+      #   response.format = :json
+      #   response.content_type # => "application/json"
+      #   response.headers["Content-Type"] # => "application/json"
+      #
+      # @example Assigning via a content type string
+      #   response.format = "application/json"
+      #   response.format # => :json
+      #   response.content_type # => "application/json"
+      #
+      # @param value [Symbol, String] the format name or content type
+      #
+      # @see Config#formats
+      #
+      # @since 2.0.0
+      # @api public
+      def format=(value)
+        format, content_type = Mime.detect_format_and_content_type(value, @config)
+
+        self.content_type = Mime.content_type_with_charset(content_type, charset)
+
+        @format = format
       end
 
       # @since 2.0.0
