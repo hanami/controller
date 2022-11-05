@@ -11,7 +11,10 @@ end
 
 gem "hanami-utils",  github: "hanami/utils", branch: "main"
 gem "hanami-router", github: "hanami/router", branch: "main"
-gem "hanami-validations", github: "hanami/validations", branch: "main"
+
+group :validations do
+  gem "hanami-validations", github: "hanami/validations", branch: "main"
+end
 
 group :test do
   gem "dry-files", github: "dry-rb/dry-files", branch: "main"
