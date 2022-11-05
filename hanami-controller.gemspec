@@ -21,8 +21,8 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = ">= 3.0"
 
   spec.add_dependency "rack",         "~> 2.0"
-  spec.add_dependency "hanami-utils", "~> 2.0.beta"
-  spec.add_dependency "dry-configurable", "~> 1.0.0.rc"
+  spec.add_dependency "hanami-utils", "~> 2.0.0.rc1"
+  spec.add_dependency "dry-configurable", "~> 1.0", "< 2"
 
   spec.add_development_dependency "bundler",   ">= 1.6", "< 3"
   spec.add_development_dependency "rack-test", "~> 2.0"
