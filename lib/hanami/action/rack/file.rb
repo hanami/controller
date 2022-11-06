@@ -4,13 +4,17 @@ require "rack/file"
 
 module Hanami
   class Action
+    # Rack extensions for actions.
+    #
+    # @api private
+    # @since 0.4.3
     module Rack
       # File to be sent
       #
+      # @see Hanami::Action::Response#send_file
+      #
       # @since 0.4.3
       # @api private
-      #
-      # @see Hanami::Action::Rack#send_file
       class File
         # @param path [String,Pathname] file path
         #

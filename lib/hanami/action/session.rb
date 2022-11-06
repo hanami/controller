@@ -4,12 +4,17 @@ require "hanami/action/flash"
 
 module Hanami
   class Action
-    # Session API
+    # Session support for actions.
     #
-    # This module isn't included by default.
+    # Not included by default; you should include this module manually to enable session support.
+    # For actions within an Hanami app, this module will be included automatically if sessions are
+    # configured in the app config.
     #
+    # @api public
     # @since 0.1.0
     module Session
+      # @api private
+      # @since 0.1.0
       def self.included(base)
         base.class_eval do
           before { |req, _| req.id }

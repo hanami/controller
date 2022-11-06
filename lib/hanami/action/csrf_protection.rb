@@ -1,19 +1,13 @@
 # frozen_string_literal: true
 
 require "hanami/utils/blank"
-require "hanami/controller/error"
 require "rack/utils"
 require "securerandom"
+require_relative "errors"
 
 module Hanami
   # @api private
   class Action
-    # Invalid CSRF Token
-    #
-    # @since 0.4.0
-    class InvalidCSRFTokenError < Controller::Error
-    end
-
     # CSRF Protection
     #
     # This security mechanism is enabled automatically if sessions are turned on.

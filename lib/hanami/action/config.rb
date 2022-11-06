@@ -5,6 +5,12 @@ require_relative "mime"
 
 module Hanami
   class Action
+    # Config for `Hanami::Action` classes.
+    #
+    # @see Hanami::Action.config
+    #
+    # @api public
+    # @since 2.0.0
     class Config < Dry::Configurable::Config
       # Default MIME type to format mapping
       #
@@ -151,7 +157,7 @@ module Hanami
       #
       #   The given format must be coercible to a symbol, and be a valid MIME
       #   type alias. If it isn't, at runtime the framework will raise an
-      #   `Hanami::Controller::UnknownFormatError`.
+      #   `Hanami::Action::UnknownFormatError`.
       #
       #   By default, this value is nil.
       #
@@ -168,7 +174,7 @@ module Hanami
       #
       #   The given format must be coercible to a symbol, and be a valid MIME
       #   type alias. If it isn't, at the runtime the framework will raise an
-      #   `Hanami::Controller::UnknownFormatError`.
+      #   `Hanami::Action::UnknownFormatError`.
       #
       #   By default, this value is nil.
       #

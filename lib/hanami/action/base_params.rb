@@ -5,6 +5,19 @@ require "hanami/utils/hash"
 
 module Hanami
   class Action
+    # Provides access to params included in a Rack request.
+    #
+    # Offers useful access to params via methods like {#[]}, {#get} and {#to_h}.
+    #
+    # These params are available via {Request#params}.
+    #
+    # This class is used by default when {Hanami::Action::Validatable} is not included, or when no
+    # {Validatable::ClassMethods#params params} validation schema is defined.
+    #
+    # @see Hanami::Action::Request#params
+    #
+    # @api private
+    # @since 0.7.0
     class BaseParams
       # @attr_reader env [Hash] the Rack env
       #
@@ -18,11 +31,9 @@ module Hanami
       # @api private
       attr_reader :raw
 
-      # Initialize the params and freeze them.
+      # Returns a new frozen params object for the Rack env.
       #
       # @param env [Hash] a Rack env or an hash of params.
-      #
-      # @return [Params]
       #
       # @since 0.7.0
       # @api private
@@ -33,25 +44,26 @@ module Hanami
         freeze
       end
 
-      # Returns the object associated with the given key
+      # Returns the value for the given params key.
       #
       # @param key [Symbol] the key
       #
-      # @return [Object,nil] return the associated object, if found
+      # @return [Object,nil] the associated value, if found
       #
       # @since 0.7.0
+      # @api public
       def [](key)
         @params[key]
       end
 
-      # Get an attribute value associated with the given key.
-      # Nested attributes are reached by listing all the keys to get to the value.
+      # Returns an value associated with the given params key.
+      #
+      # You can access nested attributes by listing all the keys in the path. This uses the same key
+      # path semantics as `Hash#dig`.
       #
       # @param keys [Array<Symbol,Integer>] the key
       #
       # @return [Object,NilClass] return the associated value, if found
-      #
-      # @since 0.7.0
       #
       # @example
       #   require "hanami/controller"
@@ -73,6 +85,9 @@ module Hanami
       #       end
       #     end
       #   end
+      #
+      # @since 0.7.0
+      # @api public
       def get(*keys)
         @params.dig(*keys)
       end
@@ -83,32 +98,40 @@ module Hanami
       # @since 0.8.0
       alias_method :dig, :get
 
-      # Provide a common interface with Params
+      # Returns true at all times, providing a common interface with {Params}.
       #
       # @return [TrueClass] always returns true
       #
-      # @since 0.7.0
-      #
       # @see Hanami::Action::Params#valid?
+      #
+      # @api public
+      # @since 0.7.0
       def valid?
         true
       end
 
-      # Serialize params to Hash
+      # Returns a hash of the parsed request params.
       #
-      # @return [::Hash]
+      # @return [Hash]
       #
       # @since 0.7.0
+      # @api public
       def to_h
         @params
       end
       alias_method :to_hash, :to_h
 
-      # Iterates through params
+      # Iterates over the params.
       #
-      # @param blk [Proc]
+      # Calls the given block with each param key-value pair; returns the full hash of params.
+      #
+      # @yieldparam key [Symbol]
+      # @yieldparam value [Object]
+      #
+      # @return [to_h]
       #
       # @since 0.7.1
+      # @api public
       def each(&blk)
         to_h.each(&blk)
       end

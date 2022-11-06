@@ -12,7 +12,7 @@ RSpec.describe Hanami::Action do
         input = req.params[:format]
         input = input.to_sym unless input.nil?
 
-        res.format = format(input)
+        res.format = input
       end
     end
 
@@ -96,17 +96,17 @@ RSpec.describe Hanami::Action do
     end
 
     it "sets nil and raises an error" do
-      expect { action.call(format: nil) }.to raise_error(Hanami::Controller::UnknownFormatError, "Cannot find a corresponding Mime type for ''. Please configure it with Hanami::Controller::Configuration#format.")
+      expect { action.call(format: nil) }.to raise_error(Hanami::Action::UnknownFormatError, "Cannot find a corresponding Mime type for ''. Please configure it with Hanami::Controller::Configuration#format.")
     end
 
     it "sets '' and raises an error" do
-      expect { action.call(format: "") }.to raise_error(Hanami::Controller::UnknownFormatError, "Cannot find a corresponding Mime type for ''. Please configure it with Hanami::Controller::Configuration#format.")
+      expect { action.call(format: "") }.to raise_error(Hanami::Action::UnknownFormatError, "Cannot find a corresponding Mime type for ''. Please configure it with Hanami::Controller::Configuration#format.")
     end
 
     it "sets an unknown format and raises an error" do
       action.call(format: :unknown)
     rescue StandardError => exception
-      expect(exception).to         be_kind_of(Hanami::Controller::UnknownFormatError)
+      expect(exception).to         be_kind_of(Hanami::Action::UnknownFormatError)
       expect(exception.message).to eq("Cannot find a corresponding Mime type for 'unknown'. Please configure it with Hanami::Controller::Configuration#format.")
     end
 
