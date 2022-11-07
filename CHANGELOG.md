@@ -2,6 +2,12 @@
 
 Complete, fast and testable actions for Rack
 
+## v2.0.0.rc1 - 2022-11-08
+
+### Changed
+
+- [Tim Riley] Simplify assignment of response format: `response.format = :json` (was `response.format = format(:json)`)
+
 ## v2.0.0.beta4 - 2022-10-24
 
 ### Added
