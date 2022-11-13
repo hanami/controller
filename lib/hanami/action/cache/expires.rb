@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "hanami/action/cache/cache_control"
-
 module Hanami
   class Action
     module Cache

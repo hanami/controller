@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "hanami/action/params"
+require_relative "params"
 
 module Hanami
   class Action

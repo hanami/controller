@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "hanami/action/flash"
 require "rack/mime"
 require "rack/request"
 require "rack/utils"

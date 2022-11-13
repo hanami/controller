@@ -1,29 +1,15 @@
 # frozen_string_literal: true
 
-begin
-  require "dry/core"
-  require "dry/types"
-  require "hanami/validations"
-  require "hanami/action/validatable"
-rescue LoadError # rubocop:disable Lint/SuppressedException
-end
-
 require "dry/configurable"
-require "hanami/utils/callbacks"
 require "hanami/utils"
-require "hanami/utils/string"
+require "hanami/utils/callbacks"
 require "hanami/utils/kernel"
+require "hanami/utils/string"
 require "rack"
 require "rack/utils"
+require "zeitwerk"
 
-require_relative "action/config"
 require_relative "action/constants"
-require_relative "action/base_params"
-require_relative "action/halt"
-require_relative "action/mime"
-require_relative "action/rack/file"
-require_relative "action/request"
-require_relative "action/response"
 require_relative "action/errors"
 
 module Hanami
@@ -42,6 +28,32 @@ module Hanami
   #
   # @api public
   class Action
+    # @since 2.0.0
+    # @api private
+    def self.gem_loader
+      @gem_loader ||= Zeitwerk::Loader.new.tap do |loader|
+        root = File.expand_path("..", __dir__)
+        loader.tag = "hanami-controller"
+        loader.inflector = Zeitwerk::GemInflector.new("#{root}/hanami-controller.rb")
+        loader.push_dir(root)
+        loader.ignore(
+          "#{root}/hanami-controller.rb",
+          "#{root}/hanami/controller/version.rb",
+          "#{root}/hanami/action/{constants,errors,params,validatable}.rb"
+        )
+        loader.inflector.inflect("csrf_protection" => "CSRFProtection")
+      end
+    end
+
+    gem_loader.setup
+
+    # Make conditional requires after Zeitwerk setup so any internal autoloading works as expected
+    begin
+      require "hanami/validations"
+      require_relative "action/validatable"
+    rescue LoadError # rubocop:disable Lint/SuppressedException
+    end
+
     extend Dry::Configurable(config_class: Config)
 
     # See {Config} for individual setting accessor API docs

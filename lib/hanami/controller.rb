@@ -9,22 +9,10 @@ require "hanami/controller/version"
 module Hanami
   # A set of logically grouped actions
   #
-  # @since 0.1.0
-  #
   # @see Hanami::Action
   #
-  # @example
-  #   require "hanami/controller"
-  #
-  #   module Articles
-  #     class Index < Hanami::Action
-  #       # ...
-  #     end
-  #
-  #     class Show < Hanami::Action
-  #       # ...
-  #     end
-  #   end
+  # @since 0.1.0
+  # @api public
   module Controller
   end
 end

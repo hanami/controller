@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "hanami/action/base_params"
 require "hanami/validations/form"
 
 module Hanami
