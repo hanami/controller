@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "hanami/action/cache/directives"
-
 module Hanami
   class Action
     module Cache

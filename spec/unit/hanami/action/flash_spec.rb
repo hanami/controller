@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "hanami/action/flash"
-
 RSpec.describe Hanami::Action::Flash do
   let(:flash) { described_class.new(input_hash) }
   let(:input_hash) { {} }
