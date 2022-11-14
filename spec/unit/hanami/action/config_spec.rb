@@ -22,6 +22,26 @@ RSpec.describe Hanami::Action::Config do
     end
   end
 
+  describe "#use_formats" do
+    context "single format given" do
+      it "sets the accepted_formats, default_request_format and default_response_format" do
+        config.use_formats :json
+        expect(config.accepted_formats).to eq [:json]
+        expect(config.default_request_format).to eq :json
+        expect(config.default_response_format).to eq :json
+      end
+    end
+
+    context "multiple formats given" do
+      it "sets all formats as accepted_formats, and the first format as default_request_format and default_response_format" do
+        config.use_formats :html, :json
+        expect(config.accepted_formats).to eq [:html, :json]
+        expect(config.default_request_format).to eq :html
+        expect(config.default_response_format).to eq :html
+      end
+    end
+  end
+
   describe "#formats" do
     it "is a basic set of mime type to format mappings by default" do
       expect(config.formats).to eq(

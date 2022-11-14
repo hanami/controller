@@ -143,6 +143,15 @@ module Hanami
         formats.key(format)
       end
 
+      # TODO: document
+      def use_formats(*formats)
+        default_format = formats.first
+
+        self.accepted_formats = formats
+        self.default_request_format = default_format
+        self.default_response_format = default_format
+      end
+
       # @since 2.0.0
       # @api private
       def accepted_mime_types
