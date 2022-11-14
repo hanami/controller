@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require "hanami/action"
-require "hanami/action/csrf_protection"
-
 RSpec.describe Hanami::Action::CSRFProtection do
   subject(:action) {
     Class.new(Hanami::Action) {

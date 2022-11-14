@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require "hanami/action/response"
-require "hanami/action/request"
-
 RSpec.describe Hanami::Action::Response, "session features" do
   subject(:response) {
     described_class.new(
