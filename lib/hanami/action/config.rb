@@ -146,9 +146,6 @@ module Hanami
       # TODO: document
       def format(*formats)
         self.formats = formats
-
-        # TODO: update this
-        self.accepted_formats = formats
       end
 
       def default_format
@@ -158,7 +155,7 @@ module Hanami
       # @since 2.0.0
       # @api private
       def accepted_mime_types
-        accepted_formats.any? ? Mime.restrict_mime_types(self) : mime_types
+        formats.any? ? Mime.restrict_mime_types(self) : mime_types
       end
 
       # @!attribute [rw] default_charset

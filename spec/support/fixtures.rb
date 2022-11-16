@@ -1587,7 +1587,7 @@ module Mimes
   class CustomFromAccept < Hanami::Action
     config.add_format custom: "application/custom"
 
-    accept :json, :custom
+    format :json, :custom
 
     def handle(*, res)
       res.body = res.format
@@ -1597,7 +1597,7 @@ module Mimes
   class Restricted < Hanami::Action
     config.add_format custom: "application/custom"
 
-    accept :html, :json, :custom
+    format :html, :json, :custom
 
     def handle(_req, res)
       res.body = res.format
@@ -1611,7 +1611,7 @@ module Mimes
   end
 
   class Strict < Hanami::Action
-    accept :json
+    format :json
 
     def handle(_req, res)
       res.body = res.format
@@ -1640,9 +1640,7 @@ end
 
 module MimesWithDefault
   class Default < Hanami::Action
-    config.format :html
-
-    accept :json
+    config.format :html, :json
 
     def handle(*, res)
       res.body = res.format

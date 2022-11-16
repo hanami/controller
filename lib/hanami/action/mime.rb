@@ -163,9 +163,9 @@ module Hanami
       # @since 2.0.0
       # @api private
       def self.restrict_mime_types(config)
-        return if config.accepted_formats.empty?
+        return if config.formats.empty?
 
-        mime_types = config.accepted_formats.map do |format|
+        mime_types = config.formats.map do |format|
           format_to_mime_type(format, config)
         end
 
@@ -176,16 +176,15 @@ module Hanami
         accepted_mime_types
       end
 
-      # Yields if an action is configured with `accepted_formats`, the request has an `Accept`
-      # header, and none of the Accept types matches the accepted formats. The given block is
-      # expected to halt the request handling.
+      # Yields if an action is configured with `formats`, the request has an `Accept` header, an
+      # none of the Accept types matches the accepted formats. The given block is expected to halt
+      # the request handling.
       #
       # If any of these conditions are not met, then the request is acceptable and the method
       # returns without yielding.
       #
       # @see Action#enforce_accepted_mime_types
-      # @see Action.accept
-      # @see Config#accepted_formats
+      # @see Config#formats
       #
       # @since 2.0.0
       # @api private
@@ -198,16 +197,15 @@ module Hanami
         yield
       end
 
-      # Yields if an action is configured with `accepted_formats`, the request has a `Content-Type`
-      # header (or a `default_requst_format` is configured), and the content type does not match the
+      # Yields if an action is configured with `formats`, the request has a `Content-Type` header
+      # (or a `default_requst_format` is configured), and the content type does not match the
       # accepted formats. The given block is expected to halt the request handling.
       #
       # If any of these conditions are not met, then the request is acceptable and the method
       # returns without yielding.
       #
       # @see Action#enforce_accepted_mime_types
-      # @see Action.accept
-      # @see Config#accepted_formats
+      # @see Config#formats
       #
       # @since 2.0.0
       # @api private

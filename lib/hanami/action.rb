@@ -60,7 +60,6 @@ module Hanami
     setting :handled_exceptions, default: {}
     setting :format_mappings, default: Config::DEFAULT_FORMAT_MAPPINGS
     setting :formats, default: []
-    setting :accepted_formats, default: []
     setting :default_charset
     setting :default_headers, default: {}, constructor: -> (headers) { headers.compact }
     setting :cookies, default: {}, constructor: -> (cookie_options) {
@@ -277,39 +276,6 @@ module Hanami
     def self.format(...)
       config.format(...)
     end
-    # class << self
-    #   alias_method :accept, :format
-    # end
-
-    # Restrict the access to the specified mime type symbols.
-    #
-    # @param formats[Array<Symbol>] one or more symbols representing mime type(s)
-    #
-    # @raise [Hanami::Action::UnknownFormatError] if the symbol cannot
-    #   be converted into a mime type
-    #
-    # @since 0.1.0
-    #
-    # @see Config#format
-    #
-    # @example
-    #   require "hanami/controller"
-    #
-    #   class Show < Hanami::Action
-    #     accept :html, :json
-    #
-    #     def handle(req, res)
-    #       # ...
-    #     end
-    #   end
-    #
-    #   # When called with "*/*"              => 200
-    #   # When called with "text/html"        => 200
-    #   # When called with "application/json" => 200
-    #   # When called with "application/xml"  => 415
-    def self.accept(*formats)
-      config.accepted_formats = formats
-    end
 
     # @see Config#handle_exception
     #
@@ -440,7 +406,7 @@ module Hanami
     # @since 2.0.0
     # @api private
     def enforce_accepted_mime_types(request)
-      return if config.accepted_formats.empty?
+      return if config.formats.empty?
 
       Mime.enforce_accept(request, config) { return halt 406 }
       Mime.enforce_content_type(request, config) { return halt 415 }

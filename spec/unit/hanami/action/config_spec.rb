@@ -23,18 +23,9 @@ RSpec.describe Hanami::Action::Config do
   end
 
   describe "#format" do
-    context "single format given" do
-      it "sets the accepted_formats" do
-        config.format :json
-        expect(config.accepted_formats).to eq [:json]
-      end
-    end
-
-    context "multiple formats given" do
-      it "sets all formats as accepted_formats" do
-        config.format :html, :json
-        expect(config.accepted_formats).to eq [:html, :json]
-      end
+    it "sets formats" do
+      config.format :json, :html
+      expect(config.formats).to eq [:json, :html]
     end
   end
 
