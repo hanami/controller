@@ -24,19 +24,17 @@ RSpec.describe Hanami::Action::Config do
 
   describe "#format" do
     context "single format given" do
-      it "sets the accepted_formats, default_request_format and default_response_format" do
+      it "sets the accepted_formats and default_response_format" do
         config.format :json
         expect(config.accepted_formats).to eq [:json]
-        expect(config.default_request_format).to eq :json
         expect(config.default_response_format).to eq :json
       end
     end
 
     context "multiple formats given" do
-      it "sets all formats as accepted_formats, and the first format as default_request_format and default_response_format" do
+      it "sets all formats as accepted_formats, and the first format as the default_response_format" do
         config.format :html, :json
         expect(config.accepted_formats).to eq [:html, :json]
-        expect(config.default_request_format).to eq :html
         expect(config.default_response_format).to eq :html
       end
     end
@@ -130,23 +128,6 @@ RSpec.describe Hanami::Action::Config do
 
     it "returns nil if no matching MIME type is found" do
       expect(config.mime_type_for(:missing)).to be nil
-    end
-  end
-
-  describe "#default_request_format" do
-    it "is nil by default" do
-      expect(config.default_request_format).to be nil
-    end
-
-    it "can be set with a format symbol" do
-      config.default_request_format = :html
-      expect(config.default_request_format).to eq(:html)
-    end
-
-    it "raises an error if the given format cannot be coerced into symbol" do
-      expect {
-        config.default_request_format = 23
-      }.to raise_error(TypeError)
     end
   end
 

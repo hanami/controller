@@ -928,12 +928,6 @@ configuration = Hanami::Controller::Configuration.new do |config|
   #
   config.format custom: "application/custom"
 
-  # Define a fallback format to detect in case of HTTP request with `Accept: */*`
-  # If not defined here, it will return Rack's default: `application/octet-stream`
-  # Argument: symbol, it should be already known. defaults to `nil`
-  #
-  config.default_request_format = :html
-
   # Define a default format to set as `Content-Type` header for response,
   # unless otherwise specified.
   # If not defined here, it will return Rack's default: `application/octet-stream`

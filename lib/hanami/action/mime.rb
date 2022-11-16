@@ -91,7 +91,7 @@ module Hanami
           return type if type
         end
 
-        default_response_type(config) || default_content_type(config) || Action::DEFAULT_CONTENT_TYPE
+        default_response_type(config) || Action::DEFAULT_CONTENT_TYPE
       end
 
       # @since 2.0.0
@@ -104,12 +104,6 @@ module Hanami
       # @api private
       def self.default_response_type(config)
         format_to_mime_type(config.default_response_format, config)
-      end
-
-      # @since 2.0.0
-      # @api private
-      def self.default_content_type(config)
-        format_to_mime_type(config.default_request_format, config)
       end
 
       # @since 2.0.0
@@ -218,7 +212,7 @@ module Hanami
       # @since 2.0.0
       # @api private
       def self.enforce_content_type(request, config)
-        content_type = request.content_type || default_content_type(config)
+        content_type = request.content_type
 
         return if content_type.nil?
 
