@@ -145,10 +145,14 @@ module Hanami
 
       # TODO: document
       def format(*formats)
-        default_format = formats.first
+        self.formats = formats
 
+        # TODO: update this
         self.accepted_formats = formats
-        self.default_response_format = default_format
+      end
+
+      def default_format
+        formats.first
       end
 
       # @since 2.0.0
@@ -156,23 +160,6 @@ module Hanami
       def accepted_mime_types
         accepted_formats.any? ? Mime.restrict_mime_types(self) : mime_types
       end
-
-      # @!attribute [rw] default_response_format
-      #
-      #   Sets a format to be used for all responses regardless of the request
-      #   type.
-      #
-      #   The given format must be coercible to a symbol, and be a valid MIME
-      #   type alias. If it isn't, at the runtime the framework will raise an
-      #   `Hanami::Action::UnknownFormatError`.
-      #
-      #   By default, this value is nil.
-      #
-      #   @return [Symbol]
-      #
-      #   @see Hanami::Action::Mime
-      #
-      #   @since 0.5.0
 
       # @!attribute [rw] default_charset
       #

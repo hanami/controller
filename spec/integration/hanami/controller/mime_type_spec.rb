@@ -22,11 +22,6 @@ RSpec.describe "MIME Type" do
       expect(response.body).to                    eq("html")
     end
 
-    it "allows to override default_response_format" do
-      response = app.get("/overwritten_format")
-      expect(response.headers["Content-Type"]).to eq("application/xml; charset=utf-8")
-    end
-
     # FIXME: Review if this test must be in place
     it 'does not produce a "Content-Type" header when the request has a 204 No Content status' do
       response = app.get("/nocontent")

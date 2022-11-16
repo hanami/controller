@@ -103,7 +103,7 @@ module Hanami
       # @since 2.0.0
       # @api private
       def self.default_response_type(config)
-        format_to_mime_type(config.default_response_format, config)
+        format_to_mime_type(config.default_format, config)
       end
 
       # @since 2.0.0

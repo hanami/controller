@@ -59,9 +59,7 @@ module Hanami
     # See {Config} for individual setting accessor API docs
     setting :handled_exceptions, default: {}
     setting :format_mappings, default: Config::DEFAULT_FORMAT_MAPPINGS
-    setting :default_response_format, constructor: -> (format) {
-      Utils::Kernel.Symbol(format) unless format.nil?
-    }
+    setting :formats, default: []
     setting :accepted_formats, default: []
     setting :default_charset
     setting :default_headers, default: {}, constructor: -> (headers) { headers.compact }
@@ -84,7 +82,7 @@ module Hanami
     #
     #   @example Access inside class body
     #     class Show < Hanami::Action
-    #       config.default_response_format = :json
+    #       config.format :json
     #     end
     #
     #   @return [Config]
