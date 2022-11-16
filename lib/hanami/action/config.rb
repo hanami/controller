@@ -11,16 +11,6 @@ module Hanami
     # @api public
     # @since 2.0.0
     class Config < Dry::Configurable::Config
-      # Default MIME type to format mapping
-      #
-      # @since 0.2.0
-      # @api private
-      DEFAULT_FORMAT_MAPPINGS = {
-        "application/octet-stream" => :all,
-        "*/*" => :all,
-        "text/html" => :html
-      }.freeze
-
       # Default public directory
       #
       # This serves as the root directory for file downloads
@@ -68,67 +58,31 @@ module Hanami
           .to_h
       end
 
-      # @!attribute [rw] format_mappings
-      #
-      #   Specifies the MIME type to format mapping for the action.
-      #
-      #   @return [Hash{String=>Symbol}] MIME type strings as keys and format symbols as values
-      #
-      #   @see #add_format
-      #   @see Hanami::Action::Mime
-      #
-      #   @example
-      #     config.format_mappings = {"text/html" => :html}
-      #
-      #   @since 0.2.0
-
-      # Registers a MIME type to format mapping
-      #
-      # @param hash [Hash{Symbol=>String}] format symbols as keys and the MIME
-      #   type strings must as values
-      #
-      # @return [void]
-      #
-      # @see #format_mappings
-      # @see Hanami::Action::Mime
-      #
-      # @example
-      #   config.format html: "text/html"
-      #
-      # @since 0.2.0
-      def add_format(hash)
-        symbol, mime_type = *Utils::Kernel.Array(hash)
-        format_mappings[Utils::Kernel.String(mime_type)] = Utils::Kernel.Symbol(symbol)
-      end
-
       # Returns the configured format for the given MIME type
       #
       # @param mime_type [#to_s,#to_str] A mime type
       #
       # @return [Symbol,nil] the corresponding format, nil if not found
       #
-      # @see #add_format
+      # @see Hanami::Action::Config::Formats#add
       #
       # @since 0.2.0
       # @api private
       def format_for(mime_type)
-        format_mappings[mime_type]
+        formats.format_for(mime_type)
       end
 
       # Returns the configured format's MIME types
       #
       # @return [Array<String>] the format's MIME types
       #
-      # @see #format_mappings=
-      # @see #format
+      # @see Hanami::Action::Config::Formats
       #
       # @since 0.8.0
       #
       # @api private
       def mime_types
-        # FIXME: this isn't efficient. speed it up!
-        ((format_mappings.keys - DEFAULT_FORMAT_MAPPINGS.keys) +
-          Hanami::Action::Mime::TYPES.values).freeze
+        formats.mime_types
       end
 
       # Returns a MIME type for the given format
@@ -140,16 +94,16 @@ module Hanami
       # @since 0.2.0
       # @api private
       def mime_type_for(format)
-        format_mappings.key(format)
+        formats.mime_type_for(format)
       end
 
       # TODO: document
       def format(*formats)
-        self.formats = formats
+        self.formats.values = formats
       end
 
       def default_format
-        formats.first
+        formats.default
       end
 
       # @since 2.0.0

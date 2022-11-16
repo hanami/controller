@@ -58,8 +58,7 @@ module Hanami
 
     # See {Config} for individual setting accessor API docs
     setting :handled_exceptions, default: {}
-    setting :format_mappings, default: Config::DEFAULT_FORMAT_MAPPINGS
-    setting :formats, default: []
+    setting :formats, default: Config::Formats.new, cloneable: true
     setting :default_charset
     setting :default_headers, default: {}, constructor: -> (headers) { headers.compact }
     setting :cookies, default: {}, constructor: -> (cookie_options) {
