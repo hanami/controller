@@ -27,7 +27,7 @@ module Hanami
 
         # @since 2.0.0
         # @api private
-        def initialize_copy(original)
+        private def initialize_copy(original) # rubocop:disable Style/AccessModifierDeclarations
           super
           @values = original.values.dup
           @mapping = original.mapping.dup
