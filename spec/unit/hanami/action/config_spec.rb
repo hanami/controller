@@ -42,9 +42,9 @@ RSpec.describe Hanami::Action::Config do
     end
   end
 
-  describe "#formats" do
+  describe "#format_mappings" do
     it "is a basic set of mime type to format mappings by default" do
-      expect(config.formats).to eq(
+      expect(config.format_mappings).to eq(
         "application/octet-stream" => :all,
         "*/*" => :all,
         "text/html" => :html
@@ -52,33 +52,33 @@ RSpec.describe Hanami::Action::Config do
     end
 
     it "can be set with a new mime type to format mappings" do
-      config.formats = {"*/*" => :all}
-      expect(config.formats).to eq("*/*" => :all)
+      config.format_mappings = {"*/*" => :all}
+      expect(config.format_mappings).to eq("*/*" => :all)
     end
   end
 
   describe "#format" do
     before do
-      config.formats = {"text/html" => :html}
+      config.format_mappings = {"text/html" => :html}
     end
 
     it "adds the given MIME type to format mapping" do
-      config.format custom: "custom/format"
+      config.add_format custom: "custom/format"
 
-      expect(config.formats).to eq(
+      expect(config.format_mappings).to eq(
         "text/html" => :html,
         "custom/format" => :custom
       )
     end
 
     it "replaces the mapping for an existing MIME type" do
-      config.format custom: "text/html"
+      config.add_format custom: "text/html"
 
-      expect(config.formats).to eq("text/html" => :custom)
+      expect(config.format_mappings).to eq("text/html" => :custom)
     end
 
     it "raises an error if the given format cannot be coerced into symbol" do
-      expect { config.format(23 => "boom") }.to raise_error(TypeError)
+      expect { config.add_format(23 => "boom") }.to raise_error(TypeError)
     end
 
     it "raises an error if the given mime type cannot be coerced into string" do
@@ -88,13 +88,13 @@ RSpec.describe Hanami::Action::Config do
         end
       end.new
 
-      expect { config.format(boom: obj) }.to raise_error(TypeError)
+      expect { config.add_format(boom: obj) }.to raise_error(TypeError)
     end
   end
 
   describe "#format_for" do
     before do
-      config.formats = {"text/html" => :html}
+      config.format_mappings = {"text/html" => :html}
     end
 
     it "returns the configured format for the given MIME type" do
@@ -102,7 +102,7 @@ RSpec.describe Hanami::Action::Config do
     end
 
     it "returns the most recently configured format for a given MIME type" do
-      config.format htm: "text/html"
+      config.add_format htm: "text/html"
 
       expect(config.format_for("text/html")).to eq(:htm)
     end
@@ -114,14 +114,14 @@ RSpec.describe Hanami::Action::Config do
 
   describe "#mime_types" do
     it "returns the MIME types from the configured formats (as well as the default MIME types)" do
-      config.formats = {"custom/type" => :custom}
+      config.format_mappings = {"custom/type" => :custom}
       expect(config.mime_types).to eq ["custom/type"] + Hanami::Action::Mime::TYPES.values
     end
   end
 
   describe "#mime_type_for" do
     before do
-      config.formats = {"text/html" => :html}
+      config.format_mappings = {"text/html" => :html}
     end
 
     it "returns the configured MIME type for the given format" do

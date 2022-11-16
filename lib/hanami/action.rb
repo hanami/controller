@@ -58,7 +58,7 @@ module Hanami
 
     # See {Config} for individual setting accessor API docs
     setting :handled_exceptions, default: {}
-    setting :formats, default: Config::DEFAULT_FORMATS
+    setting :format_mappings, default: Config::DEFAULT_FORMAT_MAPPINGS
     setting :default_request_format, constructor: -> (format) {
       Utils::Kernel.Symbol(format) unless format.nil?
     }
