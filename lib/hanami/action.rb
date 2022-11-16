@@ -278,6 +278,14 @@ module Hanami
       config.after_callbacks.prepend(...)
     end
 
+    # TODO: document
+    def self.format(...)
+      config.format(...)
+    end
+    # class << self
+    #   alias_method :accept, :format
+    # end
+
     # Restrict the access to the specified mime type symbols.
     #
     # @param formats[Array<Symbol>] one or more symbols representing mime type(s)

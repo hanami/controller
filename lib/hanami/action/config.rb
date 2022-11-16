@@ -144,7 +144,7 @@ module Hanami
       end
 
       # TODO: document
-      def use_formats(*formats)
+      def format(*formats)
         default_format = formats.first
 
         self.accepted_formats = formats
