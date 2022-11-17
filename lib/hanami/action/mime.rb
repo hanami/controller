@@ -68,6 +68,8 @@ module Hanami
         zip: "application/zip"
       }.freeze
 
+      ANY_TYPE = "*/*"
+
       class << self
         # Returns a format name for the given content type.
         #
@@ -242,7 +244,7 @@ module Hanami
         # @since 2.0.0
         # @api private
         def accepted_mime_types(config)
-          return ["*/*"] if config.formats.empty?
+          return [ANY_TYPE] if config.formats.empty?
 
           config.formats.map { |format| format_to_mime_types(format, config) }.flatten(1)
         end
