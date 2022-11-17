@@ -10,8 +10,7 @@ module Hanami
         # @api private
         DEFAULT_MAPPING = {
           "application/octet-stream" => :all,
-          "*/*" => :all,
-          "text/html" => :html
+          "*/*" => :all
         }.freeze
 
         # @since 2.0.0
