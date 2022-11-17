@@ -311,7 +311,7 @@ module Hanami
         response = build_response(
           request: request,
           config: config,
-          content_type: Mime.calculate_content_type_with_charset(config, request, config.formats.accepted_mime_types),
+          content_type: Mime.response_content_type_with_charset(request, config),
           env: env,
           headers: config.default_headers,
           sessions_enabled: sessions_enabled?

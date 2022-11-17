@@ -235,10 +235,10 @@ module Hanami
       #
       # @since 2.0.0
       # @api private
-      def self.calculate_content_type_with_charset(config, request, accepted_mime_types)
-        charset = self.charset(config.default_charset)
-        content_type = self.content_type(config, request, accepted_mime_types)
-        content_type_with_charset(content_type, charset)
+      def self.response_content_type_with_charset(request, config)
+        content_type = self.content_type(config, request, config.formats.accepted_mime_types)
+
+        content_type_with_charset(content_type, charset(config.default_charset))
       end
 
       # Patched version of <tt>Rack::Utils.best_q_match</tt>.
