@@ -58,7 +58,29 @@ module Hanami
           .to_h
       end
 
-      # TODO: document
+      # @!attribute [r] formats
+      #   Returns the format config for the action.
+      #
+      #   @return [Config::Formats]
+      #
+      #   @since 2.0.0
+      #   @api public
+
+      # Sets the format (or formats) for the action.
+      #
+      # To configure custom formats and MIME type mappings, call {Formats#add formats.add} first.
+      #
+      # @example
+      #   config.format :html, :json
+      #
+      # @param formats [Array<Symbol>] the format names
+      #
+      # @return [Array<Symbol>] the given format names
+      #
+      # @see #formats
+      #
+      # @since 2.0.0
+      # @api public
       def format(*formats)
         self.formats.values = formats
       end

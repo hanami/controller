@@ -271,7 +271,10 @@ module Hanami
       config.after_callbacks.prepend(...)
     end
 
-    # TODO: document
+    # @see Config#format
+    #
+    # @since 2.0.0
+    # @api public
     def self.format(...)
       config.format(...)
     end
