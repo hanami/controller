@@ -58,19 +58,6 @@ module Hanami
           .to_h
       end
 
-      # Returns the configured format's MIME types
-      #
-      # @return [Array<String>] the format's MIME types
-      #
-      # @see Hanami::Action::Config::Formats
-      #
-      # @since 0.8.0
-      #
-      # @api private
-      def mime_types
-        formats.mime_types
-      end
-
       # Returns a MIME type for the given format
       #
       # @param format [#to_sym] a format
@@ -95,7 +82,7 @@ module Hanami
       # @since 2.0.0
       # @api private
       def accepted_mime_types
-        formats.any? ? Mime.restrict_mime_types(self) : mime_types
+        formats.any? ? Mime.restrict_mime_types(self) : formats.mime_types
       end
 
       # @!attribute [rw] default_charset

@@ -79,13 +79,6 @@ RSpec.describe Hanami::Action::Config do
     end
   end
 
-  describe "#mime_types" do
-    it "returns the MIME types from the configured formats (as well as the default MIME types)" do
-      config.formats.mapping = {custom: "custom/type"}
-      expect(config.mime_types).to eq(["custom/type"] + Hanami::Action::Mime::TYPES.values)
-    end
-  end
-
   describe "#mime_type_for" do
     before do
       config.formats.mapping = {html: "text/html"}

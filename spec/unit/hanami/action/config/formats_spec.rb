@@ -22,4 +22,12 @@ RSpec.describe Hanami::Action::Config::Formats do
       expect(formats.format_for("*/*")).to be nil
     end
   end
+
+  describe "#mime_types" do
+    it "returns the MIME types from the configured formats (as well as the default MIME types)" do
+      formats.mapping = {custom: "custom/type"}
+
+      expect(formats.mime_types).to eq(["custom/type"] + Hanami::Action::Mime::TYPES.values)
+    end
+  end
 end

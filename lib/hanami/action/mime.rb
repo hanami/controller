@@ -169,7 +169,7 @@ module Hanami
           format_to_mime_type(format, config)
         end
 
-        accepted_mime_types = mime_types & config.mime_types
+        accepted_mime_types = mime_types & config.formats.mime_types
 
         return if accepted_mime_types.empty?
 
