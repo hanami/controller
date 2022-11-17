@@ -35,7 +35,7 @@ RSpec.describe Hanami::Action::Config do
     end
 
     it "adds the given MIME type to format mapping" do
-      config.formats.add custom: "custom/format"
+      config.formats.add :custom, "custom/format"
 
       expect(config.formats.mapping).to eq(
         "text/html" => :html,
@@ -44,13 +44,13 @@ RSpec.describe Hanami::Action::Config do
     end
 
     it "replaces the mapping for an existing MIME type" do
-      config.formats.add custom: "text/html"
+      config.formats.add :custom, "text/html"
 
       expect(config.formats.mapping).to eq("text/html" => :custom)
     end
 
     it "raises an error if the given format cannot be coerced into symbol" do
-      expect { config.formats.add(23 => "boom") }.to raise_error(TypeError)
+      expect { config.formats.add(23, "boom") }.to raise_error(TypeError)
     end
 
     it "raises an error if the given mime type cannot be coerced into string" do
@@ -60,7 +60,7 @@ RSpec.describe Hanami::Action::Config do
         end
       end.new
 
-      expect { config.formats.add(boom: obj) }.to raise_error(TypeError)
+      expect { config.formats.add(:boom, obj) }.to raise_error(TypeError)
     end
   end
 

@@ -1585,7 +1585,7 @@ module Mimes
   end
 
   class CustomFromAccept < Hanami::Action
-    config.formats.add custom: "application/custom"
+    config.formats.add :custom, "application/custom"
 
     format :json, :custom
 
@@ -1595,7 +1595,7 @@ module Mimes
   end
 
   class Restricted < Hanami::Action
-    config.formats.add custom: "application/custom"
+    config.formats.add :custom, "application/custom"
 
     format :html, :json, :custom
 

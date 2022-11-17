@@ -20,9 +20,20 @@ RSpec.describe Hanami::Action::Config::Formats do
 
   describe "#add" do
     it "adds a new mapping" do
-      expect { formats.add(custom: "application/custom") }
+      expect { formats.add(:custom, "application/custom") }
         .to change { formats.mapping }
         .to include("application/custom" => :custom)
+    end
+
+    it "appends the format to the list of enabled formats" do
+      formats.values = [:json]
+
+      expect {
+        formats.add(:custom, "application/custom")
+        formats.add(:custom, "application/custom+more")
+      }
+        .to change { formats.values }
+        .to [:json, :custom]
     end
   end
 
@@ -40,7 +51,7 @@ RSpec.describe Hanami::Action::Config::Formats do
 
   describe "#clear" do
     it "clears any previously assigned mappings and values" do
-      formats.add(custom: "application/custom")
+      formats.add(:custom, "application/custom")
       formats.values = [:custom]
 
       formats.clear
@@ -60,7 +71,7 @@ RSpec.describe Hanami::Action::Config::Formats do
     end
 
     it "returns the most recently configured format for a given MIME type" do
-      formats.add htm: "text/html"
+      formats.add :htm, "text/html"
 
       expect(formats.format_for("text/html")).to eq(:htm)
     end

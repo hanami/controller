@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "hanami/utils/kernel"
+
 module Hanami
   class Action
     class Config
@@ -41,23 +43,30 @@ module Hanami
         def mapping=(mappings)
           @mapping = {}
 
-          mappings.each do |symbol, mime_type|
-            add(symbol => mime_type)
+          mappings.each do |format_name, mime_type|
+            add(format_name, mime_type)
           end
         end
 
-        # Add a custom format
+        # Add a custom format to MIME type mapping and enables the format
         #
-        # @param mapping [Hash]
+        # @param format [Symbol]
+        # @param mime_type [String]
         #
         # @example
-        #   config.formats.add(json: "application/scim+json")
+        #   config.formats.add(:json, "application/scim+json")
+        #
+        # @return [self]
         #
         # @since 2.0.0
         # @api public
-        def add(mapping)
-          symbol, mime_type = *Utils::Kernel.Array(mapping)
-          @mapping[Utils::Kernel.String(mime_type)] = Utils::Kernel.Symbol(symbol)
+        def add(format, mime_type)
+          format = Utils::Kernel.Symbol(format)
+
+          @mapping[Utils::Kernel.String(mime_type)] = format
+          @values << format unless @values.include?(format)
+
+          self
         end
 
         # @since 2.0.0
