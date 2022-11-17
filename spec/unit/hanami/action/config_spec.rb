@@ -29,41 +29,6 @@ RSpec.describe Hanami::Action::Config do
     end
   end
 
-  describe "#format" do
-    before do
-      config.formats.mapping = {html: "text/html"}
-    end
-
-    it "adds the given MIME type to format mapping" do
-      config.formats.add :custom, "custom/format"
-
-      expect(config.formats.mapping).to eq(
-        "text/html" => :html,
-        "custom/format" => :custom
-      )
-    end
-
-    it "replaces the mapping for an existing MIME type" do
-      config.formats.add :custom, "text/html"
-
-      expect(config.formats.mapping).to eq("text/html" => :custom)
-    end
-
-    it "raises an error if the given format cannot be coerced into symbol" do
-      expect { config.formats.add(23, "boom") }.to raise_error(TypeError)
-    end
-
-    it "raises an error if the given mime type cannot be coerced into string" do
-      obj = Class.new(BasicObject) do
-        def hash
-          23
-        end
-      end.new
-
-      expect { config.formats.add(:boom, obj) }.to raise_error(TypeError)
-    end
-  end
-
   describe "#default_charset" do
     it "is nil by default" do
       expect(config.default_charset).to be nil

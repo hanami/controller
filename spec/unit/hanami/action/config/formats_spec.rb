@@ -25,6 +25,13 @@ RSpec.describe Hanami::Action::Config::Formats do
         .to include("application/custom" => :custom)
     end
 
+    it "replaces the a previously set mapping for a given MIME type" do
+      formats.mapping = {html: "text/html"}
+      formats.add :custom, "text/html"
+
+      expect(formats.mapping).to eq("text/html" => :custom)
+    end
+
     it "appends the format to the list of enabled formats" do
       formats.values = [:json]
 
@@ -34,6 +41,20 @@ RSpec.describe Hanami::Action::Config::Formats do
       }
         .to change { formats.values }
         .to [:json, :custom]
+    end
+
+    it "raises an error if the given format cannot be coerced into symbol" do
+      expect { formats.add(23, "boom") }.to raise_error(TypeError)
+    end
+
+    it "raises an error if the given mime type cannot be coerced into string" do
+      obj = Class.new(BasicObject) do
+        def hash
+          23
+        end
+      end.new
+
+      expect { formats.add(:boom, obj) }.to raise_error(TypeError)
     end
   end
 
