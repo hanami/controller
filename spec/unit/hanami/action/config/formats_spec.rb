@@ -25,6 +25,12 @@ RSpec.describe Hanami::Action::Config::Formats do
         .to include("application/custom" => :custom)
     end
 
+    it "can add a mapping to multiple content types" do
+      expect { formats.add(:json, ["application/json", "application/json+scim"]) }
+        .to change { formats.mapping }
+        .to include("application/json" => :json, "application/json+scim" => :json)
+    end
+
     it "replaces the a previously set mapping for a given MIME type" do
       formats.mapping = {html: "text/html"}
       formats.add :custom, "text/html"

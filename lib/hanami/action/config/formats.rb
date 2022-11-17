@@ -48,22 +48,37 @@ module Hanami
           end
         end
 
-        # Add a custom format to MIME type mapping and enables the format
+        # Add a custom format to MIME type mapping and enables the format.
         #
-        # @param format [Symbol]
-        # @param mime_type [String]
+        # @overload add(format, mime_type)
+        #   Adds a format mapping to a single MIME type.
         #
-        # @example
-        #   config.formats.add(:json, "application/scim+json")
+        #   @param format [Symbol]
+        #   @param mime_type [String]
+        #
+        #   @example
+        #     config.formats.add(:json, "application/json")
+        #
+        # @overload add(format, mime_types)
+        #   Adds a format mapping to multiple MIME types.
+        #
+        #   @param format [Symbol]
+        #   @param mime_types [Array<String>]
+        #
+        #   @example
+        #     config.formats.add(:json, ["application/json+scim", "application/json"])
         #
         # @return [self]
         #
         # @since 2.0.0
         # @api public
-        def add(format, mime_type)
+        def add(format, mime_types)
           format = Utils::Kernel.Symbol(format)
 
-          @mapping[Utils::Kernel.String(mime_type)] = format
+          Array(mime_types).each do |mime_type|
+            @mapping[Utils::Kernel.String(mime_type)] = format
+          end
+
           @values << format unless @values.include?(format)
 
           self
