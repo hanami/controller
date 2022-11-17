@@ -3,6 +3,21 @@
 RSpec.describe Hanami::Action::Config::Formats do
   subject(:formats) { described_class.new }
 
+  describe "#mapping" do
+    it "is a basic mapping of mime types to `:all` formats by default" do
+      expect(formats.mapping).to eq(
+        "application/octet-stream" => :all,
+        "*/*" => :all
+      )
+    end
+
+    it "can be replaced a mapping" do
+      expect { formats.mapping = {all: "*/*"} }
+        .to change { formats.mapping }
+        .to("*/*" => :all)
+    end
+  end
+
   describe "#format_for" do
     before do
       formats.mapping = {html: "text/html"}

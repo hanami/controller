@@ -29,20 +29,6 @@ RSpec.describe Hanami::Action::Config do
     end
   end
 
-  describe "#formats" do
-    it "is a basic mapping of mime types to `:all` formats by default" do
-      expect(config.formats.mapping).to eq(
-        "application/octet-stream" => :all,
-        "*/*" => :all
-      )
-    end
-
-    it "can be set with a new mime type to format mappings" do
-      config.formats.mapping = {all: "*/*"}
-      expect(config.formats.mapping).to eq("*/*" => :all)
-    end
-  end
-
   describe "#format" do
     before do
       config.formats.mapping = {html: "text/html"}
