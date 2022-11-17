@@ -104,7 +104,7 @@ module Hanami
       # @api private
       def self.default_response_type(config)
         # FIXME: I don't think we have test coverage of this code path
-        format_to_mime_type(config.default_format, config.formats)
+        format_to_mime_type(config.formats.default, config.formats)
       end
 
       # @since 2.0.0

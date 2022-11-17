@@ -63,10 +63,6 @@ module Hanami
         self.formats.values = formats
       end
 
-      def default_format
-        formats.default
-      end
-
       # @!attribute [rw] default_charset
       #
       #   Sets a charset (character set) as default fallback for all the requests
