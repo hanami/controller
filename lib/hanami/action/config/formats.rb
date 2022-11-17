@@ -5,6 +5,10 @@ require "hanami/utils/kernel"
 module Hanami
   class Action
     class Config
+      # Action format configuration.
+      #
+      # @since 2.0.0
+      # @api private
       class Formats
         # Default MIME type to format mapping
         #
@@ -124,10 +128,10 @@ module Hanami
         # @example
         #   @config.formats.format_for("application/json") # => :json
         #
+        # @see #mime_type_for
+        #
         # @since 2.0.0
         # @api public
-        #
-        # @see #mime_type_for
         def format_for(mime_type)
           @mapping[mime_type]
         end
@@ -136,22 +140,22 @@ module Hanami
         #
         # @param format [Symbol] the format name
         #
-        # @return [String,NilClass] the associated MIME Type, if any
+        # @return [String, nil] the associated MIME Type, if any
         #
         # @example
         #   @config.formats.mime_type_for(:json) # => "application/json"
         #
+        # @see #format_for
+        #
         # @since 2.0.0
         # @api public
-        #
-        # @see #format_for
         def mime_type_for(format)
           @mapping.key(format)
         end
 
         # Returns the default format name
         #
-        # @return [Symbol,NilClass] the default format name, if any
+        # @return [Symbol, nil] the default format name, if any
         #
         # @example
         #   @config.formats.default # => :json
