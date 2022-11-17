@@ -114,27 +114,6 @@ module Hanami
           @mapping.key(format)
         end
 
-        # Retrieve the supported MIME Types
-        #
-        # @return [Array<String>] the supported MIME Types
-        #
-        # @example
-        #   @config.formats.mime_types # => ["text/html", "application/json"]
-        #
-        # @since 2.0.0
-        # @api public
-        def mime_types
-          # FIXME: this isn't efficient. speed it up!
-          ((@mapping.keys - DEFAULT_MAPPING.keys) +
-            Hanami::Action::Mime::TYPES.values).freeze
-        end
-
-        # @since 2.0.0
-        # @api private
-        def accepted_mime_types
-          any? ? Mime.restrict_mime_types(self) : mime_types
-        end
-
         # Returns the default format name
         #
         # @return [Symbol,NilClass] the default format name, if any
