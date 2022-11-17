@@ -79,26 +79,6 @@ RSpec.describe Hanami::Action::Config do
     end
   end
 
-  describe "#format_for" do
-    before do
-      config.formats.mapping = {html: "text/html"}
-    end
-
-    it "returns the configured format for the given MIME type" do
-      expect(config.format_for("text/html")).to eq :html
-    end
-
-    it "returns the most recently configured format for a given MIME type" do
-      config.formats.add htm: "text/html"
-
-      expect(config.format_for("text/html")).to eq(:htm)
-    end
-
-    it "returns nil if no matching format is found" do
-      expect(config.format_for("*/*")).to be nil
-    end
-  end
-
   describe "#mime_types" do
     it "returns the MIME types from the configured formats (as well as the default MIME types)" do
       config.formats.mapping = {custom: "custom/type"}

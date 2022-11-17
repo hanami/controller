@@ -58,20 +58,6 @@ module Hanami
           .to_h
       end
 
-      # Returns the configured format for the given MIME type
-      #
-      # @param mime_type [#to_s,#to_str] A mime type
-      #
-      # @return [Symbol,nil] the corresponding format, nil if not found
-      #
-      # @see Hanami::Action::Config::Formats#add
-      #
-      # @since 0.2.0
-      # @api private
-      def format_for(mime_type)
-        formats.format_for(mime_type)
-      end
-
       # Returns the configured format's MIME types
       #
       # @return [Array<String>] the format's MIME types

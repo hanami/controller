@@ -130,7 +130,7 @@ module Hanami
         return if content_type.nil?
 
         ct = content_type.split(";").first
-        config.format_for(ct) || format_for(ct)
+        config.formats.format_for(ct) || format_for(ct)
       end
 
       # @since 2.0.0
