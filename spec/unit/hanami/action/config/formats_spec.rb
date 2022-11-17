@@ -18,6 +18,14 @@ RSpec.describe Hanami::Action::Config::Formats do
     end
   end
 
+  describe "#add" do
+    it "adds a new mapping" do
+      expect { formats.add(custom: "application/custom") }
+        .to change { formats.mapping }
+        .to include("application/custom" => :custom)
+    end
+  end
+
   describe "#format_for" do
     before do
       formats.mapping = {html: "text/html"}

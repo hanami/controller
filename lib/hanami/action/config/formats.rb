@@ -48,6 +48,20 @@ module Hanami
           @values = Utils::Kernel.Array(formats)
         end
 
+        # Add a custom format
+        #
+        # @param mapping [Hash]
+        #
+        # @example
+        #   config.formats.add(json: "application/scim+json")
+        #
+        # @since 2.0.0
+        # @api public
+        def add(mapping)
+          symbol, mime_type = *Utils::Kernel.Array(mapping)
+          @mapping[Utils::Kernel.String(mime_type)] = Utils::Kernel.Symbol(symbol)
+        end
+
         # @since 2.0.0
         # @api private
         def empty?
@@ -64,20 +78,6 @@ module Hanami
         # @api private
         def map(&blk)
           @values.map(&blk)
-        end
-
-        # Add a custom format
-        #
-        # @param mapping [Hash]
-        #
-        # @example
-        #   config.formats.add(json: "application/scim+json")
-        #
-        # @since 2.0.0
-        # @api public
-        def add(mapping)
-          symbol, mime_type = *Utils::Kernel.Array(mapping)
-          @mapping[Utils::Kernel.String(mime_type)] = Utils::Kernel.Symbol(symbol)
         end
 
         # Retrieve the format name associated with the given MIME Type
