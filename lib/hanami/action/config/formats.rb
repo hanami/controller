@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "hanami/utils/kernel"
+require "dry/core"
 
 module Hanami
   class Action
@@ -10,6 +11,8 @@ module Hanami
       # @since 2.0.0
       # @api private
       class Formats
+        include Dry.Equalizer(:values, :mapping)
+
         # Default MIME type to format mapping
         #
         # @since 2.0.0
