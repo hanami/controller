@@ -38,6 +38,18 @@ RSpec.describe Hanami::Action::Config::Formats do
     end
   end
 
+  describe "#clear" do
+    it "clears any previously assigned mappings and values" do
+      formats.add(custom: "application/custom")
+      formats.values = [:custom]
+
+      formats.clear
+
+      expect(formats.mapping.keys).not_to include "application/custom"
+      expect(formats.values).to eq []
+    end
+  end
+
   describe "#format_for" do
     before do
       formats.mapping = {html: "text/html"}

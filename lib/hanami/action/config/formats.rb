@@ -78,6 +78,19 @@ module Hanami
           @values.map(&blk)
         end
 
+        # Clears any previously added mappings and format values.
+        #
+        # @return [self]
+        #
+        # @since 2.0.0
+        # @api public
+        def clear
+          @mapping = DEFAULT_MAPPING.dup
+          @values = []
+
+          self
+        end
+
         # Retrieve the format name associated with the given MIME Type
         #
         # @param mime_type [String] the MIME Type
