@@ -30,4 +30,18 @@ RSpec.describe Hanami::Action::Config::Formats do
       expect(formats.mime_types).to eq(["custom/type"] + Hanami::Action::Mime::TYPES.values)
     end
   end
+
+  describe "#mime_type_for" do
+    before do
+      formats.mapping = {html: "text/html"}
+    end
+
+    it "returns the configured MIME type for the given format" do
+      expect(formats.mime_type_for(:html)).to eq "text/html"
+    end
+
+    it "returns nil if no matching MIME type is found" do
+      expect(formats.mime_type_for(:missing)).to be nil
+    end
+  end
 end

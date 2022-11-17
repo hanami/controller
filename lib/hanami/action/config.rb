@@ -58,18 +58,6 @@ module Hanami
           .to_h
       end
 
-      # Returns a MIME type for the given format
-      #
-      # @param format [#to_sym] a format
-      #
-      # @return [String,nil] the corresponding MIME type, if present
-      #
-      # @since 0.2.0
-      # @api private
-      def mime_type_for(format)
-        formats.mime_type_for(format)
-      end
-
       # TODO: document
       def format(*formats)
         self.formats.values = formats
