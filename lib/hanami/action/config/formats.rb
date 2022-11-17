@@ -130,6 +130,12 @@ module Hanami
             Hanami::Action::Mime::TYPES.values).freeze
         end
 
+        # @since 2.0.0
+        # @api private
+        def accepted_mime_types
+          any? ? Mime.restrict_mime_types(self) : mime_types
+        end
+
         # Returns the default format name
         #
         # @return [Symbol,NilClass] the default format name, if any

@@ -103,15 +103,16 @@ module Hanami
       # @since 2.0.0
       # @api private
       def self.default_response_type(config)
-        format_to_mime_type(config.default_format, config)
+        # FIXME: I don't think we have test coverage of this code path
+        format_to_mime_type(config.default_format, config.formats)
       end
 
       # @since 2.0.0
       # @api private
-      def self.format_to_mime_type(format, config)
+      def self.format_to_mime_type(format, formats_config)
         return if format.nil?
 
-        config.mime_type_for(format) ||
+        formats_config.mime_type_for(format) ||
           TYPES.fetch(format) { raise Hanami::Action::UnknownFormatError.new(format) }
       end
 
@@ -144,7 +145,8 @@ module Hanami
       def self.detect_format_and_content_type(value, config)
         case value
         when Symbol
-          [value, format_to_mime_type(value, config)]
+          # FIXME: I don't think we have test coverage of this code path
+          [value, format_to_mime_type(value, config.formats)]
         when String
           [detect_format(value, config), value]
         else
@@ -154,7 +156,7 @@ module Hanami
 
       # Transforms symbols to MIME Types
       # @example
-      #   restrict_mime_types(config, [:json])  #=> ["application/json"]
+      #   restrict_mime_types(config.formats, [:json])  #=> ["application/json"]
       #
       # @return [Array<String>, nil]
       #
@@ -162,14 +164,14 @@ module Hanami
       #
       # @since 2.0.0
       # @api private
-      def self.restrict_mime_types(config)
-        return if config.formats.empty?
+      def self.restrict_mime_types(formats_config)
+        return if formats_config.empty?
 
-        mime_types = config.formats.map do |format|
-          format_to_mime_type(format, config)
+        mime_types = formats_config.map do |format|
+          format_to_mime_type(format, formats_config)
         end
 
-        accepted_mime_types = mime_types & config.formats.mime_types
+        accepted_mime_types = mime_types & formats_config.mime_types
 
         return if accepted_mime_types.empty?
 
@@ -222,7 +224,7 @@ module Hanami
       # @since 2.0.0
       # @api private
       def self.accepted_mime_type?(mime_type, config)
-        config.accepted_mime_types.any? { |accepted_mime_type|
+        config.formats.accepted_mime_types.any? { |accepted_mime_type|
           ::Rack::Mime.match?(accepted_mime_type, mime_type)
         }
       end

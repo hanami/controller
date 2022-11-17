@@ -79,12 +79,6 @@ module Hanami
         formats.default
       end
 
-      # @since 2.0.0
-      # @api private
-      def accepted_mime_types
-        formats.any? ? Mime.restrict_mime_types(self) : formats.mime_types
-      end
-
       # @!attribute [rw] default_charset
       #
       #   Sets a charset (character set) as default fallback for all the requests
