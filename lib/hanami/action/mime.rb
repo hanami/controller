@@ -244,7 +244,7 @@ module Hanami
         def accepted_mime_types(config)
           return ["*/*"] if config.formats.empty?
 
-          config.formats.map { |format| format_to_mime_type(format, config) }
+          config.formats.map { |format| format_to_mime_types(format, config) }.flatten(1)
         end
 
         # @since 2.0.0
@@ -269,6 +269,14 @@ module Hanami
         def format_to_mime_type(format, config)
           config.formats.mime_type_for(format) ||
             TYPES.fetch(format) { raise Hanami::Action::UnknownFormatError.new(format) }
+        end
+
+        # @since 2.0.0
+        # @api private
+        def format_to_mime_types(format, config)
+          config.formats.mime_types_for(format).tap { |types|
+            types << TYPES[format] if TYPES.key?(format)
+          }
         end
       end
     end

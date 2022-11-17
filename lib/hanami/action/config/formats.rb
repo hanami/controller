@@ -47,8 +47,10 @@ module Hanami
         def mapping=(mappings)
           @mapping = {}
 
-          mappings.each do |format_name, mime_type|
-            add(format_name, mime_type)
+          mappings.each do |format_name, mime_types|
+            Array(mime_types).each do |mime_type|
+              add(format_name, mime_type)
+            end
           end
         end
 
@@ -136,11 +138,11 @@ module Hanami
           @mapping[mime_type]
         end
 
-        # Retrieve the MIME Type associated with the given format name
+        # Returns the primary MIME type associated with the given format.
         #
         # @param format [Symbol] the format name
         #
-        # @return [String, nil] the associated MIME Type, if any
+        # @return [String, nil] the associated MIME type, if any
         #
         # @example
         #   @config.formats.mime_type_for(:json) # => "application/json"
@@ -151,6 +153,20 @@ module Hanami
         # @api public
         def mime_type_for(format)
           @mapping.key(format)
+        end
+
+        # Returns an array of all MIME types associated with the given format.
+        #
+        # Returns an empty array if no such format is configured.
+        #
+        # @param format [Symbol] the format name
+        #
+        # @return [Array<String>] the associated MIME types
+        #
+        # @since 2.0.0
+        # @api public
+        def mime_types_for(format)
+          @mapping.each_with_object([]) { |(mime_type, f), arr| arr << mime_type if format == f }
         end
 
         # Returns the default format name
