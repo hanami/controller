@@ -26,6 +26,18 @@ RSpec.describe Hanami::Action::Config::Formats do
     end
   end
 
+  describe "#values" do
+    it "returns an empty array by default" do
+      expect(formats.values).to eq []
+    end
+
+    it "can have a list of format names assigned" do
+      expect { formats.values = [:json, :html] }
+        .to change { formats.values }
+        .to [:json, :html]
+    end
+  end
+
   describe "#format_for" do
     before do
       formats.mapping = {html: "text/html"}

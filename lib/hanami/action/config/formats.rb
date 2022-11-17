@@ -15,7 +15,11 @@ module Hanami
 
         # @since 2.0.0
         # @api private
-        attr_reader :values, :mapping
+        attr_reader :mapping
+
+        # @since 2.0.0
+        # @api private
+        attr_accessor :values
 
         # @since 2.0.0
         # @api private
@@ -40,12 +44,6 @@ module Hanami
           mappings.each do |symbol, mime_type|
             add(symbol => mime_type)
           end
-        end
-
-        # @since 2.0.0
-        # @api private
-        def values=(*formats)
-          @values = Utils::Kernel.Array(formats)
         end
 
         # Add a custom format
