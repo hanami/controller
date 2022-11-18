@@ -2,6 +2,19 @@
 
 Complete, fast and testable actions for Rack
 
+## v2.0.0 - 2022-11-22
+
+### Added
+
+- [Tim Riley] Use Zeitwerk to autoload the gem
+- [Tim Riley] Introduce `Hanami::Action::Config#formats`. Use `config.actions.formats.add(:json)`. Custom formats can use `config.actions.formats.add(:graphql, ["application/graphql"])`
+
+### Changed
+
+- [Tim Riley] Changed `Hanami::Action::Config#format` semantic: it's no longer used to add custom MIME Types, but as a macro to setup the wanted format for action(s)
+- [Tim Riley] Removed `Hanami::Action::Config#default_request_format` and `#default_response_format`, use `#format` for both
+- [Tim Riley] Removed `Hanami::Action::Config#accept`, use `#format`
+
 ## v2.0.0.rc1 - 2022-11-08
 
 ### Changed
