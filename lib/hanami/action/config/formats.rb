@@ -45,18 +45,6 @@ module Hanami
           @mapping = original.mapping.dup
         end
 
-        # @since 2.0.0
-        # @api private
-        def mapping=(mappings)
-          @mapping = {}
-
-          mappings.each do |format_name, mime_types|
-            Array(mime_types).each do |mime_type|
-              add(format_name, mime_type)
-            end
-          end
-        end
-
         # Add a custom format to MIME type mapping and enables the format.
         #
         # @overload add(format, mime_type)
@@ -109,6 +97,18 @@ module Hanami
         # @api private
         def map(&blk)
           @values.map(&blk)
+        end
+
+        # @since 2.0.0
+        # @api private
+        def mapping=(mappings)
+          @mapping = {}
+
+          mappings.each do |format_name, mime_types|
+            Array(mime_types).each do |mime_type|
+              add(format_name, mime_type)
+            end
+          end
         end
 
         # Clears any previously added mappings and format values.
