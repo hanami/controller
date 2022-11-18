@@ -45,9 +45,16 @@ module Hanami
           @mapping = original.mapping.dup
         end
 
-        # Add a custom format to MIME type mapping and enables the format.
+        # @overload add(format)
+        #   Adds and enables a format.
+        #
+        #   @param format [Symbol]
+        #
+        #   @example
+        #     config.formats.add(:json)
         #
         # @overload add(format, mime_type)
+        #   Adds a custom format to MIME type mapping and enables the format.
         #   Adds a format mapping to a single MIME type.
         #
         #   @param format [Symbol]
@@ -69,7 +76,7 @@ module Hanami
         #
         # @since 2.0.0
         # @api public
-        def add(format, mime_types)
+        def add(format, mime_types = [])
           format = Utils::Kernel.Symbol(format)
 
           Array(mime_types).each do |mime_type|
