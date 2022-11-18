@@ -27,6 +27,11 @@ RSpec.describe Hanami::Action::Config do
       config.format :json, :html
       expect(config.formats.values).to eq [:json, :html]
     end
+
+    it "returns previously set formats" do
+      config.format :json, :html
+      expect(config.format).to eq [:json, :html]
+    end
   end
 
   describe "#default_charset" do

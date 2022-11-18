@@ -82,7 +82,11 @@ module Hanami
       # @since 2.0.0
       # @api public
       def format(*formats)
-        self.formats.values = formats
+        if formats.empty?
+          self.formats.values
+        else
+          self.formats.values = formats
+        end
       end
 
       # @!attribute [rw] default_charset
