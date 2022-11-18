@@ -58,7 +58,7 @@ module Hanami
 
     # See {Config} for individual setting accessor API docs
     setting :handled_exceptions, default: {}
-    setting :formats, default: Config::Formats.new, cloneable: true
+    setting :formats, default: Config::Formats.new, mutable: true
     setting :default_charset
     setting :default_headers, default: {}, constructor: -> (headers) { headers.compact }
     setting :cookies, default: {}, constructor: -> (cookie_options) {
@@ -70,8 +70,8 @@ module Hanami
       Pathname(File.expand_path(dir || Dir.pwd)).realpath
     }
     setting :public_directory, default: Config::DEFAULT_PUBLIC_DIRECTORY
-    setting :before_callbacks, default: Utils::Callbacks::Chain.new, cloneable: true
-    setting :after_callbacks, default: Utils::Callbacks::Chain.new, cloneable: true
+    setting :before_callbacks, default: Utils::Callbacks::Chain.new, mutable: true
+    setting :after_callbacks, default: Utils::Callbacks::Chain.new, mutable: true
 
     # @!scope class
 
