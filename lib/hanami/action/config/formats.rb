@@ -26,9 +26,15 @@ module Hanami
         # @api private
         attr_reader :mapping
 
+        # The array of enabled formats.
+        #
+        # @example
+        #   config.formats.values = [:html, :json]
+        #   config.formats.values # => [:html, :json]
+        #
         # @since 2.0.0
-        # @api private
-        attr_accessor :values
+        # @api public
+        attr_reader :values
 
         # @since 2.0.0
         # @api private
@@ -43,6 +49,13 @@ module Hanami
           super
           @values = original.values.dup
           @mapping = original.mapping.dup
+        end
+
+        # !@attribute [w] values
+        #   @since 2.0.0
+        #   @api public
+        def values=(formats)
+          @values = formats.map { |f| Utils::Kernel.Symbol(f) }
         end
 
         # @overload add(format)
