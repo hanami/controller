@@ -39,10 +39,10 @@ module Hanami
       # @since 2.0.0
       # @api private
       def self.build(status, env)
-        new(config: nil, content_type: Mime.best_q_match(env[Action::HTTP_ACCEPT]), env: env).tap do |r|
+        new(config: Action.config.dup, content_type: Mime.best_q_match(env[Action::HTTP_ACCEPT]), env: env).tap do |r|
           r.status = status
           r.body   = Http::Status.message_for(status)
-          r.set_format(Mime.format_for(r.content_type))
+          r.set_format(Mime.detect_format(r.content_type), config)
         end
       end
 
@@ -106,9 +106,12 @@ module Hanami
 
       # Sets the format and associated content type for the response.
       #
-      # Either a format name (`:json`) or a content type string (`"application/json"`) may be given.
-      # In either case, the format or content type will be derived from the given value, and both
-      # will be set.
+      # Either a format name (`:json`) or a MIME type (`"application/json"`) may be given. In either
+      # case, the format or content type will be derived from the given value, and both will be set.
+      #
+      # Providing an unknown format name will raise an {Hanami::Action::UnknownFormatError}.
+      #
+      # Providing an unknown MIME type will set the content type and set the format as nil.
       #
       # @example Assigning via a format name symbol
       #   response.format = :json
@@ -121,6 +124,8 @@ module Hanami
       #   response.content_type # => "application/json"
       #
       # @param value [Symbol, String] the format name or content type
+      #
+      # @raise [Hanami::Action::UnknownFormatError] if an unknown format name is given
       #
       # @see Config#formats
       #

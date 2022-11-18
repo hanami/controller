@@ -1585,9 +1585,9 @@ module Mimes
   end
 
   class CustomFromAccept < Hanami::Action
-    config.format custom: "application/custom"
+    config.formats.add :custom, "application/custom"
 
-    accept :json, :custom
+    format :json, :custom
 
     def handle(*, res)
       res.body = res.format
@@ -1595,9 +1595,9 @@ module Mimes
   end
 
   class Restricted < Hanami::Action
-    config.format custom: "application/custom"
+    config.formats.add :custom, "application/custom"
 
-    accept :html, :json, :custom
+    format :html, :json, :custom
 
     def handle(_req, res)
       res.body = res.format
@@ -1610,20 +1610,8 @@ module Mimes
     end
   end
 
-  class OverrideDefaultResponse < Hanami::Action
-    def handle(*, res)
-      res.format = :xml
-    end
-
-    private
-
-    def default_response_format
-      :json
-    end
-  end
-
   class Strict < Hanami::Action
-    accept :json
+    format :json
 
     def handle(_req, res)
       res.body = res.format
@@ -1639,7 +1627,6 @@ module Mimes
         get "/restricted",         to: Mimes::Restricted.new
         get "/latin",              to: Mimes::Latin.new
         get "/nocontent",          to: Mimes::NoContent.new
-        get "/overwritten_format", to: Mimes::OverrideDefaultResponse.new
         get "/custom_from_accept", to: Mimes::CustomFromAccept.new
         get "/strict",             to: Mimes::Strict.new
       end
@@ -1653,9 +1640,7 @@ end
 
 module MimesWithDefault
   class Default < Hanami::Action
-    config.default_response_format = :html
-
-    accept :json
+    config.format :html, :json
 
     def handle(*, res)
       res.body = res.format

@@ -22,11 +22,6 @@ RSpec.describe "MIME Type" do
       expect(response.body).to                    eq("html")
     end
 
-    it "allows to override default_response_format" do
-      response = app.get("/overwritten_format")
-      expect(response.headers["Content-Type"]).to eq("application/xml; charset=utf-8")
-    end
-
     # FIXME: Review if this test must be in place
     it 'does not produce a "Content-Type" header when the request has a 204 No Content status' do
       response = app.get("/nocontent")
@@ -34,7 +29,7 @@ RSpec.describe "MIME Type" do
       expect(response.body).to        eq("")
     end
 
-    context "when ACCEPT header is set and no accept macro is use" do
+    context "when ACCEPT header is set and no format is configured" do
       it 'sets "Content-Type" header according to wildcard value' do
         response = app.get("/", "HTTP_ACCEPT" => "*/*")
         expect(response.headers["Content-Type"]).to eq("application/octet-stream; charset=utf-8")
@@ -42,27 +37,28 @@ RSpec.describe "MIME Type" do
       end
     end
 
-    context "when no ACCEPT or Content-Type are sent but there is a restriction using the accept macro" do
+    context "when no ACCEPT or Content-Type are sent but there is a format configured" do
       it "accepts the request and sets the status to 200" do
         response = app.get("/custom_from_accept")
         expect(response.status).to eq 200
       end
     end
 
-    context "when Content-Type are sent and there is a restriction using the accept macro" do
-      it 'sets "Content-Type" to fallback' do
+    context "when Content-Type are sent and there is a format configured" do
+      it 'accepts the request and sets the response "Content-Type" to the default format' do
         response = app.get("/custom_from_accept", "CONTENT_TYPE" => "application/custom")
-        expect(response.headers["Content-Type"]).to eq("application/octet-stream; charset=utf-8")
-        expect(response.body).to eq("all")
+        expect(response.status).to eq 200
+        expect(response.headers["Content-Type"]).to eq("application/json; charset=utf-8")
+        expect(response.body).to eq("json")
       end
 
-      it "sets status to 415 if Content-Type do not match" do
+      it "sets status to 415 if Content-Type does not match" do
         response = app.get("/custom_from_accept", "CONTENT_TYPE" => "application/xml")
         expect(response.status).to eq(415)
       end
     end
 
-    context "when ACCEPT and Content-Type are sent and we use the accept macro" do
+    context "when ACCEPT and Content-Type are sent and a format is configured" do
       it 'sets "Content-Type" header according to exact value' do
         response = app.get("/custom_from_accept", "HTTP_ACCEPT" => "application/custom")
         expect(response.headers["Content-Type"]).to eq("application/custom; charset=utf-8")
@@ -82,7 +78,7 @@ RSpec.describe "MIME Type" do
       end
     end
 
-    context "when ACCEPT and Content-Type are send and there are no restriction using accept macro" do
+    context "when ACCEPT and Content-Type are send and there is no format configured" do
       it 'sets "Content-Type" header according to exact and weighted value' do
         response = app.get("/", "HTTP_ACCEPT" => "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
         expect(response.headers["Content-Type"]).to eq("text/html; charset=utf-8")
@@ -99,8 +95,7 @@ RSpec.describe "MIME Type" do
     # See https://github.com/hanami/controller/issues/225
     context "with an accepted format and default response format" do
       let(:app) { Rack::MockRequest.new(MimesWithDefault::Application.new) }
-      let(:content_type) { "application/json" }
-      let(:response) { app.get("/default_and_accept", "CONTENT_TYPE" => content_type) }
+      let(:response) { app.get("/default_and_accept", "CONTENT_TYPE" => "application/json") }
 
       it "defaults to the accepted format" do
         expect(response.status).to be(200)

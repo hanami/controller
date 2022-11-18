@@ -11,16 +11,6 @@ module Hanami
     # @api public
     # @since 2.0.0
     class Config < Dry::Configurable::Config
-      # Default MIME type to format mapping
-      #
-      # @since 0.2.0
-      # @api private
-      DEFAULT_FORMATS = {
-        "application/octet-stream" => :all,
-        "*/*" => :all,
-        "text/html" => :html
-      }.freeze
-
       # Default public directory
       #
       # This serves as the root directory for file downloads
@@ -68,120 +58,36 @@ module Hanami
           .to_h
       end
 
-      # @!attribute [rw] formats
+      # @!attribute [r] formats
+      #   Returns the format config for the action.
       #
-      #   Specifies the MIME type to format mapping
+      #   @return [Config::Formats]
       #
-      #   @return [Hash{String=>Symbol}] MIME type strings as keys and format symbols as values
-      #
-      #   @see format
-      #   @see Hanami::Action::Mime
-      #
-      #   @example
-      #     config.formats = {"text/html" => :html}
-      #
-      #   @since 0.2.0
+      #   @since 2.0.0
+      #   @api public
 
-      # Registers a MIME type to format mapping
+      # Sets the format (or formats) for the action.
       #
-      # @param hash [Hash{Symbol=>String}] format symbols as keys and the MIME
-      #   type strings must as values
-      #
-      # @return [void]
-      #
-      # @see formats
-      # @see Hanami::Action::Mime
+      # To configure custom formats and MIME type mappings, call {Formats#add formats.add} first.
       #
       # @example
-      #   config.format html: "text/html"
+      #   config.format :html, :json
       #
-      # @since 0.2.0
-      def format(hash)
-        symbol, mime_type = *Utils::Kernel.Array(hash)
-        formats[Utils::Kernel.String(mime_type)] = Utils::Kernel.Symbol(symbol)
-      end
-
-      # Returns the configured format for the given MIME type
+      # @param formats [Array<Symbol>] the format names
       #
-      # @param mime_type [#to_s,#to_str] A mime type
+      # @return [Array<Symbol>] the given format names
       #
-      # @return [Symbol,nil] the corresponding format, nil if not found
+      # @see #formats
       #
-      # @see format
-      #
-      # @since 0.2.0
-      # @api private
-      def format_for(mime_type)
-        formats[mime_type]
-      end
-
-      # Returns the configured format's MIME types
-      #
-      # @return [Array<String>] the format's MIME types
-      #
-      # @see formats=
-      # @see format
-      #
-      # @since 0.8.0
-      #
-      # @api private
-      def mime_types
-        # FIXME: this isn't efficient. speed it up!
-        ((formats.keys - DEFAULT_FORMATS.keys) +
-          Hanami::Action::Mime::TYPES.values).freeze
-      end
-
-      # Returns a MIME type for the given format
-      #
-      # @param format [#to_sym] a format
-      #
-      # @return [String,nil] the corresponding MIME type, if present
-      #
-      # @since 0.2.0
-      # @api private
-      def mime_type_for(format)
-        formats.key(format)
-      end
-
       # @since 2.0.0
-      # @api private
-      def accepted_mime_types
-        accepted_formats.any? ? Mime.restrict_mime_types(self) : mime_types
+      # @api public
+      def format(*formats)
+        if formats.empty?
+          self.formats.values
+        else
+          self.formats.values = formats
+        end
       end
-
-      # @!attribute [rw] default_request_format
-      #
-      #   Sets a format as default fallback for all the requests without a strict
-      #   requirement for the MIME type.
-      #
-      #   The given format must be coercible to a symbol, and be a valid MIME
-      #   type alias. If it isn't, at runtime the framework will raise an
-      #   `Hanami::Action::UnknownFormatError`.
-      #
-      #   By default, this value is nil.
-      #
-      #   @return [Symbol]
-      #
-      #   @see Hanami::Action::Mime
-      #
-      #   @since 0.5.0
-
-      # @!attribute [rw] default_response_format
-      #
-      #   Sets a format to be used for all responses regardless of the request
-      #   type.
-      #
-      #   The given format must be coercible to a symbol, and be a valid MIME
-      #   type alias. If it isn't, at the runtime the framework will raise an
-      #   `Hanami::Action::UnknownFormatError`.
-      #
-      #   By default, this value is nil.
-      #
-      #   @return [Symbol]
-      #
-      #   @see Hanami::Action::Mime
-      #
-      #   @since 0.5.0
 
       # @!attribute [rw] default_charset
       #

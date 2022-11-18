@@ -58,14 +58,7 @@ module Hanami
 
     # See {Config} for individual setting accessor API docs
     setting :handled_exceptions, default: {}
-    setting :formats, default: Config::DEFAULT_FORMATS
-    setting :default_request_format, constructor: -> (format) {
-      Utils::Kernel.Symbol(format) unless format.nil?
-    }
-    setting :default_response_format, constructor: -> (format) {
-      Utils::Kernel.Symbol(format) unless format.nil?
-    }
-    setting :accepted_formats, default: []
+    setting :formats, default: Config::Formats.new, mutable: true
     setting :default_charset
     setting :default_headers, default: {}, constructor: -> (headers) { headers.compact }
     setting :cookies, default: {}, constructor: -> (cookie_options) {
@@ -77,8 +70,8 @@ module Hanami
       Pathname(File.expand_path(dir || Dir.pwd)).realpath
     }
     setting :public_directory, default: Config::DEFAULT_PUBLIC_DIRECTORY
-    setting :before_callbacks, default: Utils::Callbacks::Chain.new, cloneable: true
-    setting :after_callbacks, default: Utils::Callbacks::Chain.new, cloneable: true
+    setting :before_callbacks, default: Utils::Callbacks::Chain.new, mutable: true
+    setting :after_callbacks, default: Utils::Callbacks::Chain.new, mutable: true
 
     # @!scope class
 
@@ -87,7 +80,7 @@ module Hanami
     #
     #   @example Access inside class body
     #     class Show < Hanami::Action
-    #       config.default_response_format = :json
+    #       config.format :json
     #     end
     #
     #   @return [Config]
@@ -278,34 +271,12 @@ module Hanami
       config.after_callbacks.prepend(...)
     end
 
-    # Restrict the access to the specified mime type symbols.
-    #
-    # @param formats[Array<Symbol>] one or more symbols representing mime type(s)
-    #
-    # @raise [Hanami::Action::UnknownFormatError] if the symbol cannot
-    #   be converted into a mime type
-    #
-    # @since 0.1.0
-    #
     # @see Config#format
     #
-    # @example
-    #   require "hanami/controller"
-    #
-    #   class Show < Hanami::Action
-    #     accept :html, :json
-    #
-    #     def handle(req, res)
-    #       # ...
-    #     end
-    #   end
-    #
-    #   # When called with "*/*"              => 200
-    #   # When called with "text/html"        => 200
-    #   # When called with "application/json" => 200
-    #   # When called with "application/xml"  => 415
-    def self.accept(*formats)
-      config.accepted_formats = formats
+    # @since 2.0.0
+    # @api public
+    def self.format(...)
+      config.format(...)
     end
 
     # @see Config#handle_exception
@@ -343,7 +314,7 @@ module Hanami
         response = build_response(
           request: request,
           config: config,
-          content_type: Mime.calculate_content_type_with_charset(config, request, config.accepted_mime_types),
+          content_type: Mime.response_content_type_with_charset(request, config),
           env: env,
           headers: config.default_headers,
           sessions_enabled: sessions_enabled?
@@ -437,7 +408,7 @@ module Hanami
     # @since 2.0.0
     # @api private
     def enforce_accepted_mime_types(request)
-      return if config.accepted_formats.empty?
+      return if config.formats.empty?
 
       Mime.enforce_accept(request, config) { return halt 406 }
       Mime.enforce_content_type(request, config) { return halt 415 }

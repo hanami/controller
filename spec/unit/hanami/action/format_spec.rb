@@ -17,7 +17,7 @@ RSpec.describe Hanami::Action do
     end
 
     class Configuration < Hanami::Action
-      config.default_response_format = :jpg
+      config.format :jpg
 
       def handle(*, res)
         res.body = res.format
@@ -96,18 +96,20 @@ RSpec.describe Hanami::Action do
     end
 
     it "sets nil and raises an error" do
-      expect { action.call(format: nil) }.to raise_error(Hanami::Action::UnknownFormatError, "Cannot find a corresponding Mime type for ''. Please configure it with Hanami::Controller::Configuration#format.")
+      expect { action.call(format: nil) }
+        .to raise_error(Hanami::Action::UnknownFormatError, "Cannot find a corresponding MIME type for `nil` format.")
     end
 
     it "sets '' and raises an error" do
-      expect { action.call(format: "") }.to raise_error(Hanami::Action::UnknownFormatError, "Cannot find a corresponding Mime type for ''. Please configure it with Hanami::Controller::Configuration#format.")
+      expect { action.call(format: "") }
+        .to raise_error(Hanami::Action::UnknownFormatError, "Cannot find a corresponding MIME type for `nil` format.")
     end
 
     it "sets an unknown format and raises an error" do
       action.call(format: :unknown)
     rescue StandardError => exception
       expect(exception).to         be_kind_of(Hanami::Action::UnknownFormatError)
-      expect(exception.message).to eq("Cannot find a corresponding Mime type for 'unknown'. Please configure it with Hanami::Controller::Configuration#format.")
+      expect(exception.message).to eq("Cannot find a corresponding MIME type for format :unknown. Configure one via `config.formats.add(unknown: \"MIME_TYPE_HERE\")`.")
     end
 
     Hanami::Action::Mime::TYPES.each do |format, mime_type|
