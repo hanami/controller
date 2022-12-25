@@ -2,6 +2,12 @@
 
 Complete, fast and testable actions for Rack
 
+## v2.0.1 - 2022-12-25
+
+### Added
+
+- [Luca Guidi] Official support for Ruby 3.2
+
 ## v2.0.0 - 2022-11-22
 
 ### Added
