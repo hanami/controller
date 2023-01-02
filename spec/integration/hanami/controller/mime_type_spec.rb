@@ -58,6 +58,13 @@ RSpec.describe "MIME Type" do
       end
     end
 
+    context "when Content-Type are sent and formats are configured to accept all" do
+      it "accepts the request with a custom content type" do
+        response = app.get("/relaxed", "CONTENT_TYPE" => "application/custom")
+        expect(response.status).to eq 200
+      end
+    end
+
     context "when ACCEPT and Content-Type are sent and a format is configured" do
       it 'sets "Content-Type" header according to exact value' do
         response = app.get("/custom_from_accept", "HTTP_ACCEPT" => "application/custom")

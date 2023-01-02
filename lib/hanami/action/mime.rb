@@ -237,7 +237,7 @@ module Hanami
         # @api private
         def accepted_mime_type?(mime_type, config)
           accepted_mime_types(config).any? { |accepted_mime_type|
-            ::Rack::Mime.match?(accepted_mime_type, mime_type)
+            ::Rack::Mime.match?(mime_type, accepted_mime_type)
           }
         end
 
