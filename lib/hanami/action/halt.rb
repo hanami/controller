@@ -10,6 +10,7 @@ module Hanami
       # @api private
       # @since 2.0.0
       def self.call(status, body = nil)
+        status = Http::Status.normalize(status)
         body ||= Http::Status.message_for(status)
         throw :halt, [status, body]
       end

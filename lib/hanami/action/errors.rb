@@ -9,6 +9,22 @@ module Hanami
     class Error < ::StandardError
     end
 
+    # Unknown status code error
+    #
+    # This error is raised when a symbolic status code is given that cannot be
+    # found in `Hanami::Http::Status::SYMBOLS`.
+    #
+    # @since 2.1.0
+    #
+    # @see Hanami::Action::Response#status=
+    class UnknownStatusCodeError < Error
+      # @since 2.1.0
+      # @api private
+      def initialize(code)
+        super("Unrecognized status code: #{code.inspect}")
+      end
+    end
+
     # Unknown format error
     #
     # This error is raised when a action sets a format that it isn't recognized
