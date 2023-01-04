@@ -243,6 +243,15 @@ module Hanami
         @params
       end
       alias_method :to_hash, :to_h
+
+      # Pattern-matching support
+      #
+      # @return [::Hash]
+      #
+      # @since 2.1.0
+      def deconstruct_keys(_keys)
+        @params
+      end
     end
   end
 end

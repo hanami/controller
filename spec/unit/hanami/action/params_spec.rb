@@ -456,6 +456,21 @@ RSpec.describe Hanami::Action::Params do
     end
   end
 
+  describe "#deconstruct_keys" do
+    let(:params) do
+      TestParams.new(
+        name: "John",
+        address: {line_one: "10 High Street", deep: {deep_attr: 1}},
+        array: [{name: "Lennon"}, {name: "Wayne"}]
+      )
+    end
+
+    it "supports pattern-matching" do
+      params => { name: }
+      expect(name).to eq("John")
+    end
+  end
+
   describe "#errors" do
     let(:klass) do
       Class.new(described_class) do
