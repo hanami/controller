@@ -248,9 +248,9 @@ module Hanami
       #
       # @return [::Hash]
       #
-      # @since 2.1.0
-      def deconstruct_keys(_keys)
-        @params
+      # @since 2.0.2
+      def deconstruct_keys(*)
+        to_hash
       end
     end
   end
