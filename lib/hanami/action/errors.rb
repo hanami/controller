@@ -9,19 +9,17 @@ module Hanami
     class Error < ::StandardError
     end
 
-    # Unknown status code error
+    # Unknown status HTTP Status error
     #
-    # This error is raised when a symbolic status code is given that cannot be
-    # found in `Hanami::Http::Status::SYMBOLS`.
-    #
-    # @since 2.1.0
+    # @since 2.0.1
     #
     # @see Hanami::Action::Response#status=
-    class UnknownStatusCodeError < Error
+    # @see https://guides.hanamirb.org/v2.0/actions/status-codes/
+    class UnknownHttpStatusError < Error
       # @since 2.1.0
       # @api private
       def initialize(code)
-        super("Unrecognized status code: #{code.inspect}")
+        super("unknown HTTP status: `#{code.inspect}'")
       end
     end
 

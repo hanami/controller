@@ -25,7 +25,11 @@ RSpec.describe Hanami::Action::Response, "status codes" do
     expect(response.status).to eql 422
   end
 
-  it "raises UnknownStatusCodeError if given an unrecognized symbolic status" do
-    expect { response.status = :invalid_status }.to raise_error(Hanami::Action::UnknownStatusCodeError)
+  it "raises Hanami::Action::UnknownHttpStatusError if given an unrecognized integer status" do
+    expect { response.status = 999 }.to raise_error(Hanami::Action::UnknownHttpStatusError)
+  end
+
+  it "raises Hanami::Action::UnknownHttpStatusError if given an unrecognized symbolic status" do
+    expect { response.status = :invalid_status }.to raise_error(Hanami::Action::UnknownHttpStatusError)
   end
 end
