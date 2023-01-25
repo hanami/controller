@@ -17,6 +17,12 @@ module Hanami
       # @api private
       ALL = ::Rack::Utils::HTTP_STATUS_CODES
 
+      # Symbolic names for status codes
+      #
+      # @since 2.1.0
+      # @api private
+      SYMBOLS = ::Rack::Utils::SYMBOL_TO_STATUS_CODE
+
       # Return a status for the given code
       #
       # @param code [Integer] a valid HTTP code
@@ -44,6 +50,19 @@ module Hanami
       # @api private
       def self.message_for(code)
         for_code(code)[1]
+      end
+
+      # Ensure symbolic status is converted to integer
+      #
+      # @param code [Integer,Symbol] integer status code or symbolic name
+      #
+      # @return [Integer] HTTP status code
+      def self.normalize(code)
+        if code.is_a?(Symbol)
+          SYMBOLS[code]
+        else
+          code
+        end
       end
     end
   end
