@@ -1618,6 +1618,14 @@ module Mimes
     end
   end
 
+  class Relaxed < Hanami::Action
+    format :all
+
+    def handle(_req, res)
+      res.body = res.format
+    end
+  end
+
   class Application
     def initialize
       @router = Hanami::Router.new do
@@ -1629,6 +1637,7 @@ module Mimes
         get "/nocontent",          to: Mimes::NoContent.new
         get "/custom_from_accept", to: Mimes::CustomFromAccept.new
         get "/strict",             to: Mimes::Strict.new
+        get "/relaxed",            to: Mimes::Relaxed.new
       end
     end
 
