@@ -9,7 +9,6 @@ require_relative "./renderer"
 
 require_relative "./validations"
 
-HTTP_TEST_STATUSES_WITHOUT_BODY = Set.new((100..199).to_a << 204 << 304).freeze
 HTTP_TEST_STATUSES = {
   100 => "Continue",
   101 => "Switching Protocols",
@@ -75,6 +74,7 @@ HTTP_TEST_STATUSES = {
   510 => "Not Extended",
   511 => "Network Authentication Required"
 }.freeze
+HTTP_TEST_STATUSES_WITHOUT_BODY = (((100..199).to_a << 204 << 304) & HTTP_TEST_STATUSES.keys).freeze
 
 class RecordNotFound < StandardError
 end
