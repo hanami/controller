@@ -2,6 +2,19 @@
 
 Complete, fast and testable actions for Rack
 
+## v2.0.2 - 2023-02-01
+
+### Added
+
+- [Adam Lassek] Params Pattern Matching
+- [Adam Lassek, Luca Guidi] Allow to `halt` using a `Symbol`: `halt :unauthorized`
+- [Adam Lassek, Luca Guidi] Introduce `Hanami::Action::Response#status=` to accept an `Integer` or a `Symbol`
+
+### Fixed
+
+- [Pat Allan] Ensure action accepting the request with a custom MIME Type
+- [Luca Guidi] Halting with an unknown HTTP code will raise a `Hanami::Action::UnknownHttpStatusError`
+
 ## v2.0.1 - 2022-12-25
 
 ### Added
