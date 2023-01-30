@@ -109,7 +109,7 @@ RSpec.describe Hanami::Action do
       action.call(format: :unknown)
     rescue StandardError => exception
       expect(exception).to         be_kind_of(Hanami::Action::UnknownFormatError)
-      expect(exception.message).to eq("Cannot find a corresponding MIME type for format :unknown. Configure one via `config.formats.add(unknown: \"MIME_TYPE_HERE\")`.")
+      expect(exception.message).to eq("Cannot find a corresponding MIME type for format :unknown. Configure one via `config.actions.formats.add(:unknown, \"MIME_TYPE_HERE\")`.")
     end
 
     Hanami::Action::Mime::TYPES.each do |format, mime_type|

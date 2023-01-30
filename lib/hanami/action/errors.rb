@@ -37,7 +37,7 @@ module Hanami
       def initialize(format)
         msg =
           if format.to_s != "" # rubocop:disable Style/NegatedIfElseCondition
-            "Cannot find a corresponding MIME type for format #{format.inspect}. Configure one via `config.formats.add(#{format}: \"MIME_TYPE_HERE\")`." # rubocop:disable Layout/LineLength
+            "Cannot find a corresponding MIME type for format #{format.inspect}. Configure one via `config.actions.formats.add(:#{format}, \"MIME_TYPE_HERE\")`." # rubocop:disable Layout/LineLength
           else
             "Cannot find a corresponding MIME type for `nil` format."
           end
