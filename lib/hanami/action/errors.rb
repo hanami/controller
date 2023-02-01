@@ -35,14 +35,26 @@ module Hanami
       # @since 2.0.0
       # @api private
       def initialize(format)
-        msg =
-          if format.to_s != "" # rubocop:disable Style/NegatedIfElseCondition
-            "Cannot find a corresponding MIME type for format #{format.inspect}. Configure one via `config.actions.formats.add(:#{format}, \"MIME_TYPE_HERE\")`." # rubocop:disable Layout/LineLength
-          else
-            "Cannot find a corresponding MIME type for `nil` format."
-          end
+        message = <<~MSG
+          Cannot find a corresponding MIME type for format `#{format.inspect}'.
+        MSG
 
-        super(msg)
+        unless blank?(format)
+          message += <<~MSG
+
+            Configure one via: `config.actions.formats.add(:#{format}, "MIME_TYPE_HERE")' in `config/app.rb' to share between actions of a Hanami app.
+
+            Or make it available only in the current action: `config.formats.add(:#{format}, "MIME_TYPE_HERE")'.
+          MSG
+        end
+
+        super(message)
+      end
+
+      private
+
+      def blank?(format)
+        format.to_s.match(/\A[[:space:]]*\z/)
       end
     end
 

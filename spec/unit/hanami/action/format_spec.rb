@@ -96,20 +96,40 @@ RSpec.describe Hanami::Action do
     end
 
     it "sets nil and raises an error" do
-      expect { action.call(format: nil) }
-        .to raise_error(Hanami::Action::UnknownFormatError, "Cannot find a corresponding MIME type for `nil` format.")
+      expected_message = <<~MSG
+        Cannot find a corresponding MIME type for format `nil'.
+      MSG
+
+      expect { action.call(format: nil) }.to raise_error do |exception|
+        expect(exception).to         be_kind_of(Hanami::Action::UnknownFormatError)
+        expect(exception.message).to eq(expected_message)
+      end
     end
 
     it "sets '' and raises an error" do
-      expect { action.call(format: "") }
-        .to raise_error(Hanami::Action::UnknownFormatError, "Cannot find a corresponding MIME type for `nil` format.")
+      expected_message = <<~MSG
+        Cannot find a corresponding MIME type for format `:""'.
+      MSG
+
+      expect { action.call(format: "") }.to raise_error do |exception|
+        expect(exception).to         be_kind_of(Hanami::Action::UnknownFormatError)
+        expect(exception.message).to eq(expected_message)
+      end
     end
 
     it "sets an unknown format and raises an error" do
-      action.call(format: :unknown)
-    rescue StandardError => exception
-      expect(exception).to         be_kind_of(Hanami::Action::UnknownFormatError)
-      expect(exception.message).to eq("Cannot find a corresponding MIME type for format :unknown. Configure one via `config.actions.formats.add(:unknown, \"MIME_TYPE_HERE\")`.")
+      expected_message = <<~MSG
+        Cannot find a corresponding MIME type for format `:unknown'.
+
+        Configure one via: `config.actions.formats.add(:unknown, "MIME_TYPE_HERE")' in `config/app.rb' to share between actions of a Hanami app.
+
+        Or make it available only in the current action: `config.formats.add(:unknown, "MIME_TYPE_HERE")'.
+      MSG
+
+      expect { action.call(format: :unknown) }.to raise_error do |exception|
+        expect(exception).to         be_kind_of(Hanami::Action::UnknownFormatError)
+        expect(exception.message).to eq(expected_message)
+      end
     end
 
     Hanami::Action::Mime::TYPES.each do |format, mime_type|
