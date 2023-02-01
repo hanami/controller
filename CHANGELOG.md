@@ -14,6 +14,7 @@ Complete, fast and testable actions for Rack
 
 - [Pat Allan] Ensure action accepting the request with a custom MIME Type
 - [Luca Guidi] Halting with an unknown HTTP code will raise a `Hanami::Action::UnknownHttpStatusError`
+- [Luca Guidi] Fix error message for missing format (MIME Type)
 
 ## v2.0.1 - 2022-12-25
 
