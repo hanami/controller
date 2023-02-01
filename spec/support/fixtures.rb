@@ -9,7 +9,6 @@ require_relative "./renderer"
 
 require_relative "./validations"
 
-HTTP_TEST_STATUSES_WITHOUT_BODY = Set.new((100..199).to_a << 204 << 304).freeze
 HTTP_TEST_STATUSES = {
   100 => "Continue",
   101 => "Switching Protocols",
@@ -75,6 +74,7 @@ HTTP_TEST_STATUSES = {
   510 => "Not Extended",
   511 => "Network Authentication Required"
 }.freeze
+HTTP_TEST_STATUSES_WITHOUT_BODY = (((100..199).to_a << 204 << 304) & HTTP_TEST_STATUSES.keys).freeze
 
 class RecordNotFound < StandardError
 end
@@ -1618,6 +1618,14 @@ module Mimes
     end
   end
 
+  class Relaxed < Hanami::Action
+    format :all
+
+    def handle(_req, res)
+      res.body = res.format
+    end
+  end
+
   class Application
     def initialize
       @router = Hanami::Router.new do
@@ -1629,6 +1637,7 @@ module Mimes
         get "/nocontent",          to: Mimes::NoContent.new
         get "/custom_from_accept", to: Mimes::CustomFromAccept.new
         get "/strict",             to: Mimes::Strict.new
+        get "/relaxed",            to: Mimes::Relaxed.new
       end
     end
 

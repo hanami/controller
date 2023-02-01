@@ -88,9 +88,9 @@ module Hanami
           @directives = []
           values.each do |directive_key|
             if directive_key.is_a? Hash
-              directive_key.each { |name, value| self.<< ValueDirective.new(name, value) }
+              directive_key.each { |name, value| self << ValueDirective.new(name, value) }
             else
-              self.<< NonValueDirective.new(directive_key)
+              self << NonValueDirective.new(directive_key)
             end
           end
         end

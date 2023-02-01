@@ -81,6 +81,27 @@ module Hanami
         end
       end
 
+      # Set the response status
+      #
+      # @param code [Integer, Symbol] the status code
+      #
+      # @since 2.0.2
+      # @api public
+      #
+      # @raise [Hanami::Action::UnknownHttpStatusError] if the given code
+      #   cannot be associated to a known HTTP status
+      #
+      # @example
+      #   response.status = :unprocessable_entity
+      #
+      # @example
+      #   response.status = 422
+      #
+      # @see https://guides.hanamirb.org/v2.0/actions/status-codes/
+      def status=(code)
+        super(Http::Status.lookup(code))
+      end
+
       # This is NOT RELEASED with 2.0.0
       #
       # @api private
