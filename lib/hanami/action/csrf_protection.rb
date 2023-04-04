@@ -13,13 +13,11 @@ module Hanami
     # This security mechanism is enabled automatically if sessions are turned on.
     #
     # It stores a "challenge" token in session. For each "state changing request"
-    # (eg. <tt>POST</tt>, <tt>PATCH</tt> etc..), we should send a special param:
-    # <tt>_csrf_token</tt> which contain the "challenge" token.
+    # (eg. <tt>POST</tt>, <tt>PATCH</tt> etc..), we should send a special param
+    # <tt>_csrf_token</tt> or header <tt>X-CSRF-Token</tt> which contain the "challenge"
+    # token.
     #
-    # We can specify how to retreive the token from the request, by overriding <tt>#request_csrf_token</tt>.
-    # This is useful if we want to handle XMLHttpRequest (XHR) requests.
-    #
-    # If the param matches with the challenge token, the flow can continue.
+    # If the request token matches with the challenge token, the flow can continue.
     # Otherwise the application detects an attack attempt, it reset the session
     # and <tt>Hanami::Action::InvalidCSRFTokenError</tt> is raised.
     #
@@ -63,21 +61,6 @@ module Hanami
     #
     #       def verify_csrf_token?(req, res)
     #         false
-    #       end
-    #     end
-    #   end
-    #
-    # @example Custom Token Retrieval
-    #   module Web::Controllers::Books
-    #     class Create < Web::Action
-    #       def handle(*)
-    #         # ...
-    #       end
-    #
-    #       private
-    #
-    #       def request_csrf_token(req)
-    #         req.get_header('X-CSRF-Token')
     #       end
     #     end
     #   end
@@ -125,32 +108,14 @@ module Hanami
         res.session[CSRF_TOKEN] ||= generate_csrf_token
       end
 
-      # Get CSRF Token from request.
+      # Get CSRF Token in request.
       #
-      # By default retreives the token from the request param <tt>_csrf_token</tt>.
-      #
-      # Override this method, for custom handling of the request token retrieval.
+      # Retreives the CSRF token from the request param <tt>_csrf_token</tt> or the request header <tt>X-CSRF-Token</tt>.
       #
       # @since 2.X.X
-      #
       # @api private
-      #
-      # @example Custom Token Retrieval
-      #   module Web::Controllers::Books
-      #     class Create < Web::Action
-      #       def handle(*)
-      #         # ...
-      #       end
-      #
-      #       private
-      #
-      #       def request_csrf_token(req)
-      #         req.get_header('X-CSRF-Token')
-      #       end
-      #     end
-      #   end
       def request_csrf_token(req)
-        req.params[CSRF_TOKEN]
+        req.params[CSRF_TOKEN] || req.get_header("HTTP_X_CSRF_TOKEN")
       end
 
       # Verify if CSRF token from params, matches the one stored in session.
