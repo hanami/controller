@@ -47,18 +47,29 @@ module Hanami
         @id ||= @env[Action::REQUEST_ID] = SecureRandom.hex(Action::DEFAULT_ID_LENGTH)
       end
 
+      # Returns true if the session is enabled for the request.
+      #
+      # @return [Boolean]
+      #
+      # @api public
+      # @since x.x.x
+      def session_enabled?
+        @session_enabled
+      end
+
       # Returns the session for the request.
       #
       # @return [Hash] the session object
       #
-      # @raise [MissingSessionError] if sessions are not enabled
+      # @raise [MissingSessionError] if the session is not enabled
       #
+      # @see #session_enabled?
       # @see Response#session
       #
       # @since 2.0.0
       # @api public
       def session
-        unless @session_enabled
+        unless session_enabled?
           raise Hanami::Action::MissingSessionError.new("Hanami::Action::Request#session")
         end
 
@@ -76,7 +87,7 @@ module Hanami
       # @since 2.0.0
       # @api public
       def flash
-        unless @session_enabled
+        unless session_enabled?
           raise Hanami::Action::MissingSessionError.new("Hanami::Action::Request#flash")
         end
 
