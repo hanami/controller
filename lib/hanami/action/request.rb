@@ -29,11 +29,11 @@ module Hanami
 
       # @since 2.0.0
       # @api private
-      def initialize(env:, params:, sessions_enabled: false)
+      def initialize(env:, params:, session_enabled: false)
         super(env)
 
         @params = params
-        @sessions_enabled = sessions_enabled
+        @session_enabled = session_enabled
       end
 
       # Returns the request's ID
@@ -58,7 +58,7 @@ module Hanami
       # @since 2.0.0
       # @api public
       def session
-        unless @sessions_enabled
+        unless @session_enabled
           raise Hanami::Action::MissingSessionError.new("Hanami::Action::Request#session")
         end
 
@@ -76,7 +76,7 @@ module Hanami
       # @since 2.0.0
       # @api public
       def flash
-        unless @sessions_enabled
+        unless @session_enabled
           raise Hanami::Action::MissingSessionError.new("Hanami::Action::Request#flash")
         end
 

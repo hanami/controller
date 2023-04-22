@@ -48,7 +48,7 @@ module Hanami
 
       # @since 2.0.0
       # @api private
-      def initialize(request:, config:, content_type: nil, env: {}, headers: {}, view_options: nil, sessions_enabled: false) # rubocop:disable Layout/LineLength, Metrics/ParameterLists
+      def initialize(request:, config:, content_type: nil, env: {}, headers: {}, view_options: nil, session_enabled: false) # rubocop:disable Layout/LineLength, Metrics/ParameterLists
         super([], 200, headers.dup)
         self.content_type = content_type if content_type
 
@@ -59,7 +59,7 @@ module Hanami
         @env = env
         @view_options = view_options || DEFAULT_VIEW_OPTIONS
 
-        @sessions_enabled = sessions_enabled
+        @session_enabled = session_enabled
         @sending_file = false
       end
 
@@ -200,7 +200,7 @@ module Hanami
       # @since 2.0.0
       # @api public
       def session
-        unless @sessions_enabled
+        unless @session_enabled
           raise Hanami::Action::MissingSessionError.new("Hanami::Action::Response#session")
         end
 
@@ -220,7 +220,7 @@ module Hanami
       # @since 2.0.0
       # @api public
       def flash
-        unless @sessions_enabled
+        unless @session_enabled
           raise Hanami::Action::MissingSessionError.new("Hanami::Action::Response#flash")
         end
 

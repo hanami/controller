@@ -6,11 +6,11 @@ RSpec.describe Hanami::Action::Response, "session features" do
       env: rack_env,
       request: request,
       config: Hanami::Action.config.dup,
-      sessions_enabled: true
+      session_enabled: true
     )
   }
   let(:request) {
-    Hanami::Action::Request.new(env: rack_env, params: {}, sessions_enabled: true)
+    Hanami::Action::Request.new(env: rack_env, params: {}, session_enabled: true)
   }
   let(:rack_env) {
     Rack::MockRequest.env_for("http://example.com/foo?q=bar")
