@@ -309,7 +309,7 @@ module Hanami
         request  = build_request(
           env: env,
           params: params,
-          sessions_enabled: sessions_enabled?
+          session_enabled: session_enabled?
         )
         response = build_response(
           request: request,
@@ -317,7 +317,7 @@ module Hanami
           content_type: Mime.response_content_type_with_charset(request, config),
           env: env,
           headers: config.default_headers,
-          sessions_enabled: sessions_enabled?
+          session_enabled: session_enabled?
         )
 
         enforce_accepted_mime_types(request)
@@ -424,10 +424,10 @@ module Hanami
       nil
     end
 
-    # @see Session#sessions_enabled?
+    # @see Session#session_enabled?
     # @since 2.0.0
     # @api private
-    def sessions_enabled?
+    def session_enabled?
       false
     end
 
