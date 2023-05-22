@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 RSpec.describe Hanami::Action::Response, "session features" do
   subject(:response) {
     described_class.new(

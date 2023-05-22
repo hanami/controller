@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # The Hanami::Action::Flash implementation is derived from Roda's FlashHash, also released under the
 # MIT Licence:
 #

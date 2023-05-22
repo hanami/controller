@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require_relative "../support/isolation_spec_helper"
 
 RSpec.describe "Without validations" do

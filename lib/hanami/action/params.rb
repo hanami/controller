@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require "hanami/validations/form"
 
 module Hanami

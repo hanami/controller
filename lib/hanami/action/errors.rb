@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Hanami
   class Action
     # Base class for all Action errors.

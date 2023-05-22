@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require "hanami/devtools/unit"
 
 RSpec.describe Hanami::Action do

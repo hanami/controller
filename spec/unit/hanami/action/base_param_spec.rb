@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 RSpec.describe Hanami::Action::BaseParams do
   let(:action) { Test::Index.new }
 

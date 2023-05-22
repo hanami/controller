@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Inspector
   def self.included(action)
     action.class_eval do

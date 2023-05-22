@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 RSpec.describe "MIME Type" do
   describe "Content type" do
     let(:app) { Rack::MockRequest.new(Mimes::Application.new) }

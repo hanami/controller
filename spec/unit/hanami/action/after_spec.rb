@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 RSpec.describe Hanami::Action do
   describe ".after" do
     it "invokes the method(s) from the given symbol(s) after the action is run" do

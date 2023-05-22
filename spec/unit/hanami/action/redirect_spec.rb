@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 RSpec.describe Hanami::Action do
   describe "#redirect" do
     it "redirects to the given path" do

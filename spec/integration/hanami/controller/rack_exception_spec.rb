@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 RSpec.describe "Exception notifiers integration" do
   let(:env) { Hash[] }
 

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require "hanami/utils"
 require "rack/utils"
 require "rack/mime"

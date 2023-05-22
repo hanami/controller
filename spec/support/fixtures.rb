@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require "json"
 require "digest/md5"
 require "hanami/router"

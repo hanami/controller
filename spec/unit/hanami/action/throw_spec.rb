@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 RSpec.describe Hanami::Action do
   describe ".handle_exception" do
     it "handle an exception with the given status" do

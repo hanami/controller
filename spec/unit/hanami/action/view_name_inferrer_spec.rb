@@ -1,4 +1,3 @@
-# frozen_string_literal: true
 # require "hanami/action/view_name_inferrer"
 
 # require "dry/inflector"

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 RSpec.describe Hanami::Action do
   class FormatController
     class Lookup < Hanami::Action

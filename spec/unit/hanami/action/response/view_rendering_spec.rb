@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 RSpec.describe Hanami::Action::Response, "view rendering" do
   describe "#render" do
     subject(:response) {

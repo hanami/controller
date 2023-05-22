@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 RSpec.describe Hanami::Action::Cache::Directives do
   describe "#directives" do
     context "non value directives" do

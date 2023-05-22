@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 RSpec.describe Hanami::Action::Rack::File do
   describe "#call" do
     it "doesn't mutate given env" do

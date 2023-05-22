@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 RSpec.describe Hanami::Action do
   describe "#session" do
     it "captures session from Rack env" do
