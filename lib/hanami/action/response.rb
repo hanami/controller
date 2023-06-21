@@ -192,7 +192,7 @@ module Hanami
       # @return [Boolean]
       #
       # @api public
-      # @since x.x.x
+      # @since 2.1.0
       def session_enabled?
         @session_enabled
       end
