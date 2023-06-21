@@ -2,6 +2,12 @@
 
 Complete, fast and testable actions for Rack
 
+## v2.1.0.beta1
+
+### Added
+
+- [Tim Riley] Add `Request#session_enabled?` and `Response#session_enabled?` (#423)
+
 ## v2.0.2 - 2023-02-01
 
 ### Added
