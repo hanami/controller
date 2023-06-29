@@ -4,10 +4,10 @@ require "json"
 require "digest/md5"
 require "hanami/router"
 require "hanami/middleware/body_parser"
-require "hanami/utils/escape"
-require_relative "./renderer"
+require "hanami/view/html"
+require_relative "renderer"
 
-require_relative "./validations"
+require_relative "validations"
 
 HTTP_TEST_STATUSES = {
   100 => "Continue",
@@ -390,7 +390,7 @@ end
 
 class SafeStringRedirectAction < Hanami::Action
   def handle(*, res)
-    location = Hanami::Utils::Escape::SafeString.new("/destination")
+    location = Hanami::View::HTML::SafeString.new("/destination")
     res.redirect_to location
   end
 end

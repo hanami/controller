@@ -961,4 +961,4 @@ __Hanami::Controller__ uses [Semantic Versioning 2.0.0](http://semver.org)
 
 ## Copyright
 
-Copyright © 2014-2022 Hanami Team – Released under MIT License
+Copyright © 2014 Hanami Team – Released under MIT License

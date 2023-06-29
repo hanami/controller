@@ -2,7 +2,7 @@
 
 Complete, fast and testable actions for Rack
 
-## v2.1.0.beta1
+## v2.1.0.beta1 - 2023-06-29
 
 ### Added
 
