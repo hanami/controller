@@ -98,17 +98,37 @@ RSpec.describe Hanami::Action::Config do
 
     context "within a Hanami app" do
       before do
-        app = double("Hanami.app", root: root_directory)
-
         allow(Hanami).to receive(:respond_to?).with(:app, true).and_return(true)
         allow(Hanami).to receive(:respond_to?).with(:app).and_return(true)
-        allow(Hanami).to receive(:app).and_return(app)
       end
 
+      let(:app) { double("Hanami.app", root: root_directory) }
       let(:root_directory) { Pathname.new(__dir__).join("spec") }
 
-      it "returns the Hanami app root" do
-        expect(config.root_directory).to eq(root_directory)
+      context "when app is loaded" do
+        before do
+          allow(Hanami).to receive(:app).and_return(app)
+        end
+
+        it "returns the Hanami app root" do
+          expect(config.root_directory).to eq(root_directory)
+        end
+      end
+
+      context "when app is not loaded" do
+        before do
+          unless defined?(Hanami::AppLoadError)
+            module Hanami
+              class AppLoadError < StandardError; end
+            end
+          end
+
+          expect(Hanami).to receive(:app).and_raise(Hanami::AppLoadError)
+        end
+
+        it "falls back to standalone gem logic" do
+          expect(config.root_directory).to eq(Pathname.new(Dir.pwd))
+        end
       end
     end
   end
