@@ -67,7 +67,11 @@ module Hanami
       cookie_options.to_h.compact
     }
     setting :root_directory, constructor: -> (dir) {
-      Pathname(File.expand_path(dir || Dir.pwd)).realpath
+      if Hanami.respond_to?(:app) && Hanami.app
+        Hanami.app.root
+      else
+        Pathname(File.expand_path(dir || Dir.pwd)).realpath
+      end
     }
     setting :public_directory, default: Config::DEFAULT_PUBLIC_DIRECTORY
     setting :before_callbacks, default: Utils::Callbacks::Chain.new, mutable: true

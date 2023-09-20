@@ -95,6 +95,22 @@ RSpec.describe Hanami::Action::Config do
         config.root_directory = "/non-existent"
       }.to raise_error(StandardError)
     end
+
+    context "within a Hanami app" do
+      before do
+        app = double("Hanami.app", root: root_directory)
+
+        allow(Hanami).to receive(:respond_to?).with(:app, true).and_return(true)
+        allow(Hanami).to receive(:respond_to?).with(:app).and_return(true)
+        allow(Hanami).to receive(:app).and_return(app)
+      end
+
+      let(:root_directory) { Pathname.new(__dir__).join("spec") }
+
+      it "returns the Hanami app root" do
+        expect(config.root_directory).to eq(root_directory)
+      end
+    end
   end
 
   describe "public_directory" do
