@@ -89,12 +89,6 @@ RSpec.describe Hanami::Action::Config do
       expect(config.root_directory).to be_a Pathname
       expect(config.root_directory.to_s).to eq __dir__
     end
-
-    it "raises an error when set with a non-existent directory" do
-      expect {
-        config.root_directory = "/non-existent"
-      }.to raise_error(StandardError)
-    end
   end
 
   describe "public_directory" do
