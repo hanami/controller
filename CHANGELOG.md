@@ -2,6 +2,12 @@
 
 Complete, fast and testable actions for Rack
 
+## v2.1.0.beta2 - 2023-10-04
+
+### Fixed
+
+- [Luca Guidi] `Hanami::Action::Config#root`: don't check realpath existence to simplify the boot process of Hanami (#429)
+
 ## v2.1.0.beta1 - 2023-06-29
 
 ### Added
