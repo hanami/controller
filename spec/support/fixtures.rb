@@ -1138,20 +1138,19 @@ module SendFileTest
 
   class Application
     def initialize
-      Hanami::Action.configure do |config|
-        config.public_directory = "spec/support/fixtures"
-      end
+      config = Hanami::Action.config.dup
+      config.public_directory = "spec/support/fixtures"
 
       router = Hanami::Router.new do
-        get "/files/flow",                    to: Files::Flow.new
+        get "/files/flow",                    to: Files::Flow.new(config: config)
         get "/files/unsafe_local",            to: Files::UnsafeLocal.new
         get "/files/unsafe_public",           to: Files::UnsafePublic.new
         get "/files/unsafe_absolute",         to: Files::UnsafeAbsolute.new
         get "/files/unsafe_missing_local",    to: Files::UnsafeMissingLocal.new
         get "/files/unsafe_missing_absolute", to: Files::UnsafeMissingAbsolute.new
-        get "/files/before_callback",         to: Files::BeforeCallback.new
-        get "/files/after_callback",          to: Files::AfterCallback.new
-        get "/files/:id(.:format)",           to: Files::Show.new
+        get "/files/before_callback",         to: Files::BeforeCallback.new(config: config)
+        get "/files/after_callback",          to: Files::AfterCallback.new(config: config)
+        get "/files/:id(.:format)",           to: Files::Show.new(config: config)
         get "/files/(*glob)",                 to: Files::Glob.new
       end
 
