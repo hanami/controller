@@ -73,8 +73,7 @@ module Hanami
         @length = 0
         @body   = EMPTY_BODY.dup
 
-        # FIXME: there could be a bug that prevents Content-Length to be sent for files
-        if str.is_a?(::Rack::File::Iterator)
+        if str.is_a?(::Rack::Files::BaseIterator)
           @body = str
         else
           write(str) unless str.nil? || str == EMPTY_BODY

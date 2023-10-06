@@ -91,10 +91,6 @@ RSpec.describe "Full stack application" do
 
       expect(response.status).to be(200)
       expect(response.body).to be_empty
-
-      # Rack::Files implementation doesn't exclude Content-Length and Content-Type
-      # expect(response.headers.keys).to_not include("Content-Length")
-      # expect(response.headers.keys).to_not include("Content-Type")
     end
 
     it "doesn't send file outside of public directory" do
@@ -179,7 +175,7 @@ RSpec.describe "Full stack application" do
   end
 
   context "bytes range" do
-    xit "sends ranged contents" do
+    it "sends ranged contents" do
       get "/files/1", {}, "HTTP_RANGE" => "bytes=5-13"
 
       expect(response.status).to                    be(206)
