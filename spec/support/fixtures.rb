@@ -1015,7 +1015,11 @@ end
 
 module SendFileTest
   module Files
-    class Show < Hanami::Action
+    class Action < Hanami::Action
+      config.public_directory = "spec/support/fixtures"
+    end
+
+    class Show < Action
       def handle(req, res)
         id = req.params[:id]
 
@@ -1064,50 +1068,50 @@ module SendFileTest
       end
     end
 
-    class UnsafeLocal < Hanami::Action
+    class UnsafeLocal < Action
       def handle(*, res)
         res.unsafe_send_file "Gemfile"
       end
     end
 
-    class UnsafePublic < Hanami::Action
+    class UnsafePublic < Action
       def handle(*, res)
         res.unsafe_send_file "spec/support/fixtures/test.txt"
       end
     end
 
-    class UnsafeAbsolute < Hanami::Action
+    class UnsafeAbsolute < Action
       def handle(*, res)
         res.unsafe_send_file Pathname.new("Gemfile").realpath
       end
     end
 
-    class UnsafeMissingLocal < Hanami::Action
+    class UnsafeMissingLocal < Action
       def handle(*, res)
         res.unsafe_send_file "missing"
       end
     end
 
-    class UnsafeMissingAbsolute < Hanami::Action
+    class UnsafeMissingAbsolute < Action
       def handle(_req, res)
         res.unsafe_send_file Pathname.new(".").join("missing")
       end
     end
 
-    class Flow < Hanami::Action
+    class Flow < Action
       def handle(*, res)
         res.send_file Pathname.new("test.txt")
         res.redirect_to "/"
       end
     end
 
-    class Glob < Hanami::Action
+    class Glob < Action
       def handle(*)
         halt 202
       end
     end
 
-    class BeforeCallback < Hanami::Action
+    class BeforeCallback < Action
       before :before_callback
 
       def handle(*, res)
@@ -1121,7 +1125,7 @@ module SendFileTest
       end
     end
 
-    class AfterCallback < Hanami::Action
+    class AfterCallback < Action
       after :after_callback
 
       def handle(*, res)
@@ -1138,19 +1142,16 @@ module SendFileTest
 
   class Application
     def initialize
-      config = Hanami::Action.config.dup
-      config.public_directory = "spec/support/fixtures"
-
       router = Hanami::Router.new do
-        get "/files/flow",                    to: Files::Flow.new(config: config)
+        get "/files/flow",                    to: Files::Flow.new
         get "/files/unsafe_local",            to: Files::UnsafeLocal.new
         get "/files/unsafe_public",           to: Files::UnsafePublic.new
         get "/files/unsafe_absolute",         to: Files::UnsafeAbsolute.new
         get "/files/unsafe_missing_local",    to: Files::UnsafeMissingLocal.new
         get "/files/unsafe_missing_absolute", to: Files::UnsafeMissingAbsolute.new
-        get "/files/before_callback",         to: Files::BeforeCallback.new(config: config)
-        get "/files/after_callback",          to: Files::AfterCallback.new(config: config)
-        get "/files/:id(.:format)",           to: Files::Show.new(config: config)
+        get "/files/before_callback",         to: Files::BeforeCallback.new
+        get "/files/after_callback",          to: Files::AfterCallback.new
+        get "/files/:id(.:format)",           to: Files::Show.new
         get "/files/(*glob)",                 to: Files::Glob.new
       end
 

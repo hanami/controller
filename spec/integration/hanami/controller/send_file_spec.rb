@@ -190,7 +190,7 @@ RSpec.describe "Full stack application" do
     expect(response.status).to be(200)
   end
 
-  xit "runs 'before' callbacks" do
+  it "runs 'before' callbacks" do
     get "/files/before_callback"
 
     expect(response.status).to                    be(200)
@@ -198,7 +198,7 @@ RSpec.describe "Full stack application" do
     expect(response.headers["X-Callbacks"]).to    eq("before")
   end
 
-  xit "runs 'after' callbacks" do
+  it "runs 'after' callbacks" do
     get "/files/after_callback"
 
     expect(response.status).to                    be(200)
