@@ -73,8 +73,7 @@ module Hanami
         @length = 0
         @body   = EMPTY_BODY.dup
 
-        # FIXME: there could be a bug that prevents Content-Length to be sent for files
-        if str.is_a?(::Rack::File::Iterator)
+        if str.is_a?(::Rack::Files::BaseIterator)
           @body = str
         else
           write(str) unless str.nil? || str == EMPTY_BODY
@@ -275,23 +274,25 @@ module Hanami
       #
       # @return [void]
       #
-      # @see Config#public_directory
+      # @see Hanami::Action::Config#public_directory
+      # @see Hanami::Action::Rack::File
       #
       # @since 2.0.0
       # @api public
       def send_file(path)
         _send_file(
-          Rack::File.new(path, @config.public_directory).call(env)
+          Action::Rack::File.new(path, @config.public_directory).call(env)
         )
       end
 
       # Send the file at the given path as the response, for a file anywhere in the file system.
       #
-      # @see #send_file
-      #
       # @param path [String, Pathname] path to the file to be sent
       #
       # @return [void]
+      #
+      # @see #send_file
+      # @see Hanami::Action::Rack::File
       #
       # @since 2.0.0
       # @api public
@@ -303,7 +304,7 @@ module Hanami
                     end
 
         _send_file(
-          Rack::File.new(path, directory).call(env)
+          Action::Rack::File.new(path, directory).call(env)
         )
       end
 
