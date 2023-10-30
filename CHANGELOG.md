@@ -2,6 +2,12 @@
 
 Complete, fast and testable actions for Rack
 
+## v2.1.0.rc1 - 2023-11-01
+
+### Fixed
+
+- [Luca Guidi] Ensure Rack compatibility of `Hanami::Action::Response#send_file` (#431)
+
 ## v2.1.0.beta2 - 2023-10-04
 
 ### Fixed
