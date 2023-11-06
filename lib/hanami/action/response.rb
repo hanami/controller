@@ -80,7 +80,7 @@ module Hanami
         end
       end
 
-      # Set the response status
+      # Sets the response status.
       #
       # @param code [Integer, Symbol] the status code
       #
@@ -101,11 +101,21 @@ module Hanami
         super(Http::Status.lookup(code))
       end
 
-      # This is NOT RELEASED with 2.0.0
+      # Sets the response body from the rendered view.
       #
-      # @api private
-      def render(view, **options)
-        self.body = view.(**view_options.(request, self), **exposures.merge(options)).to_str
+      # @param view [Hanami::View] the view to render
+      # @param input [Hash] keyword arguments to pass to the view's `#call` method
+      #
+      # @api public
+      # @since 2.1.0
+      def render(view, **input)
+        view_input = {
+          **view_options.call(request, self),
+          **exposures,
+          **input
+        }
+
+        self.body = view.call(**view_input).to_str
       end
 
       # Returns the format for the response.
