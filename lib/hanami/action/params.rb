@@ -148,6 +148,45 @@ module Hanami
         validations(&blk || -> {})
       end
 
+      # Define full contract validations.  This takes precendence over the older `params` DSL.
+      #
+      # @param blk [Proc] the validation definitions
+      #
+      # @since 2.1.0
+      #
+      # @example
+      #   class Event < Hanami::Action
+      #     contract do
+      #       params do
+      #         required(:start_date).value(:date)
+      #         required(:end_date).value(:date)
+      #       end
+      #       rule do
+      #         if start_date > end_date
+      #           base.failure('event cannot end before it starts')
+      #         end
+      #       end
+      #     end
+      #
+      #     def handle(req, *)
+      #       halt 400 unless req.params.valid?
+      #       # ...
+      #     end
+      #   end
+      def self.contract(&blk)
+        @_contract = Dry::Validation::Contract.build(&blk || -> {})
+      end
+
+      # Accessor for the validations contract
+      #
+      # @return [Dry::Validation::Contract, NilClass]
+      # 
+      # @since 2.1.0
+      # @api private
+      def self._contract
+        @_contract
+      end
+
       # Initialize the params and freeze them.
       #
       # @param env [Hash] a Rack env or an hash of params.
@@ -159,9 +198,9 @@ module Hanami
       def initialize(env)
         @env = env
         super(_extract_params)
-        validation = validate
+        validation = self.class._contract ? self.class._contract.call(@input) : validate
         @params = validation.to_h
-        @errors = Errors.new(validation.messages)
+        @errors = Errors.new(self.class._contract ? validation.errors.to_h : validation.messages)
         freeze
       end
 

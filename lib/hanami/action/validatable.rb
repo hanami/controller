@@ -105,6 +105,15 @@ module Hanami
 
           @params_class = klass
         end
+
+        def contract(klass = nil, &blk)
+          if klass.nil?
+            klass = const_set(PARAMS_CLASS_NAME, Class.new(Params))
+            klass.class_eval { contract(&blk) }
+          end
+
+          @params_class = klass
+        end
       end
     end
   end

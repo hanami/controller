@@ -3,15 +3,10 @@
 require "rack"
 
 RSpec.describe Hanami::Action::Params do
-  xit "is frozen"
-
-  # This is temporary suspended.
-  # We need to get the dependency Hanami::Validations, more stable before to enable this back.
-  #
-  # it 'is frozen' do
-  #   params = Hanami::Action::Params.new({id: '23'})
-  #   params.must_be :frozen?
-  # end
+  xit 'is frozen' do
+    params = Hanami::Action::Params.new({id: '23'})
+    params.must_be :frozen?
+  end
 
   describe "#raw" do
     let(:params) { Class.new(Hanami::Action::Params) }
