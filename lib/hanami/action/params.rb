@@ -148,23 +148,23 @@ module Hanami
         validations(&blk || -> {})
       end
 
-      # Define full contract validations.  This takes precendence over the older `params` DSL.
+      # Define a validation rule.
       #
-      # @param blk [Proc] the validation definitions
+      # @param blk [Proc] the rule definition
       #
-      # @since 2.1.0
+      # @since 2.x.x
       #
       # @example
       #   class Event < Hanami::Action
-      #     contract do
-      #       params do
-      #         required(:start_date).value(:date)
-      #         required(:end_date).value(:date)
-      #       end
-      #       rule do
-      #         if start_date > end_date
-      #           base.failure('event cannot end before it starts')
-      #         end
+      #     params do
+      #       required(:start_date).value(:date)
+      #       required(:end_date).value(:date)
+      #     end
+      #
+      #     # Rules must be defined after the params schema.
+      #     rule(:start_date, :end_date) do
+      #       if start_date > end_date
+      #         base.failure('event cannot end before it starts')
       #       end
       #     end
       #
@@ -173,18 +173,13 @@ module Hanami
       #       # ...
       #     end
       #   end
-      def self.contract(&blk)
-        @_contract = Dry::Validation::Contract.build(&blk || -> {})
-      end
-
-      # Accessor for the validations contract
-      #
-      # @return [Dry::Validation::Contract, NilClass]
-      # 
-      # @since 2.1.0
-      # @api private
-      def self._contract
-        @_contract
+      def self.rule(*keys, &blk)
+        unless self._validator
+          raise ArgumentError.new(
+            "The params schema must be defined prior to adding rules."
+          )
+        end
+        self._validator.class.rule(*keys, &blk)
       end
 
       # Initialize the params and freeze them.
@@ -198,9 +193,9 @@ module Hanami
       def initialize(env)
         @env = env
         super(_extract_params)
-        validation = self.class._contract ? self.class._contract.call(@input) : validate
+        validation = validate
         @params = validation.to_h
-        @errors = Errors.new(self.class._contract ? validation.errors.to_h : validation.messages)
+        @errors = Errors.new(validation.messages)
         freeze
       end
 

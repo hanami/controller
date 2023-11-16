@@ -7,7 +7,6 @@ RSpec.describe Hanami::Action do
   describe ".params" do
     let(:klass) do
       Class.new(described_class) do
-        puts "Defining params"
         params do
           required(:book).schema do
             required(:code).filled(:str?)
@@ -40,53 +39,49 @@ RSpec.describe Hanami::Action do
     end
   end
 
-  describe ".contract" do
-    
-    context "when providing a block" do
-      let(:klass) do
-        Class.new(described_class) do
-          contract do
-            params do
-              required(:book).schema do
-                required(:code).filled(:str?)
-              end
-            end
-            rule("book.code") do
-                key.failure('must be "abc"') unless value == "abc"
-            end
-          end
-  
-          def handle(request, response)
-            response[:params] = request.params
+  describe ".rule" do
+    let(:klass) do
+      Class.new(described_class) do
+        params do
+          required(:book).schema do
+            required(:code).filled(:str?)
           end
         end
-      end
 
-      let(:action) { klass.new() }
-      let(:response) { action.call(given_input) }
+        rule("book.code") do
+          key.failure('must be "abc"') unless value == "abc"
+        end
 
-      context "given valid input" do
-        let(:given_input) { { book: { code: "abc" } } }
-
-        it "is valid" do
-          expect(response[:params].valid?).to eq(true)
+        def handle(request, response)
+          response[:params] = request.params
         end
       end
+    end
 
-      context "given invalid input" do
-        let(:given_input) { { book: { code: nil } } }
+    let(:action) { klass.new() }
+    let(:response) { action.call(given_input) }
 
-        it "is not valid" do
-          expect(response[:params].valid?).to eq(false)
-        end
+    context "given valid input" do
+      let(:given_input) { { book: { code: "abc" } } }
+
+      it "is valid" do
+        expect(response[:params].valid?).to eq(true)
       end
+    end
 
-      context "given input which does not pass rules" do
-        let(:given_input) { { book: { code: "xyz" } } }
+    context "given invalid input" do
+      let(:given_input) { { book: { code: nil } } }
 
-        it "is not valid" do
-          expect(response[:params].valid?).to eq(false)
-        end
+      it "is not valid" do
+        expect(response[:params].valid?).to eq(false)
+      end
+    end
+
+    context "given input which does not pass rules" do
+      let(:given_input) { { book: { code: "xyz" } } }
+
+      it "is not valid" do
+        expect(response[:params].valid?).to eq(false)
       end
     end
   end
