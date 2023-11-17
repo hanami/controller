@@ -174,11 +174,6 @@ module Hanami
       #     end
       #   end
       def self.rule(*keys, &blk)
-        unless self._validator
-          raise ArgumentError.new(
-            "The params schema must be defined prior to adding rules."
-          )
-        end
         self._validator.class.rule(*keys, &blk)
       end
 
