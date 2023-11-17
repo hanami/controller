@@ -173,8 +173,8 @@ module Hanami
       #       # ...
       #     end
       #   end
-      def self.rule(*keys, &blk)
-        self._validator.class.rule(*keys, &blk)
+      def self.rule(...)
+        _validator.class.rule(...)
       end
 
       # Initialize the params and freeze them.

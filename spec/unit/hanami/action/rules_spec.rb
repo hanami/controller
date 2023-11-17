@@ -19,7 +19,7 @@ RSpec.describe Hanami::Action do
       end
     end
 
-    let(:action) { klass.new() }
+    let(:action) { klass.new }
     let(:response) { action.call(given_input) }
 
     context "given valid input" do
@@ -58,7 +58,7 @@ RSpec.describe Hanami::Action do
       end
     end
 
-    let(:action) { klass.new() }
+    let(:action) { klass.new }
     let(:response) { action.call(given_input) }
 
     context "given valid input" do

@@ -131,13 +131,13 @@ module Hanami
         #       # ...
         #     end
         #   end
-        def rule(*keys, &blk)
+        def rule(...)
           unless @params_class
             raise ArgumentError.new(
               "The params schema must be defined prior to adding rules."
             )
           end
-          @params_class.class_eval { rule(*keys, &blk) }
+          @params_class.class_eval { rule(...) }
         end
       end
     end
