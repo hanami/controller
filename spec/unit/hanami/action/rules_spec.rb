@@ -23,7 +23,7 @@ RSpec.describe Hanami::Action do
     let(:response) { action.call(given_input) }
 
     context "given valid input" do
-      let(:given_input) { { book: { code: "abc" } } }
+      let(:given_input) { {book: {code: "abc"}} }
 
       it "is valid" do
         expect(response[:params].valid?).to eq(true)
@@ -31,7 +31,7 @@ RSpec.describe Hanami::Action do
     end
 
     context "given invalid input" do
-      let(:given_input) { { book: { code: nil } } }
+      let(:given_input) { {book: {code: nil}} }
 
       it "is not valid" do
         expect(response[:params].valid?).to eq(false)
@@ -62,7 +62,7 @@ RSpec.describe Hanami::Action do
     let(:response) { action.call(given_input) }
 
     context "given valid input" do
-      let(:given_input) { { book: { code: "abc" } } }
+      let(:given_input) { {book: {code: "abc"}} }
 
       it "is valid" do
         expect(response[:params].valid?).to eq(true)
@@ -70,7 +70,7 @@ RSpec.describe Hanami::Action do
     end
 
     context "given invalid input" do
-      let(:given_input) { { book: { code: nil } } }
+      let(:given_input) { {book: {code: nil}} }
 
       it "is not valid" do
         expect(response[:params].valid?).to eq(false)
@@ -78,7 +78,7 @@ RSpec.describe Hanami::Action do
     end
 
     context "given input which does not pass rules" do
-      let(:given_input) { { book: { code: "xyz" } } }
+      let(:given_input) { {book: {code: "xyz"}} }
 
       it "is not valid" do
         expect(response[:params].valid?).to eq(false)
