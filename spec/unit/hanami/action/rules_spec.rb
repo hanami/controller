@@ -3,7 +3,6 @@
 require "rack"
 
 RSpec.describe Hanami::Action do
-  # Deprecated behavior
   describe ".params" do
     let(:klass) do
       Class.new(described_class) do
