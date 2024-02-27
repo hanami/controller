@@ -2,6 +2,8 @@
 
 Complete, fast and testable actions for Rack
 
+## v2.1.0 - 2024-02-27
+
 ## v2.1.0.rc3 - 2024-02-16
 
 ## v2.1.0.rc2 - 2023-11-08
