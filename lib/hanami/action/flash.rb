@@ -158,7 +158,7 @@ module Hanami
         if no_arg
           @next.merge!(@flash)
         else
-          self[key] = self[key]
+          self[key] = self[key] # rubocop:disable Lint/SelfAssignment
         end
       end
 
