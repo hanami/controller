@@ -478,7 +478,7 @@ class IterateCookiesAction < Hanami::Action
 
   def handle(*, res)
     result = []
-    res.cookies.each do |key, value|
+    res.cookies.each do |key, value| # rubocop:disable Style/MapIntoArray
       result << "'#{key}' has value '#{value}'"
     end
 
@@ -1781,8 +1781,7 @@ module Flash
         include Hanami::Action::Session
 
         def handle(_, res)
-          each_result = []
-          res.flash.each { |type, message| each_result << [type, message] }
+          each_result = res.flash.map { |type, message| [type, message] }
           res.body = "flash_each: #{each_result}"
         end
       end
