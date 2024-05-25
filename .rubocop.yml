@@ -5,8 +5,11 @@ inherit_from:
 
 Layout/LineLength:
   Exclude:
-    - 'spec/**/*.rb'
+    - "spec/**/*.rb"
 
 Metrics/AbcSize:
   Exclude:
-    - 'spec/**/*.rb'
+    - "spec/**/*.rb"
+
+Style/SymbolProc:
+  Enabled: false

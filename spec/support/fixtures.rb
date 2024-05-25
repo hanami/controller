@@ -254,7 +254,7 @@ class ParamsBeforeMethodAction < BeforeMethodAction
 
   def set_article(req, res)
     res[:exposed_params] = req.params
-    res[:article] = super(req, res) + req.params[:bang]
+    res[:article] = super + req.params[:bang]
   end
 end
 
