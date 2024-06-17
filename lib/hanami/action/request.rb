@@ -27,12 +27,24 @@ module Hanami
       # @api public
       attr_reader :params
 
+
+      # Returns the contract that the request params can be validated against.
+      #
+      # For an action with {Validatable} included, this will be a {Contract} instance, otherwise it is not available
+      #
+      # @return [Contract]
+      #
+      # @since 2.2.0
+      # @api public
+      attr_reader :contract
+
       # @since 2.0.0
       # @api private
-      def initialize(env:, params:, session_enabled: false)
+      def initialize(env:, params:, contract: nil, session_enabled: false)
         super(env)
 
         @params = params
+        @contract = contract
         @session_enabled = session_enabled
       end
 

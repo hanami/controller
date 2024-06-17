@@ -15,6 +15,10 @@ RSpec.describe "Without validations" do
     expect(defined?(Hanami::Action::Params)).to be(nil)
   end
 
+  it "doesn't load Hanami::Action::Contract" do
+    expect(defined?(Hanami::Action::Contract)).to be(nil)
+  end
+
   it "doesn't have params DSL" do
     expect do
       Class.new(Hanami::Action) do
@@ -25,6 +29,24 @@ RSpec.describe "Without validations" do
     end.to raise_error(
       NoMethodError,
       /To use `params`, please add 'hanami\/validations' gem to your Gemfile/
+    )
+  end
+
+  it "doesn't have contract DSL" do
+    expect do
+      Class.new(Hanami::Action) do
+        contract do
+          params do
+            required(:start_date).value(:date)
+          end
+          rule(:start_date) do
+            key.failure('must be in the future') if value <= Date.today
+          end
+        end
+      end
+    end.to raise_error(
+      NoMethodError,
+      /To use `contract`, please add 'hanami\/validations' gem to your Gemfile/
     )
   end
 

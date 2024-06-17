@@ -1902,3 +1902,35 @@ module Inheritance
     end
   end
 end
+
+class ContractAction < Hanami::Action
+  contract do
+    schema do
+      required(:birth_date).filled(:date)
+    end
+
+    rule(:birth_date) do
+      key.failure("you must be 18 years or older") if value < Date.today << (12 * 18)
+    end
+  end
+
+  def handle(request, response)
+    contract = request.contract.call
+    unless contract.errors.empty?
+      response.body = { errors: contract.errors.to_h }
+      response.status = 302
+    end
+  end
+end
+
+class BaseContract < Hanami::Action::Contract
+  contract do
+    params do
+      required(:start_date).value(:date)
+    end
+
+    rule(:start_date) do
+      key.failure('must be in the future') if value <= Date.today
+    end
+  end
+end

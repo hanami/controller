@@ -39,7 +39,7 @@ module Hanami
         loader.ignore(
           "#{root}/hanami-controller.rb",
           "#{root}/hanami/controller/version.rb",
-          "#{root}/hanami/action/{constants,errors,params,validatable}.rb"
+          "#{root}/hanami/action/{constants,errors,params,contract,validatable}.rb"
         )
         loader.inflector.inflect("csrf_protection" => "CSRFProtection")
       end
@@ -109,6 +109,10 @@ module Hanami
       if instance_variable_defined?(:@params_class)
         subclass.instance_variable_set(:@params_class, @params_class)
       end
+
+      if instance_variable_defined?(:@contract_class)
+        subclass.instance_variable_set(:@contract_class, @contract_class)
+      end
     end
 
     # Returns the class which defines the params
@@ -125,6 +129,19 @@ module Hanami
       @params_class || BaseParams
     end
 
+    # Returns the class which defines the contract
+    #
+    # Returns the class which has been provided to define the
+    # contract. By default this will be Hanami::Action::Contract.
+    #
+    # @return [Class] A contract class or Hanami::Action::Contract
+    #
+    # @api private
+    # @since 2.2.0
+    def self.contract_class
+      @contract_class || Contract
+    end
+
     # Placeholder implementation for params class method
     #
     # Raises a developer friendly error to include `hanami/validations`.
@@ -136,6 +153,19 @@ module Hanami
     def self.params(_klass = nil)
       raise NoMethodError,
             "To use `params`, please add 'hanami/validations' gem to your Gemfile"
+    end
+
+    # Placeholder implementation for contract class method
+    #
+    # Raises a developer friendly error to include `hanami/validations`.
+    #
+    # @raise [NoMethodError]
+    #
+    # @api public
+    # @since 2.2.0
+    def self.contract
+      raise NoMethodError,
+            "To use `contract`, please add 'hanami/validations' gem to your Gemfile"
     end
 
     # @overload self.append_before(*callbacks, &block)
@@ -306,9 +336,11 @@ module Hanami
 
       halted = catch :halt do
         params   = self.class.params_class.new(env)
+        contract = self.class.contract_class.new(env) if self.class.instance_variable_defined?(:@contract_class)
         request  = build_request(
           env: env,
           params: params,
+          contract: contract,
           session_enabled: session_enabled?
         )
         response = build_response(
