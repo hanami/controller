@@ -151,6 +151,7 @@ module Hanami
     # @api public
     # @since 2.0.0
     def self.params(_klass = nil)
+
       raise NoMethodError,
             "To use `params`, please add 'hanami/validations' gem to your Gemfile"
     end
@@ -164,6 +165,7 @@ module Hanami
     # @api public
     # @since 2.2.0
     def self.contract
+
       raise NoMethodError,
             "To use `contract`, please add 'hanami/validations' gem to your Gemfile"
     end

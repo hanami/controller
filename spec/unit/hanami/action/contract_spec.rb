@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "rack"
-require 'byebug'
 
 RSpec.describe Hanami::Action::Contract do
   describe "when defined as block in action" do
@@ -21,6 +20,18 @@ RSpec.describe Hanami::Action::Contract do
       result = contract.call
 
       expect(result.errors.to_h).to eq(start_date: ["must be in the future"])
+    end
+
+    it "allows for usage of outside classes as schemas" do
+      contract = OutsideSchemasContract.new(country: "PL", zipcode: "11-123", mobile: "123092902", name: "myguy")
+
+      result = contract.call
+
+      expect(result.errors.to_h).to eq(
+        street: ["is missing"],
+        email: ["is missing"],
+        age: ["is missing"]
+      )
     end
   end
 end

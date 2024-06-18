@@ -1934,3 +1934,23 @@ class BaseContract < Hanami::Action::Contract
     end
   end
 end
+
+AddressSchema = Dry::Schema.Params do
+  required(:country).value(:string)
+  required(:zipcode).value(:string)
+  required(:street).value(:string)
+end
+
+ContactSchema = Dry::Schema.Params do
+  required(:email).value(:string)
+  required(:mobile).value(:string)
+end
+
+class OutsideSchemasContract < Hanami::Action::Contract
+  contract do
+    params(AddressSchema, ContactSchema) do
+      required(:name).value(:string)
+      required(:age).value(:integer)
+    end
+  end
+end

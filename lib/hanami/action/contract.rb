@@ -1,8 +1,10 @@
 # frozen_string_literal: true
+require 'byebug'
 
 module Hanami
   class Action
-    # A wrapper for Params class that allows for defining validation rules using Dry::Validation
+    # A wrapper for defining validation rules using Dry::Validation. This class essentially
+    # wraps a Dry::Validation::Contract and acts as a proxy to actually use Dry gem
     #
     # Accessible via the `contract` method in an action class.
     # Although more complex domain-specific validations, or validations concerned with things such as uniqueness
@@ -26,18 +28,19 @@ module Hanami
       #
       # @example
       # class Create < Hanami::Action
-      #  contract do
-      #    params do
-      #      required(:birth_date).value(:date)
-      #    end
-      #    rule(:birth_date) do
-      #      key.failure('you must be 18 years or older to register') if value > Date.today - 18.years
-      #    end
+      #   contract do
+      #     params do
+      #       required(:birth_date).value(:date)
+      #     end
+      #     rule(:birth_date) do
+      #       key.failure('you must be 18 years or older to register') if value > Date.today - 18.years
+      #     end
+      #   end
       #
-      #    def handle(req, *)
-      #      halt 400 unless req.contract.errors
-      #      # ...
-      #    end
+      #   def handle(req, *)
+      #     halt 400 unless req.contract.call.errors.empty?
+      #     # ...
+      #   end
       # end
       def self.contract(&blk)
         @_validator = Dry::Validation::Contract.build(&blk)
@@ -53,16 +56,17 @@ module Hanami
       #
       # @param env [Hash] a Rack env or an hash of params.
       #
-      # @return [nie wiem jeszcze]
+      # @return [Hash]
       #
       # @since 2.2.0
       # @api public
       def initialize(env)
         @env = env
-        @input = extract_params
+        @input = Hanami::Action::ParamsExtraction.new(env).call
       end
 
       # Validates the object, running the Dry::Validation contract and returning it
+      # Contract needs to be called explicitly and handled the same way, by itself it does not invalidate the request.
       # @since 2.2.0
       # @api public
       def call
@@ -74,33 +78,9 @@ module Hanami
 
       private
 
-      # TODO: shared with params.rb
+      # @since 2.2.0
       def validate
         self.class._validator.call(@input)
-      end
-
-      def extract_params
-        result = {}
-
-        if env.key?(Action::RACK_INPUT)
-          result.merge! ::Rack::Request.new(env).params
-          result.merge! _router_params
-        else
-          result.merge! _router_params(env)
-          env[Action::REQUEST_METHOD] ||= Action::DEFAULT_REQUEST_METHOD
-        end
-
-        result
-      end
-
-      def _router_params(fallback = {})
-        env.fetch(ROUTER_PARAMS) do
-          if session = fallback.delete(Action::RACK_SESSION)
-            fallback[Action::RACK_SESSION] = Utils::Hash.deep_symbolize(session)
-          end
-
-          fallback
-        end
       end
     end
   end

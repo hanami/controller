@@ -18,7 +18,7 @@ module Hanami
       # @since 0.3.0
       PARAMS_CLASS_NAME = "Params"
 
-      # Defines the base class name for contract
+      # Defines the contract base class
       #
       # @api private
       # @since 2.2.0
