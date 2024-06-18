@@ -22,7 +22,7 @@ module Hanami
       #
       # @api private
       # @since 2.2.0
-      PARAMS_CLASS_NAME = "Contract"
+      CONTRACT_CLASS_NAME = "Contract"
 
       # @api private
       # @since 0.1.0
@@ -116,7 +116,7 @@ module Hanami
         # @since 2.2.0
         # @api public
         def contract(&blk)
-          klass = const_set("Contract", Class.new(Contract))
+          klass = const_set(CONTRACT_CLASS_NAME, Class.new(Contract))
           klass.class_eval { contract(&blk) }
           @contract_class = klass
         end
