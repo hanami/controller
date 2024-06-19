@@ -105,6 +105,40 @@ module Hanami
 
           @params_class = klass
         end
+
+        # Define a validation rule.
+        #
+        # @param blk [Proc] the rule definition
+        #
+        # @since 2.x.x
+        #
+        # @example
+        #   class Event < Hanami::Action
+        #     params do
+        #       required(:start_date).value(:date)
+        #       required(:end_date).value(:date)
+        #     end
+        #
+        #     # Rules must be defined after the params schema.
+        #     rule(:start_date, :end_date) do
+        #       if start_date > end_date
+        #         base.failure('event cannot end before it starts')
+        #       end
+        #     end
+        #
+        #     def handle(req, *)
+        #       halt 400 unless req.params.valid?
+        #       # ...
+        #     end
+        #   end
+        def rule(...)
+          unless @params_class
+            raise ArgumentError.new(
+              "The params schema must be defined prior to adding rules."
+            )
+          end
+          @params_class.class_eval { rule(...) }
+        end
       end
     end
   end
