@@ -1,6 +1,6 @@
 name: ci
 
-"on":
+on:
   push:
     paths:
       - ".github/workflows/ci.yml"
@@ -36,21 +36,14 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{matrix.ruby}}
-      - name: Install latest bundler
-        run: |
-          gem install bundler --no-document
-      - name: Bundle install
-        run: bundle install --jobs 4 --retry 3
+          bundler-cache: true
       - name: Run all tests
         run: script/ci
-      - uses: ravsamhq/notify-slack-action@v1
-        if: github.ref_name == 'main'
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          status: ${{ job.status }}
-          notification_title: '{workflow} has {status_message}'
-          message_format: '{emoji} *{workflow}* {status_message} in <{repo_url}|{repo}>'
-          footer: 'Linked Repo <{repo_url}|{repo}> | <{workflow_url}|View Workflow>'
-          notify_when: 'failure'
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  workflow-keepalive:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - uses: liskin/gh-workflow-keepalive@v1
