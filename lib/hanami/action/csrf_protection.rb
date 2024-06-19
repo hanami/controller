@@ -13,10 +13,11 @@ module Hanami
     # This security mechanism is enabled automatically if sessions are turned on.
     #
     # It stores a "challenge" token in session. For each "state changing request"
-    # (eg. <tt>POST</tt>, <tt>PATCH</tt> etc..), we should send a special param:
-    # <tt>_csrf_token</tt>.
+    # (eg. <tt>POST</tt>, <tt>PATCH</tt> etc..), we should send a special param
+    # <tt>_csrf_token</tt> or header <tt>X-CSRF-Token</tt> which contain the "challenge"
+    # token.
     #
-    # If the param matches with the challenge token, the flow can continue.
+    # If the request token matches with the challenge token, the flow can continue.
     # Otherwise the application detects an attack attempt, it reset the session
     # and <tt>Hanami::Action::InvalidCSRFTokenError</tt> is raised.
     #
@@ -107,6 +108,16 @@ module Hanami
         res.session[CSRF_TOKEN] ||= generate_csrf_token
       end
 
+      # Get CSRF Token in request.
+      #
+      # Retreives the CSRF token from the request param <tt>_csrf_token</tt> or the request header <tt>X-CSRF-Token</tt>.
+      #
+      # @since 2.X.X
+      # @api private
+      def request_csrf_token(req)
+        req.params[CSRF_TOKEN] || req.get_header("HTTP_X_CSRF_TOKEN")
+      end
+
       # Verify if CSRF token from params, matches the one stored in session.
       # If not, it raises an error.
       #
@@ -131,14 +142,14 @@ module Hanami
         return false unless verify_csrf_token?(req, res)
 
         missing_csrf_token?(req, res) ||
-          !::Rack::Utils.secure_compare(req.session[CSRF_TOKEN], req.params[CSRF_TOKEN])
+          !::Rack::Utils.secure_compare(req.session[CSRF_TOKEN], request_csrf_token(req))
       end
 
       # Verify the CSRF token was passed in params.
       #
       # @api private
-      def missing_csrf_token?(req, *)
-        Hanami::Utils::Blank.blank?(req.params[CSRF_TOKEN])
+      def missing_csrf_token?(req, res)
+        Hanami::Utils::Blank.blank?(request_csrf_token(req))
       end
 
       # Generates a random CSRF Token
