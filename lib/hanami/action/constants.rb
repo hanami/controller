@@ -245,5 +245,9 @@ module Hanami
     # @since 2.0.0
     # @api private
     DEFAULT_CHARSET = "utf-8"
+
+    # @since 2.2.0
+    # @api private
+    ACTION_INSTANCE = "hanami.action_instance"
   end
 end

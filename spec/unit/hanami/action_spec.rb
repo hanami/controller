@@ -21,6 +21,14 @@ RSpec.describe Hanami::Action do
       expect(response.body).to    eq(["Hi from TestAction!"])
     end
 
+    it "sets the action instance on the request environment object" do
+      action = CallAction.new
+      env = {}
+      action.call(env)
+
+      expect(env[Hanami::Action::ACTION_INSTANCE]).to eq(action)
+    end
+
     context "when an exception isn't handled" do
       it "should raise an actual exception" do
         expect { UncheckedErrorCallAction.new.call({}) }.to raise_error(RuntimeError)
