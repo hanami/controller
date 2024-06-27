@@ -8,7 +8,7 @@ module Hanami
     #
     # @since 0.1.0
     #
-    # @see Hanami::Action::Cookies#cookies
+    # @see Hanami::Action::Response#cookies
     module Cookies
       private
 

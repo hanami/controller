@@ -6,7 +6,6 @@ require "securerandom"
 require_relative "errors"
 
 module Hanami
-  # @api private
   class Action
     # CSRF Protection
     #

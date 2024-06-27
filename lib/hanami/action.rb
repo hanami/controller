@@ -85,8 +85,8 @@ module Hanami
     #
     #   @return [Config]
     #
-    #   @api public
-    #   @since 2.0.0
+    # @since 2.0.0
+    # @api public
 
     # @!scope instance
 
@@ -153,7 +153,7 @@ module Hanami
     #
     #   @since 0.3.2
     #
-    #   @see Hanami::Action::Callbacks::ClassMethods#append_after
+    # @see #append_after
     #
     #   @example Method names (symbols)
     #     require "hanami/controller"
@@ -221,7 +221,7 @@ module Hanami
     #
     #   @since 0.3.2
     #
-    #   @see Hanami::Action::Callbacks::ClassMethods#append_before
+    # @see #append_before
     def self.append_after(...)
       config.after_callbacks.append(...)
     end
@@ -246,7 +246,7 @@ module Hanami
     #
     #   @since 0.3.2
     #
-    #   @see Hanami::Action::Callbacks::ClassMethods#prepend_after
+    # @see #prepend_after
     def self.prepend_before(...)
       config.before_callbacks.prepend(...)
     end
@@ -266,7 +266,7 @@ module Hanami
     #
     #   @since 0.3.2
     #
-    #   @see Hanami::Action::Callbacks::ClassMethods#prepend_before
+    # @see #prepend_before
     def self.prepend_after(...)
       config.after_callbacks.prepend(...)
     end

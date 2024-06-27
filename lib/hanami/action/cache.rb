@@ -6,9 +6,9 @@ module Hanami
     #
     # @since 0.3.0
     #
-    # @see Hanami::Action::Cache::ClassMethods#cache_control
-    # @see Hanami::Action::Cache::ClassMethods#expires
-    # @see Hanami::Action::Cache::ClassMethods#fresh
+    # @see Hanami::Action::Response#cache_control
+    # @see Hanami::Action::Response#expires
+    # @see Hanami::Action::Response#fresh
     module Cache
       # Override Ruby's hook for modules.
       # It includes exposures logic
