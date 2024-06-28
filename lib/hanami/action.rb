@@ -83,7 +83,7 @@ module Hanami
     #       config.format :json
     #     end
     #
-    #   @return [Config]
+    # @return [Config]
     #
     # @since 2.0.0
     # @api public
@@ -138,7 +138,7 @@ module Hanami
             "To use `params`, please add 'hanami/validations' gem to your Gemfile"
     end
 
-    # @overload self.append_before(*callbacks, &block)
+    # @overload append_before(*callbacks, &block)
     #   Define a callback for an Action.
     #   The callback will be executed **before** the action is called, in the
     #   order they are added.
@@ -153,7 +153,7 @@ module Hanami
     #
     #   @since 0.3.2
     #
-    # @see #append_after
+    #   @see #append_after
     #
     #   @example Method names (symbols)
     #     require "hanami/controller"
@@ -206,7 +206,7 @@ module Hanami
       alias_method :before, :append_before
     end
 
-    # @overload self.append_after(*callbacks, &block)
+    # @overload append_after(*callbacks, &block)
     #   Define a callback for an Action.
     #   The callback will be executed **after** the action is called, in the
     #   order they are added.
@@ -231,7 +231,7 @@ module Hanami
       alias_method :after, :append_after
     end
 
-    # @overload self.prepend_before(*callbacks, &block)
+    # @overload prepend_before(*callbacks, &block)
     #   Define a callback for an Action.
     #   The callback will be executed **before** the action is called.
     #   It will add the callback at the beginning of the callbacks' chain.
@@ -251,7 +251,7 @@ module Hanami
       config.before_callbacks.prepend(...)
     end
 
-    # @overload self.prepend_after(*callbacks, &block)
+    # @overload prepend_after(*callbacks, &block)
     #   Define a callback for an Action.
     #   The callback will be executed **after** the action is called.
     #   It will add the callback at the beginning of the callbacks' chain.
@@ -334,11 +334,14 @@ module Hanami
 
     protected
 
-    # Hook for subclasses to apply behavior as part of action invocation
+    # Hook for subclasses to apply behavior as part of action invocation.
+    #
+    # This is the method you'll implement in your actions.
     #
     # @param request [Hanami::Action::Request]
     # @param response [Hanami::Action::Response]
     #
+    # @abstract
     # @since 2.0.0
     # @api public
     def handle(request, response)
