@@ -5,6 +5,7 @@ module Hanami
     # Cache type API
     #
     # @since 0.3.0
+    # @api private
     #
     # @see Hanami::Action::Response#cache_control
     # @see Hanami::Action::Response#expires

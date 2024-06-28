@@ -364,8 +364,8 @@ module Hanami
     #
     # @since 0.2.0
     #
-    # @see Hanami::Action::Throwable#handle_exception
-    # @see Hanami::Http::Status:ALL
+    # @see Hanami::Action.handle_exception
+    # @see https://rubydoc.info/github/rack/rack/Rack/Utils
     #
     # @example Basic usage
     #   require "hanami/controller"
@@ -527,8 +527,6 @@ module Hanami
     # quota via <tt>X-Rate-Limit</tt>.
     #
     # @since 0.5.0
-    #
-    # @see Hanami::Action#_requires_no_body?
     #
     # @example
     #   require "hanami/controller"
