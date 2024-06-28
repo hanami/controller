@@ -153,7 +153,7 @@ module Hanami
     #
     #   @since 0.3.2
     #
-    #   @see #append_after
+    #   @see Action#append_after
     #
     #   @example Method names (symbols)
     #     require "hanami/controller"
@@ -221,7 +221,7 @@ module Hanami
     #
     #   @since 0.3.2
     #
-    # @see #append_before
+    # @see Action#append_before
     def self.append_after(...)
       config.after_callbacks.append(...)
     end
@@ -246,7 +246,7 @@ module Hanami
     #
     #   @since 0.3.2
     #
-    # @see #prepend_after
+    # @see Action#prepend_after
     def self.prepend_before(...)
       config.before_callbacks.prepend(...)
     end
@@ -266,7 +266,7 @@ module Hanami
     #
     #   @since 0.3.2
     #
-    # @see #prepend_before
+    # @see Action#prepend_before
     def self.prepend_after(...)
       config.after_callbacks.prepend(...)
     end
