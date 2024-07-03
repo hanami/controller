@@ -708,7 +708,7 @@ module Hanami
         @default_request_format  = nil
         @default_response_format = nil
         @default_charset         = nil
-        @default_headers         = {}
+        @default_headers         = ::Rack::Headers.new
         @cookies                 = {}
         @root_directory          = ::Pathname.new(Dir.pwd).realpath
         @public_directory        = root_directory.join(DEFAULT_PUBLIC_DIRECTORY).to_s
