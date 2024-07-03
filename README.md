@@ -1,18 +1,13 @@
 # Hanami::Controller
 
-Complete, fast and testable actions for Rack and [Hanami](http://hanamirb.org)
-
-## Version
-
-**This branch contains the code for `hanami-controller` 2.x.**
+Complete, fast, and testable actions for Rack and [Hanami](http://hanamirb.org)
 
 ## Status
 
 [![Gem Version](https://badge.fury.io/rb/hanami-controller.svg)](https://badge.fury.io/rb/hanami-controller)
-[![CI](https://github.com/hanami/controller/workflows/ci/badge.svg?branch=main)](https://github.com/hanami/controller/actions?query=workflow%3Aci+branch%3Amain)
+[![CI](https://github.com/hanami/controller/actions/workflows/ci.yml/badge.svg)](https://github.com/hanami/controller/actions?query=workflow%3Aci+branch%3Amain)
 [![Test Coverage](https://codecov.io/gh/hanami/controller/branch/main/graph/badge.svg)](https://codecov.io/gh/hanami/controller)
 [![Depfu](https://badges.depfu.com/badges/7cd17419fba78b726be1353118fb01de/overview.svg)](https://depfu.com/github/hanami/controller?project=Bundler)
-[![Inline Docs](http://inch-ci.org/github/hanami/controller.svg)](http://inch-ci.org/github/hanami/controller)
 
 ## Contact
 
@@ -20,15 +15,13 @@ Complete, fast and testable actions for Rack and [Hanami](http://hanamirb.org)
 * Community: http://hanamirb.org/community
 * Guides: https://guides.hanamirb.org
 * Mailing List: http://hanamirb.org/mailing-list
-* API Doc: http://rdoc.info/gems/hanami-controller
-* Bugs/Issues: https://github.com/hanami/controller/issues
+* API Doc: http://rubydoc.info/gems/hanami-controller
 * Chat: http://chat.hanamirb.org
 
-## Rubies
-
-__Hanami::Controller__ supports Ruby (MRI) 3.0+
 
 ## Installation
+
+__Hanami::Controller__ supports Ruby (MRI) 3.1+
 
 Add this line to your application's Gemfile:
 
@@ -961,4 +954,4 @@ __Hanami::Controller__ uses [Semantic Versioning 2.0.0](http://semver.org)
 
 ## Copyright
 
-Copyright © 2014 Hanami Team – Released under MIT License
+Copyright © 2014–2024 Hanami Team – Released under MIT License
