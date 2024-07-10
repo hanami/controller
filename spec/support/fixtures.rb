@@ -1314,6 +1314,7 @@ module FullStack
         end
 
         def handle(req, res)
+          byebug
           valid = req.params.valid?
 
           res.status = 201
@@ -1905,8 +1906,11 @@ end
 
 class ContractAction < Hanami::Action
   contract do
-    schema do
+    params do
       required(:birth_date).filled(:date)
+      required(:book).schema do
+        required(:title).filled(:str?)
+      end
     end
 
     rule(:birth_date) do
@@ -1915,9 +1919,13 @@ class ContractAction < Hanami::Action
   end
 
   def handle(request, response)
-    contract = request.contract.call
-    unless contract.errors.empty?
-      response.body = { errors: contract.errors.to_h }
+    if request.params.valid?
+      response.status = 201
+      response.body = JSON.generate(
+        new_name: request.params[:book][:title].upcase
+      )
+    else
+      response.body = { errors: request.params.errors.to_h }
       response.status = 302
     end
   end

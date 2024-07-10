@@ -8,6 +8,7 @@ require "hanami/utils/string"
 require "rack"
 require "rack/utils"
 require "zeitwerk"
+require 'byebug'
 
 require_relative "action/constants"
 require_relative "action/errors"
@@ -110,9 +111,6 @@ module Hanami
         subclass.instance_variable_set(:@params_class, @params_class)
       end
 
-      if instance_variable_defined?(:@contract_class)
-        subclass.instance_variable_set(:@contract_class, @contract_class)
-      end
     end
 
     # Returns the class which defines the params
@@ -129,6 +127,7 @@ module Hanami
       @params_class || BaseParams
     end
 
+
     # Returns the class which defines the contract
     #
     # Returns the class which has been provided to define the
@@ -138,9 +137,9 @@ module Hanami
     #
     # @api private
     # @since 2.2.0
-    def self.contract_class
-      @contract_class || Contract
-    end
+    # def self.contract_class
+    #   @contract_class || Contract
+    # end
 
     # Placeholder implementation for params class method
     #
@@ -337,12 +336,10 @@ module Hanami
       response = nil
 
       halted = catch :halt do
-        params   = self.class.params_class.new(env)
-        contract = self.class.contract_class.new(env) if self.class.instance_variable_defined?(:@contract_class)
-        request  = build_request(
+        params = self.class.params_class.new(env)
+        request = build_request(
           env: env,
           params: params,
-          contract: contract,
           session_enabled: session_enabled?
         )
         response = build_response(

@@ -109,16 +109,17 @@ module Hanami
             klass = const_set(PARAMS_CLASS_NAME, Class.new(Params))
             klass.class_eval { params(&blk) }
           end
-
           @params_class = klass
         end
 
         # @since 2.2.0
         # @api public
-        def contract(&blk)
-          klass = const_set(CONTRACT_CLASS_NAME, Class.new(Contract))
-          klass.class_eval { contract(&blk) }
-          @contract_class = klass
+        def contract(klass = nil, &blk)
+          if klass.nil?
+            klass = const_set(CONTRACT_CLASS_NAME, Class.new(Contract))
+            klass.class_eval { contract(&blk) }
+          end
+          @params_class = klass
         end
       end
     end

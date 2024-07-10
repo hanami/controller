@@ -1,18 +1,36 @@
 # frozen_string_literal: true
-require 'byebug'
+
+require "byebug"
 
 module Hanami
   class Action
     # A wrapper for defining validation rules using Dry::Validation. This class essentially
     # wraps a Dry::Validation::Contract and acts as a proxy to actually use Dry gem
     #
-    # Accessible via the `contract` method in an action class.
+    # Defined via the `contract` block in an action class.
     # Although more complex domain-specific validations, or validations concerned with things such as uniqueness
     # are usually better performed at layers deeper than your HTTP actions, Contract still provides helpful features
     # that you can use without contravening the advice form above.
     #
     # @since 2.2.0
     class Contract
+      # A wrapper for the result of a contract validation
+      # @since 2.2.0
+      # @api private
+      class Result < SimpleDelegator
+        # @since 2.0.0
+        # @api private
+        def output
+          __getobj__.to_h
+        end
+
+        # @since 2.0.0
+        # @api private
+        def messages
+          __getobj__.errors.to_h
+        end
+      end
+
       # @attr_reader env [Hash] the Rack env
       #
       # @since 2.2.0
@@ -43,12 +61,16 @@ module Hanami
       #   end
       # end
       def self.contract(&blk)
-        @_validator = Dry::Validation::Contract.build(&blk)
+        validations(&blk || -> {})
       end
 
       # @since 2.2.0
       # @api private
       class << self
+        def validations(&blk)
+          @_validator = Dry::Validation::Contract.build(&blk)
+        end
+
         attr_reader :_validator
       end
 
@@ -63,24 +85,57 @@ module Hanami
       def initialize(env)
         @env = env
         @input = Hanami::Action::ParamsExtraction.new(env).call
+        validation = validate
+        @params = validation.to_h
+        @errors = Hanami::Action::Params::Errors.new(validation.messages)
+        freeze
       end
 
-      # Validates the object, running the Dry::Validation contract and returning it
-      # Contract needs to be called explicitly and handled the same way, by itself it does not invalidate the request.
+      attr_reader :errors
+
+      # Returns true if no validation errors are found,
+      # false otherwise.
+      #
+      # @return [TrueClass, FalseClass]
+      #
       # @since 2.2.0
-      # @api public
-      def call
-        @result = validate
-        result
+      #
+      def valid?
+        errors.empty?
       end
+
+      # Serialize validated params to Hash
+      #
+      # @return [::Hash]
+      #
+      # @since 2.2.0
+      def to_h
+        validate.output
+      end
+      alias_method :to_hash, :to_h
 
       attr_reader :result
+
+      # Returns the value for the given params key.
+      #
+      # @param key [Symbol] the key
+      #
+      # @return [Object,nil] the associated value, if found
+      #
+      # @since 2.2.0
+      # @api public
+      def [](key)
+        @params[key]
+      end
 
       private
 
       # @since 2.2.0
       def validate
-        self.class._validator.call(@input)
+        # Result.new need to take this in, and provide messages and output
+        Result.new(
+          self.class._validator.call(@input)
+        )
       end
     end
   end
