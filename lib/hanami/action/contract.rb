@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "byebug"
-
 module Hanami
   class Action
     # A wrapper for defining validation rules using Dry::Validation. This class essentially

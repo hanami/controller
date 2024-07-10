@@ -8,7 +8,6 @@ require "hanami/utils/string"
 require "rack"
 require "rack/utils"
 require "zeitwerk"
-require 'byebug'
 
 require_relative "action/constants"
 require_relative "action/errors"

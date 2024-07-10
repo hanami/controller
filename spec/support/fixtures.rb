@@ -1314,7 +1314,6 @@ module FullStack
         end
 
         def handle(req, res)
-          byebug
           valid = req.params.valid?
 
           res.status = 201

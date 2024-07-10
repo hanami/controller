@@ -31,5 +31,4 @@ group :benchmarks do
   gem "memory_profiler"
 end
 
-gem 'byebug'
 gem "hanami-devtools", github: "hanami/devtools", branch: "main"
