@@ -15,8 +15,16 @@ RSpec.describe Hanami::Action::CSRFProtection do
     context "No existing session" do
       let(:request) { super().merge("rack.session" => {}) }
 
-      context "non-matching CSRF token in request" do
+      context "non-matching CSRF token in request param" do
         let(:request) { super().merge(_csrf_token: "non-matching") }
+
+        it "rejects the request" do
+          expect { response }.to raise_error Hanami::Action::InvalidCSRFTokenError
+        end
+      end
+
+      context "non-matching CSRF token in request header" do
+        let(:request) { super().merge("HTTP_X_CSRF_TOKEN" => "non-matching") }
 
         it "rejects the request" do
           expect { response }.to raise_error Hanami::Action::InvalidCSRFTokenError
@@ -35,7 +43,7 @@ RSpec.describe Hanami::Action::CSRFProtection do
       let(:session) { {_csrf_token: session_token} }
       let(:session_token) { "abc123" }
 
-      context "matching CSRF token in request" do
+      context "matching CSRF token in request param" do
         let(:request) { super().merge(_csrf_token: session_token) }
 
         it "accepts the request" do
@@ -43,8 +51,24 @@ RSpec.describe Hanami::Action::CSRFProtection do
         end
       end
 
-      context "non-matching CSRF token in request" do
+      context "matching CSRF token in request header" do
+        let(:request) { super().merge("HTTP_X_CSRF_TOKEN" => session_token) }
+
+        it "accepts the request" do
+          expect(response.status).to eq 200
+        end
+      end
+
+      context "non-matching CSRF token in request param" do
         let(:request) { super().merge(_csrf_token: "non-matching") }
+
+        it "rejects the request" do
+          expect { response }.to raise_error Hanami::Action::InvalidCSRFTokenError
+        end
+      end
+
+      context "non-matching CSRF token in request header" do
+        let(:request) { super().merge("HTTP_X_CSRF_TOKEN" => "non-matching") }
 
         it "rejects the request" do
           expect { response }.to raise_error Hanami::Action::InvalidCSRFTokenError
@@ -74,8 +98,16 @@ RSpec.describe Hanami::Action::CSRFProtection do
           end
         end
 
-        context "non-matching CSRF token in request" do
+        context "non-matching CSRF token in request param" do
           let(:request) { super().merge(_csrf_token: "non-matching") }
+
+          it "accepts the request" do
+            expect(response.status).to eq 200
+          end
+        end
+
+        context "non-matching CSRF token in request header" do
+          let(:request) { super().merge("HTTP_X_CSRF_TOKEN" => "non-matching") }
 
           it "accepts the request" do
             expect(response.status).to eq 200
