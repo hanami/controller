@@ -126,20 +126,6 @@ module Hanami
       @params_class || BaseParams
     end
 
-
-    # Returns the class which defines the contract
-    #
-    # Returns the class which has been provided to define the
-    # contract. By default this will be Hanami::Action::Contract.
-    #
-    # @return [Class] A contract class or Hanami::Action::Contract
-    #
-    # @api private
-    # @since 2.2.0
-    # def self.contract_class
-    #   @contract_class || Contract
-    # end
-
     # Placeholder implementation for params class method
     #
     # Raises a developer friendly error to include `hanami/validations`.

@@ -130,7 +130,6 @@ module Hanami
 
       # @since 2.2.0
       def validate
-        # Result.new need to take this in, and provide messages and output
         Result.new(
           self.class._validator.call(@input)
         )

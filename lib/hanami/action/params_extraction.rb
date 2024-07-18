@@ -4,6 +4,8 @@ require "rack/request"
 
 module Hanami
   class Action
+    # since 2.2.0
+    # @api private
     class ParamsExtraction
       def initialize(env)
         @env = env
