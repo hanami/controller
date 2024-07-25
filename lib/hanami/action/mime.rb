@@ -15,6 +15,8 @@ module Hanami
       TYPES = {
         txt: "text/plain",
         html: "text/html",
+        form: "application/x-www-form-urlencoded",
+        multipart: "multipart/form-data",
         json: "application/json",
         manifest: "text/cache-manifest",
         atom: "application/atom+xml",
