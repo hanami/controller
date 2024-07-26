@@ -11,7 +11,7 @@ module Hanami
       # Most commom MIME Types used for responses
       #
       # @since 1.0.0
-      # @api private
+      # @api public
       TYPES = {
         txt: "text/plain",
         html: "text/html",
