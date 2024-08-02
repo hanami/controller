@@ -40,7 +40,7 @@ RSpec.describe "Without validations" do
             required(:start_date).value(:date)
           end
           rule(:start_date) do
-            key.failure('must be in the future') if value <= Date.today
+            key.failure("must be in the future") if value <= Date.today
           end
         end
       end

@@ -1924,7 +1924,7 @@ class ContractAction < Hanami::Action
         new_name: request.params[:book][:title].upcase
       )
     else
-      response.body = { errors: request.params.errors.to_h }
+      response.body = {errors: request.params.errors.to_h}
       response.status = 302
     end
   end
@@ -1937,7 +1937,7 @@ class BaseContract < Hanami::Action::Contract
     end
 
     rule(:start_date) do
-      key.failure('must be in the future') if value <= Date.today
+      key.failure("must be in the future") if value <= Date.today
     end
   end
 end
