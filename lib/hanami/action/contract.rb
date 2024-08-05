@@ -18,13 +18,13 @@ module Hanami
       class Result < SimpleDelegator
         # @since 2.0.0
         # @api private
-        def output
+        def to_h
           __getobj__.to_h
         end
 
         # @since 2.0.0
         # @api private
-        def messages
+        def errors
           __getobj__.errors.to_h
         end
       end
@@ -59,16 +59,12 @@ module Hanami
       #   end
       # end
       def self.contract(&blk)
-        validations(&blk || -> {})
+        @_validator = Dry::Validation::Contract.build(&blk)
       end
 
       # @since 2.2.0
       # @api private
       class << self
-        def validations(&blk)
-          @_validator = Dry::Validation::Contract.build(&blk)
-        end
-
         attr_reader :_validator
       end
 
@@ -85,7 +81,7 @@ module Hanami
         @input = Hanami::Action::ParamsExtraction.new(env).call
         validation = validate
         @params = validation.to_h
-        @errors = Hanami::Action::Params::Errors.new(validation.messages)
+        @errors = Hanami::Action::Params::Errors.new(validation.errors)
         freeze
       end
 
@@ -108,9 +104,8 @@ module Hanami
       #
       # @since 2.2.0
       def to_h
-        validate.output
+        validate.to_h
       end
-      alias_method :to_hash, :to_h
 
       attr_reader :result
 
