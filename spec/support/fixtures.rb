@@ -1902,3 +1902,62 @@ module Inheritance
     end
   end
 end
+
+class ContractAction < Hanami::Action
+  contract do
+    params do
+      required(:birth_date).filled(:date)
+      required(:book).schema do
+        required(:title).filled(:str?)
+      end
+    end
+
+    rule(:birth_date) do
+      key.failure("you must be 18 years or older") if value < Date.today << (12 * 18)
+    end
+  end
+
+  def handle(request, response)
+    if request.params.valid?
+      response.status = 201
+      response.body = JSON.generate(
+        new_name: request.params[:book][:title].upcase
+      )
+    else
+      response.body = {errors: request.params.errors.to_h}
+      response.status = 302
+    end
+  end
+end
+
+class BaseContract < Hanami::Action::Contract
+  contract do
+    params do
+      required(:start_date).value(:date)
+    end
+
+    rule(:start_date) do
+      key.failure("must be in the future") if value <= Date.today
+    end
+  end
+end
+
+AddressSchema = Dry::Schema.Params do
+  required(:country).value(:string)
+  required(:zipcode).value(:string)
+  required(:street).value(:string)
+end
+
+ContactSchema = Dry::Schema.Params do
+  required(:email).value(:string)
+  required(:mobile).value(:string)
+end
+
+class OutsideSchemasContract < Hanami::Action::Contract
+  contract do
+    params(AddressSchema, ContactSchema) do
+      required(:name).value(:string)
+      required(:age).value(:integer)
+    end
+  end
+end

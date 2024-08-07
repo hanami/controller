@@ -39,7 +39,7 @@ module Hanami
         loader.ignore(
           "#{root}/hanami-controller.rb",
           "#{root}/hanami/controller/version.rb",
-          "#{root}/hanami/action/{constants,errors,params,validatable}.rb"
+          "#{root}/hanami/action/{constants,errors,params,contract,validatable}.rb"
         )
         loader.inflector.inflect("csrf_protection" => "CSRFProtection")
       end
@@ -136,6 +136,19 @@ module Hanami
     def self.params(_klass = nil)
       raise NoMethodError,
             "To use `params`, please add 'hanami/validations' gem to your Gemfile"
+    end
+
+    # Placeholder implementation for contract class method
+    #
+    # Raises a developer friendly error to include `hanami/validations`.
+    #
+    # @raise [NoMethodError]
+    #
+    # @api public
+    # @since 2.2.0
+    def self.contract
+      raise NoMethodError,
+            "To use `contract`, please add 'hanami/validations' gem to your Gemfile"
     end
 
     # @overload self.append_before(*callbacks, &block)
@@ -305,8 +318,8 @@ module Hanami
       response = nil
 
       halted = catch :halt do
-        params   = self.class.params_class.new(env)
-        request  = build_request(
+        params = self.class.params_class.new(env)
+        request = build_request(
           env: env,
           params: params,
           session_enabled: session_enabled?

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "params"
+require_relative "contract"
 
 module Hanami
   class Action
@@ -16,6 +17,12 @@ module Hanami
       # @api private
       # @since 0.3.0
       PARAMS_CLASS_NAME = "Params"
+
+      # Defines the contract base class
+      #
+      # @api private
+      # @since 2.2.0
+      CONTRACT_CLASS_NAME = "Contract"
 
       # @api private
       # @since 0.1.0
@@ -102,7 +109,14 @@ module Hanami
             klass = const_set(PARAMS_CLASS_NAME, Class.new(Params))
             klass.class_eval { params(&blk) }
           end
+          @params_class = klass
+        end
 
+        # @since 2.2.0
+        # @api public
+        def contract(&blk)
+          klass = const_set(CONTRACT_CLASS_NAME, Class.new(Contract))
+          klass.class_eval { contract(&blk) }
           @params_class = klass
         end
       end
