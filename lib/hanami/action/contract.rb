@@ -104,7 +104,7 @@ module Hanami
       #
       # @since 2.2.0
       def to_h
-        validate.to_h
+        @params
       end
 
       attr_reader :result
