@@ -12,6 +12,8 @@ module Hanami
     #
     # @since 2.2.0
     class Contract
+      include Hanami::Action::RequestParams::ActionValidations
+      include Hanami::Action::RequestParams::Base
       # A wrapper for the result of a contract validation
       # @since 2.2.0
       # @api private
@@ -22,18 +24,16 @@ module Hanami
           __getobj__.to_h
         end
 
+        # This method is called messages not errors to be consistent with the Hanami::Validations::Result
+        #
+        # @return [Hash] the error messages
+        #
         # @since 2.0.0
         # @api private
-        def errors
+        def messages
           __getobj__.errors.to_h
         end
       end
-
-      # @attr_reader env [Hash] the Rack env
-      #
-      # @since 2.2.0
-      # @api private
-      attr_reader :env
 
       # Define a contract for the given action
       #
@@ -66,59 +66,6 @@ module Hanami
       # @api private
       class << self
         attr_reader :_validator
-      end
-
-      # Initialize the contract and freeze it.
-      #
-      # @param env [Hash] a Rack env or an hash of params.
-      #
-      # @return [Hash]
-      #
-      # @since 2.2.0
-      # @api public
-      def initialize(env)
-        @env = env
-        @input = Hanami::Action::ParamsExtraction.new(env).call
-        validation = validate
-        @params = validation.to_h
-        @errors = Hanami::Action::Params::Errors.new(validation.errors)
-        freeze
-      end
-
-      attr_reader :errors
-
-      # Returns true if no validation errors are found,
-      # false otherwise.
-      #
-      # @return [TrueClass, FalseClass]
-      #
-      # @since 2.2.0
-      #
-      def valid?
-        errors.empty?
-      end
-
-      # Serialize validated params to Hash
-      #
-      # @return [::Hash]
-      #
-      # @since 2.2.0
-      def to_h
-        @params
-      end
-
-      attr_reader :result
-
-      # Returns the value for the given params key.
-      #
-      # @param key [Symbol] the key
-      #
-      # @return [Object,nil] the associated value, if found
-      #
-      # @since 2.2.0
-      # @api public
-      def [](key)
-        @params[key]
       end
 
       private

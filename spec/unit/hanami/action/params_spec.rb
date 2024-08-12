@@ -495,7 +495,7 @@ RSpec.describe Hanami::Action::Params do
       expect(params).to_not be_valid
     end
 
-    it "appens message to already existing messages" do
+    it "appends message to already existing messages" do
       params = klass.new(book: {})
       params.errors.add(:book, :code, "is invalid")
 

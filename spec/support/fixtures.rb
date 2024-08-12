@@ -1942,6 +1942,17 @@ class BaseContract < Hanami::Action::Contract
   end
 end
 
+class NestedContractParams < Hanami::Action::Contract
+  contract do
+    params do
+      required(:signup).schema do
+        required(:name).filled(:str?)
+        required(:age).filled(:int?, gteq?: 18)
+      end
+    end
+  end
+end
+
 AddressSchema = Dry::Schema.Params do
   required(:country).value(:string)
   required(:zipcode).value(:string)
@@ -1959,5 +1970,53 @@ class OutsideSchemasContract < Hanami::Action::Contract
       required(:name).value(:string)
       required(:age).value(:integer)
     end
+  end
+end
+
+class TestContract < Hanami::Action::Contract
+  contract do
+    params do
+      required(:name).value(:string)
+      required(:email).filled(format?: /\A.+@.+\z/)
+      required(:tos).filled(:bool?)
+      required(:age).filled(:int?)
+      required(:address).schema do
+        required(:line_one).filled
+        required(:deep).schema do
+          required(:deep_attr).filled(:str?)
+        end
+      end
+
+      optional(:array).maybe do
+        each do
+          schema do
+            required(:name).filled(:str?)
+          end
+        end
+      end
+    end
+
+    rule(:name) do
+      key.failure("must be Luca") if value != "Luca"
+    end
+  end
+end
+
+class WhitelistedUploadDslContractAction < Hanami::Action
+  contract do
+    params do
+      required(:id).maybe(:integer)
+      required(:upload).filled
+    end
+  end
+
+  def handle(req, res)
+    res.body = req.params.to_h.inspect
+  end
+end
+
+class RawContractAction < Hanami::Action
+  def handle(req, res)
+    res.body = req.params.to_h.inspect
   end
 end

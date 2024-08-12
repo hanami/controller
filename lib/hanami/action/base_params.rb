@@ -19,6 +19,7 @@ module Hanami
     # @api private
     # @since 0.7.0
     class BaseParams
+      include Hanami::Action::RequestParams::Base
       # @attr_reader env [Hash] the Rack env
       #
       # @since 0.7.0
@@ -39,21 +40,9 @@ module Hanami
       # @api private
       def initialize(env)
         @env    = env
-        @raw    = _extract_params
+        @raw    = Hanami::Action::ParamsExtraction.new(env).call
         @params = Utils::Hash.deep_symbolize(@raw)
         freeze
-      end
-
-      # Returns the value for the given params key.
-      #
-      # @param key [Symbol] the key
-      #
-      # @return [Object,nil] the associated value, if found
-      #
-      # @since 0.7.0
-      # @api public
-      def [](key)
-        @params[key]
       end
 
       # Returns an value associated with the given params key.
@@ -86,17 +75,6 @@ module Hanami
       #     end
       #   end
       #
-      # @since 0.7.0
-      # @api public
-      def get(*keys)
-        @params.dig(*keys)
-      end
-
-      # This is for compatibility with Hanami::Helpers::FormHelper::Values
-      #
-      # @api private
-      # @since 0.8.0
-      alias_method :dig, :get
 
       # Returns true at all times, providing a common interface with {Params}.
       #
@@ -110,49 +88,7 @@ module Hanami
         true
       end
 
-      # Returns a hash of the parsed request params.
-      #
-      # @return [Hash]
-      #
-      # @since 0.7.0
-      # @api public
-      def to_h
-        @params
-      end
-      alias_method :to_hash, :to_h
-
-      # Iterates over the params.
-      #
-      # Calls the given block with each param key-value pair; returns the full hash of params.
-      #
-      # @yieldparam key [Symbol]
-      # @yieldparam value [Object]
-      #
-      # @return [to_h]
-      #
-      # @since 0.7.1
-      # @api public
-      def each(&blk)
-        to_h.each(&blk)
-      end
-
       private
-
-      # @since 0.7.0
-      # @api private
-      def _extract_params
-        result = {}
-
-        if env.key?(Action::RACK_INPUT)
-          result.merge! ::Rack::Request.new(env).params
-          result.merge! _router_params
-        else
-          result.merge! _router_params(env)
-          env[Action::REQUEST_METHOD] ||= Action::DEFAULT_REQUEST_METHOD
-        end
-
-        result
-      end
 
       # @since 0.7.0
       # @api private
