@@ -126,15 +126,6 @@ module Hanami
           klass.send :prepend, ActionValidations
         end
 
-        # Returns raw params from Rack env
-        #
-        # @return [Hash]
-        #
-        # @since 2.2.0
-        def raw
-          @input
-        end
-
         # Returns structured error messages
         #
         # @return [Hash]
@@ -194,16 +185,6 @@ module Hanami
         def valid?
           errors.empty?
         end
-
-        # Serialize validated params to Hash
-        #
-        # @return [::Hash]
-        #
-        # @since 2.2.0
-        def to_h
-          @params
-        end
-        alias_method :to_hash, :to_h
 
         # Pattern-matching support
         #

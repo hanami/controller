@@ -14,7 +14,7 @@ module Hanami
       # since 2.2.0
       # @api private
       module Base
-        # @since 0.7.0
+        # @since 2.2.0
         # @api public
         def get(*keys)
           @params.dig(*keys)
@@ -23,14 +23,23 @@ module Hanami
         # This is for compatibility with Hanami::Helpers::FormHelper::Values
         #
         # @api private
-        # @since 0.8.0
+        # @since 2.2.0
         alias_method :dig, :get
+
+        # Returns raw params from Rack env
+        #
+        # @return [Hash]
+        #
+        # @since 2.2.0
+        def raw
+          @input
+        end
 
         # Returns a hash of the parsed request params.
         #
         # @return [Hash]
         #
-        # @since 0.7.0
+        # @since 2.2.0
         # @api public
         def to_h
           @params
@@ -46,7 +55,7 @@ module Hanami
         #
         # @return [to_h]
         #
-        # @since 0.7.1
+        # @since 2.2.0
         # @api public
         def each(&blk)
           to_h.each(&blk)
@@ -58,7 +67,7 @@ module Hanami
         #
         # @return [Object,nil] the associated value, if found
         #
-        # @since 0.7.0
+        # @since 2.2.0
         # @api public
         def [](key)
           @params[key]
