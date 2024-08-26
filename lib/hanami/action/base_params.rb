@@ -26,12 +26,6 @@ module Hanami
       # @api private
       attr_reader :env
 
-      # @attr_reader raw [Hash] the raw params from the request
-      #
-      # @since 0.7.0
-      # @api private
-      attr_reader :raw
-
       # Returns a new frozen params object for the Rack env.
       #
       # @param env [Hash] a Rack env or an hash of params.
@@ -40,8 +34,8 @@ module Hanami
       # @api private
       def initialize(env)
         @env    = env
-        @raw    = Hanami::Action::ParamsExtraction.new(env).call
-        @params = Utils::Hash.deep_symbolize(@raw)
+        @input  = Hanami::Action::ParamsExtraction.new(env).call
+        @params = Utils::Hash.deep_symbolize(@input)
         freeze
       end
 
