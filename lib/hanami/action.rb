@@ -138,6 +138,11 @@ module Hanami
             "To use `params`, please add 'hanami/validations' gem to your Gemfile"
     end
 
+    def self.contract
+      raise NoMethodError,
+            "To use `contract`, please add 'hanami/validations' gem to your Gemfile"
+    end
+
     # @overload self.append_before(*callbacks, &block)
     #   Define a callback for an Action.
     #   The callback will be executed **before** the action is called, in the

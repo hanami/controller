@@ -1902,3 +1902,49 @@ module Inheritance
     end
   end
 end
+
+class ContractAction < Hanami::Action
+  contract do
+    params do
+      required(:birth_date).filled(:date)
+      required(:book).schema do
+        required(:title).filled(:str?)
+      end
+    end
+
+    rule(:birth_date) do
+      key.failure("you must be 18 years or older") if value < Date.today << (12 * 18)
+    end
+  end
+
+  def handle(request, response)
+    if request.params.valid?
+      response.status = 201
+      response.body = JSON.generate(
+        new_name: request.params[:book][:title].upcase
+      )
+    else
+      response.body = {errors: request.params.errors.to_h}
+      response.status = 302
+    end
+  end
+end
+
+class WhitelistedUploadDslContractAction < Hanami::Action
+  contract do
+    params do
+      required(:id).maybe(:integer)
+      required(:upload).filled
+    end
+  end
+
+  def handle(req, res)
+    res.body = req.params.to_h.inspect
+  end
+end
+
+class RawContractAction < Hanami::Action
+  def handle(req, res)
+    res.body = req.params.to_h.inspect
+  end
+end

@@ -105,6 +105,16 @@ module Hanami
 
           @params_class = klass
         end
+
+        def contract(&block)
+          klass = const_set(PARAMS_CLASS_NAME, Class.new(Params))
+
+          klass.class_eval do
+            @_validator = Class.new(Dry::Validation::Contract, &block).new
+          end
+
+          @params_class = klass
+        end
       end
     end
   end
