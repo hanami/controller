@@ -107,16 +107,6 @@ module Hanami
         end
       end
 
-      # This is a Hanami::Validations extension point
-      #
-      # @since 0.7.0
-      # @api private
-      def self._base_rules
-        lambda do
-          optional(:_csrf_token).filled(:str?)
-        end
-      end
-
       # Define params validations
       #
       # @param blk [Proc] the validations definitions
