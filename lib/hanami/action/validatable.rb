@@ -97,10 +97,10 @@ module Hanami
         #
         # @since 0.3.0
         # @api public
-        def params(klass = nil, &blk)
+        def params(klass = nil, &block)
           if klass.nil?
             klass = const_set(PARAMS_CLASS_NAME, Class.new(Params))
-            klass.class_eval { params(&blk) }
+            klass.params(&block)
           end
 
           @params_class = klass
@@ -108,10 +108,7 @@ module Hanami
 
         def contract(&block)
           klass = const_set(PARAMS_CLASS_NAME, Class.new(Params))
-
-          klass.class_eval do
-            @_validator = Class.new(Dry::Validation::Contract, &block).new
-          end
+          klass.contract(&block)
 
           @params_class = klass
         end
