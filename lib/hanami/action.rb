@@ -125,22 +125,28 @@ module Hanami
       @params_class || BaseParams
     end
 
-    # Placeholder implementation for params class method
-    #
-    # Raises a developer friendly error to include `hanami/validations`.
+    # Placeholder for the `.params` method. Raises an error when the hanami-validations gem is not
+    # installed.
     #
     # @raise [NoMethodError]
     #
     # @api public
     # @since 2.0.0
     def self.params(_klass = nil)
-      raise NoMethodError,
-            "To use `params`, please add 'hanami/validations' gem to your Gemfile"
+      message = %(To use `.params`, please add the "hanami-validations" gem to your Gemfile)
+      raise NoMethodError, message
     end
 
+    # Placeholder for the `.contract` method. Raises an error when the hanami-validations gem is not
+    # installed.
+    #
+    # @raise [NoMethodError]
+    #
+    # @api public
+    # @since 2.2.0
     def self.contract
-      raise NoMethodError,
-            "To use `contract`, please add 'hanami/validations' gem to your Gemfile"
+      message = %(To use `.contract`, please add the "hanami-validations" gem to your Gemfile)
+      raise NoMethodError, message
     end
 
     # @overload self.append_before(*callbacks, &block)

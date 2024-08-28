@@ -111,37 +111,26 @@ module Hanami
         end
       end
 
-      # Define params validations
+      # Defines validations for the params, using the `params` schema of a dry-validation contract.
       #
-      # @param blk [Proc] the validations definitions
+      # @param block [Proc] the schema definition
       #
+      # @see https://dry-rb.org/gems/dry-validation/
+      #
+      # @api public
       # @since 0.7.0
-      #
-      # @see https://guides.hanamirb.org/validations/overview
-      #
-      # @example
-      #   class Signup < Hanami::Action
-      #     MEGABYTE = 1024 ** 2
-      #
-      #     params do
-      #       required(:first_name).filled(:str?)
-      #       required(:last_name).filled(:str?)
-      #       required(:email).filled?(:str?, format?: /\A.+@.+\z/)
-      #       required(:password).filled(:str?).confirmation
-      #       required(:terms_of_service).filled(:bool?)
-      #       required(:age).filled(:int?, included_in?: 18..99)
-      #       optional(:avatar).filled(size?: 1..(MEGABYTE * 3))
-      #     end
-      #
-      #     def handle(req, *)
-      #       halt 400 unless req.params.valid?
-      #       # ...
-      #     end
-      #   end
       def self.params(&block)
         @_validator = Class.new(Validator) { params(&block || -> {}) }.new
       end
 
+      # Defines validations for the params, using a dry-validation contract.
+      #
+      # @param block [Proc] the contract definition
+      #
+      # @see https://dry-rb.org/gems/dry-validation/
+      #
+      # @api public
+      # @since 2.2.0
       def self.contract(&block)
         @_validator = Class.new(Validator, &block).new
       end
