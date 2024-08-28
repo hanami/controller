@@ -1930,6 +1930,25 @@ class ContractAction < Hanami::Action
   end
 end
 
+class ExternalContractParams < Hanami::Action::Params
+  contract do
+    params do
+      required(:birth_date).filled(:date)
+      required(:book).schema do
+        required(:title).filled(:str?)
+      end
+    end
+
+    rule(:birth_date) do
+      key.failure("you must be 18 years or older") if value < Date.today << (12 * 18)
+    end
+  end
+end
+
+class ExternalContractAction < ContractAction
+  contract ExternalContractParams
+end
+
 class WhitelistedUploadDslContractAction < Hanami::Action
   contract do
     params do

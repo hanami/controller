@@ -2,8 +2,8 @@
 
 require "rack"
 
-RSpec.describe "Contracts" do
-  describe "when defined as block in action" do
+RSpec.describe "Contract" do
+  describe "defined inline in action" do
     let(:action) { ContractAction.new }
 
     context "when it has errors" do
@@ -25,8 +25,50 @@ RSpec.describe "Contracts" do
     end
   end
 
+  describe "provided by a standlone params class using a contract" do
+    let(:action) { ExternalContractAction.new }
+
+    context "when it has errors" do
+      it "returns them" do
+        response = action.call("birth_date" => "2000-01-01")
+
+        expect(response.status).to eq 302
+        expect(response.body).to eq ["{:errors=>{:book=>[\"is missing\"], :birth_date=>[\"you must be 18 years or older\"]}}"]
+      end
+    end
+
+    context "when it is valid" do
+      it "works" do
+        response = action.call("birth_date" => Date.today - (365 * 15), "book" => {"title" => "Hanami"})
+
+        expect(response.status).to eq 201
+        expect(response.body).to eq ["{\"new_name\":\"HANAMI\"}"]
+      end
+    end
+  end
+
+  describe "standalone class" do
+    it "validates the input" do
+      params_class = Class.new(Hanami::Action::Params) {
+        contract do
+          params do
+            required(:start_date).value(:date)
+          end
+
+          rule(:start_date) do
+            key.failure("must be in the future") if value <= Date.today
+          end
+        end
+      }
+
+      params = params_class.new(start_date: "2000-01-01")
+
+      expect(params.errors.to_h).to eq(start_date: ["must be in the future"])
+    end
+  end
+
   describe "#raw" do
-    context "when this feature isn't enabled" do
+    context "without a contract" do
       let(:action) { RawContractAction.new }
 
       it "raw gets all params" do
@@ -44,7 +86,7 @@ RSpec.describe "Contracts" do
       end
     end
 
-    context "when this feature is enabled" do
+    context "with a contract" do
       let(:action) { WhitelistedUploadDslContractAction.new }
 
       it "raw gets all params" do
