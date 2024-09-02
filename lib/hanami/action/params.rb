@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "hanami/utils/hash"
+
 module Hanami
   class Action
     # A set of params requested by the client
@@ -103,6 +105,11 @@ module Hanami
         end
       end
 
+      # @api private
+      # @since 2.2.0
+      DEFAULT_VALIDATOR = Utils::Hash.method(:deep_symbolize)
+      private_constant :DEFAULT_VALIDATOR
+
       # Defines validations for the params, using the `params` schema of a dry-validation contract.
       #
       # @param block [Proc] the schema definition
@@ -112,19 +119,14 @@ module Hanami
       # @api public
       # @since 0.7.0
       def self.params(&block)
-        @_validator = Class.new(Dry::Validation::Contract) { params(&block || -> {}) }.new
-      end
+        # TODO: add tests for this case
+        unless defined?(Dry::Validation::Contract)
+          message = %(To use `.params`, please add the "hanami-validations" gem to your Gemfile)
+          raise NoMethodError, message
+        end
 
-      # Defines validations for the params, using a dry-validation contract.
-      #
-      # @param block [Proc] the contract definition
-      #
-      # @see https://dry-rb.org/gems/dry-validation/
-      #
-      # @api public
-      # @since 2.2.0
-      def self.contract(&block)
-        @_validator = Class.new(Dry::Validation::Contract, &block).new
+        # TODO: deprecation warning
+        @_validator = Class.new(Dry::Validation::Contract) { params(&block || -> {}) }.new
       end
 
       class << self
@@ -143,13 +145,18 @@ module Hanami
       #
       # @since 0.1.0
       # @api private
-      def initialize(env)
+      def initialize(env:, validator: nil)
         @env = env
         @raw = _extract_params
 
-        validation = self.class._validator.call(raw)
+        # Fall back to the default validator here rather than in `._validator` itself. This allows
+        # `._validator` to return nil when there is no user-defined validator, which is important
+        # for the backwards compatibility behavior in `Validatable::ClassMethods#params`.
+        validator ||= self.class._validator || DEFAULT_VALIDATOR
+        validation = validator.call(raw)
+
         @params = validation.to_h
-        @errors = Errors.new(validation.errors.to_h)
+        @errors = Errors.new(validation.respond_to?(:errors) ? validation.errors.to_h : {})
 
         freeze
       end

@@ -156,7 +156,7 @@ RSpec.describe Hanami::Action::Params do
 
   describe "validations" do
     it "isn't valid with empty params" do
-      params = TestParams.new({})
+      params = TestParams.new(env: {})
 
       expect(params.valid?).to be(false)
 
@@ -169,7 +169,7 @@ RSpec.describe Hanami::Action::Params do
     end
 
     it "isn't valid with empty nested params" do
-      params = NestedParams.new(signup: {})
+      params = NestedParams.new(env: {signup: {}})
 
       expect(params.valid?).to be(false)
 
@@ -185,18 +185,22 @@ RSpec.describe Hanami::Action::Params do
     end
 
     it "is it valid when all the validation criteria are met" do
-      params = TestParams.new(email: "test@hanamirb.org",
-                              password: "123456",
-                              password_confirmation: "123456",
-                              name: "Luca",
-                              tos: "1",
-                              age: "34",
-                              address: {
-                                line_one: "10 High Street",
-                                deep: {
-                                  deep_attr: "blue"
-                                }
-                              })
+      params = TestParams.new(
+        env: {
+          email: "test@hanamirb.org",
+          password: "123456",
+          password_confirmation: "123456",
+          name: "Luca",
+          tos: "1",
+          age: "34",
+          address: {
+            line_one: "10 High Street",
+            deep: {
+              deep_attr: "blue"
+            }
+          }
+        }
+      )
 
       expect(params.valid?).to         be(true)
       expect(params.errors).to         be_empty
@@ -204,7 +208,7 @@ RSpec.describe Hanami::Action::Params do
     end
 
     it "has input available through the hash accessor" do
-      params = TestParams.new(name: "John", age: "1", address: {line_one: "10 High Street"})
+      params = TestParams.new(env: {name: "John", age: "1", address: {line_one: "10 High Street"}})
 
       expect(params[:name]).to               eq("John")
       expect(params[:age]).to                be(1)
@@ -212,7 +216,7 @@ RSpec.describe Hanami::Action::Params do
     end
 
     it "allows nested hash access via symbols" do
-      params = TestParams.new(name: "John", address: {line_one: "10 High Street", deep: {deep_attr: 1}})
+      params = TestParams.new(env: {name: "John", address: {line_one: "10 High Street", deep: {deep_attr: 1}}})
       expect(params[:name]).to                       eq("John")
       expect(params[:address][:line_one]).to         eq("10 High Street")
       expect(params[:address][:deep][:deep_attr]).to be(1)
@@ -223,9 +227,11 @@ RSpec.describe Hanami::Action::Params do
     context "with data" do
       let(:params) do
         TestParams.new(
-          name: "John",
-          address: {line_one: "10 High Street", deep: {deep_attr: 1}},
-          array: [{name: "Lennon"}, {name: "Wayne"}]
+          env: {
+            name: "John",
+            address: {line_one: "10 High Street", deep: {deep_attr: 1}},
+            array: [{name: "Lennon"}, {name: "Wayne"}]
+          }
         )
       end
 
@@ -256,7 +262,7 @@ RSpec.describe Hanami::Action::Params do
     end
 
     context "without data" do
-      let(:params) { TestParams.new({}) }
+      let(:params) { TestParams.new(env: {}) }
 
       it "returns nil for nil argument" do
         expect(params.get(nil)).to be(nil)
@@ -281,7 +287,7 @@ RSpec.describe Hanami::Action::Params do
   end
 
   describe "#to_h" do
-    let(:params) { TestParams.new(name: "Jane") }
+    let(:params) { TestParams.new(env: {name: "Jane"}) }
 
     it "returns a ::Hash" do
       expect(params.to_h).to be_kind_of(::Hash)
@@ -316,7 +322,7 @@ RSpec.describe Hanami::Action::Params do
         }
       }
 
-      actual = TestParams.new(input).to_h
+      actual = TestParams.new(env: input).to_h
       expect(actual).to eq(expected)
 
       expect(actual).to                  be_kind_of(::Hash)
@@ -349,7 +355,7 @@ RSpec.describe Hanami::Action::Params do
           }
         }
 
-        actual = TestParams.new(input).to_h
+        actual = TestParams.new(env: input).to_h
         expect(actual).to eq(expected)
 
         expect(actual).to                  be_kind_of(::Hash)
@@ -360,7 +366,7 @@ RSpec.describe Hanami::Action::Params do
   end
 
   describe "#to_hash" do
-    let(:params) { TestParams.new(name: "Jane") }
+    let(:params) { TestParams.new(env: {name: "Jane"}) }
 
     it "returns a ::Hash" do
       expect(params.to_hash).to be_kind_of(::Hash)
@@ -395,7 +401,7 @@ RSpec.describe Hanami::Action::Params do
         }
       }
 
-      actual = TestParams.new(input).to_hash
+      actual = TestParams.new(env: input).to_hash
       expect(actual).to eq(expected)
 
       expect(actual).to                  be_kind_of(::Hash)
@@ -428,7 +434,7 @@ RSpec.describe Hanami::Action::Params do
           }
         }
 
-        actual = TestParams.new(input).to_hash
+        actual = TestParams.new(env: input).to_hash
         expect(actual).to eq(expected)
 
         expect(actual).to                  be_kind_of(::Hash)
@@ -438,7 +444,7 @@ RSpec.describe Hanami::Action::Params do
 
       it "does not stringify values" do
         input  = {"name" => 123}
-        params = TestParams.new(input)
+        params = TestParams.new(env: input)
 
         expect(params[:name]).to be(123)
       end
@@ -448,9 +454,11 @@ RSpec.describe Hanami::Action::Params do
   describe "#deconstruct_keys" do
     let(:params) do
       TestParams.new(
-        name: "John",
-        address: {line_one: "10 High Street", deep: {deep_attr: 1}},
-        array: [{name: "Lennon"}, {name: "Wayne"}]
+        env: {
+          name: "John",
+          address: {line_one: "10 High Street", deep: {deep_attr: 1}},
+          array: [{name: "Lennon"}, {name: "Wayne"}]
+        }
       )
     end
 
@@ -471,7 +479,7 @@ RSpec.describe Hanami::Action::Params do
       end
     end
 
-    let(:params) { klass.new(book: {code: "abc"}) }
+    let(:params) { klass.new(env: {book: {code: "abc"}}) }
 
     it "returns Hanami::Action::Params::Errors" do
       expect(params.errors).to be_kind_of(Hanami::Action::Params::Errors)
@@ -485,7 +493,7 @@ RSpec.describe Hanami::Action::Params do
     end
 
     it "appends message to already existing messages" do
-      params = klass.new(book: {})
+      params = klass.new(env: {book: {}})
       params.errors.add(:book, :code, "is invalid")
 
       expect(params.error_messages).to eq(["Code is missing", "Code is invalid"])
@@ -497,7 +505,7 @@ RSpec.describe Hanami::Action::Params do
     end
 
     it "raises error when try to add an error " do
-      params = klass.new({})
+      params = klass.new(env: {})
 
       expect { params.errors.add(:book, :code, "is invalid") }.to raise_error(ArgumentError, %(Can't add :book, :code, "is invalid" to {:book=>["is missing"]}))
     end

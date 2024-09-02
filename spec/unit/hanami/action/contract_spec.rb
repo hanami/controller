@@ -25,7 +25,7 @@ RSpec.describe "Contract" do
     end
   end
 
-  describe "provided by a standlone params class using a contract" do
+  describe "provided by a standlone contract class" do
     let(:action) { ExternalContractAction.new }
 
     context "when it has errors" do
@@ -44,26 +44,6 @@ RSpec.describe "Contract" do
         expect(response.status).to eq 201
         expect(response.body).to eq ["{\"new_name\":\"HANAMI\"}"]
       end
-    end
-  end
-
-  describe "standalone class" do
-    it "validates the input" do
-      params_class = Class.new(Hanami::Action::Params) {
-        contract do
-          params do
-            required(:start_date).value(:date)
-          end
-
-          rule(:start_date) do
-            key.failure("must be in the future") if value <= Date.today
-          end
-        end
-      }
-
-      params = params_class.new(start_date: "2000-01-01")
-
-      expect(params.errors.to_h).to eq(start_date: ["must be in the future"])
     end
   end
 

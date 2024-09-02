@@ -39,7 +39,7 @@ module Hanami
         loader.ignore(
           "#{root}/hanami-controller.rb",
           "#{root}/hanami/controller/version.rb",
-          "#{root}/hanami/action/{constants,errors,params,validatable}.rb"
+          "#{root}/hanami/action/{constants,errors,validatable}.rb"
         )
         loader.inflector.inflect("csrf_protection" => "CSRFProtection")
       end
@@ -72,6 +72,7 @@ module Hanami
     setting :public_directory, default: Config::DEFAULT_PUBLIC_DIRECTORY
     setting :before_callbacks, default: Utils::Callbacks::Chain.new, mutable: true
     setting :after_callbacks, default: Utils::Callbacks::Chain.new, mutable: true
+    setting :contract_class
 
     # @!scope class
 
@@ -316,7 +317,9 @@ module Hanami
       response = nil
 
       halted = catch :halt do
-        params   = self.class.params_class.new(env)
+        # TODO: call contract_class.new at #initialize and capture it as an ivar (better perf for
+        # long-lived actions)
+        params = Params.new(env: env, validator: config.contract_class&.new)
         request  = build_request(
           env: env,
           params: params,

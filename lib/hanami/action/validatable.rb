@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "params"
-
 module Hanami
   class Action
     # Support for validating params when calling actions.
@@ -98,12 +96,18 @@ module Hanami
         # @api public
         # @since 0.3.0
         def params(klass = nil, &block)
-          if klass.nil?
-            klass = const_set(PARAMS_CLASS_NAME, Class.new(Params))
-            klass.params(&block)
-          end
+          contract_class =
+            if klass.nil?
+              Class.new(Dry::Validation::Contract) { params(&block) }
+            elsif klass < Params
+              # Handle deprecated behavior of providing custom Hanami::Action::Params subclasses.
+              # TODO: deprecation warning here
+              klass._validator.class
+            else
+              klass
+            end
 
-          @params_class = klass
+          config.contract_class = contract_class
         end
 
         # Defines a validation contract for the params passed to {Hanami::Action#call}.
@@ -187,12 +191,9 @@ module Hanami
         # @api public
         # @since 2.2.0
         def contract(klass = nil, &block)
-          if klass.nil?
-            klass = const_set(PARAMS_CLASS_NAME, Class.new(Params))
-            klass.contract(&block)
-          end
+          contract_class = klass || Class.new(Dry::Validation::Contract, &block)
 
-          @params_class = klass
+          config.contract_class = contract_class
         end
       end
     end
