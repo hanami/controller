@@ -478,7 +478,7 @@ class IterateCookiesAction < Hanami::Action
 
   def handle(*, res)
     result = []
-    res.cookies.each do |key, value| # rubocop:disable Style/MapIntoArray
+    res.cookies.each do |key, value|
       result << "'#{key}' has value '#{value}'"
     end
 

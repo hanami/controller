@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe "Exception notifiers integration" do
-  let(:env) { Hash[] }
+  let(:env) { {} }
 
   it "reference error in rack.exception" do
     expect { RackExceptionAction.new.call(env) }.to raise_error(RackExceptionAction::TestException)

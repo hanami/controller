@@ -58,7 +58,6 @@ RSpec.describe Hanami::Action::Flash do
     end
   end
 
-  # rubocop:disable Style/MapIntoArray
   describe "#each" do
     let(:input_hash) { {a: "val"} }
 
@@ -72,7 +71,6 @@ RSpec.describe Hanami::Action::Flash do
       expect(accumulator).to eq(input_hash.to_a)
     end
   end
-  # rubocop:enable Style/MapIntoArray
 
   describe "#map" do
     let(:input_hash) { {a: "val"} }
