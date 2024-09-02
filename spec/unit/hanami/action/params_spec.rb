@@ -36,7 +36,6 @@ RSpec.describe Hanami::Action::Params do
           expect(response[:params][:id]).to          eq(1)
           expect(response[:params][:unknown]).to     be(nil)
           expect(response[:params][:upload]).to      eq(upload)
-          expect(response[:params][:_csrf_token]).to eq("3")
 
           expect(response[:params].raw.fetch("id")).to          eq("1")
           expect(response[:params].raw.fetch("unknown")).to     eq("2")
@@ -96,9 +95,9 @@ RSpec.describe Hanami::Action::Params do
             expect(response.body).to eq([%({:id=>23, :article=>{:tags=>[:cool]}})])
           end
 
-          it "doesn't filter _csrf_token" do
+          it "removes _csrf_token" do
             response = action.call(_csrf_token: "abc")
-            expect(response.body).to eq([%({:_csrf_token=>"abc"})])
+            expect(response.body).to eq([%({})])
           end
         end
 
@@ -108,9 +107,9 @@ RSpec.describe Hanami::Action::Params do
             expect(response.body).to match(%({:id=>23}))
           end
 
-          it "doesn't filter _csrf_token" do
+          it "removes _csrf_token" do
             response = Rack::MockRequest.new(action).request("PATCH", "?id=1", params: {_csrf_token: "def", x: {foo: "bar"}})
-            expect(response.body).to match(%(:_csrf_token=>"def"))
+            expect(response.body).not_to match("_csrf_token")
             expect(response.body).to match(%(:id=>1))
           end
         end

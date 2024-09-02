@@ -13,14 +13,6 @@ module Hanami
     #
     # @since 0.1.0
     class Params < BaseParams
-      # @since 2.2.0
-      # @api private
-      class Validator < Dry::Validation::Contract
-        params do
-          optional(:_csrf_token).filled(:string)
-        end
-      end
-
       # Params errors
       #
       # @since 1.1.0
@@ -120,7 +112,7 @@ module Hanami
       # @api public
       # @since 0.7.0
       def self.params(&block)
-        @_validator = Class.new(Validator) { params(&block || -> {}) }.new
+        @_validator = Class.new(Dry::Validation::Contract) { params(&block || -> {}) }.new
       end
 
       # Defines validations for the params, using a dry-validation contract.
@@ -132,7 +124,7 @@ module Hanami
       # @api public
       # @since 2.2.0
       def self.contract(&block)
-        @_validator = Class.new(Validator, &block).new
+        @_validator = Class.new(Dry::Validation::Contract, &block).new
       end
 
       class << self
