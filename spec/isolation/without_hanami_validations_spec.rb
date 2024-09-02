@@ -24,7 +24,22 @@ RSpec.describe "Without validations" do
       end
     end.to raise_error(
       NoMethodError,
-      /To use `params`, please add 'hanami\/validations' gem to your Gemfile/
+      %(To use `.params`, please add the "hanami-validations" gem to your Gemfile)
+    )
+  end
+
+  it "doesn't have the contract DSL" do
+    expect do
+      Class.new(Hanami::Action) do
+        contract do
+          params do
+            required(:id).filled
+          end
+        end
+      end
+    end.to raise_error(
+      NoMethodError,
+      %(To use `.contract`, please add the "hanami-validations" gem to your Gemfile)
     )
   end
 

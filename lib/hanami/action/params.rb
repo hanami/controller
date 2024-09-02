@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "hanami/validations/form"
-
 module Hanami
   class Action
     # A set of params requested by the client
@@ -15,7 +13,13 @@ module Hanami
     #
     # @since 0.1.0
     class Params < BaseParams
-      include Hanami::Validations::Form
+      # @since 2.2.0
+      # @api private
+      class Validator < Dry::Validation::Contract
+        params do
+          optional(:_csrf_token).filled(:string)
+        end
+      end
 
       # Params errors
       #
@@ -107,46 +111,37 @@ module Hanami
         end
       end
 
-      # This is a Hanami::Validations extension point
+      # Defines validations for the params, using the `params` schema of a dry-validation contract.
       #
+      # @param block [Proc] the schema definition
+      #
+      # @see https://dry-rb.org/gems/dry-validation/
+      #
+      # @api public
       # @since 0.7.0
-      # @api private
-      def self._base_rules
-        lambda do
-          optional(:_csrf_token).filled(:str?)
-        end
+      def self.params(&block)
+        @_validator = Class.new(Validator) { params(&block || -> {}) }.new
       end
 
-      # Define params validations
+      # Defines validations for the params, using a dry-validation contract.
       #
-      # @param blk [Proc] the validations definitions
+      # @param block [Proc] the contract definition
       #
-      # @since 0.7.0
+      # @see https://dry-rb.org/gems/dry-validation/
       #
-      # @see https://guides.hanamirb.org/validations/overview
-      #
-      # @example
-      #   class Signup < Hanami::Action
-      #     MEGABYTE = 1024 ** 2
-      #
-      #     params do
-      #       required(:first_name).filled(:str?)
-      #       required(:last_name).filled(:str?)
-      #       required(:email).filled?(:str?, format?: /\A.+@.+\z/)
-      #       required(:password).filled(:str?).confirmation
-      #       required(:terms_of_service).filled(:bool?)
-      #       required(:age).filled(:int?, included_in?: 18..99)
-      #       optional(:avatar).filled(size?: 1..(MEGABYTE * 3))
-      #     end
-      #
-      #     def handle(req, *)
-      #       halt 400 unless req.params.valid?
-      #       # ...
-      #     end
-      #   end
-      def self.params(&blk)
-        validations(&blk || -> {})
+      # @api public
+      # @since 2.2.0
+      def self.contract(&block)
+        @_validator = Class.new(Validator, &block).new
       end
+
+      class << self
+        # @api private
+        # @since 2.2.0
+        attr_reader :_validator
+      end
+
+      # rubocop:disable Lint/MissingSuper
 
       # Initialize the params and freeze them.
       #
@@ -158,21 +153,16 @@ module Hanami
       # @api private
       def initialize(env)
         @env = env
-        super(_extract_params)
-        validation = validate
+        @raw = _extract_params
+
+        validation = self.class._validator.call(raw)
         @params = validation.to_h
-        @errors = Errors.new(validation.messages)
+        @errors = Errors.new(validation.errors.to_h)
+
         freeze
       end
 
-      # Returns raw params from Rack env
-      #
-      # @return [Hash]
-      #
-      # @since 0.3.2
-      def raw
-        @input
-      end
+      # rubocop:enable Lint/MissingSuper
 
       # Returns structured error messages
       #
