@@ -299,12 +299,21 @@ module Hanami
       config.handle_exception(...)
     end
 
+    # @since 2.0.0
+    # @api private
+    private attr_reader :config
+
+    # @since 2.2.0
+    # @api private
+    private attr_reader :contract
+
     # Returns a new action
     #
     # @since 2.0.0
     # @api public
-    def initialize(config: self.class.config)
+    def initialize(config: self.class.config, contract: nil)
       @config = config
+      @contract = contract || config.contract_class&.new # TODO: tests showing this overridden by a dep
       freeze
     end
 
@@ -317,9 +326,7 @@ module Hanami
       response = nil
 
       halted = catch :halt do
-        # TODO: call contract_class.new at #initialize and capture it as an ivar (better perf for
-        # long-lived actions)
-        params = Params.new(env: env, validator: config.contract_class&.new)
+        params = Params.new(env: env, validator: contract)
         request  = build_request(
           env: env,
           params: params,
@@ -414,10 +421,6 @@ module Hanami
     alias_method :_requires_empty_headers?, :_requires_no_body?
 
     private
-
-    # @since 2.0.0
-    # @api private
-    attr_reader :config
 
     # @since 2.0.0
     # @api private
