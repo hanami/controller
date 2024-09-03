@@ -106,24 +106,6 @@ module Hanami
           include Validatable if defined?(Validatable)
         end
       end
-
-      if instance_variable_defined?(:@params_class)
-        subclass.instance_variable_set(:@params_class, @params_class)
-      end
-    end
-
-    # Returns the class which defines the params
-    #
-    # Returns the class which has been provided to define the
-    # params. By default this will be Hanami::Action::Params.
-    #
-    # @return [Class] A params class (when whitelisted) or
-    #   Hanami::Action::Params
-    #
-    # @api private
-    # @since 0.7.0
-    def self.params_class
-      @params_class || BaseParams
     end
 
     # Placeholder for the `.params` method. Raises an error when the hanami-validations gem is not
