@@ -1,9 +1,21 @@
 # frozen_string_literal: true
 
+require "rack/request"
 require "hanami/utils/hash"
 
 module Hanami
   class Action
+    # Provides access to params included in a Rack request.
+    #
+    # Offers useful access to params via methods like {#[]}, {#get} and {#to_h}.
+    #
+    # These params are available via {Request#params}.
+    #
+    # This class is used by default when {Hanami::Action::Validatable} is not included, or when no
+    # {Validatable::ClassMethods#params params} validation schema is defined.
+    #
+    # @see Hanami::Action::Request#params
+
     # A set of params requested by the client
     #
     # It's able to extract the relevant params from a Rack env of from an Hash.
@@ -14,7 +26,7 @@ module Hanami
     #   * Default: it returns the given hash as it is. It's useful for testing purposes.
     #
     # @since 0.1.0
-    class Params < BaseParams
+    class Params
       # Params errors
       #
       # @since 1.1.0
@@ -135,7 +147,34 @@ module Hanami
         attr_reader :_validator
       end
 
-      # rubocop:disable Lint/MissingSuper
+      # @attr_reader env [Hash] the Rack env
+      #
+      # @since 0.7.0
+      # @api private
+      attr_reader :env
+
+      # @attr_reader raw [Hash] the raw params from the request
+      #
+      # @since 0.7.0
+      # @api private
+      attr_reader :raw
+
+      # Returns structured error messages
+      #
+      # @return [Hash]
+      #
+      # @since 0.7.0
+      #
+      # @example
+      #   params.errors
+      #     # => {
+      #            :email=>["is missing", "is in invalid format"],
+      #            :name=>["is missing"],
+      #            :tos=>["is missing"],
+      #            :age=>["is missing"],
+      #            :address=>["is missing"]
+      #          }
+      attr_reader :errors
 
       # Initialize the params and freeze them.
       #
@@ -161,24 +200,59 @@ module Hanami
         freeze
       end
 
-      # rubocop:enable Lint/MissingSuper
-
-      # Returns structured error messages
+      # Returns the value for the given params key.
       #
-      # @return [Hash]
+      # @param key [Symbol] the key
+      #
+      # @return [Object,nil] the associated value, if found
       #
       # @since 0.7.0
+      # @api public
+      def [](key)
+        @params[key]
+      end
+
+      # Returns an value associated with the given params key.
+      #
+      # You can access nested attributes by listing all the keys in the path. This uses the same key
+      # path semantics as `Hash#dig`.
+      #
+      # @param keys [Array<Symbol,Integer>] the key
+      #
+      # @return [Object,NilClass] return the associated value, if found
       #
       # @example
-      #   params.errors
-      #     # => {
-      #            :email=>["is missing", "is in invalid format"],
-      #            :name=>["is missing"],
-      #            :tos=>["is missing"],
-      #            :age=>["is missing"],
-      #            :address=>["is missing"]
-      #          }
-      attr_reader :errors
+      #   require "hanami/controller"
+      #
+      #   module Deliveries
+      #     class Create < Hanami::Action
+      #       def handle(req, *)
+      #         req.params.get(:customer_name)     # => "Luca"
+      #         req.params.get(:uknown)            # => nil
+      #
+      #         req.params.get(:address, :city)    # => "Rome"
+      #         req.params.get(:address, :unknown) # => nil
+      #
+      #         req.params.get(:tags, 0)           # => "foo"
+      #         req.params.get(:tags, 1)           # => "bar"
+      #         req.params.get(:tags, 999)         # => nil
+      #
+      #         req.params.get(nil)                # => nil
+      #       end
+      #     end
+      #   end
+      #
+      # @since 0.7.0
+      # @api public
+      def get(*keys)
+        @params.dig(*keys)
+      end
+
+      # This is for compatibility with Hanami::Helpers::FormHelper::Values
+      #
+      # @api private
+      # @since 0.8.0
+      alias_method :dig, :get
 
       # Returns flat collection of full error messages
       #
@@ -223,6 +297,21 @@ module Hanami
         errors.empty?
       end
 
+      # Iterates over the params.
+      #
+      # Calls the given block with each param key-value pair; returns the full hash of params.
+      #
+      # @yieldparam key [Symbol]
+      # @yieldparam value [Object]
+      #
+      # @return [to_h]
+      #
+      # @since 0.7.1
+      # @api public
+      def each(&blk)
+        to_h.each(&blk)
+      end
+
       # Serialize validated params to Hash
       #
       # @return [::Hash]
@@ -240,6 +329,36 @@ module Hanami
       # @since 2.0.2
       def deconstruct_keys(*)
         to_hash
+      end
+
+      private
+
+      # @since 0.7.0
+      # @api private
+      def _extract_params
+        result = {}
+
+        if env.key?(Action::RACK_INPUT)
+          result.merge! ::Rack::Request.new(env).params
+          result.merge! _router_params
+        else
+          result.merge! _router_params(env)
+          env[Action::REQUEST_METHOD] ||= Action::DEFAULT_REQUEST_METHOD
+        end
+
+        result
+      end
+
+      # @since 0.7.0
+      # @api private
+      def _router_params(fallback = {})
+        env.fetch(ROUTER_PARAMS) do
+          if session = fallback.delete(Action::RACK_SESSION)
+            fallback[Action::RACK_SESSION] = Utils::Hash.deep_symbolize(session)
+          end
+
+          fallback
+        end
       end
     end
   end
