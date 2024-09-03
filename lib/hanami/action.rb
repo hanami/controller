@@ -312,6 +312,7 @@ module Hanami
     # @since 0.1.0
     # @api private
     def call(env)
+      env[ACTION_INSTANCE] = self
       request  = nil
       response = nil
 
