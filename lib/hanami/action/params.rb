@@ -200,9 +200,9 @@ module Hanami
         @env = env
         @raw = _extract_params
 
-        # Fall back to the default validator here rather than in `._validator` itself. This allows
-        # `._validator` to return nil when there is no user-defined validator, which is important
-        # for the backwards compatibility behavior in `Validatable::ClassMethods#params`.
+        # Fall back to the default validator here, rather than in the `._validator` method itself.
+        # This allows `._validator` to return nil when there is no user-defined validator, which is
+        # important for the backwards compatibility behavior in `Validatable::ClassMethods#params`.
         validator ||= self.class._validator || DefaultValidator
         validation = validator.call(raw)
 
