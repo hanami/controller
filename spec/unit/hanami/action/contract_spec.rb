@@ -47,6 +47,28 @@ RSpec.describe "Contract" do
     end
   end
 
+  describe "provided by an injected contract dependency" do
+    let(:action) { DependencyContractAction.new(contract: ExternalContract.new) }
+
+    context "when it has errors" do
+      it "returns them" do
+        response = action.call("birth_date" => "2000-01-01")
+
+        expect(response.status).to eq 302
+        expect(response.body).to eq ["{:errors=>{:book=>[\"is missing\"], :birth_date=>[\"you must be 18 years or older\"]}}"]
+      end
+    end
+
+    context "when it is valid" do
+      it "works" do
+        response = action.call("birth_date" => Date.today - (365 * 15), "book" => {"title" => "Hanami"})
+
+        expect(response.status).to eq 201
+        expect(response.body).to eq ["{\"new_name\":\"HANAMI\"}"]
+      end
+    end
+  end
+
   describe "#raw" do
     context "without a contract" do
       let(:action) { RawContractAction.new }
