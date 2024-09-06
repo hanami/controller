@@ -11,7 +11,7 @@ RSpec.describe "Without validations" do
     expect(defined?(Hanami::Action::Validatable)).to be(nil)
   end
 
-  it "doesn't have params DSL" do
+  it "doesn't have Hanami::Action.params" do
     expect do
       Class.new(Hanami::Action) do
         params do
@@ -24,7 +24,7 @@ RSpec.describe "Without validations" do
     )
   end
 
-  it "doesn't have the contract DSL" do
+  it "doesn't have Hanami::Action.contract" do
     expect do
       Class.new(Hanami::Action) do
         contract do
@@ -39,7 +39,20 @@ RSpec.describe "Without validations" do
     )
   end
 
-  it "has params that don't respond to .valid?" do
+  it "doesn't have Hanami::Action::Params.params" do
+    expect do
+      Class.new(Hanami::Action::Params) do
+        params do
+          required(:id).filled
+        end
+      end
+    end.to raise_error(
+      NoMethodError,
+      %(To use `.params`, please add the "hanami-validations" gem to your Gemfile)
+    )
+  end
+
+  it "has params that are always valid" do
     action = Class.new(Hanami::Action) do
       def handle(req, res)
         res.body = [req.params.respond_to?(:valid?), req.params.valid?]

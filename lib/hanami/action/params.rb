@@ -143,7 +143,6 @@ module Hanami
       # @api public
       # @since 0.7.0
       def self.params(&block)
-        # TODO: add tests for this case
         unless defined?(Dry::Validation::Contract)
           message = %(To use `.params`, please add the "hanami-validations" gem to your Gemfile)
           raise NoMethodError, message
