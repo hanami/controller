@@ -27,6 +27,23 @@ module Hanami
     #
     # @since 0.1.0
     class Params
+      # Permits all params and returns them as symbolized keys. Stands in for a
+      # `Dry::Validation::Contract` when neither {Action.params} nor {Action.contract} are called.
+      #
+      # @see {Params#initialize}
+      #
+      # @since 2.2.0
+      # @api private
+      class DefaultValidator
+        def self.call(attrs) = Result.new(attrs)
+
+        class Result
+          def initialize(attrs) = @attrs = Utils::Hash.deep_symbolize(attrs)
+          def to_h = @attrs
+          def errors = {}
+        end
+      end
+
       # Params errors
       #
       # @since 1.1.0
@@ -117,11 +134,6 @@ module Hanami
         end
       end
 
-      # @api private
-      # @since 2.2.0
-      DEFAULT_VALIDATOR = Utils::Hash.method(:deep_symbolize)
-      private_constant :DEFAULT_VALIDATOR
-
       # Defines validations for the params, using the `params` schema of a dry-validation contract.
       #
       # @param block [Proc] the schema definition
@@ -191,11 +203,11 @@ module Hanami
         # Fall back to the default validator here rather than in `._validator` itself. This allows
         # `._validator` to return nil when there is no user-defined validator, which is important
         # for the backwards compatibility behavior in `Validatable::ClassMethods#params`.
-        validator ||= self.class._validator || DEFAULT_VALIDATOR
+        validator ||= self.class._validator || DefaultValidator
         validation = validator.call(raw)
 
         @params = validation.to_h
-        @errors = Errors.new(validation.respond_to?(:errors) ? validation.errors.to_h : {})
+        @errors = Errors.new(validation.errors.to_h)
 
         freeze
       end
