@@ -308,7 +308,7 @@ module Hanami
       response = nil
 
       halted = catch :halt do
-        params = Params.new(env: env, validator: contract)
+        params = Params.new(env: env, contract: contract)
         request  = build_request(
           env: env,
           params: params,

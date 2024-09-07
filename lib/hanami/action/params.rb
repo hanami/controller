@@ -34,7 +34,7 @@ module Hanami
       #
       # @since 2.2.0
       # @api private
-      class DefaultValidator
+      class DefaultContract
         def self.call(attrs) = Result.new(attrs)
 
         class Result
@@ -148,14 +148,13 @@ module Hanami
           raise NoMethodError, message
         end
 
-        # TODO: deprecation warning
-        @_validator = Class.new(Dry::Validation::Contract) { params(&block || -> {}) }.new
+        @_contract = Class.new(Dry::Validation::Contract) { params(&block || -> {}) }.new
       end
 
       class << self
         # @api private
         # @since 2.2.0
-        attr_reader :_validator
+        attr_reader :_contract
       end
 
       # @attr_reader env [Hash] the Rack env
@@ -195,15 +194,15 @@ module Hanami
       #
       # @since 0.1.0
       # @api private
-      def initialize(env:, validator: nil)
+      def initialize(env:, contract: nil)
         @env = env
         @raw = _extract_params
 
-        # Fall back to the default validator here, rather than in the `._validator` method itself.
-        # This allows `._validator` to return nil when there is no user-defined validator, which is
+        # Fall back to the default contract here, rather than in the `._contract` method itself.
+        # This allows `._contract` to return nil when there is no user-defined contract, which is
         # important for the backwards compatibility behavior in `Validatable::ClassMethods#params`.
-        validator ||= self.class._validator || DefaultValidator
-        validation = validator.call(raw)
+        contract ||= self.class._contract || DefaultContract
+        validation = contract.call(raw)
 
         @params = validation.to_h
         @errors = Errors.new(validation.errors.to_h)

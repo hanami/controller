@@ -100,9 +100,8 @@ module Hanami
             if klass.nil?
               Class.new(Dry::Validation::Contract) { params(&block) }
             elsif klass < Params
-              # Handle deprecated behavior of providing custom Hanami::Action::Params subclasses.
-              # TODO: deprecation warning here
-              klass._validator.class
+              # Handle subclasses of Hanami::Action::Params.
+              klass._contract.class
             else
               klass
             end
