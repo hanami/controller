@@ -39,7 +39,7 @@ module Hanami
         loader.ignore(
           "#{root}/hanami-controller.rb",
           "#{root}/hanami/controller/version.rb",
-          "#{root}/hanami/action/{constants,errors,params,validatable}.rb"
+          "#{root}/hanami/action/{constants,errors,validatable}.rb"
         )
         loader.inflector.inflect("csrf_protection" => "CSRFProtection")
       end
@@ -72,6 +72,7 @@ module Hanami
     setting :public_directory, default: Config::DEFAULT_PUBLIC_DIRECTORY
     setting :before_callbacks, default: Utils::Callbacks::Chain.new, mutable: true
     setting :after_callbacks, default: Utils::Callbacks::Chain.new, mutable: true
+    setting :contract_class
 
     # @!scope class
 
@@ -105,24 +106,6 @@ module Hanami
           include Validatable if defined?(Validatable)
         end
       end
-
-      if instance_variable_defined?(:@params_class)
-        subclass.instance_variable_set(:@params_class, @params_class)
-      end
-    end
-
-    # Returns the class which defines the params
-    #
-    # Returns the class which has been provided to define the
-    # params. By default this will be Hanami::Action::Params.
-    #
-    # @return [Class] A params class (when whitelisted) or
-    #   Hanami::Action::Params
-    #
-    # @api private
-    # @since 0.7.0
-    def self.params_class
-      @params_class || BaseParams
     end
 
     # Placeholder for the `.params` method. Raises an error when the hanami-validations gem is not
@@ -298,12 +281,21 @@ module Hanami
       config.handle_exception(...)
     end
 
+    # @since 2.0.0
+    # @api private
+    private attr_reader :config
+
+    # @since 2.2.0
+    # @api private
+    private attr_reader :contract
+
     # Returns a new action
     #
     # @since 2.0.0
     # @api public
-    def initialize(config: self.class.config)
+    def initialize(config: self.class.config, contract: nil)
       @config = config
+      @contract = contract || config.contract_class&.new # TODO: tests showing this overridden by a dep
       freeze
     end
 
@@ -316,7 +308,7 @@ module Hanami
       response = nil
 
       halted = catch :halt do
-        params   = self.class.params_class.new(env)
+        params = Params.new(env: env, contract: contract)
         request  = build_request(
           env: env,
           params: params,
@@ -411,10 +403,6 @@ module Hanami
     alias_method :_requires_empty_headers?, :_requires_no_body?
 
     private
-
-    # @since 2.0.0
-    # @api private
-    attr_reader :config
 
     # @since 2.0.0
     # @api private

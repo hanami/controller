@@ -36,7 +36,7 @@ RSpec.describe Hanami::Action::CSRFProtection do
       let(:session_token) { "abc123" }
 
       context "matching CSRF token in request" do
-        let(:request) { super().merge(_csrf_token: session_token) }
+        let(:request) { super().merge("_csrf_token" => session_token) }
 
         it "accepts the request" do
           expect(response.status).to eq 200

@@ -1903,20 +1903,7 @@ module Inheritance
   end
 end
 
-class ContractAction < Hanami::Action
-  contract do
-    params do
-      required(:birth_date).filled(:date)
-      required(:book).schema do
-        required(:title).filled(:str?)
-      end
-    end
-
-    rule(:birth_date) do
-      key.failure("you must be 18 years or older") if value < Date.today << (12 * 18)
-    end
-  end
-
+class ContractActionBase < Hanami::Action
   def handle(request, response)
     if request.params.valid?
       response.status = 201
@@ -1930,7 +1917,7 @@ class ContractAction < Hanami::Action
   end
 end
 
-class ExternalContractParams < Hanami::Action::Params
+class ContractAction < ContractActionBase
   contract do
     params do
       required(:birth_date).filled(:date)
@@ -1945,8 +1932,24 @@ class ExternalContractParams < Hanami::Action::Params
   end
 end
 
-class ExternalContractAction < ContractAction
-  contract ExternalContractParams
+class ExternalContract < Dry::Validation::Contract
+  params do
+    required(:birth_date).filled(:date)
+    required(:book).schema do
+      required(:title).filled(:str?)
+    end
+  end
+
+  rule(:birth_date) do
+    key.failure("you must be 18 years or older") if value < Date.today << (12 * 18)
+  end
+end
+
+class ExternalContractAction < ContractActionBase
+  contract ExternalContract
+end
+
+class DependencyContractAction < ContractActionBase
 end
 
 class WhitelistedUploadDslContractAction < Hanami::Action

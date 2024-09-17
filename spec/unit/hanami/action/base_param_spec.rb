@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-RSpec.describe Hanami::Action::BaseParams do
+# TODO: merge these tests into params_spec
+RSpec.describe Hanami::Action::Params do
   let(:action) { Test::Index.new }
 
   describe "#initialize" do
@@ -22,7 +23,7 @@ RSpec.describe Hanami::Action::BaseParams do
   describe "#each" do
     it "iterates through params" do
       expected = {song: "Break The Habit"}
-      params = described_class.new(expected.dup)
+      params = described_class.new(env: expected.dup)
       actual = {}
       params.each do |key, value|
         actual[key] = value
@@ -33,7 +34,7 @@ RSpec.describe Hanami::Action::BaseParams do
   end
 
   describe "#get" do
-    let(:params) { described_class.new(delivery: {address: {city: "Rome"}}) }
+    let(:params) { described_class.new(env: {delivery: {address: {city: "Rome"}}}) }
 
     it "returns value if present" do
       expect(params.get(:delivery, :address, :city)).to eq("Rome")

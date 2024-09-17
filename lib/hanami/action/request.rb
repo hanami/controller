@@ -18,10 +18,7 @@ module Hanami
     class Request < ::Rack::Request
       # Returns the request's params.
       #
-      # For an action with {Validatable} included, this will be a {Params} instance, otherwise a
-      # {BaseParams}.
-      #
-      # @return [BaseParams,Params]
+      # @return [Params]
       #
       # @since 2.0.0
       # @api public
