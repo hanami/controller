@@ -2,6 +2,12 @@
 
 Complete, fast and testable actions for Rack
 
+## v2.2.0.beta1 - 2024-09-25
+
+### Added
+
+- [Tim Riley, Krzysztof Piotrowski] Add support for using full dry-validation contracts for action param validation, via `Hanami::Action.contract` (#453, #454)
+
 ## v2.2.0.beta1 - 2024-07-16
 
 ### Changed
