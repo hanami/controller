@@ -14,7 +14,7 @@ module Hanami
     # @see http://www.rubydoc.info/gems/rack/Rack/Response
     #
     # @since 2.0.0
-    # @api private
+    # @api public
     class Response < ::Rack::Response
       # @since 2.0.0
       # @api private
