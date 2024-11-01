@@ -476,6 +476,7 @@ end
 class IterateCookiesAction < Hanami::Action
   include Hanami::Action::Cookies
 
+  # rubocop:disable Style/MapIntoArray
   def handle(*, res)
     result = []
     res.cookies.each do |key, value|
@@ -484,6 +485,7 @@ class IterateCookiesAction < Hanami::Action
 
     res.body = result.join(", ")
   end
+  # rubocop:enable Style/MapIntoArray
 end
 
 class ThrowCodeAction < Hanami::Action
