@@ -588,7 +588,6 @@ end
 class ParamsAction < Hanami::Action
   def handle(req, res)
     params = req.params.to_h
-    params.delete(Hanami::Action::ACTION_INSTANCE.to_sym)
     res.body = params.inspect
   end
 end

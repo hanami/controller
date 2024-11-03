@@ -304,7 +304,6 @@ module Hanami
     # @since 0.1.0
     # @api private
     def call(env)
-      env[ACTION_INSTANCE] = self
       request  = nil
       response = nil
 
@@ -332,6 +331,10 @@ module Hanami
       rescue StandardError => exception
         _handle_exception(request, response, exception)
       end
+
+      # Before finishing, put ourself into the Rack env for third-party instrumentation tools to
+      # integrate with actions
+      env[ACTION_INSTANCE] = self
 
       finish(request, response, halted)
     end
