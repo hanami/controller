@@ -332,6 +332,10 @@ module Hanami
         _handle_exception(request, response, exception)
       end
 
+      # Before finishing, put ourself into the Rack env for third-party instrumentation tools to
+      # integrate with actions
+      env[ACTION_INSTANCE] = self
+
       finish(request, response, halted)
     end
 

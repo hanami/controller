@@ -587,7 +587,8 @@ end
 
 class ParamsAction < Hanami::Action
   def handle(req, res)
-    res.body = req.params.to_h.inspect
+    params = req.params.to_h
+    res.body = params.inspect
   end
 end
 
