@@ -2,6 +2,12 @@
 
 Complete, fast and testable actions for Rack
 
+## v2.2.0 - 2024-11-05
+
+### Added
+
+- [Tom de Bruijn, Tim Riley] When an action is called, add the action instance to the Rack environment under the `"hanami.action_instance"` key (#446)
+
 ## v2.2.0.rc1 - 2024-10-29
 
 ## v2.2.0.beta2 - 2024-09-25
