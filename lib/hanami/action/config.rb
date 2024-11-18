@@ -137,14 +137,12 @@ module Hanami
 
       # @!attribute [rw] root_directory
       #
-      #   Sets the the for the public directory, which is used for file downloads.
+      #   Sets the the root directory for the public directory, which is used for file downloads.
       #   This must be an existent directory.
       #
       #   Defaults to the current working directory.
       #
       #   @return [String] the directory path
-      #
-      #   @api private
       #
       #   @since 1.0.0
 
