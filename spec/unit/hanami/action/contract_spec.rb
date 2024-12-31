@@ -38,6 +38,7 @@ RSpec.describe "Contract" do
         response = action.call("birth_date" => "2000-01-01")
 
         expect(response.status).to eq 302
+
         if RUBY_VERSION < "3.4"
           expect(response.body).to eq ["{:errors=>{:book=>[\"is missing\"], :birth_date=>[\"you must be 18 years or older\"]}}"]
         else
