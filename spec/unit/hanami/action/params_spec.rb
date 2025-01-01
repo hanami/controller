@@ -62,7 +62,12 @@ RSpec.describe Hanami::Action::Params do
           # For unit tests in Hanami projects, developers may want to define
           # params with symbolized keys.
           response = action.call(a: "1", b: "2", c: "3")
-          expect(response.body).to eq([%({:a=>"1", :b=>"2", :c=>"3"})])
+
+          if RUBY_VERSION < "3.4"
+            expect(response.body).to eq([%({:a=>"1", :b=>"2", :c=>"3"})])
+          else
+            expect(response.body).to eq([%({a: "1", b: "2", c: "3"})])
+          end
         end
       end
 
@@ -70,7 +75,12 @@ RSpec.describe Hanami::Action::Params do
         it "returns all the params as they are" do
           # Rack params are always stringified
           response = Rack::MockRequest.new(action).request("PATCH", "?id=23", params: {"x" => {"foo" => "bar"}})
-          expect(response.body).to match(%({:id=>"23", :x=>{:foo=>"bar"}}))
+
+          if RUBY_VERSION < "3.4"
+            expect(response.body).to eq(%({:id=>"23", :x=>{:foo=>"bar"}}))
+          else
+            expect(response.body).to eq(%({id: "23", x: {foo: "bar"}}))
+          end
         end
       end
 
@@ -78,7 +88,12 @@ RSpec.describe Hanami::Action::Params do
         it "returns all the params as they are" do
           # Hanami::Router params are always symbolized
           response = action.call("router.params" => {id: "23"})
-          expect(response.body).to eq([%({:id=>"23"})])
+
+          if RUBY_VERSION < "3.4"
+            expect(response.body).to eq([%({:id=>"23"})])
+          else
+            expect(response.body).to eq([%({id: "23"})])
+          end
         end
       end
     end
@@ -92,7 +107,12 @@ RSpec.describe Hanami::Action::Params do
         context "in testing mode" do
           it "returns only the listed params" do
             response = action.call(id: 23, unknown: 4, article: {foo: "bar", tags: [:cool]})
-            expect(response.body).to eq([%({:id=>23, :article=>{:tags=>[:cool]}})])
+
+            if RUBY_VERSION < "3.4"
+              expect(response.body).to eq([%({:id=>23, :article=>{:tags=>[:cool]}})])
+            else
+              expect(response.body).to eq([%({id: 23, article: {tags: [:cool]}})])
+            end
           end
 
           it "removes _csrf_token" do
@@ -104,20 +124,35 @@ RSpec.describe Hanami::Action::Params do
         context "in a Rack context" do
           it "returns only the listed params" do
             response = Rack::MockRequest.new(action).request("PATCH", "?id=23", params: {x: {foo: "bar"}})
-            expect(response.body).to match(%({:id=>23}))
+
+            if RUBY_VERSION < "3.4"
+              expect(response.body).to match(%({:id=>23}))
+            else
+              expect(response.body).to match(%({id: 23}))
+            end
           end
 
           it "removes _csrf_token" do
             response = Rack::MockRequest.new(action).request("PATCH", "?id=1", params: {_csrf_token: "def", x: {foo: "bar"}})
             expect(response.body).not_to match("_csrf_token")
-            expect(response.body).to match(%(:id=>1))
+
+            if RUBY_VERSION < "3.4"
+              expect(response.body).to match(%({:id=>1}))
+            else
+              expect(response.body).to match(%({id: 1}))
+            end
           end
         end
 
         context "with Hanami::Router" do
           it "returns only the listed params" do
             response = action.call("router.params" => {id: 23, another: "x"})
-            expect(response.body).to eq([%({:id=>23})])
+
+            if RUBY_VERSION < "3.4"
+              expect(response.body).to eq([%({:id=>23})])
+            else
+              expect(response.body).to eq([%({id: 23})])
+            end
           end
         end
       end
@@ -133,21 +168,36 @@ RSpec.describe Hanami::Action::Params do
         context "in testing mode" do
           it "returns only the listed params" do
             response = action.call(username: "jodosha", unknown: "field")
-            expect(response.body).to eq([%({:username=>"jodosha"})])
+
+            if RUBY_VERSION < "3.4"
+              expect(response.body).to eq([%({:username=>"jodosha"})])
+            else
+              expect(response.body).to eq([%({username: "jodosha"})])
+            end
           end
         end
 
         context "in a Rack context" do
           it "returns only the listed params" do
             response = Rack::MockRequest.new(action).request("PATCH", "?username=jodosha", params: {x: {foo: "bar"}})
-            expect(response.body).to match(%({:username=>"jodosha"}))
+
+            if RUBY_VERSION < "3.4"
+              expect(response.body).to match(%({:username=>"jodosha"}))
+            else
+              expect(response.body).to match(%({username: "jodosha"}))
+            end
           end
         end
 
         context "with Hanami::Router" do
           it "returns only the listed params" do
             response = action.call("router.params" => {username: "jodosha", y: "x"})
-            expect(response.body).to eq([%({:username=>"jodosha"})])
+
+            if RUBY_VERSION < "3.4"
+              expect(response.body).to eq([%({:username=>"jodosha"})])
+            else
+              expect(response.body).to eq([%({username: "jodosha"})])
+            end
           end
         end
       end
@@ -507,7 +557,17 @@ RSpec.describe Hanami::Action::Params do
     it "raises error when try to add an error " do
       params = klass.new(env: {})
 
-      expect { params.errors.add(:book, :code, "is invalid") }.to raise_error(ArgumentError, %(Can't add :book, :code, "is invalid" to {:book=>["is missing"]}))
+      if RUBY_VERSION < "3.4"
+        expect { params.errors.add(:book, :code, "is invalid") }.to raise_error(
+          ArgumentError,
+          %(Can't add :book, :code, "is invalid" to {:book=>["is missing"]})
+        )
+      else
+        expect { params.errors.add(:book, :code, "is invalid") }.to raise_error(
+          ArgumentError,
+          %(Can't add :book, :code, "is invalid" to {book: ["is missing"]})
+        )
+      end
     end
   end
 
@@ -516,7 +576,12 @@ RSpec.describe Hanami::Action::Params do
 
     it "uses the params defined in the parent class" do
       response = action.call(id: 23, unknown: 4, article: {foo: "bar", tags: [:cool]})
-      expect(response.body).to eq([%({:id=>23, :article=>{:tags=>[:cool]}})])
+
+      if RUBY_VERSION < "3.4"
+        expect(response.body).to eq([%({:id=>23, :article=>{:tags=>[:cool]}})])
+      else
+        expect(response.body).to eq([%({id: 23, article: {tags: [:cool]}})])
+      end
     end
   end
 end
