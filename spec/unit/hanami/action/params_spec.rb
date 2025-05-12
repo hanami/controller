@@ -513,7 +513,7 @@ RSpec.describe Hanami::Action::Params do
     end
 
     it "supports pattern-matching" do
-      params => { name: }
+      params => {name:}
       expect(name).to eq("John")
     end
   end
