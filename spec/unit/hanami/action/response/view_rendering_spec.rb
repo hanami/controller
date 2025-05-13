@@ -21,8 +21,7 @@ RSpec.describe Hanami::Action::Response, "view rendering" do
       if expected_view_args.any?
         allow(view).to receive(:call).with(**expected_view_args) { rendered }
       else
-        args = RUBY_VERSION >= "2.7" ? no_args : {}
-        allow(view).to receive(:call).with(args) { rendered }
+        allow(view).to receive(:call).with(no_args) { rendered }
       end
     end
 
