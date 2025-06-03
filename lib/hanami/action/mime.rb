@@ -222,11 +222,11 @@ module Hanami
         # @since 2.0.0
         # @api private
         def enforce_content_type(request, config)
-          content_type = request.content_type
+          media_type = request.media_type
 
-          return if content_type.nil?
+          return if media_type.nil?
 
-          return if accepted_mime_type?(content_type, config)
+          return if accepted_mime_type?(media_type, config)
 
           yield
         end
