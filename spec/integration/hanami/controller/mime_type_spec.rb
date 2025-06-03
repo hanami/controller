@@ -59,7 +59,7 @@ RSpec.describe "MIME Type" do
     end
 
     context "when uploading a file to an action with format multipart/form-data configured" do
-      it "does not return 415 for multipart/form-data with a boundary parameter" do
+      it "does not return 415 for valid multipart/form-data request with boundary" do
         response = app.post("/upload", "CONTENT_TYPE" => "multipart/form-data; boundary=----abc123")
 
         expect(response.status).to eq(200)
