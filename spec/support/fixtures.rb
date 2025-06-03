@@ -1597,6 +1597,16 @@ module Mimes
     end
   end
 
+  class UploadAction < Hanami::Action
+    config.formats.add :multipart, "multipart/form-data"
+    config.format :multipart
+
+    def handle(req, res)
+      res.format = :txt
+      res.body = req.content_type
+    end
+  end
+
   class Restricted < Hanami::Action
     config.formats.add :custom, "application/custom"
 
@@ -1641,6 +1651,7 @@ module Mimes
         get "/custom_from_accept", to: Mimes::CustomFromAccept.new
         get "/strict",             to: Mimes::Strict.new
         get "/relaxed",            to: Mimes::Relaxed.new
+        post "/upload",            to: Mimes::UploadAction.new
       end
     end
 
