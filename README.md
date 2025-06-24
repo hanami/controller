@@ -537,7 +537,7 @@ action.call({}) # => [200, {"Set-Cookie" => "foo=bar; max-age=100;"}, "..."]
 
 Actions have builtin support for Rack sessions.
 Similarly to cookies, you can read the session sent by the HTTP client via
-`req.session`, and also manipulate it via `res.ression`.
+`req.session`, and also manipulate it via `res.session`.
 
 ```ruby
 require "hanami/controller"
