@@ -86,7 +86,7 @@ module Hanami
 
         # @since 0.3.0
         # @api private
-        def fresh?
+        def fresh? # rubocop:disable Naming/PredicateMethod
           yield if @validations.any?(&:fresh?)
         end
 

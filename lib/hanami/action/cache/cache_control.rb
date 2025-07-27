@@ -13,6 +13,7 @@ module Hanami
         def self.included(base)
           base.class_eval do
             extend ClassMethods
+
             @cache_control_directives = nil
           end
         end

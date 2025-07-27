@@ -824,6 +824,7 @@ end
 module Dashboard
   class Index < Hanami::Action
     include Hanami::Action::Session
+
     before :authenticate!
 
     def handle(*, res)
