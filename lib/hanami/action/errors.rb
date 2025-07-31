@@ -82,7 +82,7 @@ module Hanami
             module MyApp
               class App < Hanami::App
                 # See Rack::Session::Cookie for options
-                config.sessions = :cookie, {**cookie_session_options}
+                config.actions.sessions = :cookie, {**cookie_session_options}
               end
             end
 
