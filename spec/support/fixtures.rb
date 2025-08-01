@@ -30,7 +30,6 @@ HTTP_TEST_STATUSES = {
   303 => "See Other",
   304 => "Not Modified",
   305 => "Use Proxy",
-  306 => "(Unused)",
   307 => "Temporary Redirect",
   308 => "Permanent Redirect",
   400 => "Bad Request",
@@ -46,13 +45,13 @@ HTTP_TEST_STATUSES = {
   410 => "Gone",
   411 => "Length Required",
   412 => "Precondition Failed",
-  413 => "Payload Too Large",
+  413 => Hanami::Router.rack_3? ? "Content Too Large" : "Payload Too Large",
   414 => "URI Too Long",
   415 => "Unsupported Media Type",
   416 => "Range Not Satisfiable",
   417 => "Expectation Failed",
   421 => "Misdirected Request",
-  422 => "Unprocessable Entity",
+  422 => Hanami::Router.rack_3? ? "Unprocessable Content" : "Unprocessable Entity",
   423 => "Locked",
   424 => "Failed Dependency",
   425 => "Too Early",
@@ -60,7 +59,7 @@ HTTP_TEST_STATUSES = {
   428 => "Precondition Required",
   429 => "Too Many Requests",
   431 => "Request Header Fields Too Large",
-  451 => "Unavailable for Legal Reasons",
+  451 => Hanami::Router.rack_3? ? "Unavailable For Legal Reasons" : "Unavailable for Legal Reasons",
   500 => "Internal Server Error",
   501 => "Not Implemented",
   502 => "Bad Gateway",
@@ -70,9 +69,16 @@ HTTP_TEST_STATUSES = {
   506 => "Variant Also Negotiates",
   507 => "Insufficient Storage",
   508 => "Loop Detected",
-  509 => "Bandwidth Limit Exceeded",
-  510 => "Not Extended",
   511 => "Network Authentication Required"
+}.tap { |hsh|
+  unless Hanami::Router.rack_3?
+    # These codes in Rack 2 were removed for Rack 3.
+    hsh.update(
+      306 => "(Unused)",
+      509 => "Bandwidth Limit Exceeded",
+      510 => "Not Extended"
+    )
+  end
 }.freeze
 HTTP_TEST_STATUSES_WITHOUT_BODY = (((100..199).to_a << 204 << 304) & HTTP_TEST_STATUSES.keys).freeze
 

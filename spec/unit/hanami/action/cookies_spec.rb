@@ -7,7 +7,13 @@ RSpec.describe Hanami::Action do
       response = action.call("HTTP_COOKIE" => "foo=bar")
 
       expect(response.cookies).to include(foo: "bar")
-      expect(response.headers).to eq("Content-Length" => "3", "Content-Type" => "application/octet-stream; charset=utf-8")
+      expected_headers =
+        if Hanami::Router.rack_3?
+          {"content-type" => "application/octet-stream; charset=utf-8"}
+        else
+          {"Content-Length" => "3", "Content-Type" => "application/octet-stream; charset=utf-8"}
+        end
+      expect(response.headers).to eq(expected_headers)
       expect(response.body).to    eq(["bar"])
     end
 
@@ -16,7 +22,13 @@ RSpec.describe Hanami::Action do
       response = action.call("HTTP_COOKIE" => "foo=bar")
 
       expect(response.cookies).to include(foo: "bar")
-      expect(response.headers).to eq("Content-Length" => "3", "Content-Type" => "application/octet-stream; charset=utf-8", "Set-Cookie" => "foo=baz")
+      expected_headers =
+        if Hanami::Router.rack_3?
+          {"content-type" => "application/octet-stream; charset=utf-8", "set-cookie" => "foo=baz"}
+        else
+          {"Content-Length" => "3", "Content-Type" => "application/octet-stream; charset=utf-8", "Set-Cookie" => "foo=baz"}
+        end
+      expect(response.headers).to eq(expected_headers)
       expect(response.body).to    eq(["bar"])
     end
 
@@ -24,8 +36,14 @@ RSpec.describe Hanami::Action do
       action = SetCookiesAction.new
       response = action.call({})
 
-      expect(response.body).to    eq(["yo"])
-      expect(response.headers).to eq("Content-Length" => "2", "Content-Type" => "application/octet-stream; charset=utf-8", "Set-Cookie" => "foo=yum%21")
+      expect(response.body).to eq(["yo"])
+      expected_headers =
+        if Hanami::Router.rack_3?
+          {"content-type" => "application/octet-stream; charset=utf-8", "set-cookie" => "foo=yum%21"}
+        else
+          {"Content-Length" => "2", "Content-Type" => "application/octet-stream; charset=utf-8", "Set-Cookie" => "foo=yum%21"}
+        end
+      expect(response.headers).to eq(expected_headers)
     end
 
     it "sets cookies with options" do
@@ -33,14 +51,26 @@ RSpec.describe Hanami::Action do
       action   = SetCookiesWithOptionsAction.new(expires: tomorrow)
       response = action.call({})
 
-      expect(response.headers).to eq("Content-Type" => "application/octet-stream; charset=utf-8", "Set-Cookie" => "kukki=yum%21; domain=hanamirb.org; path=/controller; expires=#{tomorrow.httpdate}; secure; HttpOnly")
+      expected_headers =
+        if Hanami::Router.rack_3?
+          {"content-type" => "application/octet-stream; charset=utf-8", "set-cookie" => "kukki=yum%21; domain=hanamirb.org; path=/controller; expires=#{tomorrow.httpdate}; secure; httponly"}
+        else
+          {"Content-Type" => "application/octet-stream; charset=utf-8", "Set-Cookie" => "kukki=yum%21; domain=hanamirb.org; path=/controller; expires=#{tomorrow.httpdate}; secure; HttpOnly"}
+        end
+      expect(response.headers).to eq(expected_headers)
     end
 
     it "removes cookies" do
       action = RemoveCookiesAction.new
       response = action.call("HTTP_COOKIE" => "foo=bar;rm=me")
 
-      expect(response.headers).to eq("Content-Type" => "application/octet-stream; charset=utf-8", "Set-Cookie" => "rm=; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT")
+      expected_headers =
+        if Hanami::Router.rack_3?
+          {"content-type" => "application/octet-stream; charset=utf-8", "set-cookie" => "rm=; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT"}
+        else
+          {"Content-Type" => "application/octet-stream; charset=utf-8", "Set-Cookie" => "rm=; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT"}
+        end
+      expect(response.headers).to eq(expected_headers)
     end
 
     it "iterates cookies" do
@@ -55,14 +85,26 @@ RSpec.describe Hanami::Action do
         action = GetDefaultCookiesAction.new
 
         response = action.call({})
-        expect(response.headers).to eq("Content-Length" => "0", "Content-Type" => "application/octet-stream; charset=utf-8", "Set-Cookie" => "bar=foo; domain=hanamirb.org; path=/controller; secure; HttpOnly")
+        expected_headers =
+          if Hanami::Router.rack_3?
+            {"content-type" => "application/octet-stream; charset=utf-8", "set-cookie" => "bar=foo; domain=hanamirb.org; path=/controller; secure; httponly"}
+          else
+            {"Content-Length" => "0", "Content-Type" => "application/octet-stream; charset=utf-8", "Set-Cookie" => "bar=foo; domain=hanamirb.org; path=/controller; secure; HttpOnly"}
+          end
+        expect(response.headers).to eq(expected_headers)
       end
 
       it "overwritten cookies values are respected" do
         action = GetOverwrittenCookiesAction.new
 
         response = action.call({})
-        expect(response.headers).to eq("Content-Length" => "0", "Content-Type" => "application/octet-stream; charset=utf-8", "Set-Cookie" => "bar=foo; domain=hanamirb.com; path=/action")
+        expected_headers =
+          if Hanami::Router.rack_3?
+            {"content-type" => "application/octet-stream; charset=utf-8", "set-cookie" => "bar=foo; domain=hanamirb.com; path=/action"}
+          else
+            {"Content-Length" => "0", "Content-Type" => "application/octet-stream; charset=utf-8", "Set-Cookie" => "bar=foo; domain=hanamirb.com; path=/action"}
+          end
+        expect(response.headers).to eq(expected_headers)
       end
     end
 
