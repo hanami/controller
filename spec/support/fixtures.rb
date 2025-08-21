@@ -1247,7 +1247,7 @@ module HeadTest
       end
 
       @app = Rack::Builder.new do
-        use Rack::Session::Cookie, secret: SecureRandom.hex(16)
+        use Rack::Session::Cookie, secret: SecureRandom.hex(64)
         run router
       end.to_app
     end
@@ -1445,7 +1445,7 @@ module FullStack
 
       @renderer = Renderer.new
       @app      = Rack::Builder.new do
-        use Rack::Session::Cookie, secret: SecureRandom.hex(16)
+        use Rack::Session::Cookie, secret: SecureRandom.hex(64)
         run routes
       end.to_app
     end
@@ -1519,7 +1519,7 @@ module SessionWithCookies
       @renderer = Renderer.new
       @app = Rack::Builder.new do
         use Rack::Lint
-        use Rack::Session::Cookie, secret: SecureRandom.hex(16)
+        use Rack::Session::Cookie, secret: SecureRandom.hex(64)
         run routes
       end.to_app
     end
@@ -1719,7 +1719,7 @@ module SessionIntegration
 
       @app = Rack::Builder.new do
         use Rack::Lint
-        use Rack::Session::Cookie, secret: SecureRandom.hex(16)
+        use Rack::Session::Cookie, secret: SecureRandom.hex(64)
         run routes
       end.to_app
     end
@@ -1735,7 +1735,7 @@ module StandaloneSessionIntegration
     def initialize
       @app = Rack::Builder.new do
         use Rack::Lint
-        use Rack::Session::Cookie, secret: SecureRandom.hex(16)
+        use Rack::Session::Cookie, secret: SecureRandom.hex(64)
         run StandaloneSession.new
       end
     end
@@ -1837,7 +1837,7 @@ module Flash
       end
 
       @middleware = Rack::Builder.new do
-        use Rack::Session::Cookie, secret: SecureRandom.hex(16)
+        use Rack::Session::Cookie, secret: SecureRandom.hex(64)
         run routes
       end
     end

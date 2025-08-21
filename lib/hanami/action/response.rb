@@ -78,6 +78,7 @@ module Hanami
           @length = str.bytesize
         else
           write(str) unless str.nil? || str == EMPTY_BODY
+          @length = str.length
         end
       end
 

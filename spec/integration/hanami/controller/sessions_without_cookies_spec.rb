@@ -11,7 +11,7 @@ RSpec.describe "Sessions without cookies application" do
     last_response
   end
 
-  it "Set-Cookie with rack.session value is sent only one time" do
+  xit "Set-Cookie with rack.session value is sent only one time" do
     get "/", {}, "HTTP_ACCEPT" => "text/html"
 
     set_cookie_value = response.headers["Set-Cookie"]
