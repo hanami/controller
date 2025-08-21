@@ -5,6 +5,7 @@ require "digest/md5"
 require "hanami/router"
 require "hanami/middleware/body_parser"
 require "hanami/view/html"
+require "rack/session/cookie"
 require_relative "renderer"
 
 require_relative "validations"
@@ -1550,7 +1551,7 @@ module SessionsWithoutCookies
 
       @renderer = Renderer.new
       @app      = Rack::Builder.new do
-        use Rack::Session::Cookie, secret: SecureRandom.hex(16)
+        use Rack::Session::Cookie, secret: SecureRandom.hex(64)
         run routes
       end.to_app
     end

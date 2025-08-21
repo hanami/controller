@@ -561,7 +561,7 @@ module Hanami
     #
     #   # Both Content-Type and X-No-Pass are removed because they're not allowed
     def keep_response_header?(header)
-      ENTITY_HEADERS.include?(header)
+      ENTITY_HEADERS.include?(header.downcase)
     end
 
     # @since 2.0.0
