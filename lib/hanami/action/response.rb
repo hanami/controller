@@ -75,6 +75,7 @@ module Hanami
 
         if str.is_a?(::Rack::Files::BaseIterator)
           @body = str
+          @length = str.bytesize
         else
           write(str) unless str.nil? || str == EMPTY_BODY
         end
