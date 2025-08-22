@@ -71,7 +71,6 @@ RSpec.describe "HTTP Standalone Sessions" do
     end
   end
 
-
   let(:app) do
     r = router
     Rack::Builder.new do
