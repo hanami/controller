@@ -21,7 +21,12 @@ RSpec.describe "HTTP HEAD" do
     expect(response.status).to be(200)
     expect(response.body.to_s).to be_empty
     expect(headers).to include([rack_header("Content-Type"), "application/octet-stream; charset=utf-8"])
-    expect(headers).to include([rack_header("Content-Length"), "0"])
+
+    # In Rack 2, the Content-Length header is inferred from the body, even for HEAD requests.
+    # In Rack 3, the Content-Length header is no longer automatically set.
+    content_length = rack3? ? "0" : "5"
+
+    expect(headers).to include([rack_header("Content-Length"), content_length])
   end
 
   xit "allows to bypass restriction on custom headers" do
