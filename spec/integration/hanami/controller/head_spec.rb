@@ -24,7 +24,7 @@ RSpec.describe "HTTP HEAD" do
 
     # In Rack 2, the Content-Length header is inferred from the body, even for HEAD requests.
     # In Rack 3, the Content-Length header is no longer automatically set.
-    content_length = rack3? ? "0" : "5"
+    content_length = Hanami::Router.rack_3? ? "0" : "5"
 
     expect(headers).to include([rack_header("Content-Length"), content_length])
   end
