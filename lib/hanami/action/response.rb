@@ -70,15 +70,15 @@ module Hanami
       # @since 2.0.0
       # @api public
       def body=(str)
-        body_is_empty = str.nil? || str == EMPTY_BODY
-        @length = body_is_empty ? 0 : str.bytesize
+        @length = 0
         @body   = EMPTY_BODY.dup
 
         if str.is_a?(::Rack::Files::BaseIterator)
           @body = str
           @length = str.bytesize
         else
-          write(str) unless body_is_empty
+          write(str) unless str.nil? || str == EMPTY_BODY
+          @length = str.length
         end
       end
 
