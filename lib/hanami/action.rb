@@ -7,6 +7,7 @@ require "hanami/utils/kernel"
 require "hanami/utils/string"
 require "rack"
 require "rack/utils"
+require "hanami/action/rack_utils"
 require "zeitwerk"
 
 require_relative "action/constants"

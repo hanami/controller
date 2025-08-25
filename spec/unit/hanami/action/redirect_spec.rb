@@ -8,7 +8,7 @@ RSpec.describe Hanami::Action do
 
       expect(response.status).to be(302)
       expected_headers =
-        if Hanami::Router.rack_3?
+        if Hanami::Action.rack_3?
           {"content-type" => "application/octet-stream; charset=utf-8", "location" => "/destination"}
         else
           {"Location" => "/destination", "Content-Type" => "application/octet-stream; charset=utf-8", "Content-Length" => "5"}

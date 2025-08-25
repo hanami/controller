@@ -18,7 +18,7 @@ RSpec.describe Hanami::Action do
 
       expect(response.status).to eq(201)
       expected_headers =
-        if Hanami::Router.rack_3?
+        if Hanami::Action.rack_3?
           {"content-type" => "application/octet-stream; charset=utf-8", "x-custom" => "OK"}
         else
           {"Content-Length" => "19", "Content-Type" => "application/octet-stream; charset=utf-8", "X-Custom" => "OK"}
@@ -81,7 +81,7 @@ RSpec.describe Hanami::Action do
         response = ErrorCallWithSpecifiedStatusCodeAction.new.call({})
 
         expect(response.status).to eq(422)
-        expect(response.body).to eq(Hanami::Router.rack_3? ? ["Unprocessable Content"] : ["Unprocessable Entity"])
+        expect(response.body).to eq(Hanami::Action.rack_3? ? ["Unprocessable Content"] : ["Unprocessable Entity"])
       end
 
       it "returns a successful response if the code and status aren't set" do
