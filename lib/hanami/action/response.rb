@@ -71,14 +71,15 @@ module Hanami
       # @api public
       def body=(str)
         @length = 0
-        @body   = EMPTY_BODY.dup
+        @body = EMPTY_BODY.dup
+
+        return if str.nil? || str == EMPTY_BODY
 
         if str.is_a?(::Rack::Files::BaseIterator)
           @body = str
-          @length = str.bytesize
+          buffered_body! # Ensure appropriate content-length is set
         else
-          write(str) unless str.nil? || str == EMPTY_BODY
-          @length = str.length
+          write(str)
         end
       end
 
