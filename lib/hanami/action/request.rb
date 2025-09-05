@@ -56,7 +56,7 @@ module Hanami
 
       # Returns the session for the request.
       #
-      # @return [Hash] the session object
+      # @return [Hanami::Request::Session] the session object
       #
       # @raise [MissingSessionError] if the session is not enabled
       #
@@ -70,7 +70,7 @@ module Hanami
           raise Hanami::Action::MissingSessionError.new("Hanami::Action::Request#session")
         end
 
-        super
+        @session ||= Session.new(super)
       end
 
       # Returns the flash for the request.

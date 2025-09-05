@@ -32,7 +32,7 @@ RSpec.describe Hanami::Action::CSRFProtection do
 
     context "Existing session" do
       let(:request) { super().merge("rack.session" => session) }
-      let(:session) { {_csrf_token: session_token} }
+      let(:session) { {"_csrf_token" => session_token} }
       let(:session_token) { "abc123" }
 
       context "matching CSRF token in request" do
@@ -98,7 +98,7 @@ RSpec.describe Hanami::Action::CSRFProtection do
 
         context "Existing session" do
           let(:request) { super().merge("rack.session" => session) }
-          let(:session) { {_csrf_token: session_token} }
+          let(:session) { {"_csrf_token" => session_token} }
           let(:session_token) { "abc123" }
 
           it "includes the existing CSRF token in the response session" do

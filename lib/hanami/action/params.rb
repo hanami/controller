@@ -362,13 +362,7 @@ module Hanami
       # @since 0.7.0
       # @api private
       def _router_params(fallback = {})
-        env.fetch(ROUTER_PARAMS) do
-          if session = fallback.delete(Action::RACK_SESSION)
-            fallback[Action::RACK_SESSION] = Utils::Hash.deep_symbolize(session)
-          end
-
-          fallback
-        end
+        env.fetch(ROUTER_PARAMS, fallback)
       end
     end
   end

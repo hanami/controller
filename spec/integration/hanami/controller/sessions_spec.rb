@@ -65,17 +65,10 @@ end
 RSpec.describe "HTTP Standalone Sessions" do
   include Rack::Test::Methods
 
-  let(:router) do
-    Hanami::Router.new do
-      get "/", to: StandaloneSession.new
-    end
-  end
-
   let(:app) do
-    r = router
     Rack::Builder.new do
       use Rack::Session::Cookie, secret: SecureRandom.hex(64)
-      run r
+      run StandaloneSession.new
     end.to_app
   end
 
