@@ -21,7 +21,7 @@ RSpec.describe Hanami::Action::Response, "status codes" do
   end
 
   it "translates a symbolic status to integer" do
-    response.status = :unprocessable_entity
+    response.status = Hanami::Action.rack_3? ? :unprocessable_content : :unprocessable_entity
     expect(response.status).to eql 422
   end
 

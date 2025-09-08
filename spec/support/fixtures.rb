@@ -5,6 +5,7 @@ require "digest/md5"
 require "hanami/router"
 require "hanami/middleware/body_parser"
 require "hanami/view/html"
+require "rack/session/cookie"
 require_relative "renderer"
 
 require_relative "validations"
@@ -30,7 +31,6 @@ HTTP_TEST_STATUSES = {
   303 => "See Other",
   304 => "Not Modified",
   305 => "Use Proxy",
-  306 => "(Unused)",
   307 => "Temporary Redirect",
   308 => "Permanent Redirect",
   400 => "Bad Request",
@@ -46,13 +46,13 @@ HTTP_TEST_STATUSES = {
   410 => "Gone",
   411 => "Length Required",
   412 => "Precondition Failed",
-  413 => "Payload Too Large",
+  413 => Hanami::Action.rack_3? ? "Content Too Large" : "Payload Too Large",
   414 => "URI Too Long",
   415 => "Unsupported Media Type",
   416 => "Range Not Satisfiable",
   417 => "Expectation Failed",
   421 => "Misdirected Request",
-  422 => "Unprocessable Entity",
+  422 => Hanami::Action.rack_3? ? "Unprocessable Content" : "Unprocessable Entity",
   423 => "Locked",
   424 => "Failed Dependency",
   425 => "Too Early",
@@ -60,7 +60,7 @@ HTTP_TEST_STATUSES = {
   428 => "Precondition Required",
   429 => "Too Many Requests",
   431 => "Request Header Fields Too Large",
-  451 => "Unavailable for Legal Reasons",
+  451 => Hanami::Action.rack_3? ? "Unavailable For Legal Reasons" : "Unavailable for Legal Reasons",
   500 => "Internal Server Error",
   501 => "Not Implemented",
   502 => "Bad Gateway",
@@ -70,9 +70,16 @@ HTTP_TEST_STATUSES = {
   506 => "Variant Also Negotiates",
   507 => "Insufficient Storage",
   508 => "Loop Detected",
-  509 => "Bandwidth Limit Exceeded",
-  510 => "Not Extended",
   511 => "Network Authentication Required"
+}.tap { |hsh|
+  unless Hanami::Action.rack_3?
+    # These codes in Rack 2 were removed for Rack 3.
+    hsh.update(
+      306 => "(Unused)",
+      509 => "Bandwidth Limit Exceeded",
+      510 => "Not Extended"
+    )
+  end
 }.freeze
 HTTP_TEST_STATUSES_WITHOUT_BODY = (((100..199).to_a << 204 << 304) & HTTP_TEST_STATUSES.keys).freeze
 
@@ -1220,7 +1227,8 @@ module HeadTest
       private
 
       def keep_response_header?(header)
-        super || header == "X-Rate-Limit"
+        # TODO: remove downcase once we drop Rack 2 support
+        super || header.downcase == "x-rate-limit"
       end
     end
   end
@@ -1240,7 +1248,7 @@ module HeadTest
       end
 
       @app = Rack::Builder.new do
-        use Rack::Session::Cookie, secret: SecureRandom.hex(16)
+        use Rack::Session::Cookie, secret: SecureRandom.hex(64)
         run router
       end.to_app
     end
@@ -1438,7 +1446,7 @@ module FullStack
 
       @renderer = Renderer.new
       @app      = Rack::Builder.new do
-        use Rack::Session::Cookie, secret: SecureRandom.hex(16)
+        use Rack::Session::Cookie, secret: SecureRandom.hex(64)
         run routes
       end.to_app
     end
@@ -1512,7 +1520,7 @@ module SessionWithCookies
       @renderer = Renderer.new
       @app = Rack::Builder.new do
         use Rack::Lint
-        use Rack::Session::Cookie, secret: SecureRandom.hex(16)
+        use Rack::Session::Cookie, secret: SecureRandom.hex(64)
         run routes
       end.to_app
     end
@@ -1544,7 +1552,7 @@ module SessionsWithoutCookies
 
       @renderer = Renderer.new
       @app      = Rack::Builder.new do
-        use Rack::Session::Cookie, secret: SecureRandom.hex(16)
+        use Rack::Session::Cookie, secret: SecureRandom.hex(64)
         run routes
       end.to_app
     end
@@ -1712,7 +1720,7 @@ module SessionIntegration
 
       @app = Rack::Builder.new do
         use Rack::Lint
-        use Rack::Session::Cookie, secret: SecureRandom.hex(16)
+        use Rack::Session::Cookie, secret: SecureRandom.hex(64)
         run routes
       end.to_app
     end
@@ -1728,7 +1736,7 @@ module StandaloneSessionIntegration
     def initialize
       @app = Rack::Builder.new do
         use Rack::Lint
-        use Rack::Session::Cookie, secret: SecureRandom.hex(16)
+        use Rack::Session::Cookie, secret: SecureRandom.hex(64)
         run StandaloneSession.new
       end
     end
@@ -1830,7 +1838,7 @@ module Flash
       end
 
       @middleware = Rack::Builder.new do
-        use Rack::Session::Cookie, secret: SecureRandom.hex(16)
+        use Rack::Session::Cookie, secret: SecureRandom.hex(64)
         run routes
       end
     end

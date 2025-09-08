@@ -50,14 +50,14 @@ module Hanami
     # @see http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.5
     # @see http://www.w3.org/Protocols/rfc2616/rfc2616-sec7.html
     ENTITY_HEADERS = {
-      "Allow" => true,
-      "Content-Encoding" => true,
-      "Content-Language" => true,
-      "Content-Location" => true,
-      "Content-MD5" => true,
-      "Content-Range" => true,
-      "Expires" => true,
-      "Last-Modified" => true,
+      "allow" => true,
+      "content-encoding" => true,
+      "content-language" => true,
+      "content-location" => true,
+      "content-md5" => true,
+      "content-range" => true,
+      "expires" => true,
+      "last-modified" => true,
       "extension-header" => true
     }.freeze
 
