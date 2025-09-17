@@ -773,7 +773,7 @@ You can check if the requested MIME type is accepted by the client.
 class Show < Hanami::Action
   def handle(request, response)
     # ...
-    # @_env["HTTP_ACCEPT"] # => "text/html,application/xhtml+xml,application/xml;q=0.9"
+    # request.env["HTTP_ACCEPT"] # => "text/html,application/xhtml+xml,application/xml;q=0.9"
 
     request.accept?("text/html")        # => true
     request.accept?("application/xml")  # => true
@@ -781,7 +781,7 @@ class Show < Hanami::Action
     response.format                     # :html
 
 
-    # @_env["HTTP_ACCEPT"] # => "*/*"
+    # request.env["HTTP_ACCEPT"] # => "*/*"
 
     request.accept?("text/html")        # => true
     request.accept?("application/xml")  # => true
