@@ -291,7 +291,7 @@ They are useful for shared logic like authentication checks.
 class Show < Hanami::Action
   before :authenticate, :set_article
 
-  def handle(*)
+  def handle(request, response)
   end
 
   private
@@ -314,7 +314,7 @@ class Show < Hanami::Action
   before { ... } # do some authentication stuff
   before { |request, response| response[:article] = ArticleRepo.new.find(request.params[:id]) }
 
-  def handle(*)
+  def handle(request, response)
   end
 end
 ```
