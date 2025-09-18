@@ -591,7 +591,7 @@ run Show.new
 
 ### HTTP Cache
 
-Hanami::Controller sets your headers correctly according to RFC 2616 / 14.9 for more on standard cache control directives: http://tools.ietf.org/html/rfc2616#section-14.9.1
+Hanami::Controller sets your headers correctly according to [RFC 2616, sec. 14.9](http://tools.ietf.org/html/rfc2616#section-14.9.1).
 
 You can easily set the Cache-Control header for your actions:
 
