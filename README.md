@@ -74,9 +74,9 @@ Imagine how **fast** the unit test could be.
 
 ```ruby
 class Show < Hanami::Action
-  def initialize(configuration:, repo: ArticleRepo.new)
+  def initialize(repo: ArticleRepo.new, **)
     @repo = repo
-    super(configuration: configuration)
+    super(**)
   end
 
   def handle(request, response)
@@ -88,8 +88,7 @@ class Show < Hanami::Action
   attr_reader :repo
 end
 
-configuration = Hanami::Controller::Configuration.new
-action = Show.new(configuration: configuration, repo: ArticleRepo.new)
+action = Show.new(repo: ArticleRepo.new)
 action.call(id: 23)
 ```
 
