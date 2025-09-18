@@ -150,10 +150,11 @@ action = Show.new
 response = action.call(id: 23, name: "test")
 ```
 
-#### Whitelisting
+#### Declaring allowed params
 
-Params represent an untrusted input.
-For security reasons it's recommended to whitelist them.
+By default, params represent untrusted input.
+For security reasons it's recommended to use hanami-validations to validate the input and remove invalid params.
+
 
 ```ruby
 require "hanami/validations"
@@ -173,19 +174,17 @@ class Signup < Hanami::Action
   end
 
   def handle(request, *)
-    # Describe inheritance hierarchy
-    puts request.params.class            # => Signup::Params
-    puts request.params.class.superclass # => Hanami::Action::Params
-
-    # Whitelist :first_name, but not :admin
+    # :first_name is allowed, but not :admin is not
     puts request.params[:first_name]     # => "Luca"
     puts request.params[:admin]          # => nil
 
-    # Whitelist nested params [:address][:line_one], not [:address][:line_two]
+    # :address's :line_one is allowed, but :line_two is not
     puts request.params[:address][:line_one] # => "69 Tender St"
     puts request.params[:address][:line_two] # => nil
   end
 end
+
+Signup.new.call({first_name: "Luca", admin: true, address: { line_one: "69 Tender St"}})
 ```
 
 #### Validations & Coercions
