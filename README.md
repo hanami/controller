@@ -330,28 +330,34 @@ An exception handler can be a valid HTTP status code (eg. `500`, `401`), or a `S
 class Show < Hanami::Action
   handle_exception StandardError => 500
 
-  def handle(*)
+  def handle(request, response)
     raise
   end
 end
 
-action = Show.new(configuration: configuration)
-action.call({}) # => [500, {}, ["Internal Server Error"]]
+action = Show.new
+response = action.call({})
+p response.status # => 500
+p response.body # => ["Internal Server Error"]
 ```
 
 You can map a specific raised exception to a different HTTP status.
 
 ```ruby
+RecordNotFound = Class.new(StandardError)
+
 class Show < Hanami::Action
   handle_exception RecordNotFound => 404
 
-  def handle(*)
+  def handle(request, response)
     raise RecordNotFound
   end
 end
 
-action = Show.new(configuration: configuration)
-action.call({}) # => [404, {}, ["Not Found"]]
+action = Show.new
+response = action.call({})
+p response.status # => 404
+p response.body # ["Not Found"]
 ```
 
 You can also define custom handlers for exceptions.
@@ -360,7 +366,7 @@ You can also define custom handlers for exceptions.
 class Create < Hanami::Action
   handle_exception ArgumentError => :my_custom_handler
 
-  def handle(*)
+  def handle(request, response)
     raise ArgumentError.new("Invalid arguments")
   end
 
@@ -372,67 +378,12 @@ class Create < Hanami::Action
   end
 end
 
-action = Create.new(configuration: configuration)
-action.call({}) # => [400, {}, ["Invalid arguments"]]
+action = Create.new
+response = action.call({})
+p response.status # => 400
+p response.body # => ["Invalid arguments"]
 ```
 
-Exception policies can be defined globally via configuration:
-
-```ruby
-configuration = Hanami::Controller::Configuration.new do |config|
-  config.handle_exception RecordNotFound => 404
-end
-
-class Show < Hanami::Action
-  def handle(*)
-    raise RecordNotFound
-  end
-end
-
-action = Show.new(configuration: configuration)
-action.call({}) # => [404, {}, ["Not Found"]]
-```
-
-#### Inherited Exceptions
-
-```ruby
-class MyCustomException < StandardError
-end
-
-module Articles
-  class Index < Hanami::Action
-    handle_exception MyCustomException => :handle_my_exception
-
-    def handle(*)
-      raise MyCustomException
-    end
-
-    private
-
-    def handle_my_exception(request, response, exception)
-      # ...
-    end
-  end
-
-  class Show < Hanami::Action
-    handle_exception StandardError => :handle_standard_error
-
-    def handle(*)
-      raise MyCustomException
-    end
-
-    private
-
-    def handle_standard_error(request, response, exception)
-      # ...
-    end
-  end
-end
-
-Articles::Index.new.call({}) # => `handle_my_exception` will be invoked
-Articles::Show.new.call({})  # => `handle_standard_error` will be invoked,
-                             #   because `MyCustomException` inherits from `StandardError`
-```
 
 ### Throwable HTTP statuses
 
