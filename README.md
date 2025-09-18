@@ -175,23 +175,23 @@ class Signup < Hanami::Action
 
   def handle(request, *)
     # :first_name is allowed, but not :admin is not
-    puts request.params[:first_name]     # => "Luca"
+    puts request.params[:first_name]     # => "Jericho"
     puts request.params[:admin]          # => nil
 
     # :address's :line_one is allowed, but :line_two is not
-    puts request.params[:address][:line_one] # => "69 Tender St"
+    puts request.params[:address][:line_one] # => "123 Motor City Blvd"
     puts request.params[:address][:line_two] # => nil
   end
 end
 
-Signup.new.call({first_name: "Luca", admin: true, address: { line_one: "69 Tender St"}})
+Signup.new.call({first_name: "Jericho", admin: true, address: { line_one: "123 Motor City Blvd" }})
 ```
 
 #### Validations & Coercions
 
-Because params are a well defined set of data required to fulfill a feature
-in your application, you can validate them. So you can avoid hitting lower MVC layers
-when params are invalid.
+Because params are a well-defined set of data required to fulfill a request in your application, you can validate them.
+In Hanami, we put validations at the action level, since different use-cases require different validation rules.
+This also lets us ensure we have well-structured data further into our application.
 
 If you specify the `:type` option, the param will be coerced.
 
@@ -205,8 +205,8 @@ class Signup < Hanami::Action
   params do
     required(:first_name).filled(:str?)
     required(:last_name).filled(:str?)
-    required(:email).filled?(:str?, format?: /\A.+@.+\z/)
-    required(:password).filled(:str?).confirmation
+    required(:email).filled(:str?, format?: /\A.+@.+\z/)
+    required(:password).filled(:str?)
     required(:terms_of_service).filled(:bool?)
     required(:age).filled(:int?, included_in?: 18..99)
     optional(:avatar).filled(size?: 1..(MEGABYTE * 3))
@@ -217,6 +217,16 @@ class Signup < Hanami::Action
     # ...
   end
 end
+
+Signup.new.call({}).status # => 400
+Signup.new.call({
+                    first_name: "Jericho",
+                    last_name: "Jackson",
+                    email: "actionjackson@example.com",
+                    password: "password",
+                    terms_of_service: true,
+                    age: 40,
+                }).status # => 200
 ```
 
 ### Response
