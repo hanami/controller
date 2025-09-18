@@ -597,32 +597,39 @@ You can easily set the Cache-Control header for your actions:
 
 ```ruby
 require "hanami/controller"
-require "hanami/action/cache"
 
-class HttpCacheController < Hanami::Action
+class HttpCache < Hanami::Action
   include Hanami::Action::Cache
-  cache_control :public, max_age: 600 # => Cache-Control: public, max-age=600
 
-  def handle(*)
+  cache_control :public, max_age: 600
+
+  def handle(request, response)
     # ...
   end
 end
+
+response = HttpCache.new.call({})
+puts response.headers.fetch("Cache-Control") # => "public, max-age=600"
 ```
 
 Expires header can be specified using `expires` method:
 
 ```ruby
 require "hanami/controller"
-require "hanami/action/cache"
 
-class HttpCacheController < Hanami::Action
+class HttpCache < Hanami::Action
   include Hanami::Action::Cache
-  expires 60, :public, max_age: 600 # => Expires: Sun, 03 Aug 2014 17:47:02 GMT, Cache-Control: public, max-age=600
 
-  def handle(*)
+  expires 600, :public
+
+  def handle(request, response)
     # ...
   end
 end
+
+response = HttpCache.new.call({})
+p response.headers.fetch("Expires") # => "Thu, 18 Sep 2025 21:30:00 GMT" (600 seconds from `Time.now`)
+p response.headers.fetch("Cache-Control") # => "public, max-age=600"
 ```
 
 ### Conditional Get
