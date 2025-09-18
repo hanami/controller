@@ -261,24 +261,25 @@ You can call `#to_a` (or `#finish)` on the response to get that Rack representat
 
 ### Exposures
 
-In case you need to send data from the action to other layers of your application, you can use exposures.
-By default, an action exposes the received params.
+In case you need to send data from the action to other layers of your application, you can use exposures on the response.
+By default, an action exposes the request's params and the format.
 
 ```ruby
+Article = Data.define(:id)
+
 class Show < Hanami::Action
   def handle(request, response)
-    response[:article] = ArticleRepo.new.find(request.params[:id])
+    response[:article] = Article.new(id: request.params[:id])
   end
 end
 
-action   = Show.new(configuration: configuration)
+action   = Show.new
 response = action.call(id: 23)
 
-article = response[:article]
-article.class # => Article
-article.id # => 23
+puts response[:article].class # => Article
+puts response[:article].id # => 23
 
-response.exposures.keys # => [:params, :article]
+response.exposures.keys # => [:article, :params, :format]
 ```
 
 ### Callbacks
