@@ -393,7 +393,7 @@ When `#halt` is used with a valid HTTP code, it stops the execution and sets the
 class Show < Hanami::Action
   before :authenticate!
 
-  def handle(*)
+  def handle(request, response)
     # ...
   end
 
@@ -402,15 +402,23 @@ class Show < Hanami::Action
   def authenticate!
     halt 401 unless authenticated?
   end
+
+  def authenticated?
+    false # to demonstrate the use of `#halt`
+  end
 end
 
-action = Show.new(configuration: configuration)
-action.call({}) # => [401, {}, ["Unauthorized"]]
+action = Show.new
+response = action.call({})
+p response.status  #=> 401
+p response.body # => ["Unauthorized"]
 ```
 
-Alternatively, you can specify a custom message.
+Alternatively, you can specify a custom message to be used in the response body:
 
 ```ruby
+class DroidRepo; def find(id) = nil; end;
+
 class Show < Hanami::Action
   def handle(request, response)
     response[:droid] = DroidRepo.new.find(request.params[:id]) or not_found
@@ -423,8 +431,10 @@ class Show < Hanami::Action
   end
 end
 
-action = Show.new(configuration: configuration)
-action.call({}) # => [404, {}, ["This is not the droid you're looking for"]]
+action = Show.new
+response = action.call({})
+p response.status # => 404
+p response.body # => ["This is not the droid you're looking for"]
 ```
 
 ### Cookies
