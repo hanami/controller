@@ -442,106 +442,102 @@ p response.body # => ["This is not the droid you're looking for"]
 You can read the original cookies sent from the HTTP client via `request.cookies`.
 If you want to send cookies in the response, use `response.cookies`.
 
-They are read as a Hash from Rack env:
+They are read as a Hash on the request (using String keys), coming from the Rack env:
 
 ```ruby
 require "hanami/controller"
-require "hanami/action/cookies"
 
 class ReadCookiesFromRackEnv < Hanami::Action
-  include Hanami::Action::Cookies
 
-  def handle(request, *)
+  def handle(request, response)
     # ...
-    request.cookies[:foo] # => "bar"
+    puts request.cookies["foo"] # => "bar"
   end
 end
 
-action = ReadCookiesFromRackEnv.new(configuration: configuration)
+action = ReadCookiesFromRackEnv.new
 action.call({"HTTP_COOKIE" => "foo=bar"})
 ```
 
-They are set like a Hash:
+They are set like a Hash, once `include Hanami::Action::Cookies` is used:
 
 ```ruby
 require "hanami/controller"
-require "hanami/action/cookies"
 
 class SetCookies < Hanami::Action
   include Hanami::Action::Cookies
 
-  def handle(*, response)
+  def handle(request, response)
     # ...
-    response.cookies[:foo] = "bar"
+    response.cookies["foo"] = "bar"
   end
 end
 
-action = SetCookies.new(configuration: configuration)
-action.call({}) # => [200, {"Set-Cookie" => "foo=bar"}, "..."]
+action = SetCookies.new
+action.call({}).headers.fetch("Set-Cookie") # "foo=bar"
 ```
 
 They are removed by setting their value to `nil`:
 
 ```ruby
 require "hanami/controller"
-require "hanami/action/cookies"
 
 class RemoveCookies < Hanami::Action
   include Hanami::Action::Cookies
 
-  def handle(*, response)
+  def handle(request, response)
     # ...
     response.cookies[:foo] = nil
   end
 end
 
-action = RemoveCookies.new(configuration: configuration)
-action.call({}) # => [200, {"Set-Cookie" => "foo=; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 -0000"}, "..."]
+action = RemoveCookies.new
+action.call({}).headers.fetch("Set-Cookie") # => "foo=; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 -0000"
 ```
 
 Default values can be set in configuration, but overridden case by case.
 
 ```ruby
 require "hanami/controller"
-require "hanami/action/cookies"
-
-configuration = Hanami::Controller::Configuration.new do |config|
-  config.cookies(max_age: 300) # 5 minutes
-end
 
 class SetCookies < Hanami::Action
   include Hanami::Action::Cookies
 
-  def handle(*, response)
+  config.cookies = { max_age: 300 }
+
+  def handle(request, response)
     # ...
-    response.cookies[:foo] = { value: "bar", max_age: 100 }
+    response.cookies[:foo] = { value: "bar" }
+    response.cookies[:baz] = { value: "boo", max_age: 100 }
   end
 end
 
-action = SetCookies.new(configuration: configuration)
-action.call({}) # => [200, {"Set-Cookie" => "foo=bar; max-age=100;"}, "..."]
+action = SetCookies.new
+p action.call({}).headers.fetch("Set-Cookie").lines
+# => ["foo=bar; max-age=300\n",
+#     "baz=boo; max-age=100; expires=Thu, 18 Sep 2025 18:14:18 GMT"]
 ```
 
 ### Sessions
 
-Actions have builtin support for Rack sessions.
-Similarly to cookies, you can read the session sent by the HTTP client via
-`request.session`, and also manipulate it via `response.session`.
+Actions have built-in support for Rack sessions.
+Similarly to cookies, you can read the session sent by the HTTP client via `request.session`,
+and manipulate it via `response.session`.
 
 ```ruby
 require "hanami/controller"
-require "hanami/action/session"
 
 class ReadSessionFromRackEnv < Hanami::Action
   include Hanami::Action::Session
+    config.session = { expire_after: 3600 }
 
   def handle(request, *)
     # ...
-    request.session[:age] # => "35"
+    puts request.session[:age] # => "35"
   end
 end
 
-action = ReadSessionFromRackEnv.new(configuration: configuration)
+action = ReadSessionFromRackEnv.new
 action.call({ "rack.session" => { "age" => "35" } })
 ```
 
@@ -554,14 +550,16 @@ require "hanami/action/session"
 class SetSession < Hanami::Action
   include Hanami::Action::Session
 
-  def handle(*, response)
+  def handle(request, response)
     # ...
     response.session[:age] = 31
   end
 end
 
-action = SetSession.new(configuration: configuration)
-action.call({}) # => [200, {"Set-Cookie"=>"rack.session=..."}, "..."]
+action = SetSession.new
+response = action.call({})
+response.session # => { age: 31 }
+# Also available via response.env["rack.session"]
 ```
 
 Values can be removed like a Hash:
@@ -573,14 +571,14 @@ require "hanami/action/session"
 class RemoveSession < Hanami::Action
   include Hanami::Action::Session
 
-  def handle(*, response)
+  def handle(request, response)
     # ...
     response.session[:age] = nil
   end
 end
 
-action = RemoveSession.new(configuration: configuration)
-action.call({}) # => [200, {"Set-Cookie"=>"rack.session=..."}, "..."] it removes that value from the session
+action = RemoveSession.new
+action.call({}).session # => {age: nil}
 ```
 
 While Hanami::Controller supports sessions natively, it's **session store agnostic**.
@@ -588,7 +586,7 @@ You have to specify the session store in your Rack middleware configuration (eg 
 
 ```ruby
 use Rack::Session::Cookie, secret: SecureRandom.hex(64)
-run Show.new(configuration: configuration)
+run Show.new
 ```
 
 ### HTTP Cache
