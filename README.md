@@ -741,81 +741,108 @@ p response.location # => "/articles/23"
 `Hanami::Action` automatically sets the `Content-Type` header, according to the request.
 
 ```ruby
-class Show < Hanami::Action
-  def handle(*)
+require "hanami/controller"
+
+class ResponseFormatAction < Hanami::Action
+  def handle(request, response)
   end
 end
 
-action = Show.new(configuration: configuration)
+action = ResponseFormatAction.new
 
-response = action.call({ "HTTP_ACCEPT" => "*/*" }) # Content-Type "application/octet-stream"
-response.format                                    # :all
+first_response = action.call({ "HTTP_ACCEPT" => "*/*" })
+p first_response.format        # :all
+p first_response.content_type  # "application/octet-stream; charset=utf-8"
 
-response = action.call({ "HTTP_ACCEPT" => "text/html" }) # Content-Type "text/html"
-response.format                                          # :html
+second_response = action.call({ "HTTP_ACCEPT" => "text/html" })
+p second_response.format       # :html
+p second_response.content_type # "text/html; charset=utf-8"
 ```
 
 However, you can force this value:
 
 ```ruby
-class Show < Hanami::Action
-  def handle(*, response)
+require "hanami/controller"
+
+class ForcedFormatAction < Hanami::Action
+  def handle(request, response)
     # ...
     response.format = :json
   end
 end
 
-action = Show.new(configuration: configuration)
+action = ForcedFormatAction.new
 
-response = action.call({ "HTTP_ACCEPT" => "*/*" }) # Content-Type "application/json"
-response.format                                    # :json
+first_response = action.call({ "HTTP_ACCEPT" => "*/*" })
+p first_response.format       # :json
+p first_response.content_type # "application/json; charset=utf-8"
 
-response = action.call({ "HTTP_ACCEPT" => "text/html" }) # Content-Type "application/json"
-response.format                                          # :json
+second_response = action.call({ "HTTP_ACCEPT" => "text/html" })
+p second_response.format       # :json
+p second_response.content_type # "application/json; charset=utf-8"
 ```
 
 You can restrict the accepted MIME types:
 
 ```ruby
-class Show < Hanami::Action
-  accept :html, :json
+require "hanami/controller"
 
-  def handle(*)
+class RestrictedTypesActionShow < Hanami::Action
+  format :html, :json
+
+  def handle(request, response)
     # ...
   end
 end
 
-# When called with "*/*"              => 200
-# When called with "text/html"        => 200
-# When called with "application/json" => 200
-# When called with "application/xml"  => 415
+
+action = RestrictedTypesActionShow.new
+
+any_format_response = action.call({ "HTTP_ACCEPT" => "*/*" })
+p any_format_response.status # => 200
+p any_format_response.format # :html (since it was listed first)
+
+html_response = action.call({ "HTTP_ACCEPT" => "text/html" })
+p html_response.status # => 200
+p html_response.format # :html
+
+json_response = action.call({ "HTTP_ACCEPT" => "application/json" })
+p json_response.status # => 200
+p json_response.format # :json
+
+xml_response = action.call({ "HTTP_ACCEPT" => "application/xml" })
+p xml_response.status # => 406 (Not Acceptable)
+
 ```
 
 You can check if the requested MIME type is accepted by the client.
 
 ```ruby
-class Show < Hanami::Action
+require "hanami/controller"
+
+class CheckAcceptsAction < Hanami::Action
   def handle(request, response)
     # ...
     # request.env["HTTP_ACCEPT"] # => "text/html,application/xhtml+xml,application/xml;q=0.9"
 
-    request.accept?("text/html")        # => true
-    request.accept?("application/xml")  # => true
-    request.accept?("application/json") # => false
-    response.format                     # :html
-
-
-    # request.env["HTTP_ACCEPT"] # => "*/*"
-
-    request.accept?("text/html")        # => true
-    request.accept?("application/xml")  # => true
-    request.accept?("application/json") # => true
-    response.format                     # :html
+    puts "Accepts header:           #{request.env["HTTP_ACCEPT"]}"
+    puts "Accepts text/html?        #{request.accept?("text/html")}"
+    puts "Accepts application/xml?  #{request.accept?("application/xml")}"
+    puts "Accepts application/json? #{request.accept?("application/json")}"
+    puts "Response format:          #{response.format.inspect}"
+    puts
   end
 end
+
+action = CheckAcceptsAction.new
+
+action.call({ "HTTP_ACCEPT" => "text/html" })
+action.call({ "HTTP_ACCEPT" => "text/html,application/xhtml+xml,application/xml;q=0.9" })
+action.call({ "HTTP_ACCEPT" => "application/json" })
+action.call({ "HTTP_ACCEPT" => "*/*" })
 ```
 
-Hanami::Controller is shipped with an extensive list of the most common MIME types.
+Hanami::Controller shipped with an extensive list of the most common MIME types.
 Also, you can register your own:
 
 ```ruby
