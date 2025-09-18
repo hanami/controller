@@ -55,7 +55,7 @@ They are the endpoints that respond to incoming HTTP requests.
 ```ruby
 class Show < Hanami::Action
   def handle(request, response)
-    response[:article] = ArticleRepository.new.find(request.params[:id])
+    response[:article] = ArticleRepo.new.find(request.params[:id])
   end
 end
 ```
@@ -68,28 +68,28 @@ To provide custom behaviour when your actions are being called, you can implemen
 **An action is an object** and **you have full control over it**.
 In other words, you have the freedom to instantiate, inject dependencies and test it, both at the unit and integration level.
 
-In the example below, the default repository is `ArticleRepository`. During a unit test we can inject a stubbed version, and invoke `#call` with the params.
-__We're avoiding HTTP calls__, we're also going to avoid hitting the database (it depends on the stubbed repository), __we're just dealing with message passing__.
+In the example below, the default repo is `ArticleRepo`. During a unit test we can inject a stubbed version, and invoke `#call` with the params.
+__We're avoiding HTTP calls__, we're also going to avoid hitting the database (it depends on the stubbed repo), __we're just dealing with message passing__.
 Imagine how **fast** the unit test could be.
 
 ```ruby
 class Show < Hanami::Action
-  def initialize(configuration:, repository: ArticleRepository.new)
-    @repository = repository
+  def initialize(configuration:, repo: ArticleRepo.new)
+    @repo = repo
     super(configuration: configuration)
   end
 
   def handle(request, response)
-    response[:article] = repository.find(request.params[:id])
+    response[:article] = repo.find(request.params[:id])
   end
 
   private
 
-  attr_reader :repository
+  attr_reader :repo
 end
 
 configuration = Hanami::Controller::Configuration.new
-action = Show.new(configuration: configuration, repository: ArticleRepository.new)
+action = Show.new(configuration: configuration, repo: ArticleRepo.new)
 action.call(id: 23)
 ```
 
@@ -240,7 +240,7 @@ By default, an action exposes the received params.
 ```ruby
 class Show < Hanami::Action
   def handle(request, response)
-    response[:article] = ArticleRepository.new.find(request.params[:id])
+    response[:article] = ArticleRepo.new.find(request.params[:id])
   end
 end
 
@@ -274,7 +274,7 @@ class Show < Hanami::Action
 
   # `request` and `response` in the method signature is optional
   def set_article(request, response)
-    response[:article] = ArticleRepository.new.find(request.params[:id])
+    response[:article] = ArticleRepo.new.find(request.params[:id])
   end
 end
 ```
@@ -284,7 +284,7 @@ Callbacks can also be expressed as anonymous lambdas:
 ```ruby
 class Show < Hanami::Action
   before { ... } # do some authentication stuff
-  before { |request, response| response[:article] = ArticleRepository.new.find(request.params[:id]) }
+  before { |request, response| response[:article] = ArticleRepo.new.find(request.params[:id]) }
 
   def handle(*)
   end
@@ -434,7 +434,7 @@ Alternatively, you can specify a custom message.
 ```ruby
 class Show < Hanami::Action
   def handle(request, response)
-    response[:droid] = DroidRepository.new.find(request.params[:id]) or not_found
+    response[:droid] = DroidRepo.new.find(request.params[:id]) or not_found
   end
 
   private
