@@ -634,47 +634,71 @@ p response.headers.fetch("Cache-Control") # => "public, max-age=600"
 
 ### Conditional Get
 
-According to HTTP specification, conditional GETs provide a way for web servers to inform clients that the response to a GET request hasn't change since the last request returning a `304 (Not Modified)` response.
+According to the HTTP specification,
+a conditional GET allows a client to ask a server to send a representation of the data only if it has changed.
+If the resource hasn’t changed,
+the server responds with *304 Not Modified*;
+otherwise, it returns the full representation with *200 OK*.
 
-Passing the `HTTP_IF_NONE_MATCH` (content identifier) or `HTTP_IF_MODIFIED_SINCE` (timestamp) headers allows the web server define if the client has a fresh version of a given resource.
+Passing the 'If-None-Match' header (with ETag content identifier)
+or 'If-Modified-Since' header (with a timestamp) headers
+allows the server to determine whether the client already has a fresh copy of the resource.
+Note that they way to use them in Rack is via the `"HTTP_IF_NONE_MATCH"` and `"HTTP_IF_MODIFIED_SINCE"` env keys on the request.
 
-You can easily take advantage of Conditional Get using `#fresh` method:
-
-```ruby
-require "hanami/controller"
-require "hanami/action/cache"
-
-class ConditionalGetController < Hanami::Action
-  include Hanami::Action::Cache
-
-  def handle(*)
-    # ...
-    fresh etag: resource.cache_key
-    # => halt 304 with header IfNoneMatch = resource.cache_key
-  end
-end
-```
-
-If `resource.cache_key` is equal to `IfNoneMatch` header, then hanami will `halt 304`.
-
-An alternative to hashing based check, is the time based check:
+You can easily take advantage of Conditional Get using `#fresh` method.
 
 ```ruby
 require "hanami/controller"
 require "hanami/action/cache"
 
-class ConditionalGetController < Hanami::Action
+Resource = Data.define(:cache_key)
+
+class ConditionalGetEtag < Hanami::Action
   include Hanami::Action::Cache
 
-  def handle(*)
+  def handle(request, response)
     # ...
-    fresh last_modified: resource.updated_at
-    # => halt 304 with header IfModifiedSince = resource.updated_at.httpdate
+    resource = Resource.new(cache_key: "abc123")
+    response.fresh(etag: resource.cache_key)
+    # => `halt 304` when value of header 'If-None-Match' is same as the `etag:` value
   end
 end
+
+first_response = ConditionalGetEtag.new.call({})
+p first_response.status # => 200
+
+second_response = ConditionalGetEtag.new.call({"HTTP_IF_NONE_MATCH" => "abc123"})
+p second_response.status # => 304
 ```
 
-If `resource.updated_at` is equal to `IfModifiedSince` header, then hanami will `halt 304`.
+An alternative to hash-based freshness check, is a time-based check with 'If-Modified-Since'.
+If the resource hasn’t been modified since the time specified in the `If-Modified-Since` header,
+the server responds with *304 Not Modified*.
+
+```ruby
+require "hanami/controller"
+require "hanami/action/cache"
+
+Resource = Data.define(:updated_at)
+
+class ConditionalGetTime < Hanami::Action
+  include Hanami::Action::Cache
+
+  def handle(request, response)
+    # ...
+    resource = Resource.new(updated_at: Time.now - 60) # i.e. last updated 1 minute ago
+    response.fresh(last_modified: resource.updated_at)
+    # => `halt 304` when value of header 'If-Modified-Since' is after the `last_modified:` value
+  end
+end
+
+first_response = ConditionalGetTime.new.call({})
+p first_response.status # => 200
+
+second_response = ConditionalGetTime.new.call({"HTTP_IF_MODIFIED_SINCE" => Time.now.httpdate})
+p second_response.status # => 304
+```
+
 
 ### Redirect
 
