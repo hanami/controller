@@ -231,13 +231,13 @@ Signup.new.call({
 
 ### Response
 
-The output of `#call` is a `Hanami::Action::Response`:
+The output of `#call` is a `Hanami::Action::Response` (which is a subclass of Rack::Response):
 
 ```ruby
 class Show < Hanami::Action
 end
 
-action = Show.new(configuration: configuration)
+action = Show.new
 action.call({}) # => #<Hanami::Action::Response:0x00007fe8be968418 @status=200 ...>
 ```
 
@@ -245,7 +245,7 @@ This is the same `response` object passed to `#handle`, where you can use its ac
 
 ```ruby
 class Show < Hanami::Action
-  def handle(*, response)
+  def handle(request, response)
     response.status  = 201
     response.body    = "Hi!"
     response.headers.merge!("X-Custom" => "OK")
@@ -253,8 +253,11 @@ class Show < Hanami::Action
 end
 
 action = Show.new
-action.call({}) # => [201, { "X-Custom" => "OK" }, ["Hi!"]]
+action.call({}) # => [201, { "X-Custom" => "OK", ... }, ["Hi!"]]
 ```
+
+The Rack API requires response to be an Array with 3 elements: status, headers, and body.
+You can call `#to_a` (or `#finish)` on the response to get that Rack representation.
 
 ### Exposures
 
