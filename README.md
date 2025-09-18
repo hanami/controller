@@ -842,35 +842,48 @@ action.call({ "HTTP_ACCEPT" => "application/json" })
 action.call({ "HTTP_ACCEPT" => "*/*" })
 ```
 
-Hanami::Controller shipped with an extensive list of the most common MIME types.
-Also, you can register your own:
+#### Custom Formats
+
+Hanami::Controller ships with an extensive list of the most common MIME types.
+You can also register your own:
 
 ```ruby
-configuration = Hanami::Controller::Configuration.new do |config|
-  config.format custom: "application/custom"
-end
+require "hanami/controller"
 
-class Index < Hanami::Action
+class CustomFormatAcceptAction < Hanami::Action
+  config.formats.add :custom, "application/custom"
+
   def handle(*)
   end
 end
 
-action = Index.new(configuration: configuration)
+action = CustomFormatAcceptAction.new
 
-response = action.call({ "HTTP_ACCEPT" => "application/custom" }) # => Content-Type "application/custom"
-response.format                                                   # => :custom
+response = action.call({ "HTTP_ACCEPT" => "application/custom" })
+p response.format        # => :custom
+p response.content_type  # => "application/custom; charset=utf-8"
+```
 
-class Show < Hanami::Action
-  def handle(*, response)
+
+You can also manually set the format on the response:
+
+```ruby
+require "hanami/controller"
+
+class ManualFormatAction < Hanami::Action
+  config.formats.add :custom, "application/custom"
+
+  def handle(request, response)
     # ...
     response.format = :custom
   end
 end
 
-action = Show.new(configuration: configuration)
+action = ManualFormatAction.new
 
-response = action.call({ "HTTP_ACCEPT" => "*/*" }) # => Content-Type "application/custom"
-response.format                                    # => :custom
+response = action.call({ "HTTP_ACCEPT" => "*/*" })
+p response.format       # => :custom
+p response.content_type # => "application/custom; charset=utf-8"
 ```
 
 ### Streamed Responses
