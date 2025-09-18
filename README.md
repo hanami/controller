@@ -95,43 +95,59 @@ action.call(id: 23)
 ### Params
 
 The request params are part of the request passed as an argument to the `#handle` method.
-If routed with *Hanami::Router*, it extracts the relevant bits from the Rack `env` (e.g. the requested `:id`).
-Otherwise everything is passed as is: the full Rack `env` in production, and the given `Hash` for unit tests.
 
-With `Hanami::Router`:
+There are three scenarios for how params are extracted:
+
+**With Hanami::Router:**
+When routed with *Hanami::Router*, it extracts and merges route parameters, query string parameters, and form parameters (with router params taking precedence).
 
 ```ruby
 class Show < Hanami::Action
-  def handle(request, *)
+  def handle(request, response)
     # ...
-    puts request.params # => { id: 23 } extracted from Rack env
+    puts request.params.to_h # => {id: 23, name: "john", age: "25"}
   end
 end
+
+# When called via router with route "/users/:id" and query string "?name=john&age=25"
+Show.new.call({
+  "router.params" => {id: 23},
+  "QUERY_STRING" => "name=john&age=25"
+})
 ```
 
-Standalone:
+**With Rack environment:**
+When used in a Rack application (but without Hanami::Router), it extracts query string and form parameters from the request.
 
 ```ruby
 class Show < Hanami::Action
-  def handle(request, *)
+  def handle(request, response)
     # ...
-    puts request.params # => { :"rack.version"=>[1, 2], :"rack.input"=>#<StringIO:0x007fa563463948>, ... }
+    puts request.params.to_h # => {name: "john", age: "25"} from query/form
   end
 end
+
+# When called with Rack env containing rack.input
+Show.new.call({
+  "rack.input" => StringIO.new("name=john&age=25"),
+  "CONTENT_TYPE" => "application/x-www-form-urlencoded"
+})
 ```
 
-Unit Testing:
+**Standalone (testing):**
+When called directly with a hash (typical in unit tests), it returns the given hash as-is.
 
 ```ruby
 class Show < Hanami::Action
-  def handle(request, *)
+  def handle(request, response)
     # ...
-    puts request.params # => { id: 23, key: "value" } passed as it is from testing
+    puts request.params.to_h # => {id: 23, name: "test"}
   end
 end
 
-action   = Show.new(configuration: configuration)
-response = action.call(id: 23, key: "value")
+# Direct call with hash for testing
+action = Show.new
+response = action.call(id: 23, name: "test")
 ```
 
 #### Whitelisting
