@@ -705,29 +705,35 @@ p second_response.status # => 304
 If you need to redirect the client to another resource, use `response.redirect_to`:
 
 ```ruby
-class Create < Hanami::Action
-  def handle(*, response)
+require "hanami/controller"
+
+class RedirectAction < Hanami::Action
+  def handle(request, response)
     # ...
     response.redirect_to "http://example.com/articles/23"
   end
 end
 
-action = Create.new(configuration: configuration)
-action.call({ article: { title: "Hello" }}) # => [302, {"Location" => "/articles/23"}, ""]
+response = RedirectAction.new.call({})
+p response.status # => 302
+p response.location # => "http://example.com/articles/23" (same as `response.headers["Location"]`)
 ```
 
 You can also redirect with a custom status code:
 
 ```ruby
-class Create < Hanami::Action
-  def handle(*, response)
+require "hanami/controller"
+
+class PermanentRedirectAction < Hanami::Action
+  def handle(request, response)
     # ...
-    response.redirect_to "http://example.com/articles/23", status: 301
+    response.redirect_to "/articles/23", status: 301
   end
 end
 
-action = Create.new(configuration: configuration)
-action.call({ article: { title: "Hello" }}) # => [301, {"Location" => "/articles/23"}, ""]
+response = PermanentRedirectAction.new.call({})
+p response.status # => 301
+p response.location # => "/articles/23"
 ```
 
 ### MIME Types
