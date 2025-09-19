@@ -886,38 +886,10 @@ p response.format       # => :custom
 p response.content_type # => "application/custom; charset=utf-8"
 ```
 
-### Streamed Responses
-
-When the work to be done by the server takes time, it may be a good idea to stream your response. Here's an example of a streamed CSV.
-
-```ruby
-configuration = Hanami::Controller::Configuration.new do |config|
-  config.format csv: 'text/csv'
-end
-
-class Csv < Hanami::Action
-  def handle(*, response)
-    response.format = :csv
-    response.body = Enumerator.new do |yielder|
-      yielder << csv_header
-
-      # Expensive operation is streamed as each line becomes available
-      csv_body.each_line do |line|
-        yielder << line
-      end
-    end
-  end
-end
-```
-
-Note:
-* In development, Hanami' code reloading needs to be disabled for streaming to work. This is because `Shotgun` interferes with the streaming action. You can disable it like this `hanami server --code-reloading=false`
-* Streaming does not work with WEBrick as it buffers its response. We recommend using `puma`, though you may find success with other servers
-
 ### No rendering, please
 
-Hanami::Controller is designed to be a pure HTTP endpoint, rendering belongs to other layers of MVC.
-You can set the body directly (see [response](#response)), or use [Hanami::View](https://github.com/hanami/view).
+Hanami::Controller is designed to be a pure HTTP endpoint, rendering belongs to the View layer.
+You can set the body directly (see [response](#response)), use [Hanami::View](https://github.com/hanami/view).
 
 ### Controllers
 
