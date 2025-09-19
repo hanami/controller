@@ -186,7 +186,7 @@ class Signup < Hanami::Action
 
   def handle(request, *)
     # :first_name is allowed, but not :admin is not
-    p request.params[:first_name]     # => "Jericho"
+    p request.params[:first_name]     # => "Action"
     p request.params[:admin]          # => nil
 
     # :address's :line_one is allowed, but :line_two is not
@@ -195,7 +195,7 @@ class Signup < Hanami::Action
   end
 end
 
-Signup.new.call({first_name: "Jericho", admin: true, address: { line_one: "123 Motor City Blvd" }})
+Signup.new.call({first_name: "Action", admin: true, address: { line_one: "123 Motor City Blvd" }})
 ```
 
 #### Validations & Coercions
@@ -231,7 +231,7 @@ end
 
 SignupValidateParams.new.call({}).status # => 400
 SignupValidateParams.new.call({
-  first_name: "Jericho",
+  first_name: "Action",
   last_name: "Jackson",
   email: "actionjackson@example.com",
   password: "password",
