@@ -303,7 +303,7 @@ They are useful for shared logic like authentication checks.
 require "hanami/controller"
 
 Article = Data.define(:title)
-ArticleRepo = Class.new { def find(id) = Article.new(title: "Why Hanami? Reason ##{id}") }
+class ArticleRepo; def find(id) = Article.new(title: "Why Hanami? Reason ##{id}"); end
 
 Data.define(:title)
 class BeforeCallbackMethodName < Hanami::Action
@@ -335,7 +335,7 @@ Callbacks can also be expressed as anonymous lambdas:
 require "hanami/controller"
 
 Article = Data.define(:title)
-ArticleRepo = Class.new { def find(id) = Article.new(title: "Why Hanami? Reason ##{id}") }
+class ArticleRepo; def find(id) = Article.new(title: "Why Hanami? Reason ##{id}"); end
 
 class BeforeCallbackLambda < Hanami::Action
   before { } # do some authentication stuff
@@ -379,7 +379,7 @@ You can map a specific raised exception to a different HTTP status.
 ```ruby
 require "hanami/controller"
 
-RecordNotFound = Class.new(StandardError)
+clsss RecordNotFound < StandardError; end
 
 class HandleCustomException < Hanami::Action
   handle_exception RecordNotFound => 404
