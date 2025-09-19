@@ -946,30 +946,7 @@ module Articles
   end
 end
 
-Articles::Index.new(configuration: configuration).call({})
-```
-
-### Hanami::Router integration
-
-```ruby
-require "hanami/router"
-require "hanami/controller"
-
-module Web
-  module Controllers
-    module Books
-      class Show < Hanami::Action
-        def handle(*)
-        end
-      end
-    end
-  end
-end
-
-configuration = Hanami::Controller::Configuration.new
-router = Hanami::Router.new(configuration: configuration, namespace: Web::Controllers) do
-  get "/books/:id", "books#show"
-end
+Articles::Index.new().call({})
 ```
 
 ### Rack integration
