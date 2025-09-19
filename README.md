@@ -955,36 +955,61 @@ Hanami::Controller is compatible with Rack. If you need to use any Rack middlewa
 
 ### Configuration
 
-Hanami::Controller can be configured via `Hanami::Controller::Configuration`.
-It supports a few options:
+Hanami::Action can be configured via `config` on the action class.
+It supports the following options:
 
 ```ruby
 require "hanami/controller"
 
-configuration = Hanami::Controller::Configuration.new do |config|
+class MyAction < Hanami::Action
   # If the given exception is raised, return that HTTP status
   # It can be used multiple times
   # Argument: hash, empty by default
   #
-  config.handle_exception ArgumentError => 404
+  config.handle_exception ArgumentError => 400
 
-  # Register a format to MIME type mapping
-  # Argument: hash, key: format symbol, value: MIME type string, empty by default
+  # Register custom formats with MIME type mappings
+  # Use formats.add to register new format/MIME type pairs
   #
-  config.format custom: "application/custom"
+  config.formats.add :custom, "application/custom"
 
-  # Define a default format to set as `Content-Type` header for response,
-  # unless otherwise specified.
-  # If not defined here, it will return Rack's default: `application/octet-stream`
-  # Argument: symbol, it should be already known. defaults to `nil`
+  # Set accepted formats for this action
+  # Argument: format symbols, defaults to all formats
   #
-  config.default_response_format = :html
+  config.format :html, :json
 
   # Define a default charset to return in the `Content-Type` response header
   # If not defined here, it returns `utf-8`
   # Argument: string, defaults to `nil`
   #
   config.default_charset = "koi8-r"
+
+  # Set default headers for all responses
+  # Argument: hash, empty by default
+  #
+  config.default_headers = {"X-Frame-Options" => "DENY"}
+
+  # Set default cookie options for all responses
+  # Argument: hash, empty by default
+  #
+  config.cookies = {
+    domain: "hanamirb.org",
+    path: "/controller",
+    secure: true,
+    httponly: true
+  }
+
+  # Set the root directory for the action (for file downloads)
+  # Defaults to current working directory
+  # Argument: string path
+  #
+  config.root_directory = "/path/to/root"
+
+  # Set the public directory path (relative to root directory)
+  # Used for file downloads, defaults to "public"
+  # Argument: string path
+  #
+  config.public_directory = "assets"
 end
 ```
 
