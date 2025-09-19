@@ -53,11 +53,16 @@ The core of this framework are the actions.
 They are the endpoints that respond to incoming HTTP requests.
 
 ```ruby
-class Show < Hanami::Action
+require "hanami/controller"
+
+class HelloWorld < Hanami::Action
   def handle(request, response)
-    response[:article] = ArticleRepo.new.find(request.params[:id])
+    response.body = "Hello World!"
   end
 end
+
+response = HelloWorld.new.call({})
+p response.body # => ["Hello World!"]
 ```
 
 `Hanami::Action` follows the Hanami philosophy: a single purpose object with a minimal interface.
@@ -73,7 +78,7 @@ __We're avoiding HTTP calls__, we're also going to avoid hitting the database (i
 Imagine how **fast** the unit test could be.
 
 ```ruby
-class Show < Hanami::Action
+class ShowArticle < Hanami::Action
   def initialize(repo: ArticleRepo.new, **)
     @repo = repo
     super(**)
@@ -88,7 +93,7 @@ class Show < Hanami::Action
   attr_reader :repo
 end
 
-action = Show.new(repo: ArticleRepo.new)
+action = ShowArticle.new(repo: ArticleRepo.new)
 action.call(id: 23)
 ```
 
@@ -102,15 +107,17 @@ There are three scenarios for how params are extracted:
 When routed with *Hanami::Router*, it extracts and merges route parameters, query string parameters, and form parameters (with router params taking precedence).
 
 ```ruby
-class Show < Hanami::Action
+require "hanami/controller"
+
+class InspectParams < Hanami::Action
   def handle(request, response)
     # ...
-    puts request.params.to_h # => {id: 23, name: "john", age: "25"}
+    p request.params.to_h # => {id: 23, name: "john", age: "25"}
   end
 end
 
 # When called via router with route "/users/:id" and query string "?name=john&age=25"
-Show.new.call({
+InspectParams.new.call({
   "router.params" => {id: 23},
   "QUERY_STRING" => "name=john&age=25"
 })
@@ -120,15 +127,17 @@ Show.new.call({
 When used in a Rack application (but without Hanami::Router), it extracts query string and form parameters from the request.
 
 ```ruby
-class Show < Hanami::Action
+require "hanami/controller"
+
+class ParamsFromRackInput < Hanami::Action
   def handle(request, response)
     # ...
-    puts request.params.to_h # => {name: "john", age: "25"} from query/form
+    p request.params.to_h # => {name: "john", age: "25"} from query/form
   end
 end
 
 # When called with Rack env containing rack.input
-Show.new.call({
+ParamsFromRackInput.new.call({
   "rack.input" => StringIO.new("name=john&age=25"),
   "CONTENT_TYPE" => "application/x-www-form-urlencoded"
 })
@@ -138,15 +147,17 @@ Show.new.call({
 When called directly with a hash (typical in unit tests), it returns the given hash as-is.
 
 ```ruby
-class Show < Hanami::Action
+require "hanami/controller"
+
+class ParamsFromHash < Hanami::Action
   def handle(request, response)
     # ...
-    puts request.params.to_h # => {id: 23, name: "test"}
+    p request.params.to_h # => {id: 23, name: "test"}
   end
 end
 
 # Direct call with hash for testing
-action = Show.new
+action = ParamsFromHash.new
 response = action.call(id: 23, name: "test")
 ```
 
@@ -175,12 +186,12 @@ class Signup < Hanami::Action
 
   def handle(request, *)
     # :first_name is allowed, but not :admin is not
-    puts request.params[:first_name]     # => "Jericho"
-    puts request.params[:admin]          # => nil
+    p request.params[:first_name]     # => "Jericho"
+    p request.params[:admin]          # => nil
 
     # :address's :line_one is allowed, but :line_two is not
-    puts request.params[:address][:line_one] # => "123 Motor City Blvd"
-    puts request.params[:address][:line_two] # => nil
+    p request.params[:address][:line_one] # => "123 Motor City Blvd"
+    p request.params[:address][:line_two] # => nil
   end
 end
 
@@ -199,7 +210,7 @@ If you specify the `:type` option, the param will be coerced.
 require "hanami/validations"
 require "hanami/controller"
 
-class Signup < Hanami::Action
+class SignupValidateParams < Hanami::Action
   MEGABYTE = 1024 ** 2
 
   params do
@@ -218,33 +229,35 @@ class Signup < Hanami::Action
   end
 end
 
-Signup.new.call({}).status # => 400
-Signup.new.call({
-                    first_name: "Jericho",
-                    last_name: "Jackson",
-                    email: "actionjackson@example.com",
-                    password: "password",
-                    terms_of_service: true,
-                    age: 40,
-                }).status # => 200
+SignupValidateParams.new.call({}).status # => 400
+SignupValidateParams.new.call({
+  first_name: "Jericho",
+  last_name: "Jackson",
+  email: "actionjackson@example.com",
+  password: "password",
+  terms_of_service: true,
+  age: 40,
+}).status # => 200
 ```
 
 ### Response
 
-The output of `#call` is a `Hanami::Action::Response` (which is a subclass of Rack::Response):
+The output of `#call` is a `Hanami::Action::Response` (which is a subclass of [Rack::Response](https://github.com/rack/rack/blob/main/lib/rack/response.rb)):
 
 ```ruby
-class Show < Hanami::Action
+require "hanami/controller"
+
+class ReturnsResponse < Hanami::Action
 end
 
-action = Show.new
-action.call({}) # => #<Hanami::Action::Response:0x00007fe8be968418 @status=200 ...>
+action = ReturnsResponse.new
+action.call({}).class # => Hanami::Action::Response
 ```
 
 This is the same `response` object passed to `#handle`, where you can use its accessors to explicitly set status, headers, and body:
 
 ```ruby
-class Show < Hanami::Action
+class ManiplateResponse < Hanami::Action
   def handle(request, response)
     response.status  = 201
     response.body    = "Hi!"
@@ -252,7 +265,7 @@ class Show < Hanami::Action
   end
 end
 
-action = Show.new
+action = ManipulateResponse.new
 action.call({}) # => [201, { "X-Custom" => "OK", ... }, ["Hi!"]]
 ```
 
@@ -267,19 +280,18 @@ By default, an action exposes the request's params and the format.
 ```ruby
 Article = Data.define(:id)
 
-class Show < Hanami::Action
+class ExposeArticle < Hanami::Action
   def handle(request, response)
     response[:article] = Article.new(id: request.params[:id])
   end
 end
 
-action   = Show.new
-response = action.call(id: 23)
+response = ExposeAticle.new.call(id: 23)
 
-puts response[:article].class # => Article
-puts response[:article].id # => 23
+p response[:article].class # => Article
+p response[:article].id # => 23
 
-response.exposures.keys # => [:article, :params, :format]
+p response.exposures.keys # => [:article, :params, :format]
 ```
 
 ### Callbacks
@@ -288,7 +300,13 @@ If you need to execute logic **before** or **after** `#handle` is invoked, you c
 They are useful for shared logic like authentication checks.
 
 ```ruby
-class Show < Hanami::Action
+require "hanami/controller"
+
+Article = Data.define(:title)
+ArticleRepo = Class.new { def find(id) = Article.new(title: "Why Hanami? Reason ##{id}") }
+
+Data.define(:title)
+class BeforeCallbackMethodName < Hanami::Action
   before :authenticate, :set_article
 
   def handle(request, response)
@@ -305,18 +323,31 @@ class Show < Hanami::Action
     response[:article] = ArticleRepo.new.find(request.params[:id])
   end
 end
+
+response = BeforeCallbackMethodName.new.call({id: 1000})
+
+p response[:article].title # => "Why Hanami? Reason #1000"
 ```
 
 Callbacks can also be expressed as anonymous lambdas:
 
 ```ruby
-class Show < Hanami::Action
-  before { ... } # do some authentication stuff
+require "hanami/controller"
+
+Article = Data.define(:title)
+ArticleRepo = Class.new { def find(id) = Article.new(title: "Why Hanami? Reason ##{id}") }
+
+class BeforeCallbackLambda < Hanami::Action
+  before { } # do some authentication stuff
   before { |request, response| response[:article] = ArticleRepo.new.find(request.params[:id]) }
 
   def handle(request, response)
+    p "Article: #{response[:article].title}"
   end
 end
+
+response = BeforeCallbackLambda.new.call({id: 1001})
+p response[:article].title # => "Why Hanami? Reason #1001"
 ```
 
 ### Exceptions management
@@ -327,7 +358,9 @@ You can write custom exception handling on per action or configuration basis.
 An exception handler can be a valid HTTP status code (eg. `500`, `401`), or a `Symbol` that represents an action method.
 
 ```ruby
-class Show < Hanami::Action
+require "hanami/controller"
+
+class HandleStandardError < Hanami::Action
   handle_exception StandardError => 500
 
   def handle(request, response)
@@ -335,7 +368,7 @@ class Show < Hanami::Action
   end
 end
 
-action = Show.new
+action = HandleStandardError.new
 response = action.call({})
 p response.status # => 500
 p response.body # => ["Internal Server Error"]
@@ -344,9 +377,11 @@ p response.body # => ["Internal Server Error"]
 You can map a specific raised exception to a different HTTP status.
 
 ```ruby
+require "hanami/controller"
+
 RecordNotFound = Class.new(StandardError)
 
-class Show < Hanami::Action
+class HandleCustomException < Hanami::Action
   handle_exception RecordNotFound => 404
 
   def handle(request, response)
@@ -354,7 +389,7 @@ class Show < Hanami::Action
   end
 end
 
-action = Show.new
+action = HandleCustomException.new
 response = action.call({})
 p response.status # => 404
 p response.body # ["Not Found"]
@@ -363,7 +398,9 @@ p response.body # ["Not Found"]
 You can also define custom handlers for exceptions.
 
 ```ruby
-class Create < Hanami::Action
+require "hanami/controller"
+
+class CustomHandler < Hanami::Action
   handle_exception ArgumentError => :my_custom_handler
 
   def handle(request, response)
@@ -378,7 +415,7 @@ class Create < Hanami::Action
   end
 end
 
-action = Create.new
+action = CustomHandler.new
 response = action.call({})
 p response.status # => 400
 p response.body # => ["Invalid arguments"]
@@ -390,7 +427,9 @@ p response.body # => ["Invalid arguments"]
 When `#halt` is used with a valid HTTP code, it stops the execution and sets the proper status and body for the response:
 
 ```ruby
-class Show < Hanami::Action
+require "hanami/controller"
+
+class ThrowUnauthorized < Hanami::Action
   before :authenticate!
 
   def handle(request, response)
@@ -408,7 +447,7 @@ class Show < Hanami::Action
   end
 end
 
-action = Show.new
+action = ThrowUnauthorized.new
 response = action.call({})
 p response.status  #=> 401
 p response.body # => ["Unauthorized"]
@@ -417,9 +456,11 @@ p response.body # => ["Unauthorized"]
 Alternatively, you can specify a custom message to be used in the response body:
 
 ```ruby
+require "hanami/controller"
+
 class DroidRepo; def find(id) = nil; end;
 
-class Show < Hanami::Action
+class FindDroid < Hanami::Action
   def handle(request, response)
     response[:droid] = DroidRepo.new.find(request.params[:id]) or not_found
   end
@@ -431,8 +472,7 @@ class Show < Hanami::Action
   end
 end
 
-action = Show.new
-response = action.call({})
+response = FindDroid.new.call({})
 p response.status # => 404
 p response.body # => ["This is not the droid you're looking for"]
 ```
@@ -451,7 +491,7 @@ class ReadCookiesFromRackEnv < Hanami::Action
 
   def handle(request, response)
     # ...
-    puts request.cookies["foo"] # => "bar"
+    p request.cookies["foo"] # => "bar"
   end
 end
 
@@ -533,7 +573,7 @@ class ReadSessionFromRackEnv < Hanami::Action
 
   def handle(request, *)
     # ...
-    puts request.session[:age] # => "35"
+    p request.session[:age] # => "35"
   end
 end
 
@@ -609,7 +649,7 @@ class HttpCache < Hanami::Action
 end
 
 response = HttpCache.new.call({})
-puts response.headers.fetch("Cache-Control") # => "public, max-age=600"
+p response.headers.fetch("Cache-Control") # => "public, max-age=600"
 ```
 
 Expires header can be specified using `expires` method:
@@ -825,12 +865,12 @@ class CheckAcceptsAction < Hanami::Action
     # ...
     # request.env["HTTP_ACCEPT"] # => "text/html,application/xhtml+xml,application/xml;q=0.9"
 
-    puts "Accepts header:           #{request.env["HTTP_ACCEPT"]}"
-    puts "Accepts text/html?        #{request.accept?("text/html")}"
-    puts "Accepts application/xml?  #{request.accept?("application/xml")}"
-    puts "Accepts application/json? #{request.accept?("application/json")}"
-    puts "Response format:          #{response.format.inspect}"
-    puts
+    p "Accepts header:           #{request.env["HTTP_ACCEPT"]}"
+    p "Accepts text/html?        #{request.accept?("text/html")}"
+    p "Accepts application/xml?  #{request.accept?("application/xml")}"
+    p "Accepts application/json? #{request.accept?("application/json")}"
+    p "Response format:          #{response.format.inspect}"
+    p
   end
 end
 
