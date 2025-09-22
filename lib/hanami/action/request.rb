@@ -91,6 +91,26 @@ module Hanami
         @flash ||= Flash.new(session[Flash::KEY])
       end
 
+      # Returns the subdomains for the current host.
+      #
+      # @return [Array]
+      #
+      # @api public
+      def subdomains(tld_length = 1)
+        return [] unless host !~ /\A\d+\.\d+\.\d+\.\d+\z/
+
+        host.split(".")[0..-(tld_length + 2)]
+      end
+
+      # Returns the subdomain for the current host.
+      #
+      # @return [String]
+      #
+      # @api public
+      def subdomain(tld_length = 1)
+        subdomains(tld_length).join(".")
+      end
+
       # @since 2.0.0
       # @api private
       def accept?(mime_type)
