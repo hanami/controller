@@ -98,7 +98,7 @@ module Hanami
       #
       # @api public
       # @since x.x.x
-      def subdomains(tld_length = 1)
+      def subdomains(tld_length = @default_tld_length)
         return [] if IP_ADDRESS_HOST_REGEXP.match?(host)
 
         host.split(".")[0..-(tld_length + 2)]
@@ -113,7 +113,7 @@ module Hanami
       #
       # @api public
       # @since x.x.x
-      def subdomain(tld_length = 1)
+      def subdomain(tld_length = @default_tld_length)
         subdomains(tld_length).join(".")
       end
 
