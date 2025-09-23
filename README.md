@@ -53,7 +53,7 @@ The core of this framework are the actions.
 They are the endpoints that respond to incoming HTTP requests.
 
 ```ruby
-require "hanami/controller"
+require "hanami/action"
 
 class HelloWorld < Hanami::Action
   def handle(request, response)
@@ -78,6 +78,8 @@ __We're avoiding HTTP calls__, we're also going to avoid hitting the database (i
 Imagine how **fast** the unit test could be.
 
 ```ruby
+require "hanami/action"
+
 class ShowArticle < Hanami::Action
   def initialize(repo: ArticleRepo.new, **)
     @repo = repo
@@ -107,7 +109,7 @@ There are three scenarios for how params are extracted:
 When routed with *Hanami::Router*, it extracts and merges route parameters, query string parameters, and form parameters (with router params taking precedence).
 
 ```ruby
-require "hanami/controller"
+require "hanami/action"
 
 class InspectParams < Hanami::Action
   def handle(request, response)
@@ -127,7 +129,7 @@ InspectParams.new.call({
 When used in a Rack application (but without Hanami::Router), it extracts query string and form parameters from the request.
 
 ```ruby
-require "hanami/controller"
+require "hanami/action"
 
 class ParamsFromRackInput < Hanami::Action
   def handle(request, response)
@@ -147,7 +149,7 @@ ParamsFromRackInput.new.call({
 When called directly with a hash (typical in unit tests), it returns the given hash as-is.
 
 ```ruby
-require "hanami/controller"
+require "hanami/action"
 
 class ParamsFromHash < Hanami::Action
   def handle(request, response)
@@ -169,7 +171,7 @@ For security reasons it's recommended to use hanami-validations to validate the 
 
 ```ruby
 require "hanami/validations"
-require "hanami/controller"
+require "hanami/action"
 
 class Signup < Hanami::Action
   params do
@@ -208,7 +210,7 @@ If you specify the `:type` option, the param will be coerced.
 
 ```ruby
 require "hanami/validations"
-require "hanami/controller"
+require "hanami/action"
 
 class SignupValidateParams < Hanami::Action
   MEGABYTE = 1024 ** 2
@@ -245,7 +247,7 @@ SignupValidateParams.new.call({
 The output of `#call` is a `Hanami::Action::Response` (which is a subclass of [Rack::Response](https://github.com/rack/rack/blob/main/lib/rack/response.rb)):
 
 ```ruby
-require "hanami/controller"
+require "hanami/action"
 
 class ReturnsResponse < Hanami::Action
 end
@@ -257,6 +259,8 @@ action.call({}).class # => Hanami::Action::Response
 This is the same `response` object passed to `#handle`, where you can use its accessors to explicitly set status, headers, and body:
 
 ```ruby
+require "hanami/action"
+
 class ManipulateResponse < Hanami::Action
   def handle(request, response)
     response.status  = 201
@@ -278,6 +282,8 @@ In case you need to send data from the action to other layers of your applicatio
 By default, an action exposes the request's params and the format.
 
 ```ruby
+require "hanami/action"
+
 Article = Data.define(:id)
 
 class ExposeArticle < Hanami::Action
@@ -300,7 +306,7 @@ If you need to execute logic **before** or **after** `#handle` is invoked, you c
 They are useful for shared logic like authentication checks.
 
 ```ruby
-require "hanami/controller"
+require "hanami/action"
 
 Article = Data.define(:title)
 class ArticleRepo; def find(id) = Article.new(title: "Why Hanami? Reason ##{id}"); end
@@ -332,7 +338,7 @@ p response[:article].title # => "Why Hanami? Reason #1000"
 Callbacks can also be expressed as anonymous lambdas:
 
 ```ruby
-require "hanami/controller"
+require "hanami/action"
 
 Article = Data.define(:title)
 class ArticleRepo; def find(id) = Article.new(title: "Why Hanami? Reason ##{id}"); end
@@ -358,7 +364,7 @@ You can write custom exception handling on per action or configuration basis.
 An exception handler can be a valid HTTP status code (eg. `500`, `401`), or a `Symbol` that represents an action method.
 
 ```ruby
-require "hanami/controller"
+require "hanami/action"
 
 class HandleStandardError < Hanami::Action
   handle_exception StandardError => 500
@@ -377,7 +383,7 @@ p response.body # => ["Internal Server Error"]
 You can map a specific raised exception to a different HTTP status.
 
 ```ruby
-require "hanami/controller"
+require "hanami/action"
 
 class RecordNotFound < StandardError; end
 
@@ -398,7 +404,7 @@ p response.body # ["Not Found"]
 You can also define custom handlers for exceptions.
 
 ```ruby
-require "hanami/controller"
+require "hanami/action"
 
 class CustomHandler < Hanami::Action
   handle_exception ArgumentError => :my_custom_handler
@@ -427,7 +433,7 @@ p response.body # => ["Invalid arguments"]
 When `#halt` is used with a valid HTTP code, it stops the execution and sets the proper status and body for the response:
 
 ```ruby
-require "hanami/controller"
+require "hanami/action"
 
 class ThrowUnauthorized < Hanami::Action
   before :authenticate!
@@ -456,7 +462,7 @@ p response.body # => ["Unauthorized"]
 Alternatively, you can specify a custom message to be used in the response body:
 
 ```ruby
-require "hanami/controller"
+require "hanami/action"
 
 class DroidRepo; def find(id) = nil; end;
 
@@ -485,7 +491,7 @@ If you want to send cookies in the response, use `response.cookies`.
 They are read as a Hash on the request (using String keys), coming from the Rack env:
 
 ```ruby
-require "hanami/controller"
+require "hanami/action"
 
 class ReadCookiesFromRackEnv < Hanami::Action
 
@@ -502,7 +508,7 @@ action.call({"HTTP_COOKIE" => "foo=bar"})
 They are set like a Hash, once `include Hanami::Action::Cookies` is used:
 
 ```ruby
-require "hanami/controller"
+require "hanami/action"
 
 class SetCookies < Hanami::Action
   include Hanami::Action::Cookies
@@ -520,7 +526,7 @@ action.call({}).headers.fetch("Set-Cookie") # "foo=bar"
 They are removed by setting their value to `nil`:
 
 ```ruby
-require "hanami/controller"
+require "hanami/action"
 
 class RemoveCookies < Hanami::Action
   include Hanami::Action::Cookies
@@ -538,7 +544,7 @@ action.call({}).headers.fetch("Set-Cookie") # => "foo=; max-age=0; expires=Thu, 
 Default values can be set in configuration, but overridden case by case.
 
 ```ruby
-require "hanami/controller"
+require "hanami/action"
 
 class SetCookies < Hanami::Action
   include Hanami::Action::Cookies
@@ -565,7 +571,7 @@ Similarly to cookies, you can read the session sent by the HTTP client via `requ
 and manipulate it via `response.session`.
 
 ```ruby
-require "hanami/controller"
+require "hanami/action"
 
 class ReadSessionFromRackEnv < Hanami::Action
   include Hanami::Action::Session
@@ -584,7 +590,7 @@ action.call({ "rack.session" => { "age" => "35" } })
 Values can be set like a Hash:
 
 ```ruby
-require "hanami/controller"
+require "hanami/action"
 require "hanami/action/session"
 
 class SetSession < Hanami::Action
@@ -605,7 +611,7 @@ response.session # => { age: 31 }
 Values can be removed like a Hash:
 
 ```ruby
-require "hanami/controller"
+require "hanami/action"
 require "hanami/action/session"
 
 class RemoveSession < Hanami::Action
@@ -636,7 +642,7 @@ Hanami::Controller sets your headers correctly according to [RFC 2616, sec. 14.9
 You can easily set the Cache-Control header for your actions:
 
 ```ruby
-require "hanami/controller"
+require "hanami/action"
 
 class HttpCache < Hanami::Action
   include Hanami::Action::Cache
@@ -655,7 +661,7 @@ p response.headers.fetch("Cache-Control") # => "public, max-age=600"
 Expires header can be specified using `expires` method:
 
 ```ruby
-require "hanami/controller"
+require "hanami/action"
 
 class HttpCache < Hanami::Action
   include Hanami::Action::Cache
@@ -688,7 +694,7 @@ Note that they way to use them in Rack is via the `"HTTP_IF_NONE_MATCH"` and `"H
 You can easily take advantage of Conditional Get using `#fresh` method.
 
 ```ruby
-require "hanami/controller"
+require "hanami/action"
 require "hanami/action/cache"
 
 Resource = Data.define(:cache_key)
@@ -716,7 +722,7 @@ If the resource hasn’t been modified since the time specified in the `If-Modif
 the server responds with *304 Not Modified*.
 
 ```ruby
-require "hanami/controller"
+require "hanami/action"
 require "hanami/action/cache"
 
 Resource = Data.define(:updated_at)
@@ -745,7 +751,7 @@ p second_response.status # => 304
 If you need to redirect the client to another resource, use `response.redirect_to`:
 
 ```ruby
-require "hanami/controller"
+require "hanami/action"
 
 class RedirectAction < Hanami::Action
   def handle(request, response)
@@ -762,7 +768,7 @@ p response.location # => "http://example.com/articles/23" (same as `response.hea
 You can also redirect with a custom status code:
 
 ```ruby
-require "hanami/controller"
+require "hanami/action"
 
 class PermanentRedirectAction < Hanami::Action
   def handle(request, response)
@@ -781,7 +787,7 @@ p response.location # => "/articles/23"
 `Hanami::Action` automatically sets the `Content-Type` header, according to the request.
 
 ```ruby
-require "hanami/controller"
+require "hanami/action"
 
 class ResponseFormatAction < Hanami::Action
   def handle(request, response)
@@ -802,7 +808,7 @@ p second_response.content_type # "text/html; charset=utf-8"
 However, you can force this value:
 
 ```ruby
-require "hanami/controller"
+require "hanami/action"
 
 class ForcedFormatAction < Hanami::Action
   def handle(request, response)
@@ -825,7 +831,7 @@ p second_response.content_type # "application/json; charset=utf-8"
 You can restrict the accepted MIME types:
 
 ```ruby
-require "hanami/controller"
+require "hanami/action"
 
 class RestrictedTypesActionShow < Hanami::Action
   format :html, :json
@@ -858,7 +864,7 @@ p xml_response.status # => 406 (Not Acceptable)
 You can check if the requested MIME type is accepted by the client.
 
 ```ruby
-require "hanami/controller"
+require "hanami/action"
 
 class CheckAcceptsAction < Hanami::Action
   def handle(request, response)
@@ -888,7 +894,7 @@ Hanami::Controller ships with an extensive list of the most common MIME types.
 You can also register your own:
 
 ```ruby
-require "hanami/controller"
+require "hanami/action"
 
 class CustomFormatAcceptAction < Hanami::Action
   config.formats.add :custom, "application/custom"
@@ -908,7 +914,7 @@ p response.content_type  # => "application/custom; charset=utf-8"
 You can also manually set the format on the response:
 
 ```ruby
-require "hanami/controller"
+require "hanami/action"
 
 class ManualFormatAction < Hanami::Action
   config.formats.add :custom, "application/custom"
@@ -936,6 +942,8 @@ You can set the body directly (see [response](#response)), use [Hanami::View](ht
 A Controller is nothing more than a logical group of actions: just a Ruby module.
 
 ```ruby
+require "hanami/action"
+
 module Articles
   class Index < Hanami::Action
     # ...
