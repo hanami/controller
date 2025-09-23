@@ -63,7 +63,8 @@ RSpec.describe Hanami::Action::Request do
       it "gets host and port" do
         request = described_class.new(
           env: Rack::MockRequest.env_for("http://example.com:81/foo?q=bar", {}),
-          params: {}
+          params: {},
+          default_tld_length: 1
         )
         expect(request.host_with_port).to eq("example.com:81")
       end
@@ -202,6 +203,6 @@ RSpec.describe Hanami::Action::Request do
   def build_request(attributes = {})
     url = attributes.delete("url") || "http://example.com/foo?q=bar"
     env = Rack::MockRequest.env_for(url, attributes)
-    described_class.new(env: env, params: {})
+    described_class.new(env: env, params: {}, default_tld_length: 1)
   end
 end

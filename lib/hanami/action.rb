@@ -441,7 +441,7 @@ module Hanami
     # @since 2.0.0
     # @api private
     def build_request(**options)
-      Request.new(**options)
+      Request.new(default_tld_length: config.default_tld_length, **options)
     end
 
     # Hook to be overridden by `Hanami::Extensions::Action` for integrated actions

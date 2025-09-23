@@ -26,11 +26,12 @@ module Hanami
 
       # @since 2.0.0
       # @api private
-      def initialize(env:, params:, session_enabled: false)
+      def initialize(env:, params:, default_tld_length:, session_enabled: false)
         super(env)
 
         @params = params
         @session_enabled = session_enabled
+        @default_tld_length = default_tld_length
       end
 
       # Returns the request's ID
