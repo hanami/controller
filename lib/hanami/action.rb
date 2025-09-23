@@ -62,6 +62,7 @@ module Hanami
     setting :formats, default: Config::Formats.new, mutable: true
     setting :default_charset
     setting :default_headers, default: {}, constructor: -> (headers) { headers.compact }
+    setting :default_tld_length, default: 1
     setting :cookies, default: {}, constructor: -> (cookie_options) {
       # Call `to_h` here to permit `ApplicationConfiguration::Cookies` object to be
       # provided when application actions are configured
