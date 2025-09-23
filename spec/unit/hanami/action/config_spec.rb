@@ -107,7 +107,7 @@ RSpec.describe Hanami::Action::Config do
     end
   end
 
-  describe "public_directory" do
+  describe "#public_directory" do
     let(:root_directory) { __dir__ }
 
     before do
