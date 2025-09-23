@@ -110,6 +110,15 @@ RSpec.describe Hanami::Action::Request do
         request = build_request({"url" => "http://one.example.co.uk"})
         expect(request.subdomains(2)).to eq(%w[one])
       end
+
+      it "uses the global default tld length setting" do
+        request = described_class.new(
+          env: Rack::MockRequest.env_for("http://one.example.co.uk", {}),
+          params: {},
+          default_tld_length: 2
+        )
+        expect(request.subdomains).to eq(%w[one])
+      end
     end
   end
 
@@ -125,6 +134,15 @@ RSpec.describe Hanami::Action::Request do
       it "gets the subdomain" do
         request = build_request({"url" => "http://one.two.example.co.uk"})
         expect(request.subdomain(2)).to eq("one.two")
+      end
+
+      it "uses the global default tld length setting" do
+        request = described_class.new(
+          env: Rack::MockRequest.env_for("http://one.two.example.co.uk", {}),
+          params: {},
+          default_tld_length: 2
+        )
+        expect(request.subdomain).to eq("one.two")
       end
     end
   end
