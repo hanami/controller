@@ -257,7 +257,7 @@ action.call({}).class # => Hanami::Action::Response
 This is the same `response` object passed to `#handle`, where you can use its accessors to explicitly set status, headers, and body:
 
 ```ruby
-class ManiplateResponse < Hanami::Action
+class ManipulateResponse < Hanami::Action
   def handle(request, response)
     response.status  = 201
     response.body    = "Hi!"
@@ -286,7 +286,7 @@ class ExposeArticle < Hanami::Action
   end
 end
 
-response = ExposeAticle.new.call(id: 23)
+response = ExposeArticle.new.call(id: 23)
 
 p response[:article].class # => Article
 p response[:article].id # => 23
@@ -379,7 +379,7 @@ You can map a specific raised exception to a different HTTP status.
 ```ruby
 require "hanami/controller"
 
-clsss RecordNotFound < StandardError; end
+class RecordNotFound < StandardError; end
 
 class HandleCustomException < Hanami::Action
   handle_exception RecordNotFound => 404
