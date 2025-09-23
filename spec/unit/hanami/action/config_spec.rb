@@ -61,6 +61,22 @@ RSpec.describe Hanami::Action::Config do
     end
   end
 
+  describe "#default_tld_length" do
+    it "is 1 by default" do
+      expect(config.default_tld_length).to be(1)
+    end
+
+    it "can be set with an integer" do
+      config.default_tld_length = 2
+      expect(config.default_tld_length).to be(2)
+    end
+
+    it "rejects nil values" do
+      config.default_tld_length = nil
+      expect(config.default_tld_length).to be(1)
+    end
+  end
+
   describe "#cookies" do
     it "is an empty hash by default" do
       expect(config.cookies).to eq({})
