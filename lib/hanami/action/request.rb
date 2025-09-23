@@ -93,9 +93,10 @@ module Hanami
 
       # Returns the subdomains for the current host.
       #
-      # @return [Array]
+      # @return [Array<String>]
       #
       # @api public
+      # @since x.x.x
       def subdomains(tld_length = 1)
         return [] unless host !~ /\A\d+\.\d+\.\d+\.\d+\z/
 
@@ -107,6 +108,7 @@ module Hanami
       # @return [String]
       #
       # @api public
+      # @since x.x.x
       def subdomain(tld_length = 1)
         subdomains(tld_length).join(".")
       end
