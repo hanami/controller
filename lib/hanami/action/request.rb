@@ -98,10 +98,13 @@ module Hanami
       # @api public
       # @since x.x.x
       def subdomains(tld_length = 1)
-        return [] unless host !~ /\A\d+\.\d+\.\d+\.\d+\z/
+        return [] if IP_ADDRESS_HOST_REGEXP.match?(host)
 
         host.split(".")[0..-(tld_length + 2)]
       end
+
+      IP_ADDRESS_HOST_REGEXP = /\A\d+\.\d+\.\d+\.\d+\z/
+      private_constant :IP_ADDRESS_HOST_REGEXP
 
       # Returns the subdomain for the current host.
       #
