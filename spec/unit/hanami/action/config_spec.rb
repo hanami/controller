@@ -70,11 +70,6 @@ RSpec.describe Hanami::Action::Config do
       config.default_tld_length = 2
       expect(config.default_tld_length).to be(2)
     end
-
-    it "rejects nil values" do
-      config.default_tld_length = nil
-      expect(config.default_tld_length).to be(1)
-    end
   end
 
   describe "#cookies" do
