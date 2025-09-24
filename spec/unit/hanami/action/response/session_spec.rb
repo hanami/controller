@@ -13,8 +13,7 @@ RSpec.describe Hanami::Action::Response, "session features" do
     Hanami::Action::Request.new(
       env: rack_env,
       params: {},
-      session_enabled: true,
-      default_tld_length: 1
+      session_enabled: true
     )
   }
   let(:rack_env) {

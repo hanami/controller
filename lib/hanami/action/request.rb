@@ -26,7 +26,7 @@ module Hanami
 
       # @since 2.0.0
       # @api private
-      def initialize(env:, params:, default_tld_length:, session_enabled: false)
+      def initialize(env:, params:, default_tld_length: 1, session_enabled: false)
         super(env)
 
         @params = params
