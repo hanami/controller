@@ -314,7 +314,8 @@ module Hanami
         request  = build_request(
           env: env,
           params: params,
-          session_enabled: session_enabled?
+          session_enabled: session_enabled?,
+          default_tld_length: config.default_tld_length
         )
         response = build_response(
           request: request,
@@ -441,7 +442,7 @@ module Hanami
     # @since 2.0.0
     # @api private
     def build_request(**options)
-      Request.new(default_tld_length: config.default_tld_length, **options)
+      Request.new(**options)
     end
 
     # Hook to be overridden by `Hanami::Extensions::Action` for integrated actions
