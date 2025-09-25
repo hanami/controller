@@ -4,11 +4,12 @@ module Hanami
   class Action
     # Cookies API
     #
-    # This module isn't included by default.
+    # If you want cookies in your actions then include this module.
+    # It's not included by default.
     #
     # @since 0.1.0
     #
-    # @see Hanami::Action::Cookies#cookies
+    # @see Hanami::Action::Response#cookies
     module Cookies
       private
 

@@ -6,7 +6,6 @@ require "securerandom"
 require_relative "errors"
 
 module Hanami
-  # @api private
   class Action
     # CSRF Protection
     #
@@ -30,8 +29,8 @@ module Hanami
     #
     # @since 0.4.0
     #
-    # @see https://www.owasp.org/index.php/Cross-Site_Request_Forgery_%28CSRF%29
-    # @see https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)_Prevention_Cheat_Sheet
+    # @see https://owasp.org/www-community/attacks/csrf
+    # @see https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html
     #
     # @example Custom Handling
     #   module Web::Controllers::Books

@@ -11,7 +11,7 @@ module Hanami
     #
     # @since 0.1.0
     #
-    # @see Hanami::Action::Cookies#cookies
+    # @see Hanami::Action::Response#cookies
     class CookieJar
       # @since 0.4.5
       # @api private
