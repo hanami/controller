@@ -61,6 +61,17 @@ RSpec.describe Hanami::Action::Config do
     end
   end
 
+  describe "#default_tld_length" do
+    it "is 1 by default" do
+      expect(config.default_tld_length).to be(1)
+    end
+
+    it "can be set with an integer" do
+      config.default_tld_length = 2
+      expect(config.default_tld_length).to be(2)
+    end
+  end
+
   describe "#cookies" do
     it "is an empty hash by default" do
       expect(config.cookies).to eq({})
@@ -91,7 +102,7 @@ RSpec.describe Hanami::Action::Config do
     end
   end
 
-  describe "public_directory" do
+  describe "#public_directory" do
     let(:root_directory) { __dir__ }
 
     before do
