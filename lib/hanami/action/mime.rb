@@ -233,6 +233,45 @@ module Hanami
 
         private
 
+        # Extracts the file extension from a path
+        #
+        # @param path [String] the request path
+        # @return [String, nil] the file extension without the dot, or nil if no extension
+        #
+        # @example
+        #   extract_extension("/users/123.json") # => "json"
+        #   extract_extension("/users/123") # => nil
+        #
+        # @api private
+        def extract_extension(path)
+          return nil if path.nil? || path.empty?
+
+          # Remove query string and fragment if present
+          clean_path = path.split("?").first.split("#").first
+
+          # Extract extension
+          extension = File.extname(clean_path)
+          return nil if extension.nil? || extension.empty?
+
+          # Remove the leading dot and return
+          extension[1..-1]
+        end
+
+        # Returns the format based on path extension
+        #
+        # @param path [String] the request path
+        # @return [Symbol, nil] the format symbol, or nil if no matching format
+        #
+        # @api private
+        def format_from_path_extension(path)
+          extension = extract_extension(path)
+          return nil unless extension
+
+          # Convert extension to symbol and check if it's a known format
+          format = extension.to_sym
+          TYPES.key?(format) ? format : nil
+        end
+
         # @since 2.0.0
         # @api private
         def accepted_mime_type?(mime_type, config)
@@ -252,6 +291,12 @@ module Hanami
         # @since 2.0.0
         # @api private
         def response_content_type(request, config)
+          # Check if there's a format specified in the path extension and use that if present
+          path_format = format_from_path_extension(request.path_info)
+          if path_format
+            return format_to_mime_type(path_format, config)
+          end
+
           if request.accept_header?
             all_mime_types = TYPES.values + config.formats.mapping.keys
             content_type = best_q_match(request.accept, all_mime_types)
