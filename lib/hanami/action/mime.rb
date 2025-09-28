@@ -254,7 +254,7 @@ module Hanami
           return nil if extension.nil? || extension.empty?
 
           # Remove the leading dot and return
-          extension[1..-1]
+          extension[1..]
         end
 
         # Returns the format based on path extension

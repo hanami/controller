@@ -4,7 +4,7 @@ RSpec.describe Hanami::Action do
   describe "Path extension format detection" do
     class PathExtensionController
       class Index < Hanami::Action
-        def handle(req, res)
+        def handle(_req, res)
           res.body = "format: #{res.format}"
         end
       end
@@ -12,7 +12,7 @@ RSpec.describe Hanami::Action do
       class JsonOnly < Hanami::Action
         config.format :json
 
-        def handle(req, res)
+        def handle(_req, res)
           res.body = "format: #{res.format}"
         end
       end
