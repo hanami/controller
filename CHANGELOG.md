@@ -2,6 +2,17 @@
 
 Complete, fast and testable actions for Rack
 
+## v2.3.0.beta1 - Unreleased
+
+### Added
+
+- [Wout] Add `Request#subdomains`, returning an array of subdomains for the current host, and `Request#subdomain` returning a dot-delimited subdomain string for the current host. Add `config.default_tld_length` setting for configuring the TLD length for your app's expected domain (#481)
+
+### Changed
+
+- [Kyle Plump, Tim Riley] Support Rack 3 in addition to Rack 2 (#460)
+- [Tim Riley] `request.session` is now an instance of `Hanami::Action::Request::Session`, which wraps the session object and provides access to session values via symbol keys. This was previously handled via symbolizing and reassigning the entire session hash, which is not compatible with Rack 3 (#477)
+
 ## v2.2.0 - 2024-11-05
 
 ### Added

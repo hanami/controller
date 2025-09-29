@@ -133,7 +133,7 @@ module Hanami
       #
       #   @return [Integer] the number of subdomains
       #
-      #   @since x.x.x
+      #   @since 2.3.0
 
       # @!attribute [rw] cookies
       #
