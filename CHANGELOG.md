@@ -4,6 +4,10 @@ Complete, fast and testable actions for Rack
 
 ## v2.3.0.beta1 - Unreleased
 
+### Fixed
+
+- [wuarmin] Avoid false negatives in format/content type matches by checking against the request's media type, which excludes content type parameters (e.g. "test/plain" instead of "text/plain;charset=utf-8") (#471)
+
 ### Added
 
 - [Wout] Add `Request#subdomains`, returning an array of subdomains for the current host, and `Request#subdomain` returning a dot-delimited subdomain string for the current host. Add `config.default_tld_length` setting for configuring the TLD length for your app's expected domain (#481)
