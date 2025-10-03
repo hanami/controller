@@ -24,7 +24,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "hanami-utils", "~> 2.3.0.beta1"
   spec.add_dependency "dry-configurable", "~> 1.0", "< 2"
   spec.add_dependency "dry-core", "~> 1.0"
-  spec.add_dependency "zeitwerk", "~> 2.6"
+  spec.add_dependency "zeitwerk", "2.7.3"
 
   spec.add_development_dependency "bundler",   ">= 1.6", "< 3"
   spec.add_development_dependency "rack-test", "~> 2.0"
