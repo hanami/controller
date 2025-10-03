@@ -11,10 +11,12 @@ module Hanami
       # Most commom MIME Types used for responses
       #
       # @since 1.0.0
-      # @api private
+      # @api public
       TYPES = {
         txt: "text/plain",
         html: "text/html",
+        form: "application/x-www-form-urlencoded",
+        multipart: "multipart/form-data",
         json: "application/json",
         manifest: "text/cache-manifest",
         atom: "application/atom+xml",
