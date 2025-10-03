@@ -2,7 +2,7 @@
 
 Complete, fast and testable actions for Rack
 
-## v2.3.0.beta1 - Unreleased
+## v2.3.0.beta1 - 2025-10-03
 
 ### Fixed
 
