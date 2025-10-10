@@ -190,7 +190,7 @@ module Hanami
           }.compact.max&.format
         end
 
-        # Yields if an action is configured with `formats`, the request has an `Accept` header, an
+        # Yields if an action is configured with `formats`, the request has an `Accept` header, and
         # none of the Accept types matches the accepted formats. The given block is expected to halt
         # the request handling.
         #
