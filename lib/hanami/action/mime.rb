@@ -211,9 +211,9 @@ module Hanami
           yield
         end
 
-        # Yields if an action is configured with `formats`, the request has a `Content-Type` header
-        # (or a `default_requst_format` is configured), and the content type does not match the
-        # accepted formats. The given block is expected to halt the request handling.
+        # Yields if an action is configured with `formats`, the request has a `Content-Type` header,
+        # and the content type does not match the accepted formats. The given block is expected to
+        # halt the request handling.
         #
         # If any of these conditions are not met, then the request is acceptable and the method
         # returns without yielding.
