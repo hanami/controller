@@ -224,8 +224,8 @@ module Hanami
         # @since 2.0.0
         # @api private
         def enforce_content_type(request, config)
-          # Compare media type (without parameters) instead of full Content-Type header
-          # to avoid false negatives (e.g., multipart/form-data; boundary=...)
+          # Compare media type (without parameters) instead of full Content-Type header to avoid
+          # false negatives (e.g., multipart/form-data; boundary=...)
           media_type = request.media_type
 
           return if media_type.nil?
