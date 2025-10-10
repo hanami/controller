@@ -26,20 +26,43 @@ module Hanami
         # @api private
         attr_reader :mapping
 
-        # The array of enabled formats.
+        # The array of formats to accept requests by.
         #
         # @example
-        #   config.formats.values = [:html, :json]
-        #   config.formats.values # => [:html, :json]
+        #   config.formats.accepted = [:html, :json]
+        #   config.formats.accepted # => [:html, :json]
         #
         # @since 2.0.0
         # @api public
-        attr_reader :values
+        attr_reader :accepted
+
+        # @see #accepted
+        #
+        # @since 2.0.0
+        # @api public
+        def values
+          # TODO: add deprecation notice
+          accepted
+        end
+
+        # Returns the default format name.
+        #
+        # When a request is received that cannot
+        #
+        # @return [Symbol, nil] the default format name, if any
+        #
+        # @example
+        #   @config.formats.default # => :json
+        #
+        # @since 2.0.0
+        # @api public
+        attr_reader :default
 
         # @since 2.0.0
         # @api private
-        def initialize(values: [], mapping: DEFAULT_MAPPING.dup)
-          @values = values
+        def initialize(accepted: [], default: nil, mapping: DEFAULT_MAPPING.dup)
+          @accepted = accepted
+          @default = default
           @mapping = mapping
         end
 
@@ -47,15 +70,56 @@ module Hanami
         # @api private
         private def initialize_copy(original) # rubocop:disable Style/AccessModifierDeclarations
           super
-          @values = original.values.dup
+          @accepted = original.accepted.dup
+          @default = original.default
           @mapping = original.mapping.dup
+        end
+
+        # !@attribute [w] accepted
+        #   @since 2.3.0
+        #   @api public
+        def accepted=(formats)
+          @accepted = formats.map { |f| Hanami::Utils::Kernel.Symbol(f) }
         end
 
         # !@attribute [w] values
         #   @since 2.0.0
         #   @api public
-        def values=(formats)
-          @values = formats.map { |f| Utils::Kernel.Symbol(f) }
+        alias_method :values=, :accepted=
+
+        # @since 2.3.0
+        def accept(*formats)
+          self.default = formats.first if default.nil?
+          self.accepted = accepted | formats
+        end
+
+        # @since 2.3.0
+        def default=(format)
+          @default = Hanami::Utils::Kernel.Symbol(format)
+        end
+
+        # Registers a format and its associated MIME types.
+        #
+        # @param formats_to_mime_types [Hash{Symbol => String, Array<String>}]
+        #
+        # @example
+        #   config.formats.register(json: "application/json")
+        #   config.formats.register(json: ["application/json+scim", "application/json"])
+        #
+        # @return [self]
+        #
+        # @since 2.3.0
+        # @api public
+        def register(formats_to_mime_types)
+          formats_to_mime_types.each do |format, mime_types|
+            format = Hanami::Utils::Kernel.Symbol(format)
+
+            Array(mime_types).each do |mime_type|
+              @mapping[Hanami::Utils::Kernel.String(mime_type)] = format
+            end
+          end
+
+          self
         end
 
         # @overload add(format)
@@ -89,14 +153,12 @@ module Hanami
         #
         # @since 2.0.0
         # @api public
-        def add(format, mime_types = [])
-          format = Utils::Kernel.Symbol(format)
+        def add(format, mime_types)
+          # TODO: deprecation
 
-          Array(mime_types).each do |mime_type|
-            @mapping[Utils::Kernel.String(mime_type)] = format
-          end
+          register(format => mime_types)
 
-          @values << format unless @values.include?(format)
+          accept(format) unless @accepted.include?(format)
 
           self
         end
@@ -104,19 +166,19 @@ module Hanami
         # @since 2.0.0
         # @api private
         def empty?
-          @values.empty?
+          accepted.empty?
         end
 
         # @since 2.0.0
         # @api private
         def any?
-          @values.any?
+          @accepted.any?
         end
 
         # @since 2.0.0
         # @api private
         def map(&blk)
-          @values.map(&blk)
+          @accepted.map(&blk)
         end
 
         # @since 2.0.0
@@ -139,7 +201,8 @@ module Hanami
         # @api public
         def clear
           @mapping = DEFAULT_MAPPING.dup
-          @values = []
+          @accepted = []
+          @default = nil
 
           self
         end
@@ -190,19 +253,6 @@ module Hanami
         # @api public
         def mime_types_for(format)
           @mapping.each_with_object([]) { |(mime_type, f), arr| arr << mime_type if format == f }
-        end
-
-        # Returns the default format name
-        #
-        # @return [Symbol, nil] the default format name, if any
-        #
-        # @example
-        #   @config.formats.default # => :json
-        #
-        # @since 2.0.0
-        # @api public
-        def default
-          @values.first
         end
 
         # @since 2.0.0

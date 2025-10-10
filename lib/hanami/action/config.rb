@@ -68,7 +68,8 @@ module Hanami
 
       # Sets the format (or formats) for the action.
       #
-      # To configure custom formats and MIME type mappings, call {Formats#add formats.add} first.
+      # To configure custom formats and MIME type mappings, call {Formats#register formats.register}
+      # first.
       #
       # @example
       #   config.format :html, :json
@@ -85,7 +86,9 @@ module Hanami
         if formats.empty?
           self.formats.values
         else
+          # TODO: add deprecation notice; use config.formats.accept instead
           self.formats.values = formats
+          self.formats.default = formats.first
         end
       end
 
