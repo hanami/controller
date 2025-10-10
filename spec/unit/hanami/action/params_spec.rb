@@ -27,7 +27,7 @@ RSpec.describe Hanami::Action::Params do
     end
 
     context "when this feature is enabled" do
-      let(:action) { WhitelistedUploadDslAction.new }
+      let(:action) { AllowlistedUploadDslAction.new }
 
       it "raw gets all params" do
         Tempfile.create("multipart-upload") do |upload|
@@ -46,7 +46,7 @@ RSpec.describe Hanami::Action::Params do
     end
   end
 
-  describe "whitelisting" do
+  describe "allowlisting" do
     let(:params) { Class.new(Hanami::Action::Params) }
 
     context "when this feature isn't enabled" do
@@ -100,7 +100,7 @@ RSpec.describe Hanami::Action::Params do
 
     context "when this feature is enabled" do
       context "with an explicit class" do
-        let(:action) { WhitelistedParamsAction.new }
+        let(:action) { AllowlistedParamsAction.new }
 
         # For unit tests in Hanami projects, developers may want to define
         # params with symbolized keys.
@@ -158,11 +158,11 @@ RSpec.describe Hanami::Action::Params do
       end
 
       context "with an anoymous class" do
-        let(:action) { WhitelistedDslAction.new }
+        let(:action) { AllowlistedDslAction.new }
 
         it "creates a Params innerclass" do
-          expect(defined?(WhitelistedDslAction::Params)).to eq("constant")
-          expect(WhitelistedDslAction::Params.ancestors).to include(Hanami::Action::Params)
+          expect(defined?(AllowlistedDslAction::Params)).to eq("constant")
+          expect(AllowlistedDslAction::Params.ancestors).to include(Hanami::Action::Params)
         end
 
         context "in testing mode" do
@@ -380,7 +380,7 @@ RSpec.describe Hanami::Action::Params do
       expect(actual[:address][:deep]).to be_kind_of(::Hash)
     end
 
-    context "when whitelisting" do
+    context "when allowlisting" do
       # This is bug 113.
       it "handles nested params" do
         input = {
@@ -459,7 +459,7 @@ RSpec.describe Hanami::Action::Params do
       expect(actual[:address][:deep]).to be_kind_of(::Hash)
     end
 
-    context "when whitelisting" do
+    context "when allowlisting" do
       # This is bug 113.
       it "handles nested params" do
         input = {
@@ -572,7 +572,7 @@ RSpec.describe Hanami::Action::Params do
   end
 
   describe "inheritance" do
-    let(:action) { Class.new(WhitelistedParamsAction).new }
+    let(:action) { Class.new(AllowlistedParamsAction).new }
 
     it "uses the params defined in the parent class" do
       response = action.call(id: 23, unknown: 4, article: {foo: "bar", tags: [:cool]})

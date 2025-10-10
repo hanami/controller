@@ -135,10 +135,10 @@ action   = Show.new(configuration: configuration)
 response = action.call(id: 23, key: "value")
 ```
 
-#### Whitelisting
+#### Allowlisting
 
 Params represent an untrusted input.
-For security reasons it's recommended to whitelist them.
+For security reasons it's recommended to allowlist them.
 
 ```ruby
 require "hanami/validations"
@@ -162,11 +162,11 @@ class Signup < Hanami::Action
     puts request.params.class            # => Signup::Params
     puts request.params.class.superclass # => Hanami::Action::Params
 
-    # Whitelist :first_name, but not :admin
+    # Allowlist :first_name, but not :admin
     puts request.params[:first_name]     # => "Luca"
     puts request.params[:admin]          # => nil
 
-    # Whitelist nested params [:address][:line_one], not [:address][:line_two]
+    # Allowlist nested params [:address][:line_one], not [:address][:line_two]
     puts request.params[:address][:line_one] # => "69 Tender St"
     puts request.params[:address][:line_two] # => nil
   end
