@@ -82,6 +82,70 @@ RSpec.describe Hanami::Action::Request do
     end
   end
 
+  describe "#subdomains" do
+    context "one TLD" do
+      it "gets the subdomains" do
+        [%w[one], %w[one two three]].each do |list|
+          request = build_request({"url" => "http://#{list.join(".")}.moi.com"})
+          expect(request.subdomains).to eq(list)
+        end
+      end
+
+      it "handles hosts without subdomains" do
+        %w[http://example.com http://localhost:2300].each do |url|
+          request = build_request({"url" => url})
+          expect(request.subdomains).to eq(%w[])
+        end
+      end
+
+      it "ignores IP addresses" do
+        request = build_request({"url" => "http://127.0.0.1"})
+        expect(request.subdomains).to eq([])
+      end
+    end
+
+    context "two TLDs" do
+      it "gets the subdomains" do
+        request = build_request({"url" => "http://one.example.co.uk"})
+        expect(request.subdomains(2)).to eq(%w[one])
+      end
+
+      it "uses the global default tld length setting" do
+        request = described_class.new(
+          env: Rack::MockRequest.env_for("http://one.example.co.uk", {}),
+          params: {},
+          default_tld_length: 2
+        )
+        expect(request.subdomains).to eq(%w[one])
+      end
+    end
+  end
+
+  describe "#subdomain" do
+    context "one TLD" do
+      it "gets the subdomain" do
+        request = build_request({"url" => "http://one.two.example.com"})
+        expect(request.subdomain).to eq("one.two")
+      end
+    end
+
+    context "two TLDs" do
+      it "gets the subdomain" do
+        request = build_request({"url" => "http://one.two.example.co.uk"})
+        expect(request.subdomain(2)).to eq("one.two")
+      end
+
+      it "uses the global default tld length setting" do
+        request = described_class.new(
+          env: Rack::MockRequest.env_for("http://one.two.example.co.uk", {}),
+          params: {},
+          default_tld_length: 2
+        )
+        expect(request.subdomain).to eq("one.two")
+      end
+    end
+  end
+
   describe "request method boolean methods" do
     it "answers correctly" do
       request = build_request

@@ -16,8 +16,14 @@ RSpec.describe Hanami::Action do
     it "calls an action" do
       response = CallAction.new.call({})
 
-      expect(response.status).to  eq(201)
-      expect(response.headers).to eq("Content-Length" => "19", "Content-Type" => "application/octet-stream; charset=utf-8", "X-Custom" => "OK")
+      expect(response.status).to eq(201)
+      expected_headers =
+        if Hanami::Action.rack_3?
+          {"content-type" => "application/octet-stream; charset=utf-8", "x-custom" => "OK"}
+        else
+          {"Content-Length" => "19", "Content-Type" => "application/octet-stream; charset=utf-8", "X-Custom" => "OK"}
+        end
+      expect(response.headers).to eq(expected_headers)
       expect(response.body).to    eq(["Hi from TestAction!"])
     end
 
@@ -75,7 +81,7 @@ RSpec.describe Hanami::Action do
         response = ErrorCallWithSpecifiedStatusCodeAction.new.call({})
 
         expect(response.status).to eq(422)
-        expect(response.body).to   eq(["Unprocessable Entity"])
+        expect(response.body).to eq(Hanami::Action.rack_3? ? ["Unprocessable Content"] : ["Unprocessable Entity"])
       end
 
       it "returns a successful response if the code and status aren't set" do

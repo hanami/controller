@@ -117,6 +117,24 @@ module Hanami
       #
       #   @since 0.4.0
 
+      # @!attribute [rw] default_tld_length
+      #
+      #   Sets the default TLD length for host names. It is used to extract the
+      #   subdomain(s) in `Request#subdomains`.
+      #
+      #   Defaults to 1.
+      #
+      #   @example
+      #     # For *.example.com
+      #     config.default_tld_length = 1
+      #
+      #     # Or for *.example.co.uk
+      #     config.default_tld_length = 2
+      #
+      #   @return [Integer] the number of subdomains
+      #
+      #   @since 2.3.0
+
       # @!attribute [rw] cookies
       #
       #   Sets default cookie options for all responses.

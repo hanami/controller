@@ -19,7 +19,7 @@ RSpec.describe "HTTP sessions" do
   let(:app) do
     r = router
     Rack::Builder.new do
-      use Rack::Session::Cookie, secret: SecureRandom.hex(16)
+      use Rack::Session::Cookie, secret: SecureRandom.hex(64)
       run r
     end.to_app
   end
@@ -67,7 +67,7 @@ RSpec.describe "HTTP Standalone Sessions" do
 
   let(:app) do
     Rack::Builder.new do
-      use Rack::Session::Cookie, secret: SecureRandom.hex(16)
+      use Rack::Session::Cookie, secret: SecureRandom.hex(64)
       run StandaloneSession.new
     end.to_app
   end

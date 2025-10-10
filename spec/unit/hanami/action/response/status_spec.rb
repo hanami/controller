@@ -9,7 +9,11 @@ RSpec.describe Hanami::Action::Response, "status codes" do
     )
   }
   let(:request) {
-    Hanami::Action::Request.new(env: rack_env, params: {}, session_enabled: true)
+    Hanami::Action::Request.new(
+      env: rack_env,
+      params: {},
+      session_enabled: true
+    )
   }
   let(:rack_env) {
     Rack::MockRequest.env_for("http://example.com/foo?q=bar")
@@ -21,7 +25,7 @@ RSpec.describe Hanami::Action::Response, "status codes" do
   end
 
   it "translates a symbolic status to integer" do
-    response.status = :unprocessable_entity
+    response.status = Hanami::Action.rack_3? ? :unprocessable_content : :unprocessable_entity
     expect(response.status).to eql 422
   end
 

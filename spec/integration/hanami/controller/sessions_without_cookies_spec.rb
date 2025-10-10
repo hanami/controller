@@ -19,6 +19,8 @@ RSpec.describe "Sessions without cookies application" do
 
     get "/", {}, "HTTP_ACCEPT" => "text/html", "Cookie" => rack_session
 
+    pending "Restore when https://github.com/rack/rack-session/issues/52 is fixed" if Hanami::Action.rack_3?
+
     expect(response.headers).to_not have_key("Set-Cookie")
   end
 end

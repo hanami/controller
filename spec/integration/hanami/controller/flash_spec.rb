@@ -13,7 +13,12 @@ RSpec.describe "Flash application" do
     get "/"
     follow_redirect!
 
-    expect(last_response.body).to match(/{:hello=>"world"}/)
+    if RUBY_VERSION < "3.4"
+      expect(last_response.body).to match(/{:hello=>"world"}/)
+    else
+      expect(last_response.body).to match(/{hello: "world"}/)
+    end
+
     expect(last_response.body).to match(/flash_empty: false/)
   end
 

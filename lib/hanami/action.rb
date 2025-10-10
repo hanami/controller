@@ -7,6 +7,7 @@ require "hanami/utils/kernel"
 require "hanami/utils/string"
 require "rack"
 require "rack/utils"
+require "hanami/action/rack_utils"
 require "zeitwerk"
 
 require_relative "action/constants"
@@ -61,6 +62,7 @@ module Hanami
     setting :formats, default: Config::Formats.new, mutable: true
     setting :default_charset
     setting :default_headers, default: {}, constructor: -> (headers) { headers.compact }
+    setting :default_tld_length, default: 1
     setting :cookies, default: {}, constructor: -> (cookie_options) {
       # Call `to_h` here to permit `ApplicationConfiguration::Cookies` object to be
       # provided when application actions are configured
@@ -312,7 +314,8 @@ module Hanami
         request  = build_request(
           env: env,
           params: params,
-          session_enabled: session_enabled?
+          session_enabled: session_enabled?,
+          default_tld_length: config.default_tld_length
         )
         response = build_response(
           request: request,
@@ -561,7 +564,7 @@ module Hanami
     #
     #   # Both Content-Type and X-No-Pass are removed because they're not allowed
     def keep_response_header?(header)
-      ENTITY_HEADERS.include?(header)
+      ENTITY_HEADERS.include?(header.downcase)
     end
 
     # @since 2.0.0

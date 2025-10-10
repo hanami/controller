@@ -11,10 +11,12 @@ module Hanami
       # Most commom MIME Types used for responses
       #
       # @since 1.0.0
-      # @api private
+      # @api public
       TYPES = {
         txt: "text/plain",
         html: "text/html",
+        form: "application/x-www-form-urlencoded",
+        multipart: "multipart/form-data",
         json: "application/json",
         manifest: "text/cache-manifest",
         atom: "application/atom+xml",
@@ -222,11 +224,13 @@ module Hanami
         # @since 2.0.0
         # @api private
         def enforce_content_type(request, config)
-          content_type = request.content_type
+          # Compare media type (without parameters) instead of full Content-Type header
+          # to avoid false negatives (e.g., multipart/form-data; boundary=...)
+          media_type = request.media_type
 
-          return if content_type.nil?
+          return if media_type.nil?
 
-          return if accepted_mime_type?(content_type, config)
+          return if accepted_mime_type?(media_type, config)
 
           yield
         end

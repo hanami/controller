@@ -26,11 +26,12 @@ module Hanami
 
       # @since 2.0.0
       # @api private
-      def initialize(env:, params:, session_enabled: false)
+      def initialize(env:, params:, default_tld_length: 1, session_enabled: false)
         super(env)
 
         @params = params
         @session_enabled = session_enabled
+        @default_tld_length = default_tld_length
       end
 
       # Returns the request's ID
@@ -56,7 +57,7 @@ module Hanami
 
       # Returns the session for the request.
       #
-      # @return [Hash] the session object
+      # @return [Hanami::Request::Session] the session object
       #
       # @raise [MissingSessionError] if the session is not enabled
       #
@@ -70,7 +71,7 @@ module Hanami
           raise Hanami::Action::MissingSessionError.new("Hanami::Action::Request#session")
         end
 
-        super
+        @session ||= Session.new(super)
       end
 
       # Returns the flash for the request.
@@ -89,6 +90,31 @@ module Hanami
         end
 
         @flash ||= Flash.new(session[Flash::KEY])
+      end
+
+      # Returns the subdomains for the current host.
+      #
+      # @return [Array<String>]
+      #
+      # @api public
+      # @since 2.3.0
+      def subdomains(tld_length = @default_tld_length)
+        return [] if IP_ADDRESS_HOST_REGEXP.match?(host)
+
+        host.split(".")[0..-(tld_length + 2)]
+      end
+
+      IP_ADDRESS_HOST_REGEXP = /\A\d+\.\d+\.\d+\.\d+\z/
+      private_constant :IP_ADDRESS_HOST_REGEXP
+
+      # Returns the subdomain for the current host.
+      #
+      # @return [String]
+      #
+      # @api public
+      # @since 2.3.0
+      def subdomain(tld_length = @default_tld_length)
+        subdomains(tld_length).join(".")
       end
 
       # @since 2.0.0
