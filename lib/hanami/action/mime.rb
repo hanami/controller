@@ -13,33 +13,32 @@ module Hanami
       # @since 1.0.0
       # @api public
       TYPES = {
-        txt: "text/plain",
-        html: "text/html",
-        form: "application/x-www-form-urlencoded",
-        multipart: "multipart/form-data",
-        json: "application/json",
-        manifest: "text/cache-manifest",
         atom: "application/atom+xml",
         avi: "video/x-msvideo",
         bmp: "image/bmp",
-        bz: "application/x-bzip",
         bz2: "application/x-bzip2",
+        bz: "application/x-bzip",
         chm: "application/vnd.ms-htmlhelp",
         css: "text/css",
         csv: "text/csv",
         flv: "video/x-flv",
+        form: "application/x-www-form-urlencoded",
         gif: "image/gif",
         gz: "application/x-gzip",
         h264: "video/h264",
+        html: "text/html",
         ico: "image/vnd.microsoft.icon",
         ics: "text/calendar",
         jpg: "image/jpeg",
         js: "application/javascript",
-        mp4: "video/mp4",
+        json: "application/json",
+        manifest: "text/cache-manifest",
         mov: "video/quicktime",
         mp3: "audio/mpeg",
+        mp4: "video/mp4",
         mp4a: "audio/mp4",
         mpg: "video/mpeg",
+        multipart: "multipart/form-data",
         oga: "audio/ogg",
         ogg: "application/ogg",
         ogv: "video/ogg",
@@ -55,13 +54,14 @@ module Hanami
         tar: "application/x-tar",
         torrent: "application/x-bittorrent",
         tsv: "text/tab-separated-values",
+        txt: "text/plain",
         uri: "text/uri-list",
         vcs: "text/x-vcalendar",
         wav: "audio/x-wav",
         webm: "video/webm",
         wmv: "video/x-ms-wmv",
-        woff: "application/font-woff",
         woff2: "application/font-woff2",
+        woff: "application/font-woff",
         wsdl: "application/wsdl+xml",
         xhtml: "application/xhtml+xml",
         xml: "application/xml",
@@ -190,7 +190,7 @@ module Hanami
           }.compact.max&.format
         end
 
-        # Yields if an action is configured with `formats`, the request has an `Accept` header, an
+        # Yields if an action is configured with `formats`, the request has an `Accept` header, and
         # none of the Accept types matches the accepted formats. The given block is expected to halt
         # the request handling.
         #
@@ -211,9 +211,9 @@ module Hanami
           yield
         end
 
-        # Yields if an action is configured with `formats`, the request has a `Content-Type` header
-        # (or a `default_requst_format` is configured), and the content type does not match the
-        # accepted formats. The given block is expected to halt the request handling.
+        # Yields if an action is configured with `formats`, the request has a `Content-Type` header,
+        # and the content type does not match the accepted formats. The given block is expected to
+        # halt the request handling.
         #
         # If any of these conditions are not met, then the request is acceptable and the method
         # returns without yielding.
@@ -224,8 +224,8 @@ module Hanami
         # @since 2.0.0
         # @api private
         def enforce_content_type(request, config)
-          # Compare media type (without parameters) instead of full Content-Type header
-          # to avoid false negatives (e.g., multipart/form-data; boundary=...)
+          # Compare media type (without parameters) instead of full Content-Type header to avoid
+          # false negatives (e.g., multipart/form-data; boundary=...)
           media_type = request.media_type
 
           return if media_type.nil?

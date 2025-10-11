@@ -17,7 +17,7 @@ RSpec.describe Hanami::Action do
     end
 
     class Configuration < Hanami::Action
-      config.format :jpg
+      config.formats.accept :jpg
 
       def handle(*, res)
         res.body = res.format

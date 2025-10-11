@@ -24,12 +24,12 @@ RSpec.describe Hanami::Action::Config do
 
   describe "#format" do
     it "sets formats" do
-      config.format :json, :html
+      config.formats.accept :json, :html
       expect(config.formats.values).to eq [:json, :html]
     end
 
     it "returns previously set formats" do
-      config.format :json, :html
+      config.formats.accept :json, :html
       expect(config.format).to eq [:json, :html]
     end
   end
