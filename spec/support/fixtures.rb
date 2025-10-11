@@ -599,7 +599,7 @@ class ParamsAction < Hanami::Action
   end
 end
 
-class WhitelistedParamsAction < Hanami::Action
+class AllowlistedParamsAction < Hanami::Action
   class Params < Hanami::Action::Params
     params do
       if RSpec::Support::Validations.version?(2)
@@ -621,7 +621,7 @@ class WhitelistedParamsAction < Hanami::Action
   end
 end
 
-class WhitelistedDslAction < Hanami::Action
+class AllowlistedDslAction < Hanami::Action
   params do
     required(:username).filled
   end
@@ -631,7 +631,7 @@ class WhitelistedDslAction < Hanami::Action
   end
 end
 
-class WhitelistedUploadDslAction < Hanami::Action
+class AllowlistedUploadDslAction < Hanami::Action
   params do
     if RSpec::Support::Validations.version?(2)
       required(:id).maybe(:integer)
@@ -1975,7 +1975,7 @@ end
 class DependencyContractAction < ContractActionBase
 end
 
-class WhitelistedUploadDslContractAction < Hanami::Action
+class AllowlistedUploadDslContractAction < Hanami::Action
   contract do
     params do
       required(:id).maybe(:integer)

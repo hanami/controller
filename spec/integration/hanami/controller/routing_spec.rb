@@ -131,7 +131,7 @@ RSpec.describe "Hanami::Router integration" do
     end
 
     context "with validations" do
-      it "automatically whitelists params from router" do
+      it "automatically allowlist params from router" do
         response = app.request("PATCH", "/painters/23", params: {painter: {first_name: "Gustav", last_name: "Klimt"}})
 
         expect(response.status).to be(200)

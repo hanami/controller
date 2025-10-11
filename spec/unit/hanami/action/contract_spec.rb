@@ -104,7 +104,7 @@ RSpec.describe "Contract" do
     end
 
     context "with a contract" do
-      let(:action) { WhitelistedUploadDslContractAction.new }
+      let(:action) { AllowlistedUploadDslContractAction.new }
 
       it "raw gets all params" do
         Tempfile.create("multipart-upload") do |upload|
