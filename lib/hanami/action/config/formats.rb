@@ -41,7 +41,15 @@ module Hanami
         # @since 2.0.0
         # @api public
         def values
-          # TODO: add deprecation notice
+          msg = <<~TEXT
+            Hanami::Action `config.formats.values` is deprecated and will be removed in Hanami 2.4.
+
+            Please use `config.formats.accepted` instead.
+
+            See https://guides.hanamirb.org/v2.3/actions/formats-and-mime-types/ for details.
+          TEXT
+          warn(msg, category: :deprecated)
+
           accepted
         end
 
@@ -154,7 +162,14 @@ module Hanami
         # @since 2.0.0
         # @api public
         def add(format, mime_types)
-          # TODO: deprecation
+          msg = <<~TEXT
+            Hanami::Action `config.formats.add` is deprecated and will be removed in Hanami 2.4.
+
+            Please use `config.formats.register` instead.
+
+            See https://guides.hanamirb.org/v2.3/actions/formats-and-mime-types/ for details.
+          TEXT
+          warn(msg, category: :deprecated)
 
           register(format => mime_types)
 

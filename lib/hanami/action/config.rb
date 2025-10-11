@@ -83,6 +83,15 @@ module Hanami
       # @since 2.0.0
       # @api public
       def format(*formats)
+        msg = <<~TEXT
+          Hanami::Action `config.format` is deprecated and will be removed in Hanami 2.4.
+
+          Please use `config.formats.register` and/or `config.formats.accept` instead.
+
+          See https://guides.hanamirb.org/v2.3/actions/formats-and-mime-types/ for details.
+        TEXT
+        warn(msg, category: :deprecated)
+
         if formats.empty?
           self.formats.values
         else
