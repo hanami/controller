@@ -200,12 +200,7 @@ module Hanami
         # @api private
         def mapping=(mappings)
           @mapping = {}
-
-          mappings.each do |format_name, mime_types|
-            Array(mime_types).each do |mime_type|
-              add(format_name, mime_type)
-            end
-          end
+          register(mappings)
         end
 
         # Clears any previously added mappings and format values.
