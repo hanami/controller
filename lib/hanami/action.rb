@@ -335,7 +335,7 @@ module Hanami
           session_enabled: session_enabled?
         )
 
-        enforce_accepted_mime_types(request)
+        enforce_accepted_media_types(request)
 
         _run_before_callbacks(request, response)
         handle(request, response)
@@ -422,7 +422,7 @@ module Hanami
 
     # @since 2.0.0
     # @api private
-    def enforce_accepted_mime_types(request)
+    def enforce_accepted_media_types(request)
       return if config.formats.empty?
 
       Mime.enforce_accept(request, config) { return halt 406 }
@@ -605,7 +605,7 @@ module Hanami
       _empty_headers(res) if _requires_empty_headers?(res)
       _empty_body(res) if res.head?
 
-      res.set_format(Action::Mime.detect_format(res.content_type, config))
+      res.set_format(Mime.format_from_media_type(res.content_type, config))
       res[:params] = req.params
       res[:format] = res.format
       res

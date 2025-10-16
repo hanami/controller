@@ -3,65 +3,28 @@
 RSpec.describe Hanami::Action::Config::Formats do
   subject(:formats) { described_class.new }
 
-  describe "#mapping" do
-    it "is a basic mapping of mime types to `:all` formats by default" do
-      expect(formats.mapping).to eq(
-        "application/octet-stream" => :all,
-        "*/*" => :all
-      )
-    end
-
-    it "can be replaced a mapping" do
-      expect { formats.mapping = {all: "*/*"} }
-        .to change { formats.mapping }
-        .to("*/*" => :all)
-    end
-  end
-
   describe "#register" do
     it "registers a mapping" do
-      expect { formats.register(custom: "application/custom") }
+      expect { formats.register(:custom, media_type: "application/custom") }
         .to change { formats.mapping }
-        .to include("application/custom" => :custom)
+        .to include(custom: have_attributes(media_type: "application/custom"))
     end
 
-    it "registers a mapping with multiple content types" do
-      expect { formats.register(json: ["application/json", "application/json+scim"]) }
-        .to change { formats.mapping }
-        .to include("application/json" => :json, "application/json+scim" => :json)
-    end
-
-    it "registers multiple mappings" do
+    it "registers a mapping with content types" do
       expect {
-        formats.register(custom: "application/custom", json: ["application/json", "application/json+scim"])
+        formats.register(
+          :jsonapi,
+          media_type: "application/vnd.api+json",
+          content_types: ["application/vnd.api+json", "application/json"]
+        )
       }
         .to change { formats.mapping }
         .to include(
-          "application/custom" => :custom,
-          "application/json" => :json,
-          "application/json+scim" => :json
+          jsonapi: have_attributes(
+            media_type: "application/vnd.api+json",
+            content_types: ["application/vnd.api+json", "application/json"]
+          )
         )
-    end
-
-    it "replaces a previously set mapping for a given content type" do
-      formats.mapping = {html: "text/html"}
-      formats.register(custom: "text/html")
-
-      expect(formats.mapping).to eq("text/html" => :custom)
-    end
-
-    it "raises an error if the given format cannot be coerced into symbol" do
-      expect { formats.register(23 => "boom") }.to raise_error(TypeError)
-    end
-
-    it "raises an error if the given mime type cannot be coerced into string" do
-      obj = Class.new(BasicObject) do
-        def hash
-          23
-        end
-      end.new
-
-      expect { formats.register(boom: obj) }.to raise_error(TypeError)
     end
   end
 
@@ -145,7 +108,7 @@ RSpec.describe Hanami::Action::Config::Formats do
 
   describe "#format_for" do
     before do
-      formats.mapping = {html: "text/html"}
+      formats.register(:html, media_type: "text/html")
     end
 
     it "returns the configured format for the given MIME type" do
@@ -153,7 +116,7 @@ RSpec.describe Hanami::Action::Config::Formats do
     end
 
     it "returns the most recently configured format for a given MIME type" do
-      formats.add :htm, "text/html"
+      formats.register :htm, media_type: "text/html"
 
       expect(formats.format_for("text/html")).to eq(:htm)
     end
@@ -163,31 +126,17 @@ RSpec.describe Hanami::Action::Config::Formats do
     end
   end
 
-  describe "#mime_type_for" do
+  describe "#media_type_for" do
     before do
-      formats.mapping = {html: ["text/html", "text/htm"]}
+      formats.register(:custom, media_type: "application/custom")
     end
 
-    it "returns the first configured MIME type for the given format" do
-      expect(formats.mime_type_for(:html)).to eq "text/html"
+    it "returns the configured media type for the given format" do
+      expect(formats.media_type_for(:custom)).to eq "application/custom"
     end
 
-    it "returns nil if no matching MIME type is found" do
+    it "returns nil if no matching format is found" do
       expect(formats.mime_type_for(:missing)).to be nil
-    end
-  end
-
-  describe "#mime_types_for" do
-    before do
-      formats.mapping = {html: ["text/html", "text/htm"]}
-    end
-
-    it "returns all configured MIME types for the given format" do
-      expect(formats.mime_types_for(:html)).to eq ["text/html", "text/htm"]
-    end
-
-    it "returns an empty array if no matching MIME type is found" do
-      expect(formats.mime_types_for(:missing)).to eq []
     end
   end
 
@@ -196,45 +145,14 @@ RSpec.describe Hanami::Action::Config::Formats do
       it "adds a new mapping" do
         expect { formats.add(:custom, "application/custom") }
           .to change { formats.mapping }
-          .to include("application/custom" => :custom)
-      end
-
-      it "can add a mapping to multiple content types" do
-        expect { formats.add(:json, ["application/json", "application/json+scim"]) }
-          .to change { formats.mapping }
-          .to include("application/json" => :json, "application/json+scim" => :json)
+          .to include(custom: have_attributes(media_type: "application/custom"))
       end
 
       it "replaces a previously set mapping for a given MIME type" do
-        formats.mapping = {html: "text/html"}
+        formats.register(:html, media_type: "text/html")
         formats.add :custom, "text/html"
 
-        expect(formats.mapping).to eq("text/html" => :custom)
-      end
-
-      it "appends the format to the list of enabled formats" do
-        formats.values = [:json]
-
-        expect {
-          formats.add(:custom, "application/custom")
-          formats.add(:custom, "application/custom+more")
-        }
-          .to change { formats.values }
-          .to [:json, :custom]
-      end
-
-      it "raises an error if the given format cannot be coerced into symbol" do
-        expect { formats.add(23, "boom") }.to raise_error(TypeError)
-      end
-
-      it "raises an error if the given mime type cannot be coerced into string" do
-        obj = Class.new(BasicObject) do
-          def hash
-            23
-          end
-        end.new
-
-        expect { formats.add(:boom, obj) }.to raise_error(TypeError)
+        expect(formats.mapping).to match(custom: have_attributes(media_type: "text/html"))
       end
     end
 

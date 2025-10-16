@@ -7,8 +7,9 @@ require_relative "errors"
 
 module Hanami
   class Action
+    # @api private
     module Mime # rubocop:disable Metrics/ModuleLength
-      # Most commom MIME Types used for responses
+      # Most commom media types used for responses
       #
       # @since 1.0.0
       # @api public
@@ -70,7 +71,37 @@ module Hanami
         zip: "application/zip"
       }.freeze
 
+      # @api private
       ANY_TYPE = "*/*"
+
+      # @api private
+      Format = Data.define(:name, :media_type, :content_types) do
+        def initialize(name:, media_type:, content_types: [media_type])
+          super
+        end
+      end
+
+      # @api private
+      FORMATS = TYPES
+        .to_h { |name, media_type| [name, Format.new(name:, media_type:)] }
+        .update(
+          all: Format.new(
+            name: :all,
+            media_type: "application/octet-stream",
+            content_types: ["*/*"]
+          ),
+          html: Format.new(
+            name: :html,
+            media_type: "text/html",
+            content_types: ["application/x-www-form-urlencoded", "multipart/form-data"]
+          )
+        )
+        .freeze
+
+      # @api private
+      MEDIA_TYPES_TO_FORMATS = FORMATS.each_with_object({}) { |(_name, format), hsh|
+        hsh[format.media_type] = format
+      }.freeze
 
       class << self
         # Returns a format name for the given content type.
@@ -83,52 +114,50 @@ module Hanami
         # This is used to return the format name a {Response}.
         #
         # @example
-        #   detect_format("application/jsonl charset=utf-8", config) # => :json
+        #   format_from_media_type("application/json;charset=utf-8", config) # => :json
         #
         # @return [Symbol, nil]
         #
         # @see Response#format
         # @see Action#finish
         #
-        # @since 2.0.0
         # @api private
-        def detect_format(content_type, config)
-          return if content_type.nil?
+        def format_from_media_type(media_type, config)
+          return if media_type.nil?
 
-          ct = content_type.split(";").first
-          config.formats.format_for(ct) || TYPES.key(ct)
+          mt = media_type.split(";").first
+          config.formats.format_for(mt) || MEDIA_TYPES_TO_FORMATS[mt]&.name
         end
 
         # Returns a format name and content type pair for a given format name or content type
         # string.
         #
         # @example
-        #   detect_format_and_content_type(:json, config)
+        #   format_and_media_type(:json, config)
         #   # => [:json, "application/json"]
         #
-        #   detect_format_and_content_type("application/json", config)
+        #   format_and_media_type("application/json", config)
         #   # => [:json, "application/json"]
         #
         # @example Unknown format name
-        #   detect_format_and_content_type(:unknown, config)
+        #   format_and_media_type(:unknown, config)
         #   # raises Hanami::Action::UnknownFormatError
         #
         # @example Unknown content type
-        #   detect_format_and_content_type("application/unknown", config)
+        #   format_and_media_type("application/unknown", config)
         #   # => [nil, "application/unknown"]
         #
         # @return [Array<(Symbol, String)>]
         #
         # @raise [Hanami::Action::UnknownFormatError] if an unknown format name is given
         #
-        # @since 2.0.0
         # @api private
-        def detect_format_and_content_type(value, config)
+        def format_and_media_type(value, config)
           case value
           when Symbol
-            [value, format_to_mime_type(value, config)]
+            [value, format_to_media_type(value, config)]
           when String
-            [detect_format(value, config), value]
+            [format_from_media_type(value, config), value]
           else
             raise UnknownFormatError.new(value)
           end
@@ -146,13 +175,12 @@ module Hanami
         #
         # @return [String]
         #
-        # @since 2.0.0
         # @api private
         def content_type_with_charset(content_type, charset)
           "#{content_type}; charset=#{charset}"
         end
 
-        # Returns a string combining a MIME type and charset, intended for setting as the
+        # Returns a string combining a media type and charset, intended for setting as the
         # `Content-Type` header for the response to the given request.
         #
         # This uses the request's `Accept` header (if present) along with the configured formats to
@@ -162,7 +190,6 @@ module Hanami
         #
         # @see Action#call
         #
-        # @since 2.0.0
         # @api private
         def response_content_type_with_charset(request, config)
           content_type_with_charset(
@@ -173,7 +200,6 @@ module Hanami
 
         # Patched version of <tt>Rack::Utils.best_q_match</tt>.
         #
-        # @since 2.0.0
         # @api private
         #
         # @see http://www.rubydoc.info/gems/rack/Rack/Utils#best_q_match-class_method
@@ -181,7 +207,7 @@ module Hanami
         # @see https://github.com/hanami/controller/issues/59
         # @see https://github.com/hanami/controller/issues/104
         # @see https://github.com/hanami/controller/issues/275
-        def best_q_match(q_value_header, available_mimes = TYPES.values)
+        def best_q_match(q_value_header, available_mimes)
           ::Rack::Utils.q_values(q_value_header).each_with_index.map { |(req_mime, quality), index|
             match = available_mimes.find { |am| ::Rack::Mime.match?(am, req_mime) }
             next unless match
@@ -197,16 +223,15 @@ module Hanami
         # If any of these conditions are not met, then the request is acceptable and the method
         # returns without yielding.
         #
-        # @see Action#enforce_accepted_mime_types
+        # @see Action#enforce_accepted_media_types
         # @see Config#formats
         #
-        # @since 2.0.0
         # @api private
         def enforce_accept(request, config)
           return unless request.accept_header?
 
           accept_types = ::Rack::Utils.q_values(request.accept).map(&:first)
-          return if accept_types.any? { |mime_type| accepted_mime_type?(mime_type, config) }
+          return if accept_types.any? { |type| accepted_media_type?(type, config) }
 
           yield
         end
@@ -218,10 +243,9 @@ module Hanami
         # If any of these conditions are not met, then the request is acceptable and the method
         # returns without yielding.
         #
-        # @see Action#enforce_accepted_mime_types
+        # @see Action#enforce_accepted_media_types
         # @see Config#formats
         #
-        # @since 2.0.0
         # @api private
         def enforce_content_type(request, config)
           # Compare media type (without parameters) instead of full Content-Type header to avoid
@@ -230,58 +254,74 @@ module Hanami
 
           return if media_type.nil?
 
-          return if accepted_mime_type?(media_type, config)
+          return if accepted_content_type?(media_type, config)
 
           yield
         end
 
         private
 
-        # @since 2.0.0
         # @api private
-        def accepted_mime_type?(mime_type, config)
-          accepted_mime_types(config).any? { |accepted_mime_type|
-            ::Rack::Mime.match?(mime_type, accepted_mime_type)
+        def accepted_media_type?(media_type, config)
+          accepted_media_types(config).any? { |accepted_media_type|
+            ::Rack::Mime.match?(media_type, accepted_media_type)
           }
         end
 
-        # @since 2.0.0
         # @api private
-        def accepted_mime_types(config)
-          return [ANY_TYPE] if config.formats.empty?
-
-          config.formats.map { |format| format_to_mime_types(format, config) }.flatten(1)
+        def accepted_content_type?(content_type, config)
+          accepted_content_types(config).any? { |accepted_content_type|
+            ::Rack::Mime.match?(content_type, accepted_content_type)
+          }
         end
 
-        # @since 2.0.0
+        # @api private
+        def accepted_content_types(config)
+          return [ANY_TYPE] if config.formats.empty?
+
+          config.formats.map { |format| format_to_content_types(format, config) }.flatten(1)
+        end
+
+        # @api private
+        def accepted_media_types(config)
+          return [ANY_TYPE] if config.formats.empty?
+
+          config.formats.map { |format| format_to_media_type(format, config) }
+        end
+
         # @api private
         def response_content_type(request, config)
           if request.accept_header?
-            all_mime_types = TYPES.values + config.formats.mapping.keys
-            content_type = best_q_match(request.accept, all_mime_types)
+            all_media_types = MEDIA_TYPES_TO_FORMATS.keys + config.formats.accepted_media_types
+            content_type = best_q_match(request.accept, all_media_types)
 
             return content_type if content_type
           end
 
           if config.formats.default
-            return format_to_mime_type(config.formats.default, config)
+            return format_to_media_type(config.formats.default, config)
           end
 
           Action::DEFAULT_CONTENT_TYPE
         end
 
-        # @since 2.0.0
         # @api private
-        def format_to_mime_type(format, config)
-          config.formats.mime_type_for(format) ||
-            TYPES.fetch(format) { raise Hanami::Action::UnknownFormatError.new(format) }
+        def format_to_media_type(format, config)
+          config.formats.media_type_for(format) ||
+            FORMATS.fetch(format) { raise Hanami::Action::UnknownFormatError.new(format) }.media_type
         end
 
-        # @since 2.0.0
         # @api private
-        def format_to_mime_types(format, config)
-          config.formats.mime_types_for(format).tap { |types|
-            types << TYPES[format] if TYPES.key?(format)
+        def format_to_media_types(format, config)
+          config.formats.media_types_for(format).tap { |types| # WIP
+            types << FORMATS[format].media_type if FORMATS.key?(format)
+          }
+        end
+
+        # @api private
+        def format_to_content_types(format, config)
+          config.formats.content_types_for(format).tap { |types|
+            types.concat FORMATS[format].content_types if FORMATS.key?(format)
           }
         end
       end
