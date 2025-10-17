@@ -71,7 +71,7 @@ module Hanami
           super
           @accepted = original.accepted.dup
           @default = original.default
-          @formats = original.mapping.dup
+          @mapping = original.mapping.dup
         end
 
         # !@attribute [w] accepted
