@@ -111,13 +111,16 @@ module Hanami
         #
         # @param format [Symbol] the format name
         # @param media_type [String] the format's media type
-        # @param content_types [Array<String>] the acceptable content types for the format
+        # @param accept_types [Array<String>] media types to accept in request `Accept` headers
+        # @param content_types [Array<String>] media types to accept in request `Content-Type` headers
         #
         # @example
         #   config.formats.register(:scim, media_type: "application/json+scim")
+        #
         #   config.formats.register(
         #     :jsonapi,
-        #     media_type: "application/vnd.api+json",
+        #     "application/vnd.api+json",
+        #     accept_types: ["application/vnd.api+json", "application/json"],
         #     content_types: ["application/vnd.api+json", "application/json"]
         #   )
         #
