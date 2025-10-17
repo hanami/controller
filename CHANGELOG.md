@@ -2,6 +2,79 @@
 
 Complete, fast and testable actions for Rack
 
+## v2.3.0.beta2 - 2025-10-17
+
+### Added
+
+- [Tim Riley] Make format config more flexible. (#485)
+
+  **Use `config.formats.register` to register a new format and its media types.**
+
+  This replaces `config.formats.add`. Unlike `.add` it does _not_ set the format as being one of the accpeted formats at the same time.
+
+  This change makes it easier to `register` your custom formats in app config or a base action class, without inadvertently causing format restrictions in descendent action classes.
+
+  A simple registration looks like this:
+
+  ```ruby
+  config.formats.register(:json, "application/json")
+  ```
+
+  `.register` also allows you to register one or more media types for the distinct stages of request processing:
+
+  - If you want to accept requests based on different/additional media types in `Accept` request headers, provide them as `accept_types:`
+  - If you want to accept requests based on different/additional media types in `Content-Type` request headers, provide them as `content_types:`
+  - If you do not provide these options, then the _default_ media type (the required second argument, after the format name) is used for each of the above
+  - This default media type is also set as the default `Content-Type` _response_ header for requests that match the format
+
+  Together, these allow you to register a format like this:
+
+  ```ruby
+  config.formats.register(
+    :jsonapi,
+    "application/vnd.api+json",
+    accept_types: ["application/vnd.api+json", "application/json"],
+    content_types: ["application/vnd.api+json", "application/json"],
+  )
+  ```
+
+  **Use `config.formats.accept` to accept specific formats from an action.**
+
+  `formats.accept` replaces `Action.format` and `config.format`. You can access your accepted formats via `formats.accepted`, which replaces `config.formats.values`.
+
+  To accept a format:
+
+  ```ruby
+  config.formats.accept :html, :json
+  config.formats.accepted # => [:html, :json]
+
+  config.formats.accept :csv # it is additive
+  config.formats.accepted # => [:html, :json, :csv]
+  ```
+
+  The first format you give to `accept` will also become the _default format_ for responses from your action.
+
+  **Use config.formats.default=` to set an action's default format.**
+
+  This is a new capability. Assign an action's default format using `config.formats.default=`.
+
+  The default format is used to set the response `Content-Type` header when the request does not specify a format via `Accept`.
+
+  ```ruby
+  config.formats.accept :html, :json
+
+  # When no default is already set, the first accepted format becomes default
+  config.formats.default # => :html
+
+  # But you can now configure this directly
+  config.formats.default = :json
+  ```
+
+### Changed
+
+- [Tim Riley] `Action.format`, `config.format`, `config.formats.add`, `config.formats.values`, and `config.formats.values=` are deprecated and will be removed in Hanami 2.4. (#485)
+- [Tim Riley] Drop support for Ruby 3.1.
+
 ## v2.3.0.beta1 - 2025-10-03
 
 ### Fixed
