@@ -1631,7 +1631,7 @@ module Mimes
   end
 
   class Strict < Hanami::Action
-    format :json
+    config.formats.accept :json
 
     def handle(_req, res)
       res.body = res.format
@@ -1639,7 +1639,7 @@ module Mimes
   end
 
   class Relaxed < Hanami::Action
-    format :all
+    config.formats.accept :all
 
     def handle(_req, res)
       res.body = res.format
