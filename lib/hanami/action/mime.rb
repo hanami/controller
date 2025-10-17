@@ -206,24 +206,6 @@ module Hanami
           )
         end
 
-        # Patched version of <tt>Rack::Utils.best_q_match</tt>.
-        #
-        # @api private
-        #
-        # @see http://www.rubydoc.info/gems/rack/Rack/Utils#best_q_match-class_method
-        # @see https://github.com/rack/rack/pull/659
-        # @see https://github.com/hanami/controller/issues/59
-        # @see https://github.com/hanami/controller/issues/104
-        # @see https://github.com/hanami/controller/issues/275
-        def best_q_match(q_value_header, available_mimes)
-          ::Rack::Utils.q_values(q_value_header).each_with_index.map { |(req_mime, quality), index|
-            match = available_mimes.find { |am| ::Rack::Mime.match?(am, req_mime) }
-            next unless match
-
-            RequestMimeWeight.new(req_mime, quality, index, match)
-          }.compact.max&.format
-        end
-
         # Yields if an action is configured with `formats`, the request has an `Accept` header, and
         # none of the Accept types matches the accepted formats. The given block is expected to halt
         # the request handling.
@@ -265,6 +247,24 @@ module Hanami
           return if accepted_content_type?(media_type, config)
 
           yield
+        end
+
+        # Patched version of <tt>Rack::Utils.best_q_match</tt>.
+        #
+        # @api private
+        #
+        # @see http://www.rubydoc.info/gems/rack/Rack/Utils#best_q_match-class_method
+        # @see https://github.com/rack/rack/pull/659
+        # @see https://github.com/hanami/controller/issues/59
+        # @see https://github.com/hanami/controller/issues/104
+        # @see https://github.com/hanami/controller/issues/275
+        def best_q_match(q_value_header, available_mimes)
+          ::Rack::Utils.q_values(q_value_header).each_with_index.map { |(req_mime, quality), index|
+            match = available_mimes.find { |am| ::Rack::Mime.match?(am, req_mime) }
+            next unless match
+
+            RequestMimeWeight.new(req_mime, quality, index, match)
+          }.compact.max&.format
         end
 
         private
