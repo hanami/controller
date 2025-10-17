@@ -42,7 +42,7 @@ module Hanami
         new(config: Action.config.dup, content_type: Mime.best_q_match(env[Action::HTTP_ACCEPT]), env: env).tap do |r|
           r.status = status
           r.body   = Http::Status.message_for(status)
-          r.set_format(Mime.detect_format(r.content_type), config)
+          r.set_format(Mime.format_from_media_type(r.content_type), config)
         end
       end
 
@@ -134,7 +134,7 @@ module Hanami
       # @since 2.0.0
       # @api public
       def format
-        @format ||= Mime.detect_format(content_type, @config)
+        @format ||= Mime.format_from_media_type(content_type, @config)
       end
 
       # Sets the format and associated content type for the response.
@@ -165,7 +165,7 @@ module Hanami
       # @since 2.0.0
       # @api public
       def format=(value)
-        format, content_type = Mime.detect_format_and_content_type(value, @config)
+        format, content_type = Mime.format_and_media_type(value, @config)
 
         self.content_type = Mime.content_type_with_charset(content_type, charset)
 

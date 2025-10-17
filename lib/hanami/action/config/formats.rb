@@ -11,35 +11,57 @@ module Hanami
       # @since 2.0.0
       # @api private
       class Formats
-        include Dry.Equalizer(:values, :mapping)
-
-        # Default MIME type to format mapping
-        #
-        # @since 2.0.0
-        # @api private
-        DEFAULT_MAPPING = {
-          "application/octet-stream" => :all,
-          "*/*" => :all
-        }.freeze
+        include Dry.Equalizer(:accepted, :mapping)
 
         # @since 2.0.0
         # @api private
         attr_reader :mapping
 
-        # The array of enabled formats.
+        # The array of formats to accept requests by.
         #
         # @example
-        #   config.formats.values = [:html, :json]
-        #   config.formats.values # => [:html, :json]
+        #   config.formats.accepted = [:html, :json]
+        #   config.formats.accepted # => [:html, :json]
         #
         # @since 2.0.0
         # @api public
-        attr_reader :values
+        attr_reader :accepted
+
+        # @see #accepted
+        #
+        # @since 2.0.0
+        # @api public
+        def values
+          msg = <<~TEXT
+            Hanami::Action `config.formats.values` is deprecated and will be removed in Hanami 2.4.
+
+            Please use `config.formats.accepted` instead.
+
+            See https://guides.hanamirb.org/v2.3/actions/formats-and-mime-types/ for details.
+          TEXT
+          warn(msg, category: :deprecated)
+
+          accepted
+        end
+
+        # Returns the default format name.
+        #
+        # When a request is received that cannot
+        #
+        # @return [Symbol, nil] the default format name, if any
+        #
+        # @example
+        #   @config.formats.default # => :json
+        #
+        # @since 2.0.0
+        # @api public
+        attr_reader :default
 
         # @since 2.0.0
         # @api private
-        def initialize(values: [], mapping: DEFAULT_MAPPING.dup)
-          @values = values
+        def initialize(accepted: [], default: nil, mapping: {})
+          @accepted = accepted
+          @default = default
           @mapping = mapping
         end
 
@@ -47,15 +69,74 @@ module Hanami
         # @api private
         private def initialize_copy(original) # rubocop:disable Style/AccessModifierDeclarations
           super
-          @values = original.values.dup
+          @accepted = original.accepted.dup
+          @default = original.default
           @mapping = original.mapping.dup
+        end
+
+        # !@attribute [w] accepted
+        #   @since 2.3.0
+        #   @api public
+        def accepted=(formats)
+          @accepted = formats.map { |f| Hanami::Utils::Kernel.Symbol(f) }
         end
 
         # !@attribute [w] values
         #   @since 2.0.0
         #   @api public
-        def values=(formats)
-          @values = formats.map { |f| Utils::Kernel.Symbol(f) }
+        alias_method :values=, :accepted=
+
+        # @since 2.3.0
+        def accept(*formats)
+          self.default = formats.first if default.nil?
+          self.accepted = accepted | formats
+        end
+
+        # @api private
+        def accepted_formats(standard_formats = {})
+          accepted.to_h { |format|
+            [
+              format,
+              mapping.fetch(format) { standard_formats[format] }
+            ]
+          }
+        end
+
+        # @since 2.3.0
+        def default=(format)
+          @default = format.to_sym
+        end
+
+        # Registers a format and its associated media types.
+        #
+        # @param format [Symbol] the format name
+        # @param media_type [String] the format's media type
+        # @param accept_types [Array<String>] media types to accept in request `Accept` headers
+        # @param content_types [Array<String>] media types to accept in request `Content-Type` headers
+        #
+        # @example
+        #   config.formats.register(:scim, media_type: "application/json+scim")
+        #
+        #   config.formats.register(
+        #     :jsonapi,
+        #     "application/vnd.api+json",
+        #     accept_types: ["application/vnd.api+json", "application/json"],
+        #     content_types: ["application/vnd.api+json", "application/json"]
+        #   )
+        #
+        # @return [self]
+        #
+        # @since 2.3.0
+        # @api public
+        def register(format, media_type, accept_types: [media_type], content_types: [media_type])
+          mapping[format] = Mime::Format.new(
+            name: format.to_sym,
+            media_type: media_type,
+            accept_types: accept_types,
+            content_types: content_types
+          )
+
+          self
         end
 
         # @overload add(format)
@@ -83,20 +164,30 @@ module Hanami
         #   @param mime_types [Array<String>]
         #
         #   @example
-        #     config.formats.add(:json, ["application/json+scim", "application/json"])
+        #     config.formats.add(:json, ["application/json+scim"])
         #
         # @return [self]
         #
         # @since 2.0.0
         # @api public
-        def add(format, mime_types = [])
-          format = Utils::Kernel.Symbol(format)
+        def add(format, mime_types)
+          msg = <<~TEXT
+            Hanami::Action `config.formats.add` is deprecated and will be removed in Hanami 2.4.
 
-          Array(mime_types).each do |mime_type|
-            @mapping[Utils::Kernel.String(mime_type)] = format
-          end
+            Please use `config.formats.register` instead.
 
-          @values << format unless @values.include?(format)
+            See https://guides.hanamirb.org/v2.3/actions/formats-and-mime-types/ for details.
+          TEXT
+          warn(msg, category: :deprecated)
+
+          mime_type = Array(mime_types).first
+
+          # The old behaviour would have subsequent mime types _replacing_ previous ones
+          mapping.reject! { |_, format| format.media_type == mime_type }
+
+          register(format, Array(mime_types).first, accept_types: mime_types)
+
+          accept(format) unless @accepted.include?(format)
 
           self
         end
@@ -104,31 +195,19 @@ module Hanami
         # @since 2.0.0
         # @api private
         def empty?
-          @values.empty?
+          accepted.empty?
         end
 
         # @since 2.0.0
         # @api private
         def any?
-          @values.any?
+          @accepted.any?
         end
 
         # @since 2.0.0
         # @api private
         def map(&blk)
-          @values.map(&blk)
-        end
-
-        # @since 2.0.0
-        # @api private
-        def mapping=(mappings)
-          @mapping = {}
-
-          mappings.each do |format_name, mime_types|
-            Array(mime_types).each do |mime_type|
-              add(format_name, mime_type)
-            end
-          end
+          @accepted.map(&blk)
         end
 
         # Clears any previously added mappings and format values.
@@ -138,15 +217,24 @@ module Hanami
         # @since 2.0.0
         # @api public
         def clear
-          @mapping = DEFAULT_MAPPING.dup
-          @values = []
+          @accepted = []
+          @default = nil
+          @mapping = {}
 
           self
         end
 
-        # Retrieve the format name associated with the given MIME Type
+        # Returns an array of all accepted media types.
         #
-        # @param mime_type [String] the MIME Type
+        # @since 2.3.0
+        # @api public
+        def accept_types
+          accepted.map { |format| mapping[format]&.accept_types }.flatten(1).compact
+        end
+
+        # Retrieve the format name associated with the given media type
+        #
+        # @param media_type [String] the media Type
         #
         # @return [Symbol,NilClass] the associated format name, if any
         #
@@ -157,59 +245,46 @@ module Hanami
         #
         # @since 2.0.0
         # @api public
-        def format_for(mime_type)
-          @mapping[mime_type]
+        def format_for(media_type)
+          mapping.values.reverse.find { |format| format.media_type == media_type }&.name
         end
 
-        # Returns the primary MIME type associated with the given format.
+        # Returns the media type associated with the given format.
         #
         # @param format [Symbol] the format name
         #
-        # @return [String, nil] the associated MIME type, if any
+        # @return [String, nil] the associated media type, if any
         #
         # @example
-        #   @config.formats.mime_type_for(:json) # => "application/json"
+        #   @config.formats.media_type_for(:json) # => "application/json"
         #
         # @see #format_for
         #
-        # @since 2.0.0
+        # @since 2.3.0
         # @api public
-        def mime_type_for(format)
-          @mapping.key(format)
+        def media_type_for(format)
+          mapping[format]&.media_type
         end
 
-        # Returns an array of all MIME types associated with the given format.
-        #
-        # Returns an empty array if no such format is configured.
-        #
-        # @param format [Symbol] the format name
-        #
-        # @return [Array<String>] the associated MIME types
-        #
-        # @since 2.0.0
-        # @api public
-        def mime_types_for(format)
-          @mapping.each_with_object([]) { |(mime_type, f), arr| arr << mime_type if format == f }
-        end
-
-        # Returns the default format name
-        #
-        # @return [Symbol, nil] the default format name, if any
-        #
-        # @example
-        #   @config.formats.default # => :json
-        #
-        # @since 2.0.0
-        # @api public
-        def default
-          @values.first
-        end
-
-        # @since 2.0.0
         # @api private
-        def keys
-          @mapping.keys
+        def accept_types_for(format)
+          mapping[format]&.accept_types || []
         end
+
+        # @api private
+        def content_types_for(format)
+          mapping[format]&.content_types || []
+        end
+
+        # @see #media_type_for
+        # @since 2.0.0
+        # @api public
+        alias_method :mime_type_for, :media_type_for
+
+        # @see #media_type_for
+        # @since 2.0.0
+        # @api public
+        alias_method :mime_types_for, :accept_types_for
       end
     end
   end

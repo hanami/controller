@@ -81,6 +81,12 @@ RSpec.describe "MIME Type" do
         expect(response.body).to                    eq("custom")
       end
 
+      it %(sets the "Content-Type" header to the format's canonical media type) do
+        response = app.get("/custom_from_accept", "HTTP_ACCEPT" => "application/custom+variant")
+        expect(response.headers["Content-Type"]).to eq("application/custom; charset=utf-8")
+        expect(response.body).to                    eq("custom")
+      end
+
       it 'sets "Content-Type" header according to weighted value' do
         response = app.get("/custom_from_accept", "HTTP_ACCEPT" => "application/custom;q=0.9,application/json;q=0.5")
         expect(response.headers["Content-Type"]).to eq("application/custom; charset=utf-8")
