@@ -112,6 +112,67 @@ module Hanami
       private_constant :ACCEPT_TYPES_TO_FORMATS
 
       class << self
+        # Yields if an action is configured with `formats`, the request has an `Accept` header, and
+        # none of the Accept types matches the accepted formats. The given block is expected to halt
+        # the request handling.
+        #
+        # If any of these conditions are not met, then the request is acceptable and the method
+        # returns without yielding.
+        #
+        # @see Action#enforce_accepted_media_types
+        # @see Config#formats
+        #
+        # @api private
+        def enforce_accept(request, config)
+          return unless request.accept_header?
+
+          accept_types = ::Rack::Utils.q_values(request.accept).map(&:first)
+          return if accept_types.any? { |type| accepted_media_type?(type, config) }
+
+          yield
+        end
+
+        # Yields if an action is configured with `formats`, the request has a `Content-Type` header,
+        # and the content type does not match the accepted formats. The given block is expected to
+        # halt the request handling.
+        #
+        # If any of these conditions are not met, then the request is acceptable and the method
+        # returns without yielding.
+        #
+        # @see Action#enforce_accepted_media_types
+        # @see Config#formats
+        #
+        # @api private
+        def enforce_content_type(request, config)
+          # Compare media type (without parameters) instead of full Content-Type header to avoid
+          # false negatives (e.g., multipart/form-data; boundary=...)
+          media_type = request.media_type
+
+          return if media_type.nil?
+
+          return if accepted_content_type?(media_type, config)
+
+          yield
+        end
+
+        # Returns a string combining a media type and charset, intended for setting as the
+        # `Content-Type` header for the response to the given request.
+        #
+        # This uses the request's `Accept` header (if present) along with the configured formats to
+        # determine the best content type to return.
+        #
+        # @return [String]
+        #
+        # @see Action#call
+        #
+        # @api private
+        def response_content_type_with_charset(request, config)
+          content_type_with_charset(
+            response_content_type(request, config),
+            config.default_charset || Action::DEFAULT_CHARSET
+          )
+        end
+
         # Returns a format name for the given content type.
         #
         # The format name will come from the configured formats, if such a format is configured
@@ -186,67 +247,6 @@ module Hanami
         # @api private
         def content_type_with_charset(content_type, charset)
           "#{content_type}; charset=#{charset}"
-        end
-
-        # Returns a string combining a media type and charset, intended for setting as the
-        # `Content-Type` header for the response to the given request.
-        #
-        # This uses the request's `Accept` header (if present) along with the configured formats to
-        # determine the best content type to return.
-        #
-        # @return [String]
-        #
-        # @see Action#call
-        #
-        # @api private
-        def response_content_type_with_charset(request, config)
-          content_type_with_charset(
-            response_content_type(request, config),
-            config.default_charset || Action::DEFAULT_CHARSET
-          )
-        end
-
-        # Yields if an action is configured with `formats`, the request has an `Accept` header, and
-        # none of the Accept types matches the accepted formats. The given block is expected to halt
-        # the request handling.
-        #
-        # If any of these conditions are not met, then the request is acceptable and the method
-        # returns without yielding.
-        #
-        # @see Action#enforce_accepted_media_types
-        # @see Config#formats
-        #
-        # @api private
-        def enforce_accept(request, config)
-          return unless request.accept_header?
-
-          accept_types = ::Rack::Utils.q_values(request.accept).map(&:first)
-          return if accept_types.any? { |type| accepted_media_type?(type, config) }
-
-          yield
-        end
-
-        # Yields if an action is configured with `formats`, the request has a `Content-Type` header,
-        # and the content type does not match the accepted formats. The given block is expected to
-        # halt the request handling.
-        #
-        # If any of these conditions are not met, then the request is acceptable and the method
-        # returns without yielding.
-        #
-        # @see Action#enforce_accepted_media_types
-        # @see Config#formats
-        #
-        # @api private
-        def enforce_content_type(request, config)
-          # Compare media type (without parameters) instead of full Content-Type header to avoid
-          # false negatives (e.g., multipart/form-data; boundary=...)
-          media_type = request.media_type
-
-          return if media_type.nil?
-
-          return if accepted_content_type?(media_type, config)
-
-          yield
         end
 
         # Patched version of <tt>Rack::Utils.best_q_match</tt>.
