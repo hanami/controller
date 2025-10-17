@@ -95,7 +95,6 @@ module Hanami
         if formats.empty?
           self.formats.values
         else
-          # TODO: add deprecation notice; use config.formats.accept instead
           self.formats.values = formats
           self.formats.default = formats.first
         end
