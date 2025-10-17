@@ -1597,7 +1597,7 @@ module Mimes
   end
 
   class CustomFromAccept < Hanami::Action
-    config.formats.register :custom, "application/custom"
+    config.formats.register :custom, "application/custom", accept_types: ["application/custom", "application/custom+variant"]
     config.formats.accept :json, :custom
 
     def handle(*, res)
@@ -1606,9 +1606,6 @@ module Mimes
   end
 
   class UploadAction < Hanami::Action
-    config.formats.register :multipart, "multipart/form-data"
-    config.formats.accept :multipart
-
     def handle(req, res)
       res.format = :txt
       res.body = req.content_type
