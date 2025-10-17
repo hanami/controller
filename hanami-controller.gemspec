@@ -18,7 +18,7 @@ Gem::Specification.new do |spec|
   spec.executables   = []
   spec.require_paths = ["lib"]
   spec.metadata["rubygems_mfa_required"] = "true"
-  spec.required_ruby_version = ">= 3.1"
+  spec.required_ruby_version = ">= 3.2"
 
   spec.add_dependency "rack", ">= 2.1"
   spec.add_dependency "hanami-utils", "~> 2.3.0.beta1"
