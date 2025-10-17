@@ -307,6 +307,16 @@ module Hanami
         end
 
         # @api private
+        def format_to_content_types(format, config)
+          configured_types = config.formats.content_types_for(format)
+          return configured_types if configured_types.any?
+
+          FORMATS
+            .fetch(format) { raise Hanami::Action::UnknownFormatError.new(format) }
+            .content_types
+        end
+
+        # @api private
         def response_content_type(request, config)
           # This method prepares the default `Content-Type` for the response. Importantly, it only
           # does this after `#enforce_accept` and `#enforce_content_type` have already passed the
@@ -372,13 +382,6 @@ module Hanami
         def format_to_media_types(format, config)
           config.formats.media_types_for(format).tap { |types| # WIP
             types << FORMATS[format].media_type if FORMATS.key?(format)
-          }
-        end
-
-        # @api private
-        def format_to_content_types(format, config)
-          config.formats.content_types_for(format).tap { |types|
-            types.concat FORMATS[format].content_types if FORMATS.key?(format)
           }
         end
       end
