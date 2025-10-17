@@ -263,20 +263,6 @@ module Hanami
           mapping[format]&.media_type
         end
 
-        # @see #media_type_for
-        # @since 2.0.0
-        # @api public
-        alias_method :mime_type_for, :media_type_for
-
-        # @see #media_type_for
-        # @since 2.0.0
-        # @api public
-        def mime_types_for(format)
-          # TODO: deprecate?
-          # FIXME: NOT ANY MORE
-          [media_type_for(format)]
-        end
-
         # @api private
         def accept_types_for(format)
           mapping[format]&.accept_types || []
@@ -286,6 +272,16 @@ module Hanami
         def content_types_for(format)
           mapping[format]&.content_types || []
         end
+
+        # @see #media_type_for
+        # @since 2.0.0
+        # @api public
+        alias_method :mime_type_for, :media_type_for
+
+        # @see #media_type_for
+        # @since 2.0.0
+        # @api public
+        alias_method :mime_types_for, :accept_types_for
       end
     end
   end

@@ -372,17 +372,13 @@ module Hanami
         end
 
         # @api private
-        # TODO: maybe delete these
         def format_to_media_type(format, config)
-          config.formats.media_type_for(format) ||
-            FORMATS.fetch(format) { raise Hanami::Action::UnknownFormatError.new(format) }.media_type
-        end
+          configured_type = config.formats.media_type_for(format)
+          return configured_type if configured_type
 
-        # @api private
-        def format_to_media_types(format, config)
-          config.formats.media_types_for(format).tap { |types| # WIP
-            types << FORMATS[format].media_type if FORMATS.key?(format)
-          }
+          FORMATS
+            .fetch(format) { raise Hanami::Action::UnknownFormatError.new(format) }
+            .media_type
         end
       end
     end
