@@ -92,6 +92,16 @@ module Hanami
           self.accepted = accepted | formats
         end
 
+        # @api private
+        def accepted_formats(standard_formats = {})
+          accepted.to_h { |format|
+            [
+              format,
+              mapping.fetch(format) { standard_formats[format] }
+            ]
+          }
+        end
+
         # @since 2.3.0
         def default=(format)
           @default = format.to_sym

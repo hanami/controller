@@ -301,13 +301,19 @@ module Hanami
 
         # @api private
         def response_content_type(request, config)
-          if request.accept_header?
-            # TODO: This bit really doesn't make sense to me. Why aren't we restricting based on the
-            # config.accepted?
-            all_accept_types = ACCEPT_TYPES_TO_FORMATS.keys + config.formats.accept_types
-            content_type = best_q_match(request.accept, all_accept_types)
+          # This method prepares the default `Content-Type` for the response. Importantly, it only
+          # does this after `#enforce_accept` and `#enforce_content_type` have already passed the
+          # request. So by the time we get here, the request has been deemed acceptable to the
+          # action, so we can try to be as helpful as possible in setting an appropriate content
+          # type for the response.
 
-            # TODO: should this map back to the canonical media type for the format?
+          if request.accept_header?
+            content_type =
+              if config.formats.empty? || config.formats.accepted.include?(:all)
+                permissive_response_content_type(request, config)
+              else
+                restrictive_response_content_type(request, config)
+              end
 
             return content_type if content_type
           end
@@ -317,6 +323,35 @@ module Hanami
           end
 
           Action::DEFAULT_CONTENT_TYPE
+        end
+
+        # @api private
+        def permissive_response_content_type(request, config)
+          # If no accepted formats are configured, or if the formats include :all, then we're
+          # working with a "permissive" action. In this case we simply want a response content type
+          # that corresponds to the request's accept header as closely as possible. This means we
+          # work from _all_ the media types we know of.
+
+          all_media_types =
+            (ACCEPT_TYPES_TO_FORMATS.keys | MEDIA_TYPES_TO_FORMATS.keys) +
+            config.formats.accept_types
+
+          best_q_match(request.accept, all_media_types)
+        end
+
+        # @api private
+        def restrictive_response_content_type(request, config)
+          # When specific formats are configured, this is a "resitrctive" action. Here we want to
+          # match against the configured accept types only, and work back from those to the
+          # configured format, so we can use its canonical media type for the content type.
+
+          accept_types_to_formats = config.formats.accepted_formats(FORMATS)
+            .each_with_object({}) { |(_, format), hsh|
+              format.accept_types.each { hsh[_1] = format }
+            }
+
+          accept_type = best_q_match(request.accept, accept_types_to_formats.keys)
+          accept_types_to_formats[accept_type].media_type if accept_type
         end
 
         # @api private
