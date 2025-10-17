@@ -98,6 +98,7 @@ module Hanami
           )
         )
         .freeze
+      private_constant :FORMATS
 
       # @api private
       MEDIA_TYPES_TO_FORMATS = FORMATS.each_with_object({}) { |(_name, format), hsh|
