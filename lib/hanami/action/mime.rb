@@ -127,7 +127,7 @@ module Hanami
           return unless request.accept_header?
 
           accept_types = ::Rack::Utils.q_values(request.accept).map(&:first)
-          return if accept_types.any? { |type| accepted_media_type?(type, config) }
+          return if accept_types.any? { |type| accepted_type?(type, config) }
 
           yield
         end
@@ -270,10 +270,26 @@ module Hanami
         private
 
         # @api private
-        def accepted_media_type?(media_type, config)
-          accepted_media_types(config).any? { |accepted_media_type|
-            ::Rack::Mime.match?(media_type, accepted_media_type)
+        def accepted_type?(media_type, config)
+          accepted_types(config).any? { |accepted_type|
+            ::Rack::Mime.match?(media_type, accepted_type)
           }
+        end
+
+        # @api private
+        def accepted_types(config)
+          return [ANY_TYPE] if config.formats.empty?
+
+          config.formats.map { |format| format_to_accept_types(format, config) }.flatten(1)
+        end
+
+        def format_to_accept_types(format, config)
+          configured_types = config.formats.accept_types_for(format)
+          return configured_types if configured_types.any?
+
+          FORMATS
+            .fetch(format) { raise Hanami::Action::UnknownFormatError.new(format) }
+            .accept_types
         end
 
         # @api private
@@ -288,15 +304,6 @@ module Hanami
           return [ANY_TYPE] if config.formats.empty?
 
           config.formats.map { |format| format_to_content_types(format, config) }.flatten(1)
-        end
-
-        # @api private
-        def accepted_media_types(config)
-          # TODO: rename to accept_types
-
-          return [ANY_TYPE] if config.formats.empty?
-
-          config.formats.map { |format| format_to_media_type(format, config) }
         end
 
         # @api private
@@ -355,6 +362,7 @@ module Hanami
         end
 
         # @api private
+        # TODO: maybe delete these
         def format_to_media_type(format, config)
           config.formats.media_type_for(format) ||
             FORMATS.fetch(format) { raise Hanami::Action::UnknownFormatError.new(format) }.media_type

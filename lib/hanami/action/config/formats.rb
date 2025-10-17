@@ -277,8 +277,12 @@ module Hanami
           [media_type_for(format)]
         end
 
-        # @since 2.3.0
-        # @api public
+        # @api private
+        def accept_types_for(format)
+          mapping[format]&.accept_types || []
+        end
+
+        # @api private
         def content_types_for(format)
           mapping[format]&.content_types || []
         end
