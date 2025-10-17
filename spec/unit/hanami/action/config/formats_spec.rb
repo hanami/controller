@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-RSpec.xdescribe Hanami::Action::Config::Formats do
+RSpec.describe Hanami::Action::Config::Formats do
   subject(:formats) { described_class.new }
 
   describe "#register" do
     it "registers a mapping" do
-      expect { formats.register(:custom, media_type: "application/custom") }
+      expect { formats.register(:custom, "application/custom") }
         .to change { formats.mapping }
         .to include(custom: have_attributes(media_type: "application/custom"))
     end
@@ -14,7 +14,8 @@ RSpec.xdescribe Hanami::Action::Config::Formats do
       expect {
         formats.register(
           :jsonapi,
-          media_type: "application/vnd.api+json",
+          "application/vnd.api+json",
+          accept_types: ["application/vnd.api+json", "application/json"],
           content_types: ["application/vnd.api+json", "application/json"]
         )
       }
@@ -22,6 +23,7 @@ RSpec.xdescribe Hanami::Action::Config::Formats do
         .to include(
           jsonapi: have_attributes(
             media_type: "application/vnd.api+json",
+            accept_types: ["application/vnd.api+json", "application/json"],
             content_types: ["application/vnd.api+json", "application/json"]
           )
         )
@@ -108,7 +110,7 @@ RSpec.xdescribe Hanami::Action::Config::Formats do
 
   describe "#format_for" do
     before do
-      formats.register(:html, media_type: "text/html")
+      formats.register(:html, "text/html")
     end
 
     it "returns the configured format for the given MIME type" do
@@ -116,7 +118,7 @@ RSpec.xdescribe Hanami::Action::Config::Formats do
     end
 
     it "returns the most recently configured format for a given MIME type" do
-      formats.register :htm, media_type: "text/html"
+      formats.register :htm, "text/html"
 
       expect(formats.format_for("text/html")).to eq(:htm)
     end
@@ -128,7 +130,7 @@ RSpec.xdescribe Hanami::Action::Config::Formats do
 
   describe "#media_type_for" do
     before do
-      formats.register(:custom, media_type: "application/custom")
+      formats.register(:custom, "application/custom")
     end
 
     it "returns the configured media type for the given format" do
@@ -148,8 +150,14 @@ RSpec.xdescribe Hanami::Action::Config::Formats do
           .to include(custom: have_attributes(media_type: "application/custom"))
       end
 
+      it "can add a mapping to multiple content types" do
+        expect { formats.add(:json, ["application/json", "application/json+scim"]) }
+          .to change { formats.mapping }
+          .to include(json: have_attributes(media_type: "application/json", accept_types: ["application/json", "application/json+scim"]))
+      end
+
       it "replaces a previously set mapping for a given MIME type" do
-        formats.register(:html, media_type: "text/html")
+        formats.register(:html, "text/html")
         formats.add :custom, "text/html"
 
         expect(formats.mapping).to match(custom: have_attributes(media_type: "text/html"))

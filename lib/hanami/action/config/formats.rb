@@ -182,7 +182,7 @@ module Hanami
           # The old behaviour would have subsequent mime types _replacing_ previous ones
           mapping.reject! { |_, format| format.media_type == mime_type }
 
-          register(format, media_type: Array(mime_types).first)
+          register(format, Array(mime_types).first, accept_types: mime_types)
 
           accept(format) unless @accepted.include?(format)
 
