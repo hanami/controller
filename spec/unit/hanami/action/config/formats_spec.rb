@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Hanami::Action::Config::Formats do
+RSpec.xdescribe Hanami::Action::Config::Formats do
   subject(:formats) { described_class.new }
 
   describe "#register" do

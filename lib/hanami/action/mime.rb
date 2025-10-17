@@ -75,8 +75,8 @@ module Hanami
       ANY_TYPE = "*/*"
 
       # @api private
-      Format = Data.define(:name, :media_type, :content_types) do
-        def initialize(name:, media_type:, content_types: [media_type])
+      Format = Data.define(:name, :media_type, :accept_types, :content_types) do
+        def initialize(name:, media_type:, accept_types: [media_type], content_types: [media_type])
           super
         end
       end
@@ -88,6 +88,7 @@ module Hanami
           all: Format.new(
             name: :all,
             media_type: "application/octet-stream",
+            accept_types: ["*/*"],
             content_types: ["*/*"]
           ),
           html: Format.new(
@@ -102,6 +103,13 @@ module Hanami
       MEDIA_TYPES_TO_FORMATS = FORMATS.each_with_object({}) { |(_name, format), hsh|
         hsh[format.media_type] = format
       }.freeze
+      private_constant :MEDIA_TYPES_TO_FORMATS
+
+      # @api private
+      ACCEPT_TYPES_TO_FORMATS = FORMATS.each_with_object({}) { |(_name, format), hsh|
+        format.accept_types.each { |type| hsh[type] = format }
+      }.freeze
+      private_constant :ACCEPT_TYPES_TO_FORMATS
 
       class << self
         # Returns a format name for the given content type.
@@ -284,6 +292,8 @@ module Hanami
 
         # @api private
         def accepted_media_types(config)
+          # TODO: rename to accept_types
+
           return [ANY_TYPE] if config.formats.empty?
 
           config.formats.map { |format| format_to_media_type(format, config) }
@@ -292,8 +302,12 @@ module Hanami
         # @api private
         def response_content_type(request, config)
           if request.accept_header?
-            all_media_types = MEDIA_TYPES_TO_FORMATS.keys + config.formats.accepted_media_types
-            content_type = best_q_match(request.accept, all_media_types)
+            # TODO: This bit really doesn't make sense to me. Why aren't we restricting based on the
+            # config.accepted?
+            all_accept_types = ACCEPT_TYPES_TO_FORMATS.keys + config.formats.accept_types
+            content_type = best_q_match(request.accept, all_accept_types)
+
+            # TODO: should this map back to the canonical media type for the format?
 
             return content_type if content_type
           end

@@ -115,10 +115,11 @@ module Hanami
         #
         # @since 2.3.0
         # @api public
-        def register(format, media_type:, content_types: [media_type])
+        def register(format, media_type, accept_types: [media_type], content_types: [media_type])
           mapping[format] = Mime::Format.new(
             name: format.to_sym,
             media_type: media_type,
+            accept_types: accept_types,
             content_types: content_types
           )
 
@@ -210,12 +211,12 @@ module Hanami
           self
         end
 
-        # Returns an array of all accepted meda
+        # Returns an array of all accepted media types.
         #
         # @since 2.3.0
         # @api public
-        def accepted_media_types
-          accepted.map { |format| mapping[format]&.media_type }.compact
+        def accept_types
+          accepted.map { |format| mapping[format]&.accept_types }.flatten(1).compact
         end
 
         # Retrieve the format name associated with the given media type
@@ -261,7 +262,8 @@ module Hanami
         # @since 2.0.0
         # @api public
         def mime_types_for(format)
-          # TODO: deprecate
+          # TODO: deprecate?
+          # FIXME: NOT ANY MORE
           [media_type_for(format)]
         end
 
