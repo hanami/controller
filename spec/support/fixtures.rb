@@ -615,6 +615,23 @@ class StringExceptionWithHandlerAction < Hanami::Action
   end
 end
 
+class NonExistentExceptionNameAction < Hanami::Action
+  config.handle_exception "NonExistentException" => 404
+
+  def handle(_req, _res)
+    raise RecordNotFound.new
+  end
+end
+
+class MixedExistingAndNonExistentAction < Hanami::Action
+  config.handle_exception "NonExistentException" => 400
+  config.handle_exception RecordNotFound => 404
+
+  def handle(_req, _res)
+    raise RecordNotFound.new
+  end
+end
+
 class ParamsAction < Hanami::Action
   def handle(req, res)
     params = req.params.to_h
