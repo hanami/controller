@@ -592,6 +592,29 @@ class UnhandledExceptionAction < Hanami::Action
   end
 end
 
+class StringExceptionNameAction < Hanami::Action
+  config.handle_exception "RecordNotFound" => 404
+
+  def handle(_req, _res)
+    raise RecordNotFound.new
+  end
+end
+
+class StringExceptionWithHandlerAction < Hanami::Action
+  config.handle_exception "StandardError" => :handle_standard_error
+
+  def handle(_req, _res)
+    raise StandardError.new("test error")
+  end
+
+  private
+
+  def handle_standard_error(_req, res, _exception)
+    res.status = 422
+    res.body = "Custom handler"
+  end
+end
+
 class ParamsAction < Hanami::Action
   def handle(req, res)
     params = req.params.to_h
