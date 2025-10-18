@@ -12,6 +12,29 @@ RSpec.describe Hanami::Action do
       expect { UnhandledExceptionAction.new.call({}) }.to raise_error(RecordNotFound)
     end
 
+    it "handles an exception when its name is provided as a string" do
+      response = StringExceptionNameAction.new.call({})
+
+      expect(response.status).to be(404)
+    end
+
+    it "handles an exception with a custom handler when its name is provided as a string" do
+      response = StringExceptionWithHandlerAction.new.call({})
+
+      expect(response.status).to be(422)
+      expect(response.body).to eq(["Custom handler"])
+    end
+
+    it "ignores non-existent exception class names and raises the exception" do
+      expect { NonExistentExceptionNameAction.new.call({}) }.to raise_error(RecordNotFound)
+    end
+
+    it "handles valid exception classes even when mixed with non-existent names" do
+      response = MixedExistingAndNonExistentAction.new.call({})
+
+      expect(response.status).to be(404)
+    end
+
     describe "with global handled exceptions" do
       it "handles raised exception" do
         response = GlobalHandledExceptionAction.new.call({})

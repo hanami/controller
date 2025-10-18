@@ -20,6 +20,29 @@ RSpec.describe Hanami::Action::Config do
       config.handle_exception TypeError => 400
       expect(config.handled_exceptions).to eq(ArgumentError => 400, TypeError => 400)
     end
+
+    it "allows specifying exceptions as string names" do
+      config.handle_exception "ArgumentError" => 400
+      expect(config.handled_exceptions).to eq("ArgumentError" => 400)
+    end
+
+    it "allows mixing exception classes and string names" do
+      config.handle_exception ArgumentError => 400
+      config.handle_exception "TypeError" => 500
+      expect(config.handled_exceptions).to eq(ArgumentError => 400, "TypeError" => 500)
+    end
+
+    it "handles non-existent exception class names gracefully during sorting" do
+      config.handle_exception "NonExistentException" => 400
+      config.handle_exception ArgumentError => 500
+      expect(config.handled_exceptions.keys).to include("NonExistentException", ArgumentError)
+    end
+
+    it "handles multiple non-existent exception class names" do
+      config.handle_exception "FirstNonExistent" => 400
+      config.handle_exception "SecondNonExistent" => 500
+      expect(config.handled_exceptions).to eq("FirstNonExistent" => 400, "SecondNonExistent" => 500)
+    end
   end
 
   describe "#format" do

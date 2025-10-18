@@ -433,7 +433,10 @@ module Hanami
     # @api private
     def exception_handler(exception)
       config.handled_exceptions.each do |exception_class, handler|
-        return handler if exception.is_a?(exception_class)
+        klass = exception_class.is_a?(String) ? Object.const_get(exception_class) : exception_class
+        return handler if exception.is_a?(klass)
+      rescue NameError
+        next
       end
 
       nil
